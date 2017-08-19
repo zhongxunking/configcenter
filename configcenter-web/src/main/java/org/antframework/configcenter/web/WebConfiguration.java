@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-06-22 13:06 创建
  */
-package org.antframework.template.web;
+package org.antframework.configcenter.web;
 
 import org.springframework.context.annotation.Configuration;
 

@@ -17,9 +17,5 @@
             <artifactId>configcenter-common</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.antframework.boot</groupId>
-            <artifactId>ant-boot-starter-dubbo</artifactId>
-        </dependency>
     </dependencies>
 </project>
