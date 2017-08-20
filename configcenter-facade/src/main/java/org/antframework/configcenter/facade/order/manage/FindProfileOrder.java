@@ -12,4 +12,14 @@ package org.antframework.configcenter.facade.order.manage;
  *
  */
 public class FindProfileOrder {
+
+    private String profileCode;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
 }

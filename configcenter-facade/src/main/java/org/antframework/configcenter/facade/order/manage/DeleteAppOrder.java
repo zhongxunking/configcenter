@@ -8,8 +8,21 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  *
  */
 public class DeleteAppOrder {
+
+    @NotBlank
+    private String appCode;
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
 }

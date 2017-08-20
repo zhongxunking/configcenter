@@ -27,5 +27,18 @@
             <artifactId>configcenter-integration</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
+        <!--bekit-->
+        <dependency>
+            <groupId>org.bekit</groupId>
+            <artifactId>event</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bekit</groupId>
+            <artifactId>flow</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.bekit</groupId>
+            <artifactId>service</artifactId>
+        </dependency>
     </dependencies>
 </project>

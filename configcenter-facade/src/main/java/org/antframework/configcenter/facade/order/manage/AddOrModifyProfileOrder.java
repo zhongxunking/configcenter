@@ -12,4 +12,24 @@ package org.antframework.configcenter.facade.order.manage;
  *
  */
 public class AddOrModifyProfileOrder {
+
+    private String profileCode;
+
+    private String memo;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }

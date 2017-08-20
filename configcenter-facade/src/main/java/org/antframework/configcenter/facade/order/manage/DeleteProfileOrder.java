@@ -8,8 +8,21 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  *
  */
 public class DeleteProfileOrder {
+
+    @NotBlank
+    private String profileCode;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
 }
