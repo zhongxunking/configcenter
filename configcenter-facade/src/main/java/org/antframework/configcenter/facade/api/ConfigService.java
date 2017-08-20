@@ -18,6 +18,8 @@ import org.antframework.configcenter.facade.result.QueryAppProfilePropertyResult
  */
 public interface ConfigService {
 
+    String PROFILE_COMMON_APP_CODE = "common";
+
     FindAppResult findApp(FindAppOrder order);
 
     QueryAppProfilePropertyResult queryAppProfileProperty(QueryAppProfilePropertyOrder order);

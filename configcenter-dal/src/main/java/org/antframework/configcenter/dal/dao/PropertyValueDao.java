@@ -10,6 +10,8 @@ package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.PropertyValue;
 
+import java.util.List;
+
 /**
  *
  */
@@ -20,4 +22,6 @@ public interface PropertyValueDao {
     PropertyValue findLockByProfileCodeAndAppCodeAndKey(String profileCode, String appCode, String key);
 
     void delete(PropertyValue propertyValue);
+
+    List<PropertyValue> findByProfileCodeAndAppCode(String profileCode, String appCode);
 }

@@ -20,6 +20,8 @@ public interface AppDao {
 
     void save(App app);
 
+    App findByAppCode(String appCode);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     App findLockByAppCode(String appCode);
 

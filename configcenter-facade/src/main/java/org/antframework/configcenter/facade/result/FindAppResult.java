@@ -8,8 +8,19 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import org.antframework.configcenter.facade.info.AppInfo;
+
 /**
  *
  */
 public class FindAppResult {
+    private AppInfo appInfo;
+
+    public AppInfo getAppInfo() {
+        return appInfo;
+    }
+
+    public void setAppInfo(AppInfo appInfo) {
+        this.appInfo = appInfo;
+    }
 }

@@ -12,4 +12,24 @@ package org.antframework.configcenter.facade.order;
  *
  */
 public class QueryAppProfilePropertyOrder {
+
+    private String appCode;
+
+    private String profileCode;
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
 }
