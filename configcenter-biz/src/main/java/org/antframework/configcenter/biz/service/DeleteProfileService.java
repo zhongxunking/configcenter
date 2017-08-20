@@ -31,7 +31,7 @@ public class DeleteProfileService {
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
         if (profile != null) {
-            profileDao.deleteByProfileCode(order.getProfileCode());
+            profileDao.delete(profile);
         }
     }
 

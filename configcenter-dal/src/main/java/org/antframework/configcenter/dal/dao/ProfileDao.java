@@ -25,5 +25,5 @@ public interface ProfileDao {
 
     Profile findByProfileCode(String profileCode);
 
-    void deleteByProfileCode(String profileCode);
+    void delete(Profile profile);
 }

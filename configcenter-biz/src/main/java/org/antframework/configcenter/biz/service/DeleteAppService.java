@@ -32,7 +32,7 @@ public class DeleteAppService {
 
         App app = appDao.findLockByAppCode(order.getAppCode());
         if (app != null) {
-            appDao.deleteByAppCode(order.getAppCode());
+            appDao.delete(app);
         }
     }
 }

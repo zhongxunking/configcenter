@@ -8,8 +8,19 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.configcenter.facade.info.ProfileInfo;
+
 /**
  *
  */
 public class FindProfileResult {
+    private ProfileInfo profileInfo;
+
+    public ProfileInfo getProfileInfo() {
+        return profileInfo;
+    }
+
+    public void setProfileInfo(ProfileInfo profileInfo) {
+        this.profileInfo = profileInfo;
+    }
 }

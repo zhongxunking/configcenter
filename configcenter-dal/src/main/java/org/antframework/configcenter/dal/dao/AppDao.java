@@ -23,5 +23,5 @@ public interface AppDao {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     App findLockByAppCode(String appCode);
 
-    void deleteByAppCode(String appCode);
+    void delete(App app);
 }

@@ -8,10 +8,10 @@
  */
 package org.antframework.configcenter.facade.api.manage;
 
-import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 
@@ -20,7 +20,7 @@ import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResu
  */
 public interface PropertyValueManageService {
 
-    AddOrModifyPropertyValueResult addOrModifyPropertyValue(AddOrModifyPropertyValueOrder order);
+    SetPropertyValueResult setPropertyValue(SetPropertyValueOrder order);
 
     DeletePropertyValueResult deletePropertyValue(DeletePropertyValueOrder order);
 

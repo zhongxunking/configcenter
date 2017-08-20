@@ -4,7 +4,7 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-08-20 13:53 创建
+ * @author 钟勋 2017-08-20 02:25 创建
  */
 package org.antframework.configcenter.facade.order.manage;
 
@@ -13,7 +13,10 @@ import org.hibernate.validator.constraints.NotBlank;
 /**
  *
  */
-public class AddOrModifyPropertyKeyOrder {
+public class SetPropertyValueOrder {
+
+    @NotBlank
+    private String profileCode;
 
     @NotBlank
     private String appCode;
@@ -21,7 +24,16 @@ public class AddOrModifyPropertyKeyOrder {
     @NotBlank
     private String key;
 
-    private String memo;
+    @NotBlank
+    private String value;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
 
     public String getAppCode() {
         return appCode;
@@ -39,11 +51,11 @@ public class AddOrModifyPropertyKeyOrder {
         this.key = key;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getValue() {
+        return value;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setValue(String value) {
+        this.value = value;
     }
 }

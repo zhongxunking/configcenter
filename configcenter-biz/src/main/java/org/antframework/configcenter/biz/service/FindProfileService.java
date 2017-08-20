@@ -10,11 +10,13 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.manage.FindProfileOrder;
 import org.antframework.configcenter.facade.result.manage.FindProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -28,9 +30,17 @@ public class FindProfileService {
     @ServiceExecute
     public void serviceExecute(ServiceContext<FindProfileOrder, FindProfileResult> serviceContext) {
         FindProfileOrder order = serviceContext.getOrder();
+        FindProfileResult result = serviceContext.getResult();
 
         Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+        if (profile != null) {
+            result.setProfileInfo(buildProfileInfo(profile));
+        }
+    }
 
-
+    private ProfileInfo buildProfileInfo(Profile profile) {
+        ProfileInfo info = new ProfileInfo();
+        BeanUtils.copyProperties(profile, info);
+        return info;
     }
 }
