@@ -8,8 +8,31 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.hibernate.validator.constraints.NotBlank;
+
 /**
  *
  */
 public class AddOrModifyAppOrder {
+
+    @NotBlank
+    private String appCode;
+
+    private String memo;
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
+    }
 }
