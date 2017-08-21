@@ -8,12 +8,15 @@
  */
 package org.antframework.configcenter.biz;
 
+import org.antframework.configcenter.biz.bekitboot.boot.BekitConfiguration;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
  * biz层配置
  */
 @Configuration
+@Import(BekitConfiguration.class)
 public class BizConfiguration {
 
 }
