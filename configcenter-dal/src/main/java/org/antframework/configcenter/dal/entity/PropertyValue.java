@@ -18,7 +18,7 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"profileCode", "appCode", "key"}))
-public class PropertyValue {
+public class PropertyValue extends AbstractEntity {
     // 环境编码
     @Column(length = 64)
     private String profileCode;
