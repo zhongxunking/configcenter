@@ -8,13 +8,20 @@
  */
 package org.antframework.configcenter.dal.entity;
 
-/**
- *
- */
-public class App {
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
+/**
+ * 应用
+ */
+@Entity
+public class App extends AbstractEntity {
+    // 应用编码
+    @Column(unique = true, length = 64)
     private String appCode;
 
+    // 备注
+    @Column
     private String memo;
 
     public String getAppCode() {

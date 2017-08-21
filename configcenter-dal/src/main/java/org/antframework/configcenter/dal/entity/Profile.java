@@ -8,13 +8,20 @@
  */
 package org.antframework.configcenter.dal.entity;
 
-/**
- *
- */
-public class Profile {
+import javax.persistence.Column;
+import javax.persistence.Entity;
 
+/**
+ * 环境
+ */
+@Entity
+public class Profile extends AbstractEntity {
+    // 环境编码
+    @Column(unique = true, length = 64)
     private String profileCode;
 
+    // 备注
+    @Column
     private String memo;
 
     public String getProfileCode() {

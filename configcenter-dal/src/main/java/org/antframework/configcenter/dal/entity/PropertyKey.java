@@ -8,15 +8,27 @@
  */
 package org.antframework.configcenter.dal.entity;
 
-/**
- *
- */
-public class PropertyKey {
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
+/**
+ * 属性key
+ */
+@Entity
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appCode", "key"}))
+public class PropertyKey {
+    // 应用编码
+    @Column(length = 64)
     private String appCode;
 
+    // 属性key
+    @Column(name = "`key`", length = 128)
     private String key;
 
+    // 备注
+    @Column
     private String memo;
 
     public String getAppCode() {

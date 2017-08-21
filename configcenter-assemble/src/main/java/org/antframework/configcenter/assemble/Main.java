@@ -18,7 +18,6 @@ import org.springframework.core.env.AbstractEnvironment;
  */
 @SpringBootApplication
 public class Main {
-
     public static void main(String[] args) {
         setProfileIfNotExists("offline");
         SpringApplication.run(Main.class, args);
