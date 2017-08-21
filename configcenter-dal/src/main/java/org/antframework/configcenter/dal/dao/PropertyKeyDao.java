@@ -9,15 +9,22 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.PropertyKey;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.RepositoryDefinition;
+
+import javax.persistence.LockModeType;
 
 /**
- *
+ * 属性key实体dao
  */
+@RepositoryDefinition(domainClass = PropertyKey.class, idClass = Long.class)
 public interface PropertyKeyDao {
 
     void save(PropertyKey propertyKey);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     PropertyKey findLockByAppCodeAndKey(String appCode, String key);
 
     void delete(PropertyKey propertyKey);
+
 }

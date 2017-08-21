@@ -9,19 +9,25 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.RepositoryDefinition;
 
+import javax.persistence.LockModeType;
 import java.util.List;
 
 /**
- *
+ * 属性value实体dao
  */
+@RepositoryDefinition(domainClass = PropertyValue.class, idClass = Long.class)
 public interface PropertyValueDao {
 
     void save(PropertyValue propertyValue);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
     PropertyValue findLockByProfileCodeAndAppCodeAndKey(String profileCode, String appCode, String key);
+
+    List<PropertyValue> findByProfileCodeAndAppCode(String profileCode, String appCode);
 
     void delete(PropertyValue propertyValue);
 
-    List<PropertyValue> findByProfileCodeAndAppCode(String profileCode, String appCode);
 }

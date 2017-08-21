@@ -10,12 +10,14 @@ package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.Profile;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
 
 /**
- *
+ * 环境实体dao
  */
+@RepositoryDefinition(domainClass = Profile.class, idClass = Long.class)
 public interface ProfileDao {
 
     void save(Profile profile);
@@ -26,4 +28,5 @@ public interface ProfileDao {
     Profile findByProfileCode(String profileCode);
 
     void delete(Profile profile);
+
 }

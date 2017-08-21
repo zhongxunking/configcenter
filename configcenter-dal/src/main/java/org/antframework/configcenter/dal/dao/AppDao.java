@@ -10,20 +10,23 @@ package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.App;
 import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
 
 /**
- *
+ * 应用实体dao
  */
+@RepositoryDefinition(domainClass = App.class, idClass = Long.class)
 public interface AppDao {
 
     void save(App app);
 
-    App findByAppCode(String appCode);
-
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     App findLockByAppCode(String appCode);
 
+    App findByAppCode(String appCode);
+
     void delete(App app);
+
 }
