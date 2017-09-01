@@ -1,0 +1,37 @@
+/* 
+ * 作者：钟勋 (e-mail:zhongxunking@163.com)
+ */
+
+/*
+ * 修订记录:
+ * @author 钟勋 2017-08-20 21:31 创建
+ */
+package org.antframework.configcenter.biz.service;
+
+import org.antframework.configcenter.dal.dao.PropertyValueDao;
+import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
+import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceExecute;
+import org.bekit.service.engine.ServiceContext;
+import org.springframework.beans.factory.annotation.Autowired;
+
+/**
+ *
+ */
+@Service(enableTx = true)
+public class DeletePropertyValueService {
+    @Autowired
+    private PropertyValueDao propertyValueDao;
+
+    @ServiceExecute
+    public void execute(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> serviceContext) {
+        DeletePropertyValueOrder order = serviceContext.getOrder();
+
+        PropertyValue propertyValue = propertyValueDao.findLockByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), order.getKey());
+        if (propertyValue != null) {
+            propertyValueDao.delete(propertyValue);
+        }
+    }
+}
