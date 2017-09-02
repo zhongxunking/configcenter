@@ -8,15 +8,15 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.facade.FacadeUtils.SpringDataPageExtractor;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,11 +33,11 @@ public class QueryPropertyKeyService {
     private PropertyKeyDao propertyKeyDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<QueryPropertyKeyOrder, QueryPropertyKeyResult> serviceContext) {
-        QueryPropertyKeyOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<QueryPropertyKeyOrder, QueryPropertyKeyResult> context) {
+        QueryPropertyKeyOrder order = context.getOrder();
 
         Page<PropertyKey> page = propertyKeyDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
-        setResult(serviceContext.getResult(), page);
+        FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
 
 
@@ -51,17 +51,5 @@ public class QueryPropertyKeyService {
             searchParams.put("LIKE_key", "%" + queryPropertyKeyOrder.getKey() + "%");
         }
         return searchParams;
-    }
-
-    // 设置result
-    private void setResult(QueryPropertyKeyResult result, Page<PropertyKey> page) {
-        result.setTotalCount(page.getTotalElements());
-
-        for (PropertyKey propertyKey : page.getContent()) {
-            PropertyKeyInfo info = new PropertyKeyInfo();
-            BeanUtils.copyProperties(propertyKey, info);
-
-            result.addInfo(info);
-        }
     }
 }

@@ -8,15 +8,15 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.facade.FacadeUtils.SpringDataPageExtractor;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -33,11 +33,11 @@ public class QueryProfileService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<QueryProfileOrder, QueryProfileResult> serviceContext) {
-        QueryProfileOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<QueryProfileOrder, QueryProfileResult> context) {
+        QueryProfileOrder order = context.getOrder();
 
         Page<Profile> page = profileDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
-        setResult(serviceContext.getResult(), page);
+        FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
 
     // 构建查询条件
@@ -47,17 +47,5 @@ public class QueryProfileService {
             searchParams.put("LIKE_profileCode", "%" + queryProfileOrder.getProfileCode() + "%");
         }
         return searchParams;
-    }
-
-    // 设置result
-    private void setResult(QueryProfileResult result, Page<Profile> page) {
-        result.setTotalCount(page.getTotalElements());
-
-        for (Profile profile : page.getContent()) {
-            ProfileInfo info = new ProfileInfo();
-            BeanUtils.copyProperties(profile, info);
-
-            result.addInfo(info);
-        }
     }
 }
