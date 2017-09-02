@@ -25,7 +25,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- *
+ * 查询属性key服务
  */
 @Service
 public class QueryPropertyKeyService {
@@ -39,7 +39,6 @@ public class QueryPropertyKeyService {
         Page<PropertyKey> page = propertyKeyDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
         FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
-
 
     // 构建查询条件
     private Map<String, Object> buildSearchParams(QueryPropertyKeyOrder queryPropertyKeyOrder) {

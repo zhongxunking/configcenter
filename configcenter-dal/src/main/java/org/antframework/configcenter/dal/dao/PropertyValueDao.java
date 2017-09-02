@@ -9,11 +9,14 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 属性value实体dao
@@ -34,4 +37,5 @@ public interface PropertyValueDao {
 
     boolean existsByAppCodeAndKey(String appCode, String key);
 
+    Page<PropertyValue> query(Map<String, Object> searchParams, Pageable pageable);
 }

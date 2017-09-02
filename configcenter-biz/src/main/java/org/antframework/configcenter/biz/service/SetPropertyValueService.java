@@ -19,7 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 设置属性value服务
  */
 @Service(enableTx = true)
 public class SetPropertyValueService {
@@ -27,8 +27,8 @@ public class SetPropertyValueService {
     private PropertyValueDao propertyValueDao;
 
     @ServiceExecute
-    public void serviceExecute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> serviceContext) {
-        SetPropertyValueOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
+        SetPropertyValueOrder order = context.getOrder();
 
         PropertyValue propertyValue = propertyValueDao.findLockByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), order.getKey());
         if (propertyValue == null) {
@@ -39,6 +39,7 @@ public class SetPropertyValueService {
         propertyValueDao.save(propertyValue);
     }
 
+    //构建属性value
     private PropertyValue buildPropertyValue(SetPropertyValueOrder setPropertyValueOrder) {
         PropertyValue propertyValue = new PropertyValue();
         BeanUtils.copyProperties(setPropertyValueOrder, propertyValue);

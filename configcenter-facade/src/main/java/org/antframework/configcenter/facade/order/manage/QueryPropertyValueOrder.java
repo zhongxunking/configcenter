@@ -8,8 +8,40 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractQueryOrder;
+
 /**
- *
+ * 查询属性value-order
  */
-public class QueryPropertyValueOrder {
+public class QueryPropertyValueOrder extends AbstractQueryOrder {
+    // 环境编码
+    private String profileCode;
+    // 应用编码
+    private String appCode;
+    // 属性key
+    private String key;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }
