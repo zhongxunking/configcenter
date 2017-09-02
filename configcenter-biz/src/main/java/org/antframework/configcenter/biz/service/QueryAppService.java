@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.jpa.SpecificationUtil;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -21,7 +20,6 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.jpa.domain.Specification;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,15 +36,15 @@ public class QueryAppService {
     public void execute(ServiceContext<QueryAppOrder, QueryAppResult> serviceContext) {
         QueryAppOrder order = serviceContext.getOrder();
 
-        Page<App> page = appDao.findAll(buildSpecification(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<App> page = appDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
         setResult(serviceContext.getResult(), page);
     }
 
     // 构建查询条件
-    private Specification<App> buildSpecification(QueryAppOrder queryAppOrder) {
+    private Map<String, Object> buildSearchParams(QueryAppOrder queryAppOrder) {
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("LIKE_appCode", queryAppOrder.getAppCode());
-        return SpecificationUtil.parse(searchParams);
+        return searchParams;
     }
 
     // 设置结果

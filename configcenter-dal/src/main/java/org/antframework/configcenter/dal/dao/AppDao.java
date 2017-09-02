@@ -11,11 +11,11 @@ package org.antframework.configcenter.dal.dao;
 import org.antframework.configcenter.dal.entity.App;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.Map;
 
 /**
  * 应用实体dao
@@ -32,5 +32,5 @@ public interface AppDao {
 
     void delete(App app);
 
-    Page<App> findAll(Specification<App> spec, Pageable pageable);
+    Page<App> query(Map<String, Object> searchParams, Pageable pageable);
 }

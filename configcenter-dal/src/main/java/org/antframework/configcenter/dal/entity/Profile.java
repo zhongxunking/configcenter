@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.dal.entity;
 
+import org.antframework.boot.jpa.AbstractEntity;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 
