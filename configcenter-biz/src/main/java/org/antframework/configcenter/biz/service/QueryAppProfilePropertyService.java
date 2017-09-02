@@ -13,7 +13,9 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
+import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
+import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.QueryAppProfilePropertyOrder;
@@ -24,6 +26,7 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,10 +42,12 @@ public class QueryAppProfilePropertyService {
     private AppDao appDao;
     @Autowired
     private PropertyValueDao propertyValueDao;
+    @Autowired
+    private PropertyKeyDao propertyKeyDao;
 
     @ServiceCheck
-    public void check(ServiceContext<QueryAppProfilePropertyOrder, QueryAppProfilePropertyResult> serviceContext) {
-        QueryAppProfilePropertyOrder order = serviceContext.getOrder();
+    public void check(ServiceContext<QueryAppProfilePropertyOrder, QueryAppProfilePropertyResult> context) {
+        QueryAppProfilePropertyOrder order = context.getOrder();
 
         if (profileDao.findByProfileCode(order.getProfileCode()) == null) {
             throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
@@ -53,12 +58,12 @@ public class QueryAppProfilePropertyService {
     }
 
     @ServiceExecute
-    public void execute(ServiceContext<QueryAppProfilePropertyOrder, QueryAppProfilePropertyResult> serviceContext) {
-        QueryAppProfilePropertyOrder order = serviceContext.getOrder();
-        QueryAppProfilePropertyResult result = serviceContext.getResult();
+    public void execute(ServiceContext<QueryAppProfilePropertyOrder, QueryAppProfilePropertyResult> context) {
+        QueryAppProfilePropertyOrder order = context.getOrder();
+        QueryAppProfilePropertyResult result = context.getResult();
 
         List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), ConfigService.PROFILE_COMMON_APP_CODE);
-        propertyValues.addAll(propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode()));
+        propertyValues.addAll(getAppPropertyValues(order));
 
         Map<String, String> properties = new HashMap<>();
         for (PropertyValue propertyValue : propertyValues) {
@@ -68,4 +73,21 @@ public class QueryAppProfilePropertyService {
         result.setProperties(properties);
     }
 
+    private List<PropertyValue> getAppPropertyValues(QueryAppProfilePropertyOrder order) {
+        List<PropertyValue> propertyValues = new ArrayList<>();
+
+        if (!order.isOnlyCommon()) {
+            propertyValues.addAll(propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode()));
+        } else {
+            List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCodeAndCommon(order.getAppCode(), true);
+            for (PropertyKey propertyKey : propertyKeys) {
+                PropertyValue propertyValue = propertyValueDao.findByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), propertyKey.getKey());
+                if (propertyValue != null) {
+                    propertyValues.add(propertyValue);
+                }
+            }
+        }
+
+        return propertyValues;
+    }
 }

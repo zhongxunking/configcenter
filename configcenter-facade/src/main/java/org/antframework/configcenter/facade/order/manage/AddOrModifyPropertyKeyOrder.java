@@ -21,6 +21,8 @@ public class AddOrModifyPropertyKeyOrder {
     @NotBlank
     private String key;
 
+    private boolean common;
+
     private String memo;
 
     public String getAppCode() {
@@ -37,6 +39,14 @@ public class AddOrModifyPropertyKeyOrder {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public boolean isCommon() {
+        return common;
+    }
+
+    public void setCommon(boolean common) {
+        this.common = common;
     }
 
     public String getMemo() {

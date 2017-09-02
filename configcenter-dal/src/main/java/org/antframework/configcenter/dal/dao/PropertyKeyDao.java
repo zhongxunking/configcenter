@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -31,6 +32,8 @@ public interface PropertyKeyDao {
     void delete(PropertyKey propertyKey);
 
     boolean existsByAppCode(String appCode);
+
+    List<PropertyKey> findByAppCodeAndCommon(String appCode, Boolean common);
 
     Page<PropertyKey> query(Map<String, Object> searchParams, Pageable pageable);
 }

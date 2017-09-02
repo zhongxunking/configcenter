@@ -29,6 +29,10 @@ public class PropertyKey extends AbstractEntity {
     @Column(name = "`key`", length = 128)
     private String key;
 
+    // 是否公用
+    @Column
+    private Boolean common;
+
     // 备注
     @Column
     private String memo;
@@ -47,6 +51,14 @@ public class PropertyKey extends AbstractEntity {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Boolean getCommon() {
+        return common;
+    }
+
+    public void setCommon(Boolean common) {
+        this.common = common;
     }
 
     public String getMemo() {

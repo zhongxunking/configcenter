@@ -21,6 +21,9 @@ public class QueryAppProfilePropertyOrder {
     @NotBlank
     private String profileCode;
 
+    // 是否只查询公用属性
+    private boolean onlyCommon;
+
     public String getAppCode() {
         return appCode;
     }
@@ -35,5 +38,13 @@ public class QueryAppProfilePropertyOrder {
 
     public void setProfileCode(String profileCode) {
         this.profileCode = profileCode;
+    }
+
+    public boolean isOnlyCommon() {
+        return onlyCommon;
+    }
+
+    public void setOnlyCommon(boolean onlyCommon) {
+        this.onlyCommon = onlyCommon;
     }
 }

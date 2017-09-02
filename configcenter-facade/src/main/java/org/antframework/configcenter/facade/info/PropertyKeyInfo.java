@@ -18,6 +18,8 @@ public class PropertyKeyInfo implements Serializable {
     private String appCode;
     // 属性key
     private String key;
+    // 是否公用
+    private boolean common;
     // 备注
     private String memo;
 
@@ -35,6 +37,14 @@ public class PropertyKeyInfo implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public boolean isCommon() {
+        return common;
+    }
+
+    public void setCommon(boolean common) {
+        this.common = common;
     }
 
     public String getMemo() {

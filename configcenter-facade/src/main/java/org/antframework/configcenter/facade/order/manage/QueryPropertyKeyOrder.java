@@ -20,6 +20,9 @@ public class QueryPropertyKeyOrder extends AbstractQueryOrder {
     // 属性key
     private String key;
 
+    // 是否公用
+    private Boolean common;
+
     public String getAppCode() {
         return appCode;
     }
@@ -34,5 +37,13 @@ public class QueryPropertyKeyOrder extends AbstractQueryOrder {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public Boolean getCommon() {
+        return common;
+    }
+
+    public void setCommon(Boolean common) {
+        this.common = common;
     }
 }
