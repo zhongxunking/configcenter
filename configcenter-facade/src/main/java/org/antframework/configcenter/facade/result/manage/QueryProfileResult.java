@@ -8,8 +8,11 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.common.util.facade.AbstractQueryResult;
+import org.antframework.configcenter.facade.info.ProfileInfo;
+
 /**
- *
+ * 查询环境result
  */
-public class QueryProfileResult {
+public class QueryProfileResult extends AbstractQueryResult<ProfileInfo> {
 }

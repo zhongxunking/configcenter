@@ -9,10 +9,13 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.PropertyKey;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.Map;
 
 /**
  * 属性key实体dao
@@ -29,4 +32,5 @@ public interface PropertyKeyDao {
 
     boolean existsByAppCode(String appCode);
 
+    Page<PropertyKey> query(Map<String, Object> searchParams, Pageable pageable);
 }

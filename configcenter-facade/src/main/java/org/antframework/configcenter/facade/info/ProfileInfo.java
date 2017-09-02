@@ -8,13 +8,15 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import java.io.Serializable;
+
 /**
- *
+ * 环境信息
  */
-public class ProfileInfo {
-
+public class ProfileInfo implements Serializable {
+    // 环境编码
     private String profileCode;
-
+    // 备注
     private String memo;
 
     public String getProfileCode() {

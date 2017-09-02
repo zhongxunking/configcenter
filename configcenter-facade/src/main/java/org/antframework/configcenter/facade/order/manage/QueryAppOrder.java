@@ -9,14 +9,12 @@
 package org.antframework.configcenter.facade.order.manage;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
-import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 查询应用order
  */
 public class QueryAppOrder extends AbstractQueryOrder {
-    // 应用编码
-    @NotBlank
+    // 应用编码（null表示不限制）
     private String appCode;
 
     public String getAppCode() {

@@ -8,8 +8,20 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractQueryOrder;
+
 /**
- *
+ * 查询环境order
  */
-public class QueryProfileOrder {
+public class QueryProfileOrder extends AbstractQueryOrder {
+    // 环境编码（null表示不限制）
+    private String profileCode;
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
+    }
 }

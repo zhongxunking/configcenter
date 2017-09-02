@@ -43,7 +43,9 @@ public class QueryAppService {
     // 构建查询条件
     private Map<String, Object> buildSearchParams(QueryAppOrder queryAppOrder) {
         Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("LIKE_appCode", queryAppOrder.getAppCode());
+        if (queryAppOrder.getAppCode() != null) {
+            searchParams.put("LIKE_appCode", "%" + queryAppOrder.getAppCode() + "%");
+        }
         return searchParams;
     }
 

@@ -8,13 +8,15 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import java.io.Serializable;
+
 /**
- *
+ * 应用信息
  */
-public class AppInfo {
-
+public class AppInfo implements Serializable {
+    // 应用编码
     private String appCode;
-
+    // 备注
     private String memo;
 
     public String getAppCode() {

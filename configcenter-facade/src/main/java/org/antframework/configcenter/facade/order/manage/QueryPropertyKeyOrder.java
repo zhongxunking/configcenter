@@ -8,8 +8,31 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractQueryOrder;
+
 /**
- *
+ * 查询属性key-order
  */
-public class QueryPropertyKeyOrder {
+public class QueryPropertyKeyOrder extends AbstractQueryOrder {
+    // 应用编码
+    private String appCode;
+
+    // 属性key
+    private String key;
+
+    public String getAppCode() {
+        return appCode;
+    }
+
+    public void setAppCode(String appCode) {
+        this.appCode = appCode;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
 }
