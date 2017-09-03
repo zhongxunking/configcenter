@@ -18,7 +18,7 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 删除属性value服务
  */
 @Service(enableTx = true)
 public class DeletePropertyValueService {
@@ -26,8 +26,8 @@ public class DeletePropertyValueService {
     private PropertyValueDao propertyValueDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> serviceContext) {
-        DeletePropertyValueOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
+        DeletePropertyValueOrder order = context.getOrder();
 
         PropertyValue propertyValue = propertyValueDao.findLockByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), order.getKey());
         if (propertyValue != null) {

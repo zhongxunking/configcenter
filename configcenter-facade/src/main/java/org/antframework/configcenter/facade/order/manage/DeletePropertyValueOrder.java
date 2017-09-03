@@ -11,16 +11,16 @@ package org.antframework.configcenter.facade.order.manage;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 删除属性value-order
  */
 public class DeletePropertyValueOrder {
-
+    // 环境编码
     @NotBlank
     private String profileCode;
-
+    // 应用编码
     @NotBlank
     private String appCode;
-
+    // key
     @NotBlank
     private String key;
 

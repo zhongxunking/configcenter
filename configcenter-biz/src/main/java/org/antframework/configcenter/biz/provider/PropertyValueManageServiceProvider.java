@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 属性value管理服务提供者
  */
 @Service
 public class PropertyValueManageServiceProvider implements PropertyValueManageService {

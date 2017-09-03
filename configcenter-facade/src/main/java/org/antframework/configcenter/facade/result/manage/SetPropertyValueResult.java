@@ -8,8 +8,10 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.common.util.facade.AbstractResult;
+
 /**
- *
+ * 设置属性value-result
  */
-public class SetPropertyValueResult {
+public class SetPropertyValueResult extends AbstractResult {
 }

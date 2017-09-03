@@ -8,22 +8,23 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 设置属性value-order
  */
-public class SetPropertyValueOrder {
-
+public class SetPropertyValueOrder extends AbstractOrder {
+    // 环境编码
     @NotBlank
     private String profileCode;
-
+    // 应用编码
     @NotBlank
     private String appCode;
-
+    // key
     @NotBlank
     private String key;
-
+    // value
     @NotBlank
     private String value;
 

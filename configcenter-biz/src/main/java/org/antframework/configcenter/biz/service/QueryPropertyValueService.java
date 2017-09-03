@@ -44,7 +44,7 @@ public class QueryPropertyValueService {
     private Map<String, Object> buildSearchParams(QueryPropertyValueOrder queryPropertyValueOrder) {
         Map<String, Object> searchParams = new HashMap<>();
         if (queryPropertyValueOrder.getProfileCode() != null) {
-            searchParams.put("LIKE_profileCode", queryPropertyValueOrder.getProfileCode());
+            searchParams.put("LIKE_profileCode", "%" + queryPropertyValueOrder.getProfileCode() + "%");
         }
         if (queryPropertyValueOrder.getAppCode() != null) {
             searchParams.put("LIKE_appCode", "%" + queryPropertyValueOrder.getAppCode() + "%");

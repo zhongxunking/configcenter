@@ -8,7 +8,14 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.dal.dao.ProfileDao;
+import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
+import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
@@ -24,11 +31,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service(enableTx = true)
 public class SetPropertyValueService {
     @Autowired
+    private ProfileDao profileDao;
+    @Autowired
+    private PropertyKeyDao propertyKeyDao;
+    @Autowired
     private PropertyValueDao propertyValueDao;
 
     @ServiceExecute
     public void execute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
         SetPropertyValueOrder order = context.getOrder();
+
+        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
+        if (profile == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%S]", order.getProfileCode()));
+        }
+        PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), order.getKey());
+        if (propertyKey == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppCode(), order.getKey()));
+        }
 
         PropertyValue propertyValue = propertyValueDao.findLockByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), order.getKey());
         if (propertyValue == null) {
