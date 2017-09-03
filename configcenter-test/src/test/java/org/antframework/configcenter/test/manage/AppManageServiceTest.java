@@ -39,6 +39,7 @@ public class AppManageServiceTest extends AbstractTest {
 
     @Test
     public void testDeleteApp() {
+        testAddOrModifyApp();
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode("scbfund");
         DeleteAppResult result = appManageService.deleteApp(order);
