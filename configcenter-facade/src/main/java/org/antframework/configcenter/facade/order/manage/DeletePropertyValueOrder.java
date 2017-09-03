@@ -8,12 +8,13 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 删除属性value-order
  */
-public class DeletePropertyValueOrder {
+public class DeletePropertyValueOrder extends AbstractOrder {
     // 环境编码
     @NotBlank
     private String profileCode;

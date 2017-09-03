@@ -9,6 +9,8 @@
 package org.antframework.configcenter.test;
 
 import org.antframework.boot.core.Apps;
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.Main;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,7 +28,13 @@ public class AbstractTest {
 
     static {
         // 设置使用环境
-        Apps.setProfileIfNotExists("dev");
+        Apps.setProfileIfNotExists("offline");
     }
 
+    protected void checkResult(AbstractResult result, Status status) {
+        logger.info("执行结果：{}", result);
+        if (result.getStatus() != status) {
+            throw new IllegalArgumentException("结果不正确");
+        }
+    }
 }
