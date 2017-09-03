@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import org.antframework.common.util.tostring.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -53,5 +55,10 @@ public class PropertyValueInfo implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }

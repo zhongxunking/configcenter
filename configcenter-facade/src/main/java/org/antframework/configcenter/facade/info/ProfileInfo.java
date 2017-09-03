@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import org.antframework.common.util.tostring.ToString;
+
 import java.io.Serializable;
 
 /**
@@ -33,5 +35,10 @@ public class ProfileInfo implements Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }
