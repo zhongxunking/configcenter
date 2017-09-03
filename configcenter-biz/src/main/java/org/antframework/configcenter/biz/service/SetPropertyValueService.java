@@ -43,7 +43,7 @@ public class SetPropertyValueService {
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
         if (profile == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%S]", order.getProfileCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
         }
         PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), order.getKey());
         if (propertyKey == null) {
