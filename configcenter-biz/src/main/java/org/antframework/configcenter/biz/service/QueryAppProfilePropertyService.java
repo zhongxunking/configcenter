@@ -79,6 +79,7 @@ public class QueryAppProfilePropertyService {
         List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode());
 
         if (order.isOnlyCommon()) {
+            // 如果只查询公共属性，则剔除掉私有属性
             Set<String> commonKeys = new HashSet<>();
             for (PropertyKey propertyKey : propertyKeyDao.findByAppCodeAndCommon(order.getAppCode(), true)) {
                 commonKeys.add(propertyKey.getKey());
