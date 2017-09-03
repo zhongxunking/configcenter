@@ -8,16 +8,17 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 删除属性key-order
  */
-public class DeletePropertyKeyOrder {
-
+public class DeletePropertyKeyOrder extends AbstractOrder {
+    // 应用编码
     @NotBlank
     private String appCode;
-
+    // key
     @NotBlank
     private String key;
 

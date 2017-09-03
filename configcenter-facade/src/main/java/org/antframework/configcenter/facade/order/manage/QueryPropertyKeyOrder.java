@@ -16,10 +16,8 @@ import org.antframework.common.util.facade.AbstractQueryOrder;
 public class QueryPropertyKeyOrder extends AbstractQueryOrder {
     // 应用编码
     private String appCode;
-
     // 属性key
     private String key;
-
     // 是否公用
     private Boolean common;
 

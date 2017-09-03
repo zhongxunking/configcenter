@@ -8,21 +8,22 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 添加或删除属性key-order
  */
-public class AddOrModifyPropertyKeyOrder {
-
+public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
+    // 应用编码
     @NotBlank
     private String appCode;
-
+    // key
     @NotBlank
     private String key;
-
+    // 是否公用
     private boolean common;
-
+    // 备注
     private String memo;
 
     public String getAppCode() {

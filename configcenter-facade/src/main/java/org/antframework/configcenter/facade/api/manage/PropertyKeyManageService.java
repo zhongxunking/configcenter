@@ -16,13 +16,21 @@ import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResul
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 
 /**
- *
+ * 属性key管理服务
  */
 public interface PropertyKeyManageService {
-
+    /**
+     * 添加或修改属性key
+     */
     AddOrModifyPropertyKeyResult addOrModifyPropertyKey(AddOrModifyPropertyKeyOrder order);
 
+    /**
+     * 删除属性key
+     */
     DeletePropertyKeyResult deletePropertyKey(DeletePropertyKeyOrder order);
 
+    /**
+     * 查询属性key
+     */
     QueryPropertyKeyResult queryPropertyKey(QueryPropertyKeyOrder order);
 }

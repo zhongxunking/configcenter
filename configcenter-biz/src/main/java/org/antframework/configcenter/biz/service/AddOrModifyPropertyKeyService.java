@@ -24,7 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 添加或修改属性key服务
  */
 @Service(enableTx = true)
 public class AddOrModifyPropertyKeyService {
@@ -34,8 +34,8 @@ public class AddOrModifyPropertyKeyService {
     private PropertyKeyDao propertyKeyDao;
 
     @ServiceExecute
-    public void sexecute(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> serviceContext) {
-        AddOrModifyPropertyKeyOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> context) {
+        AddOrModifyPropertyKeyOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
         if (app == null) {
@@ -51,6 +51,7 @@ public class AddOrModifyPropertyKeyService {
         propertyKeyDao.save(propertyKey);
     }
 
+    // 构建属性key
     private PropertyKey buildPropertyKey(AddOrModifyPropertyKeyOrder addOrModifyPropertyKeyOrder) {
         PropertyKey propertyKey = new PropertyKey();
         BeanUtils.copyProperties(addOrModifyPropertyKeyOrder, propertyKey);
