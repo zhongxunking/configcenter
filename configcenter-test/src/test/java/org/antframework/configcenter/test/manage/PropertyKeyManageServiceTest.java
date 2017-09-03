@@ -18,12 +18,14 @@ import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResul
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class PropertyKeyManageServiceTest extends AbstractTest {
     @Autowired
     private PropertyKeyManageService propertyKeyManageService;

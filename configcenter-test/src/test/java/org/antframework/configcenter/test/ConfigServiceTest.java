@@ -15,12 +15,14 @@ import org.antframework.configcenter.facade.order.QueryAppProfilePropertyOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.QueryAppProfilePropertyResult;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class ConfigServiceTest extends AbstractTest {
     @Autowired
     private ConfigService configService;

@@ -18,12 +18,14 @@ import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResu
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class PropertyValueManageServiceTest extends AbstractTest {
     @Autowired
     private PropertyValueManageService propertyValueManageService;

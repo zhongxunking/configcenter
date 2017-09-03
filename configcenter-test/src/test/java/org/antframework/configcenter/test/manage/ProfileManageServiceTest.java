@@ -20,12 +20,14 @@ import org.antframework.configcenter.facade.result.manage.FindProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class ProfileManageServiceTest extends AbstractTest {
     @Autowired
     private ProfileManageService profileManageService;

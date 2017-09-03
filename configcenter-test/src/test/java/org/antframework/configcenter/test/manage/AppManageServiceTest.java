@@ -18,12 +18,14 @@ import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class AppManageServiceTest extends AbstractTest {
     @Autowired
     private AppManageService appManageService;
