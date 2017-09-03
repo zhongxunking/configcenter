@@ -8,13 +8,14 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 查找应用order
  */
-public class FindAppOrder {
-
+public class FindAppOrder extends AbstractOrder {
+    // 应用编码
     @NotBlank
     private String appCode;
 

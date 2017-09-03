@@ -20,7 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 查找应用服务
  */
 @Service
 public class FindAppService {
@@ -28,9 +28,9 @@ public class FindAppService {
     private AppDao appDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<FindAppOrder, FindAppResult> serviceContext) {
-        FindAppOrder order = serviceContext.getOrder();
-        FindAppResult result = serviceContext.getResult();
+    public void execute(ServiceContext<FindAppOrder, FindAppResult> context) {
+        FindAppOrder order = context.getOrder();
+        FindAppResult result = context.getResult();
 
         App app = appDao.findByAppCode(order.getAppCode());
         if (app != null) {
@@ -38,6 +38,7 @@ public class FindAppService {
         }
     }
 
+    // 构建应用信息
     private AppInfo buildAppInfo(App app) {
         AppInfo appInfo = new AppInfo();
         BeanUtils.copyProperties(app, appInfo);

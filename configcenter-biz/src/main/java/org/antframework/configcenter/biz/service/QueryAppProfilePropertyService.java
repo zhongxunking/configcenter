@@ -15,6 +15,8 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
+import org.antframework.configcenter.dal.entity.App;
+import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.api.ConfigService;
@@ -26,13 +28,10 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
- *
+ * 查询应用在特定环境中的配置服务
  */
 @Service
 public class QueryAppProfilePropertyService {
@@ -49,10 +48,12 @@ public class QueryAppProfilePropertyService {
     public void check(ServiceContext<QueryAppProfilePropertyOrder, QueryAppProfilePropertyResult> context) {
         QueryAppProfilePropertyOrder order = context.getOrder();
 
-        if (profileDao.findByProfileCode(order.getProfileCode()) == null) {
+        Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+        if (profile == null) {
             throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
         }
-        if (appDao.findByAppCode(order.getAppCode()) == null) {
+        App app = appDao.findByAppCode(order.getAppCode());
+        if (app == null) {
             throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppCode()));
         }
     }
@@ -73,19 +74,23 @@ public class QueryAppProfilePropertyService {
         result.setProperties(properties);
     }
 
+    // 获取特定应用的属性value
     private List<PropertyValue> getAppPropertyValues(QueryAppProfilePropertyOrder order) {
-        List<PropertyValue> propertyValues = new ArrayList<>();
+        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode());
 
-        if (!order.isOnlyCommon()) {
-            propertyValues.addAll(propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode()));
-        } else {
-            List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCodeAndCommon(order.getAppCode(), true);
-            for (PropertyKey propertyKey : propertyKeys) {
-                PropertyValue propertyValue = propertyValueDao.findByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), propertyKey.getKey());
-                if (propertyValue != null) {
-                    propertyValues.add(propertyValue);
+        if (order.isOnlyCommon()) {
+            Set<String> commonKeys = new HashSet<>();
+            for (PropertyKey propertyKey : propertyKeyDao.findByAppCodeAndCommon(order.getAppCode(), true)) {
+                commonKeys.add(propertyKey.getKey());
+            }
+            List<PropertyValue> commonPropertyValues = new ArrayList<>();
+            for (PropertyValue propertyValue : propertyValues) {
+                if (commonKeys.contains(propertyValue.getKey())) {
+                    commonPropertyValues.add(propertyValue);
                 }
             }
+
+            propertyValues = commonPropertyValues;
         }
 
         return propertyValues;

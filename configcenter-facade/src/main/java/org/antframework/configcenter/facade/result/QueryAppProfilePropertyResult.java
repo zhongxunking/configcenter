@@ -8,13 +8,15 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import org.antframework.common.util.facade.AbstractResult;
+
 import java.util.Map;
 
 /**
- *
+ * 查询应用在特定环境中的配置result
  */
-public class QueryAppProfilePropertyResult {
-
+public class QueryAppProfilePropertyResult extends AbstractResult {
+    // 属性（不存在该应用或环境，则返回null）
     private Map<String, String> properties;
 
     public Map<String, String> getProperties() {

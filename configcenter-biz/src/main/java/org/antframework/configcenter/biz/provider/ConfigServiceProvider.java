@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 配置服务提供者
  */
 @Service
 public class ConfigServiceProvider implements ConfigService {

@@ -8,12 +8,14 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.AppInfo;
 
 /**
- *
+ * 查找应用result
  */
-public class FindAppResult {
+public class FindAppResult extends AbstractResult {
+    // 应用信息（null表示不存在该应用）
     private AppInfo appInfo;
 
     public AppInfo getAppInfo() {
