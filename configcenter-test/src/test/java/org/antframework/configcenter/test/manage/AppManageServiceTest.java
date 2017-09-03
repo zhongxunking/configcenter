@@ -51,7 +51,7 @@ public class AppManageServiceTest extends AbstractTest {
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        order.setAppCode("scbfu");
+        order.setAppCode("scbfund");
         QueryAppResult result = appManageService.queryApp(order);
         checkResult(result, Status.SUCCESS);
         Assert.assertEquals(1, result.getInfos().size());
