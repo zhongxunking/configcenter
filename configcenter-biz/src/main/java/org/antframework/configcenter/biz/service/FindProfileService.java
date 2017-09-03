@@ -20,7 +20,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 查找环境服务
  */
 @Service
 public class FindProfileService {
@@ -28,9 +28,9 @@ public class FindProfileService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<FindProfileOrder, FindProfileResult> serviceContext) {
-        FindProfileOrder order = serviceContext.getOrder();
-        FindProfileResult result = serviceContext.getResult();
+    public void execute(ServiceContext<FindProfileOrder, FindProfileResult> context) {
+        FindProfileOrder order = context.getOrder();
+        FindProfileResult result = context.getResult();
 
         Profile profile = profileDao.findByProfileCode(order.getProfileCode());
         if (profile != null) {
@@ -38,6 +38,7 @@ public class FindProfileService {
         }
     }
 
+    // 构建环境信息
     private ProfileInfo buildProfileInfo(Profile profile) {
         ProfileInfo info = new ProfileInfo();
         BeanUtils.copyProperties(profile, info);

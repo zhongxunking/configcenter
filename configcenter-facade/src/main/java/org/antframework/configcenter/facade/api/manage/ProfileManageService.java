@@ -18,15 +18,26 @@ import org.antframework.configcenter.facade.result.manage.FindProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 
 /**
- *
+ * 环境管理服务
  */
 public interface ProfileManageService {
-
+    /**
+     * 添加或修改环境
+     */
     AddOrModifyProfileResult addOrModifyProfile(AddOrModifyProfileOrder order);
 
+    /**
+     * 删除环境
+     */
     DeleteProfileResult deleteProfile(DeleteProfileOrder order);
 
+    /**
+     * 查找环境
+     */
     FindProfileResult findProfile(FindProfileOrder order);
 
+    /**
+     * 查询环境
+     */
     QueryProfileResult queryProfile(QueryProfileOrder order);
 }

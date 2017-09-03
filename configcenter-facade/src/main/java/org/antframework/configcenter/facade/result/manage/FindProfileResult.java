@@ -8,12 +8,14 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 
 /**
- *
+ * 查找环境result
  */
-public class FindProfileResult {
+public class FindProfileResult extends AbstractResult {
+    // 环境信息
     private ProfileInfo profileInfo;
 
     public ProfileInfo getProfileInfo() {

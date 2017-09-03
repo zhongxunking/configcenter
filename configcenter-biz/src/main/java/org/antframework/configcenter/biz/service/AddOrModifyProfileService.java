@@ -19,7 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 添加会修改环境服务
  */
 @Service(enableTx = true)
 public class AddOrModifyProfileService {
@@ -27,8 +27,8 @@ public class AddOrModifyProfileService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> serviceContext) {
-        AddOrModifyProfileOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
+        AddOrModifyProfileOrder order = context.getOrder();
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
         if (profile == null) {
@@ -39,6 +39,7 @@ public class AddOrModifyProfileService {
         profileDao.save(profile);
     }
 
+    // 构建环境
     private Profile buildProfile(AddOrModifyProfileOrder addOrModifyProfileOrder) {
         Profile profile = new Profile();
         BeanUtils.copyProperties(addOrModifyProfileOrder, profile);

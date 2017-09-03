@@ -17,7 +17,7 @@ import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 
 /**
- * 应用管理接口
+ * 应用管理服务
  */
 public interface AppManageService {
     /**

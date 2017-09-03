@@ -8,13 +8,14 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 删除环境order
  */
-public class DeleteProfileOrder {
-
+public class DeleteProfileOrder extends AbstractOrder {
+    // 环境编码
     @NotBlank
     private String profileCode;
 

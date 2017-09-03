@@ -8,11 +8,15 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
-/**
- *
- */
-public class FindProfileOrder {
+import org.antframework.common.util.facade.AbstractOrder;
+import org.hibernate.validator.constraints.NotBlank;
 
+/**
+ * 查找环境order
+ */
+public class FindProfileOrder extends AbstractOrder {
+    // 环境编码
+    @NotBlank
     private String profileCode;
 
     public String getProfileCode() {

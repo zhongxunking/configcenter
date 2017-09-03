@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.AbstractQueryOrder;
  * 查询环境order
  */
 public class QueryProfileOrder extends AbstractQueryOrder {
-    // 环境编码（null表示不限制）
+    // 环境编码
     private String profileCode;
 
     public String getProfileCode() {

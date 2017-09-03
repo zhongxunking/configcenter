@@ -22,7 +22,7 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 删除环境服务
  */
 @Service(enableTx = true)
 public class DeleteProfileService {
@@ -32,8 +32,8 @@ public class DeleteProfileService {
     private PropertyValueDao propertyValueDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeleteProfileOrder, DeleteProfileResult> serviceContext) {
-        DeleteProfileOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
+        DeleteProfileOrder order = context.getOrder();
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
         if (profile == null) {

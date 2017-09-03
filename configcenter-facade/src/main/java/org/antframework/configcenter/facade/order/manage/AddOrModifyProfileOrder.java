@@ -8,16 +8,17 @@
  */
 package org.antframework.configcenter.facade.order.manage;
 
+import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- *
+ * 添加或修改环境order
  */
-public class AddOrModifyProfileOrder {
-
+public class AddOrModifyProfileOrder extends AbstractOrder {
+    // 环境编码
     @NotBlank
     private String profileCode;
-
+    // 备注
     private String memo;
 
     public String getProfileCode() {

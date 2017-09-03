@@ -8,8 +8,10 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.common.util.facade.AbstractResult;
+
 /**
- *
+ * 删除环境result
  */
-public class DeleteProfileResult {
+public class DeleteProfileResult extends AbstractResult {
 }

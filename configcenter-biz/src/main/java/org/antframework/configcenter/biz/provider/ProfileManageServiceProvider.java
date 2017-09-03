@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 环境管理服务提供者
  */
 @Service
 public class ProfileManageServiceProvider implements ProfileManageService {
