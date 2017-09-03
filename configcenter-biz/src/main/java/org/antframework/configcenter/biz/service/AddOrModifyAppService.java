@@ -19,7 +19,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 添加或修改应用服务
  */
 @Service(enableTx = true)
 public class AddOrModifyAppService {
@@ -27,8 +27,8 @@ public class AddOrModifyAppService {
     private AppDao appDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<AddOrModifyAppOrder, AddOrModifyAppResult> serviceContext) {
-        AddOrModifyAppOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<AddOrModifyAppOrder, AddOrModifyAppResult> context) {
+        AddOrModifyAppOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
         if (app == null) {
@@ -39,6 +39,7 @@ public class AddOrModifyAppService {
         appDao.save(app);
     }
 
+    // 构建应用
     private App buildApp(AddOrModifyAppOrder addOrModifyAppOrder) {
         App app = new App();
         BeanUtils.copyProperties(addOrModifyAppOrder, app);

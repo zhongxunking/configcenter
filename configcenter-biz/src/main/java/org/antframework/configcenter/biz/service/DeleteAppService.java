@@ -22,7 +22,7 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 删除应用服务
  */
 @Service(enableTx = true)
 public class DeleteAppService {
@@ -32,8 +32,8 @@ public class DeleteAppService {
     private PropertyKeyDao propertyKeyDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeleteAppOrder, DeleteAppResult> serviceContext) {
-        DeleteAppOrder order = serviceContext.getOrder();
+    public void execute(ServiceContext<DeleteAppOrder, DeleteAppResult> context) {
+        DeleteAppOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
         if (app == null) {

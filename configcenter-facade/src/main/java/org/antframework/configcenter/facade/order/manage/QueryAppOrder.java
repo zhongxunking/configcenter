@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.AbstractQueryOrder;
  * 查询应用order
  */
 public class QueryAppOrder extends AbstractQueryOrder {
-    // 应用编码（null表示不限制）
+    // 应用编码
     private String appCode;
 
     public String getAppCode() {

@@ -8,8 +8,10 @@
  */
 package org.antframework.configcenter.facade.result.manage;
 
+import org.antframework.common.util.facade.AbstractResult;
+
 /**
- *
+ * 添加或删除应用result
  */
-public class AddOrModifyAppResult {
+public class AddOrModifyAppResult extends AbstractResult {
 }

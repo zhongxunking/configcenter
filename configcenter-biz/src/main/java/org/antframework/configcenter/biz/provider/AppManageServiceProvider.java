@@ -20,11 +20,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 应用管理服务提供者
  */
 @Service
 public class AppManageServiceProvider implements AppManageService {
-
     @Autowired
     private ServiceEngine serviceEngine;
 

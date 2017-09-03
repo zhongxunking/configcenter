@@ -17,13 +17,21 @@ import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 
 /**
- *
+ * 应用管理接口
  */
 public interface AppManageService {
-
+    /**
+     * 添加或修改应用
+     */
     AddOrModifyAppResult addOrModifyApp(AddOrModifyAppOrder order);
 
+    /**
+     * 删除应用
+     */
     DeleteAppResult deleteApp(DeleteAppOrder order);
 
+    /**
+     * 查询应用
+     */
     QueryAppResult queryApp(QueryAppOrder order);
 }
