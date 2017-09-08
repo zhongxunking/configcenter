@@ -55,7 +55,7 @@ public class AddOrModifyAppService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkOperations.createNodesByPath(ZkOperations.buildPath(profile.getProfileCode(), order.getAppCode()));
+            zkOperations.createNode(ZkOperations.buildPath(profile.getProfileCode(), order.getAppCode()));
         }
     }
 

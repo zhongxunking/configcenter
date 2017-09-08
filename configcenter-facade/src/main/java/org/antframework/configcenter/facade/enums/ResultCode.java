@@ -13,7 +13,11 @@ package org.antframework.configcenter.facade.enums;
  */
 public enum ResultCode {
 
-    ILLEGAL_STATE("configcenter-0001", "非法内部状态");
+    ILLEGAL_STATE("configcenter-0001", "非法内部状态"),
+
+    UPDATE_ZOOKEEPER_FAIL("configcenter-0002", "更新zookeeper失败"),
+
+    ;
 
     // 结果码
     private String code;

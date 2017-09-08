@@ -15,6 +15,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -33,4 +34,6 @@ public interface AppDao {
     void delete(App app);
 
     Page<App> query(Map<String, Object> searchParams, Pageable pageable);
+
+    List<App> findAll();
 }

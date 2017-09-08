@@ -9,7 +9,9 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.configcenter.biz.ZkOperations;
+import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
+import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
@@ -20,6 +22,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.util.List;
+
 /**
  * 添加会修改环境服务
  */
@@ -27,6 +31,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AddOrModifyProfileService {
     @Autowired
     private ProfileDao profileDao;
+    @Autowired
+    private AppDao appDao;
     @Autowired
     private ZkOperations zkOperations;
 
@@ -47,7 +53,12 @@ public class AddOrModifyProfileService {
     public void after(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
-        zkOperations.createNodesByPath(ZkOperations.buildPath(order.getProfileCode()));
+        zkOperations.createNode(ZkOperations.buildPath(order.getProfileCode()));
+
+        List<App> apps = appDao.findAll();
+        for (App app : apps) {
+            zkOperations.createNode(ZkOperations.buildPath(order.getProfileCode(), app.getAppCode()));
+        }
     }
 
     // 构建环境

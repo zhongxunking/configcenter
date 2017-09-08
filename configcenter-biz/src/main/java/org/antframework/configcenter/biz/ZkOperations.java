@@ -13,6 +13,8 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.zookeeper.CreateMode;
 
+import java.util.List;
+
 /**
  * zookeeper操作类
  */
@@ -34,7 +36,7 @@ public class ZkOperations {
      *
      * @param path 路径中任何一个节点如果不存在，则创建
      */
-    public void createNodesByPath(String path) {
+    public void createNode(String path) {
         try {
             StringBuilder pathBuilder = new StringBuilder();
             for (String node : StringUtils.split(path, NODE_SEPARATOR)) {
@@ -47,6 +49,22 @@ public class ZkOperations {
         } catch (Throwable e) {
             ExceptionUtils.wrapAndThrow(e);
         }
+    }
+
+    /**
+     * 删除节点（如果该节点存在子节点，则会递归删除子节点）
+     *
+     * @param path 节点路径
+     */
+    public void deleteNode(String path) throws Exception {
+        if (zkClient.checkExists().forPath(path) == null) {
+            return;
+        }
+        List<String> children = zkClient.getChildren().forPath(path);
+        for (String child : children) {
+            deleteNode(buildPath(path, child));
+        }
+        zkClient.delete().forPath(path);
     }
 
     /**
@@ -66,17 +84,19 @@ public class ZkOperations {
     /**
      * 构建路径
      *
-     * @param nodes 路径中从前到后的节点
+     * @param pathParts 路径片段
      */
-    public static String buildPath(String... nodes) {
-        if (nodes == null) {
+    public static String buildPath(String... pathParts) {
+        if (pathParts == null) {
             return null;
         }
         StringBuilder pathBuilder = new StringBuilder();
-        for (String node : nodes) {
-            pathBuilder.append(NODE_SEPARATOR).append(node);
+        for (String pathPart : pathParts) {
+            if (!pathPart.startsWith(Character.toString(NODE_SEPARATOR))) {
+                pathBuilder.append(NODE_SEPARATOR);
+            }
+            pathBuilder.append(pathPart);
         }
         return pathBuilder.toString();
     }
-
 }
