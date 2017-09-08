@@ -8,6 +8,13 @@
  */
 package org.antframework.configcenter.biz;
 
+import org.antframework.configcenter.facade.constant.ZkConstant;
+import org.apache.curator.framework.CuratorFramework;
+import org.apache.curator.framework.CuratorFrameworkFactory;
+import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.hibernate.validator.constraints.NotBlank;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
@@ -15,4 +22,29 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class BizConfiguration {
+
+    @Value("${config.zookeeper.url}")
+    @NotBlank
+    private String zkUrl;
+
+    // zookeeper客户端
+    @Bean
+    public CuratorFramework zkClient() throws InterruptedException {
+        CuratorFramework zkClient = CuratorFrameworkFactory.builder()
+                .connectString(zkUrl)
+                .namespace(ZkConstant.ZK_CONFIG_NAMESPACE)
+                .retryPolicy(new ExponentialBackoffRetry(1000, 10))
+                .build();
+        zkClient.start();
+        if (!zkClient.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
+            throw new RuntimeException(String.format("连接zookeeper[%s]失败", zkUrl));
+        }
+        return zkClient;
+    }
+
+    // zookeeper操作类
+    @Bean
+    public ZkOperations zkOperations(CuratorFramework zkClient) {
+        return new ZkOperations(zkClient);
+    }
 }
