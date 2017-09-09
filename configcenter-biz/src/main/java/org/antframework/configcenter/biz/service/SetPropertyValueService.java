@@ -11,6 +11,7 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.ZkOperations;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
@@ -20,6 +21,7 @@ import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -36,6 +38,8 @@ public class SetPropertyValueService {
     private PropertyKeyDao propertyKeyDao;
     @Autowired
     private PropertyValueDao propertyValueDao;
+    @Autowired
+    private ZkOperations zkOperations;
 
     @ServiceExecute
     public void execute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
@@ -57,6 +61,13 @@ public class SetPropertyValueService {
             propertyValue.setValue(order.getValue());
         }
         propertyValueDao.save(propertyValue);
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
+        SetPropertyValueOrder order = context.getOrder();
+
+        zkOperations.setData(ZkOperations.buildPath(order.getProfileCode(), order.getAppCode()), null);
     }
 
     //构建属性value

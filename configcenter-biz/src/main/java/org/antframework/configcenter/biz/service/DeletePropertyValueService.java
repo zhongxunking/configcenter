@@ -8,11 +8,13 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.configcenter.biz.ZkOperations;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +26,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class DeletePropertyValueService {
     @Autowired
     private PropertyValueDao propertyValueDao;
+    @Autowired
+    private ZkOperations zkOperations;
 
     @ServiceExecute
     public void execute(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
@@ -33,5 +37,12 @@ public class DeletePropertyValueService {
         if (propertyValue != null) {
             propertyValueDao.delete(propertyValue);
         }
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
+        DeletePropertyValueOrder order = context.getOrder();
+
+        zkOperations.setData(ZkOperations.buildPath(order.getProfileCode(), order.getAppCode()), null);
     }
 }

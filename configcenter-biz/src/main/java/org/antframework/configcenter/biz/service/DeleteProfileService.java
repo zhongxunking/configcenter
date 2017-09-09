@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.ZkOperations;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.Profile;
@@ -17,6 +18,7 @@ import org.antframework.configcenter.facade.enums.ResultCode;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +32,8 @@ public class DeleteProfileService {
     private ProfileDao profileDao;
     @Autowired
     private PropertyValueDao propertyValueDao;
+    @Autowired
+    private ZkOperations zkOperations;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
@@ -44,5 +48,12 @@ public class DeleteProfileService {
         }
 
         profileDao.delete(profile);
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
+        DeleteProfileOrder order = context.getOrder();
+
+        zkOperations.deleteNode(ZkOperations.buildPath(order.getProfileCode()));
     }
 }

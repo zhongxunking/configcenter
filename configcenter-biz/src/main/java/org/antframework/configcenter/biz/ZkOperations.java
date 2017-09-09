@@ -56,15 +56,19 @@ public class ZkOperations {
      *
      * @param path 节点路径
      */
-    public void deleteNode(String path) throws Exception {
-        if (zkClient.checkExists().forPath(path) == null) {
-            return;
+    public void deleteNode(String path) {
+        try {
+            if (zkClient.checkExists().forPath(path) == null) {
+                return;
+            }
+            List<String> children = zkClient.getChildren().forPath(path);
+            for (String child : children) {
+                deleteNode(buildPath(path, child));
+            }
+            zkClient.delete().forPath(path);
+        } catch (Throwable e) {
+            ExceptionUtils.wrapAndThrow(e);
         }
-        List<String> children = zkClient.getChildren().forPath(path);
-        for (String child : children) {
-            deleteNode(buildPath(path, child));
-        }
-        zkClient.delete().forPath(path);
     }
 
     /**

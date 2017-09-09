@@ -22,7 +22,23 @@ public class ZkOperationsTest extends AbstractTest {
 
     @Test
     public void testCreateNodesByPath() throws Exception {
-        zkOperations.createNodesByPath("/dev/scbfund");
+        zkOperations.createNode("/dev/scbfund1/aa");
+        zkOperations.createNode("/dev/scbfund1/bb");
+        zkOperations.createNode("/dev/scbfund1/cc");
+        zkOperations.createNode("/dev/scbfund1/dd");
+        zkOperations.createNode("/dev/scbfund2");
+        zkOperations.createNode("/dev/scbfund2/aa");
+        zkOperations.createNode("/dev/scbfund2/bb");
+        zkOperations.createNode("/dev/scbfund2/cc");
+        zkOperations.createNode("/dev/scbfund2/dd");
+        zkOperations.createNode("/dev/scbfund3");
+        zkOperations.createNode("/dev/scbfund4");
+        zkOperations.createNode("/dev/scbfund5");
+    }
+
+    @Test
+    public void testDeleteNode(){
+        zkOperations.deleteNode("/dev");
     }
 
     @Test
