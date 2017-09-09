@@ -43,7 +43,6 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
 
     @Test
     public void testDeletePropertyKey() {
-        testAddOrModifyPropertyKey();
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
@@ -53,7 +52,6 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
 
     @Test
     public void testQueryPropertyKey() {
-        testAddOrModifyPropertyKey();
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(1);
         order.setPageSize(10);

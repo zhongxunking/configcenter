@@ -53,7 +53,6 @@ public class PropertyValueManageServiceTest extends AbstractTest {
 
     @Test
     public void testQueryPropertyValue() {
-        testSetPropertyValue();
         QueryPropertyValueOrder order = new QueryPropertyValueOrder();
         order.setPageNo(1);
         order.setPageSize(10);

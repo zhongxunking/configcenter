@@ -41,7 +41,6 @@ public class AppManageServiceTest extends AbstractTest {
 
     @Test
     public void testDeleteApp() {
-        testAddOrModifyApp();
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode("scbfund");
         DeleteAppResult result = appManageService.deleteApp(order);
@@ -50,7 +49,6 @@ public class AppManageServiceTest extends AbstractTest {
 
     @Test
     public void testQueryApp() {
-        testAddOrModifyApp();
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(1);
         order.setPageSize(10);

@@ -43,7 +43,6 @@ public class ProfileManageServiceTest extends AbstractTest {
 
     @Test
     public void testDeleteProfile() {
-        testAddOrModifyProfile();
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode("dev");
         DeleteProfileResult result = profileManageService.deleteProfile(order);
@@ -52,7 +51,6 @@ public class ProfileManageServiceTest extends AbstractTest {
 
     @Test
     public void testFindProfile() {
-        testAddOrModifyProfile();
         FindProfileOrder order = new FindProfileOrder();
         order.setProfileCode("dev");
         FindProfileResult result = profileManageService.findProfile(order);
@@ -63,7 +61,6 @@ public class ProfileManageServiceTest extends AbstractTest {
 
     @Test
     public void testQueryProfile() {
-        testAddOrModifyProfile();
         QueryProfileOrder order = new QueryProfileOrder();
         order.setPageNo(1);
         order.setPageSize(10);
