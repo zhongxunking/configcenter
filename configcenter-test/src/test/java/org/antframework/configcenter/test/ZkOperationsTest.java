@@ -9,12 +9,14 @@
 package org.antframework.configcenter.test;
 
 import org.antframework.configcenter.biz.ZkOperations;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class ZkOperationsTest extends AbstractTest {
 
     @Autowired
@@ -37,7 +39,7 @@ public class ZkOperationsTest extends AbstractTest {
     }
 
     @Test
-    public void testDeleteNode(){
+    public void testDeleteNode() {
         zkOperations.deleteNode("/dev");
     }
 
