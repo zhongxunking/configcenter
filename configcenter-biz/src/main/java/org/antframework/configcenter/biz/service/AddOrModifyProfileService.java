@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.configcenter.biz.ZkOperations;
+import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
@@ -34,7 +34,7 @@ public class AddOrModifyProfileService {
     @Autowired
     private AppDao appDao;
     @Autowired
-    private ZkOperations zkOperations;
+    private ZkTemplate zkTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
@@ -53,11 +53,11 @@ public class AddOrModifyProfileService {
     public void after(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
-        zkOperations.createNode(ZkOperations.buildPath(order.getProfileCode()));
+        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode()));
 
         List<App> apps = appDao.findAll();
         for (App app : apps) {
-            zkOperations.createNode(ZkOperations.buildPath(order.getProfileCode(), app.getAppCode()));
+            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode(), app.getAppCode()));
         }
     }
 

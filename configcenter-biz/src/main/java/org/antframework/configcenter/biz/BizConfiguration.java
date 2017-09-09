@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz;
 
+import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.facade.constant.ZkConstant;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
@@ -44,7 +45,7 @@ public class BizConfiguration {
 
     // zookeeper操作类
     @Bean
-    public ZkOperations zkOperations(CuratorFramework zkClient) {
-        return new ZkOperations(zkClient);
+    public ZkTemplate zkTemplate(CuratorFramework zkClient) {
+        return new ZkTemplate(zkClient);
     }
 }

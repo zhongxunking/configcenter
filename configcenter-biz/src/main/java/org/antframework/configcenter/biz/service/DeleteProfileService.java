@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.ZkOperations;
+import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.Profile;
@@ -33,7 +33,7 @@ public class DeleteProfileService {
     @Autowired
     private PropertyValueDao propertyValueDao;
     @Autowired
-    private ZkOperations zkOperations;
+    private ZkTemplate zkTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
@@ -54,6 +54,6 @@ public class DeleteProfileService {
     public void after(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
         DeleteProfileOrder order = context.getOrder();
 
-        zkOperations.deleteNode(ZkOperations.buildPath(order.getProfileCode()));
+        zkTemplate.deleteNode(ZkTemplate.buildPath(order.getProfileCode()));
     }
 }

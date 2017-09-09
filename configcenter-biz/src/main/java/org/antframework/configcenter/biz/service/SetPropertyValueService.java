@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.ZkOperations;
+import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
@@ -39,7 +39,7 @@ public class SetPropertyValueService {
     @Autowired
     private PropertyValueDao propertyValueDao;
     @Autowired
-    private ZkOperations zkOperations;
+    private ZkTemplate zkTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
@@ -67,7 +67,7 @@ public class SetPropertyValueService {
     public void after(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
         SetPropertyValueOrder order = context.getOrder();
 
-        zkOperations.setData(ZkOperations.buildPath(order.getProfileCode(), order.getAppCode()), null);
+        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), null);
     }
 
     //构建属性value
