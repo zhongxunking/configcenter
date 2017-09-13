@@ -25,7 +25,7 @@ public class ConfigContext {
     // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
     // 配置刷新器
-    private ConfigRefresher configRefresher;
+    private PropertiesRefresher propertiesRefresher;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
     // 监听器处理器
@@ -35,7 +35,7 @@ public class ConfigContext {
         this.params = params;
         serverQuerier = new ServerQuerier(params);
         cacheFileHandler = new CacheFileHandler(params);
-        configRefresher = new ConfigRefresher(properties, serverQuerier, cacheFileHandler, listenersHandler);
+        propertiesRefresher = new PropertiesRefresher(properties, serverQuerier, cacheFileHandler, listenersHandler);
     }
 
     /**
@@ -55,24 +55,26 @@ public class ConfigContext {
     /**
      * 开始监听属性是否被修改
      */
-    public void startListenPropertiesModified() {
-        refreshTrigger = new RefreshTrigger(this, params);
+    public void listenPropertiesModified() {
+        refreshTrigger = new RefreshTrigger(propertiesRefresher, params);
     }
 
     /**
      * 刷新属性
      */
     public void refreshProperties() {
-        configRefresher.refresh();
+        propertiesRefresher.refresh();
     }
 
     /**
      * 关闭上下文（释放相关资源）
      */
     public void close() {
-        refreshTrigger.close();
+        if (refreshTrigger != null) {
+            refreshTrigger.close();
+        }
         serverQuerier.close();
-        configRefresher.close();
+        propertiesRefresher.close();
     }
 
     /**

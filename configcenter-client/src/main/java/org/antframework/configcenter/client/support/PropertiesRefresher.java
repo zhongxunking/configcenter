@@ -20,21 +20,29 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- *
+ * 属性刷新器
  */
-public class ConfigRefresher {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigRefresher.class);
+public class PropertiesRefresher {
+    private static final Logger logger = LoggerFactory.getLogger(PropertiesRefresher.class);
+    // 刷新属性
     private static final Object REFRESH_ELEMENT = new Object();
+    // 停止监听
     private static final Object STOP_ELEMENT = new Object();
 
+    // 属性
     private ConfigurableConfigProperties configProperties;
+    // 服务查询器
     private ServerQuerier serverQuerier;
+    // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
+    // 监听器处理器
     private ListenersHandler listenersHandler;
+    // 触发更新的队列
     private BlockingQueue queue;
+    // 用于刷新的线程
     private RefreshThread refreshThread;
 
-    public ConfigRefresher(ConfigurableConfigProperties configProperties, ServerQuerier serverQuerier, CacheFileHandler cacheFileHandler, ListenersHandler listenersHandler) {
+    public PropertiesRefresher(ConfigurableConfigProperties configProperties, ServerQuerier serverQuerier, CacheFileHandler cacheFileHandler, ListenersHandler listenersHandler) {
         this.configProperties = configProperties;
         this.serverQuerier = serverQuerier;
         this.cacheFileHandler = cacheFileHandler;
@@ -44,6 +52,9 @@ public class ConfigRefresher {
         this.refreshThread.start();
     }
 
+    /**
+     * 刷新配置
+     */
     public void refresh() {
         try {
             if (!queue.contains(REFRESH_ELEMENT)) {
@@ -54,6 +65,9 @@ public class ConfigRefresher {
         }
     }
 
+    /**
+     * 关闭（释放资源）
+     */
     public void close() {
         try {
             queue.put(STOP_ELEMENT);
@@ -62,6 +76,7 @@ public class ConfigRefresher {
         }
     }
 
+    // 刷新线程
     private class RefreshThread extends Thread {
         @Override
         public void run() {

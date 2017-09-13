@@ -30,12 +30,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 服务查询器
  */
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
-
+    // 发送服务端的请求
     private HttpUriRequest request;
+    // 发送http请求的客户端
     private CloseableHttpClient httpClient;
 
     public ServerQuerier(ConfigContext.ConfigParams configParams) {
@@ -43,6 +44,9 @@ public class ServerQuerier {
         httpClient = HttpClients.createDefault();
     }
 
+    /**
+     * 查询属性
+     */
     public Map<String, String> queryProperties() {
         try {
             logger.info("调用服务端查询配置，入参：{}", request);
@@ -61,6 +65,9 @@ public class ServerQuerier {
         }
     }
 
+    /**
+     * 关闭（释放资源）
+     */
     public void close() {
         try {
             httpClient.close();
@@ -69,6 +76,7 @@ public class ServerQuerier {
         }
     }
 
+    // 构建请求
     private HttpUriRequest buildRequest(ConfigContext.ConfigParams configParams) {
         List<NameValuePair> params = new ArrayList<>();
         params.add(new BasicNameValuePair("profileCode", configParams.getProfileCode()));
@@ -80,7 +88,7 @@ public class ServerQuerier {
         return httpPost;
     }
 
-
+    // 服务端返回的结果
     private static class QueryPropertiesResult extends AbstractResult {
         private Map<String, String> properties;
 

@@ -22,23 +22,31 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * 刷新触发器
  */
 public class RefreshTrigger {
     private static final Logger logger = LoggerFactory.getLogger(RefreshTrigger.class);
-    public static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
-    public static final String COMMON_NODE = "common";
+    // 配置中心在zookeeper的命名空间
+    private static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
+    // 需监听的公共节点
+    private static final String COMMON_NODE = "common";
 
-    private ConfigContext configContext;
+    // 属性刷新器
+    private PropertiesRefresher refresher;
+    // zookeeper操作类
     private ZkTemplate zkTemplate;
+    // 被监听的节点
     private List<NodeCache> nodeCaches;
 
-    public RefreshTrigger(ConfigContext configContext, ConfigContext.ConfigParams configParams) {
-        this.configContext = configContext;
+    public RefreshTrigger(PropertiesRefresher refresher, ConfigContext.ConfigParams configParams) {
+        this.refresher = refresher;
         this.zkTemplate = buildZkTemplate(configParams.getZkUrl());
-        this.nodeCaches = buildNodeCaches(configParams.getProfileCode(), new String[]{COMMON_NODE, configParams.getQueriedAppCode()});
+        this.nodeCaches = listenNodes(configParams.getProfileCode(), new String[]{COMMON_NODE, configParams.getQueriedAppCode()});
     }
 
+    /**
+     * 关闭（释放资源）
+     */
     public void close() {
         for (NodeCache nodeCache : nodeCaches) {
             try {
@@ -50,6 +58,7 @@ public class RefreshTrigger {
         zkTemplate.getZkClient().close();
     }
 
+    // 构建 zookeeper操作类
     private ZkTemplate buildZkTemplate(String zkUrl) {
         CuratorFramework zkClient = CuratorFrameworkFactory.builder()
                 .connectString(zkUrl)
@@ -61,11 +70,12 @@ public class RefreshTrigger {
         return new ZkTemplate(zkClient);
     }
 
-    private List<NodeCache> buildNodeCaches(String profileCode, String[] appCodes) {
+    // 监听指定节点
+    private List<NodeCache> listenNodes(String profileCode, String[] appCodes) {
         ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
             @Override
             public void nodeChanged() throws Exception {
-                configContext.refreshProperties();
+                refresher.refresh();
             }
         };
         List<NodeCache> nodeCaches = new ArrayList<>();

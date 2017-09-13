@@ -15,19 +15,31 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- *
+ * 监听器处理器
  */
 public class ListenersHandler {
+    // 监听器
     private List<PropertiesListener> listeners = new CopyOnWriteArrayList<>();
 
+    /**
+     * 注册监听器
+     */
     public void register(PropertiesListener listener) {
         listeners.add(listener);
     }
 
+    /**
+     * 删除监听器
+     */
     public void remove(PropertiesListener listener) {
         listeners.remove(listener);
     }
 
+    /**
+     * 属性被修改触发监听器
+     *
+     * @param modifiedProperties 被修改的属性
+     */
     public void propertiesModified(List<ModifiedProperty> modifiedProperties) {
         if (modifiedProperties == null || modifiedProperties.size() <= 0) {
             return;
