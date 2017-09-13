@@ -13,10 +13,15 @@ import org.antframework.configcenter.client.core.ModifiedProperty;
 import java.util.List;
 
 /**
- *
+ * 属性监听器
  */
 public interface PropertiesListener {
 
+    /**
+     * 当属性被修改时触发本方法
+     *
+     * @param modifiedProperties 被修改的属性
+     */
     void propertiesModified(List<ModifiedProperty> modifiedProperties);
 
 }

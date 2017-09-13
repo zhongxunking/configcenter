@@ -11,58 +11,85 @@ package org.antframework.configcenter.client;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.antframework.configcenter.client.support.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
- *
+ * 配置上下文
  */
 public class ConfigContext {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigContext.class);
-
+    // 参数
     private ConfigParams params;
-    private ConfigurableConfigProperties configProperties = new DefaultConfigProperties();
+    // 属性
+    private ConfigurableConfigProperties properties = new DefaultConfigProperties();
+    // 服务端查询器
     private ServerQuerier serverQuerier;
+    // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
+    // 配置刷新器
     private ConfigRefresher configRefresher;
+    // 刷新触发器
     private RefreshTrigger refreshTrigger;
+    // 监听器处理器
     private ListenersHandler listenersHandler = new ListenersHandler();
 
     public ConfigContext(ConfigParams params) {
         this.params = params;
         serverQuerier = new ServerQuerier(params);
         cacheFileHandler = new CacheFileHandler(params);
-        configRefresher = new ConfigRefresher(configProperties, serverQuerier, cacheFileHandler, listenersHandler);
+        configRefresher = new ConfigRefresher(properties, serverQuerier, cacheFileHandler, listenersHandler);
     }
 
-    public ConfigProperties getConfigProperties() {
-        return configProperties;
+    /**
+     * 获取属性
+     */
+    public ConfigProperties getProperties() {
+        return properties;
     }
 
+    /**
+     * 获取监听器处理器
+     */
     public ListenersHandler getListenersHandler() {
         return listenersHandler;
     }
 
+    /**
+     * 开始监听属性是否被修改
+     */
     public void startListenPropertiesModified() {
         refreshTrigger = new RefreshTrigger(this, params);
     }
 
+    /**
+     * 刷新属性
+     */
     public void refreshProperties() {
         configRefresher.refresh();
     }
 
+    /**
+     * 关闭上下文（释放相关资源）
+     */
     public void close() {
         refreshTrigger.close();
         serverQuerier.close();
         configRefresher.close();
     }
 
+    /**
+     * 客户端初始化参数
+     */
     public static class ConfigParams {
+        // 环境编码
         private String profileCode;
+        // 主体应用编码
         private String appCode;
+        // 被查询配置的应用编码
         private String queriedAppCode;
+        // 服务端地址
         private String serverUrl;
+        // zookeeper地址
         private String zkUrl;
+        // 缓存文件路径
         private String cacheFilePath;
 
         public String getProfileCode() {

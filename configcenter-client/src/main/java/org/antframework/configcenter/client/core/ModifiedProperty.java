@@ -15,28 +15,43 @@ import java.util.List;
 import java.util.Map;
 
 /**
- *
+ * 被修改的属性
  */
 public class ModifiedProperty {
 
+    /**
+     * 分析被修改的属性
+     *
+     * @param oldProperties 旧属性
+     * @param newProperties 新属性
+     * @return 被修改的属性
+     */
     public static List<ModifiedProperty> analyseModify(Map<String, String> oldProperties, Map<String, String> newProperties) {
         List<ModifiedProperty> modifiedProperties = new ArrayList<>();
+        // 分析删除和修改的属性
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(key, ModifiedProperty.ModifyType.DELETE, oldProperties.get(key), null));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.DELETE, key, oldProperties.get(key), null));
             } else if (!StringUtils.equals(newProperties.get(key), oldProperties.get(key))) {
-                modifiedProperties.add(new ModifiedProperty(key, ModifiedProperty.ModifyType.UPDATE, oldProperties.get(key), newProperties.get(key)));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, oldProperties.get(key), newProperties.get(key)));
             }
         }
+        // 分析新增的属性
         for (String key : newProperties.keySet()) {
             if (!oldProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(key, ModifiedProperty.ModifyType.ADD, null, newProperties.get(key)));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.ADD, key, null, newProperties.get(key)));
             }
         }
 
         return modifiedProperties;
     }
 
+    /**
+     * 应用被修改的属性
+     *
+     * @param properties         属性
+     * @param modifiedProperties 被修改的属性
+     */
     public static void applyModify(Map<String, String> properties, List<ModifiedProperty> modifiedProperties) {
         for (ModifiedProperty modifiedProperty : modifiedProperties) {
             switch (modifiedProperty.getType()) {
@@ -53,53 +68,49 @@ public class ModifiedProperty {
         }
     }
 
-    private String key;
+    // 修改类型
     private ModifyType type;
+    // 属性key
+    private String key;
+    // 旧属性值
     private String oldValue;
+    // 新属性值
     private String newValue;
 
-    public ModifiedProperty(String key, ModifyType type, String oldValue, String newValue) {
-        this.key = key;
+    public ModifiedProperty(ModifyType type, String key, String oldValue, String newValue) {
         this.type = type;
+        this.key = key;
         this.oldValue = oldValue;
         this.newValue = newValue;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
     }
 
     public ModifyType getType() {
         return type;
     }
 
-    public void setType(ModifyType type) {
-        this.type = type;
+    public String getKey() {
+        return key;
     }
 
     public String getOldValue() {
         return oldValue;
     }
 
-    public void setOldValue(String oldValue) {
-        this.oldValue = oldValue;
-    }
-
     public String getNewValue() {
         return newValue;
     }
 
-    public void setNewValue(String newValue) {
-        this.newValue = newValue;
-    }
-
+    /**
+     * 修改类型
+     */
     public enum ModifyType {
+        // 新增
         ADD,
+
+        // 更新
         UPDATE,
-        DELETE;
+
+        // 删除
+        DELETE
     }
 }

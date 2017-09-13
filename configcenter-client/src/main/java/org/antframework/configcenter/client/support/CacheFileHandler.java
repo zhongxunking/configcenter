@@ -10,8 +10,6 @@ package org.antframework.configcenter.client.support;
 
 import org.antframework.configcenter.client.ConfigContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.util.Date;
@@ -20,11 +18,10 @@ import java.util.Map;
 import java.util.Properties;
 
 /**
- *
+ * 缓存文件处理器
  */
 public class CacheFileHandler {
-    private static final Logger logger = LoggerFactory.getLogger(CacheFileHandler.class);
-
+    // 缓存文件
     private File cacheFile;
 
     public CacheFileHandler(ConfigContext.ConfigParams configParams) {
@@ -32,6 +29,9 @@ public class CacheFileHandler {
         createFileIfAbsent(this.cacheFile);
     }
 
+    /**
+     * 读取属性
+     */
     public Map<String, String> readProperties() {
         try {
             InputStream in = null;
@@ -50,6 +50,9 @@ public class CacheFileHandler {
         }
     }
 
+    /**
+     * 缓存属性
+     */
     public void writeProperties(Map<String, String> properties) {
         try {
             OutputStream out = null;
@@ -66,6 +69,7 @@ public class CacheFileHandler {
         }
     }
 
+    // 如果文件不存在，则创建文件
     private static void createFileIfAbsent(File file) {
         try {
             if (file.exists()) {
@@ -84,6 +88,7 @@ public class CacheFileHandler {
         }
     }
 
+    // Properties转Map
     private static Map<String, String> propsToMap(Properties props) {
         Map<String, String> map = new HashMap<>();
         for (String key : props.stringPropertyNames()) {
@@ -92,6 +97,7 @@ public class CacheFileHandler {
         return map;
     }
 
+    // Map转Properties
     private static Properties mapToProps(Map<String, String> map) {
         Properties props = new Properties();
         for (String key : map.keySet()) {

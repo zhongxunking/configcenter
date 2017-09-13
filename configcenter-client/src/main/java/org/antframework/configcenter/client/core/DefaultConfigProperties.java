@@ -14,10 +14,10 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- *
+ * 配置属性默认实现
  */
 public class DefaultConfigProperties implements ConfigurableConfigProperties {
-
+    // 属性
     private Map<String, String> properties = new ConcurrentHashMap<>();
 
     @Override
