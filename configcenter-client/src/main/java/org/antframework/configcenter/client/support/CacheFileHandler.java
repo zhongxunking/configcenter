@@ -26,9 +26,9 @@ public class CacheFileHandler {
     private File cacheFile;
 
     public CacheFileHandler(String filePath) throws IOException {
-        cacheFile = new File(filePath);
-        createFileIfAbsent(cacheFile);
-        if (!cacheFile.canWrite()) {
+        this.cacheFile = new File(filePath);
+        createFileIfAbsent(this.cacheFile);
+        if (!this.cacheFile.canWrite()) {
             throw new IllegalArgumentException("无权限读取文件：" + filePath);
         }
     }
@@ -59,7 +59,7 @@ public class CacheFileHandler {
         }
     }
 
-    private static void createFileIfAbsent(File file) {
+    private static void createFileIfAbsent(File file) throws IOException {
         if (file.exists()) {
             return;
         }
@@ -67,11 +67,8 @@ public class CacheFileHandler {
         if (parent != null) {
             parent.mkdirs();
         }
-        try {
-            if (!file.createNewFile()) {
-                throw new RuntimeException("创建文件失败：" + file.getPath());
-            }
-        } catch (IOException e) {
+        file.createNewFile();
+        if (!file.exists()) {
             throw new RuntimeException("创建文件失败：" + file.getPath());
         }
     }

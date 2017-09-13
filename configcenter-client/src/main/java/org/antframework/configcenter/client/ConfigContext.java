@@ -8,13 +8,11 @@
  */
 package org.antframework.configcenter.client;
 
-import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.apache.http.client.HttpClient;
+import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
+import org.antframework.configcenter.client.core.DefaultConfigProperties;
+import org.antframework.configcenter.client.support.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  *
@@ -22,26 +20,36 @@ import java.util.concurrent.LinkedBlockingQueue;
 public class ConfigContext {
     private static final Logger logger = LoggerFactory.getLogger(ConfigContext.class);
 
-    public static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
+    private ConfigurableConfigProperties configProperties;
+    private ServerQuerier serverQuerier;
+    private CacheFileHandler cacheFileHandler;
+    private ConfigRefresher configRefresher;
+    private RefreshTrigger refreshTrigger;
+    private ListenersHandler listenersHandler = new ListenersHandler();
 
-    private String configCenterUrl;
-    private String configZkUrl;
-    private String configFilePath;
-    private String profileCode;
-    private String appCode;
-    private String queriedAppCode;
-    private ZkTemplate zkTemplate;
-    private HttpClient httpClient;
-    private ConfigProperties configProperties;
-    private BlockingQueue queue = new LinkedBlockingQueue();
-
-    public ConfigContext(String configCenterUrl, String configZkUrl, String configFilePath, String profileCode, String appCode, String queriedAppCode) {
-        this.configCenterUrl = configCenterUrl;
-        this.configZkUrl = configZkUrl;
-        this.configFilePath = configFilePath;
-        this.profileCode = profileCode;
-        this.appCode = appCode;
-        this.queriedAppCode = queriedAppCode;
+    public ConfigContext(String profileCode, String appCode, String queriedAppCode, String serverUrl, String zkUrl, String cacheFilePath) {
+        this.configProperties = new DefaultConfigProperties();
+        this.serverQuerier = new ServerQuerier(serverUrl, profileCode, appCode, queriedAppCode);
+        this.cacheFileHandler = new CacheFileHandler(cacheFilePath);
+        this.configRefresher = new ConfigRefresher(this.configProperties, this.serverQuerier, this.cacheFileHandler, this.listenersHandler);
+        this.refreshTrigger = new RefreshTrigger(this, zkUrl, profileCode, queriedAppCode);
     }
 
+    public ConfigProperties getProperties() {
+        return configProperties;
+    }
+
+    public ListenersHandler getListenersHandler() {
+        return listenersHandler;
+    }
+
+    public void refreshProperties() {
+        configRefresher.refresh();
+    }
+
+    public void close() {
+        refreshTrigger.close();
+        serverQuerier.close();
+        configRefresher.close();
+    }
 }

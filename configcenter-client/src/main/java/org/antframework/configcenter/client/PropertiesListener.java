@@ -17,6 +17,6 @@ import java.util.List;
  */
 public interface PropertiesListener {
 
-    void propertiesModified(List<ModifiedProperty>)
+    void propertiesModified(List<ModifiedProperty> modifiedProperties);
 
 }

@@ -27,15 +27,16 @@ import java.util.List;
 public class RefreshTrigger {
     private static final Logger logger = LoggerFactory.getLogger(RefreshTrigger.class);
     public static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
+    public static final String COMMON_NODE = "common";
 
     private ConfigContext configContext;
     private ZkTemplate zkTemplate;
     private List<NodeCache> nodeCaches;
 
-    public RefreshTrigger(ConfigContext configContext, String zkUrl, String profileCode, String[] nodes) {
+    public RefreshTrigger(ConfigContext configContext, String zkUrl, String profileCode, String appCode) {
         this.configContext = configContext;
         this.zkTemplate = buildZkTemplate(zkUrl);
-        this.nodeCaches = buildNodeCaches(profileCode, nodes);
+        this.nodeCaches = buildNodeCaches(profileCode, new String[]{COMMON_NODE, appCode});
     }
 
     public void close() {
@@ -60,7 +61,7 @@ public class RefreshTrigger {
         return new ZkTemplate(zkClient);
     }
 
-    private List<NodeCache> buildNodeCaches(String profileCode, String[] nodes) {
+    private List<NodeCache> buildNodeCaches(String profileCode, String[] appCodes) {
         ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
             @Override
             public void nodeChanged() throws Exception {
@@ -68,8 +69,8 @@ public class RefreshTrigger {
             }
         };
         List<NodeCache> nodeCaches = new ArrayList<>();
-        for (String node : nodes) {
-            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileCode, node), listener);
+        for (String appCode : appCodes) {
+            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileCode, appCode), listener);
             nodeCaches.add(nodeCache);
         }
         return nodeCaches;

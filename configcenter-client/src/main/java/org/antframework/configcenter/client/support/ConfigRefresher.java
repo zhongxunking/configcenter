@@ -9,9 +9,12 @@
 package org.antframework.configcenter.client.support;
 
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
+import org.antframework.configcenter.client.core.ModifiedProperty;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -27,21 +30,27 @@ public class ConfigRefresher {
     private ConfigurableConfigProperties configProperties;
     private ServerQuerier serverQuerier;
     private CacheFileHandler cacheFileHandler;
+    private ListenersHandler listenersHandler;
     private BlockingQueue queue;
     private RefreshThread refreshThread;
 
-    public ConfigRefresher(ConfigurableConfigProperties configProperties, ServerQuerier serverQuerier, CacheFileHandler cacheFileHandler) {
+    public ConfigRefresher(ConfigurableConfigProperties configProperties, ServerQuerier serverQuerier, CacheFileHandler cacheFileHandler, ListenersHandler listenersHandler) {
         this.configProperties = configProperties;
         this.serverQuerier = serverQuerier;
         this.cacheFileHandler = cacheFileHandler;
+        this.listenersHandler = listenersHandler;
         this.queue = new LinkedBlockingQueue();
         this.refreshThread = new RefreshThread();
         this.refreshThread.start();
     }
 
-    public void refresh() throws InterruptedException {
-        if (!queue.contains(REFRESH_ELEMENT)) {
-            queue.put(REFRESH_ELEMENT);
+    public void refresh() {
+        try {
+            if (!queue.contains(REFRESH_ELEMENT)) {
+                queue.put(REFRESH_ELEMENT);
+            }
+        } catch (InterruptedException e) {
+            ExceptionUtils.wrapAndThrow(e);
         }
     }
 
@@ -63,8 +72,9 @@ public class ConfigRefresher {
                         break;
                     }
                     Map<String, String> properties = serverQuerier.queryProperties();
-                    configProperties.replaceProperties(properties);
+                    List<ModifiedProperty> modifiedProperties = configProperties.replaceProperties(properties);
                     cacheFileHandler.writeProperties(properties);
+                    listenersHandler.propertiesModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：", e);
                 }
