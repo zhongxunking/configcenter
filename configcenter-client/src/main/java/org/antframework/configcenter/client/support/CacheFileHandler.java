@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.antframework.configcenter.client.ConfigContext;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,51 +27,60 @@ public class CacheFileHandler {
 
     private File cacheFile;
 
-    public CacheFileHandler(String filePath) throws IOException {
-        this.cacheFile = new File(filePath);
+    public CacheFileHandler(ConfigContext.ConfigParams configParams) {
+        this.cacheFile = new File(configParams.getCacheFilePath());
         createFileIfAbsent(this.cacheFile);
-        if (!this.cacheFile.canWrite()) {
-            throw new IllegalArgumentException("无权限读取文件：" + filePath);
-        }
     }
 
-    public Map<String, String> readProperties() throws IOException {
-        InputStream in = null;
+    public Map<String, String> readProperties() {
         try {
-            in = new FileInputStream(cacheFile);
-            Properties props = new Properties();
-            props.load(in);
-            return propsToMap(props);
-        } finally {
-            if (in != null) {
-                in.close();
+            InputStream in = null;
+            try {
+                in = new FileInputStream(cacheFile);
+                Properties props = new Properties();
+                props.load(in);
+                return propsToMap(props);
+            } finally {
+                if (in != null) {
+                    in.close();
+                }
             }
+        } catch (IOException e) {
+            return ExceptionUtils.wrapAndThrow(e);
         }
     }
 
-    public void writeProperties(Map<String, String> properties) throws IOException {
-        OutputStream out = null;
+    public void writeProperties(Map<String, String> properties) {
         try {
-            out = new FileOutputStream(cacheFile);
-            mapToProps(properties).store(out, "configcenter-client create at " + new Date());
-        } finally {
-            if (out != null) {
-                out.close();
+            OutputStream out = null;
+            try {
+                out = new FileOutputStream(cacheFile);
+                mapToProps(properties).store(out, "configcenter-client create at " + new Date());
+            } finally {
+                if (out != null) {
+                    out.close();
+                }
             }
+        } catch (IOException e) {
+            ExceptionUtils.wrapAndThrow(e);
         }
     }
 
-    private static void createFileIfAbsent(File file) throws IOException {
-        if (file.exists()) {
-            return;
-        }
-        File parent = file.getParentFile();
-        if (parent != null) {
-            parent.mkdirs();
-        }
-        file.createNewFile();
-        if (!file.exists()) {
-            throw new RuntimeException("创建文件失败：" + file.getPath());
+    private static void createFileIfAbsent(File file) {
+        try {
+            if (file.exists()) {
+                return;
+            }
+            File parent = file.getParentFile();
+            if (parent != null) {
+                parent.mkdirs();
+            }
+            file.createNewFile();
+            if (!file.exists()) {
+                throw new RuntimeException("创建文件失败：" + file.getPath());
+            }
+        } catch (IOException e) {
+            ExceptionUtils.wrapAndThrow(e);
         }
     }
 

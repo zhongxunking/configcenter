@@ -33,10 +33,10 @@ public class RefreshTrigger {
     private ZkTemplate zkTemplate;
     private List<NodeCache> nodeCaches;
 
-    public RefreshTrigger(ConfigContext configContext, String zkUrl, String profileCode, String appCode) {
+    public RefreshTrigger(ConfigContext configContext, ConfigContext.ConfigParams configParams) {
         this.configContext = configContext;
-        this.zkTemplate = buildZkTemplate(zkUrl);
-        this.nodeCaches = buildNodeCaches(profileCode, new String[]{COMMON_NODE, appCode});
+        this.zkTemplate = buildZkTemplate(configParams.getZkUrl());
+        this.nodeCaches = buildNodeCaches(configParams.getProfileCode(), new String[]{COMMON_NODE, configParams.getQueriedAppCode()});
     }
 
     public void close() {

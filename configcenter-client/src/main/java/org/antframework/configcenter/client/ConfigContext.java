@@ -20,27 +20,31 @@ import org.slf4j.LoggerFactory;
 public class ConfigContext {
     private static final Logger logger = LoggerFactory.getLogger(ConfigContext.class);
 
-    private ConfigurableConfigProperties configProperties;
+    private ConfigParams params;
+    private ConfigurableConfigProperties configProperties = new DefaultConfigProperties();
     private ServerQuerier serverQuerier;
     private CacheFileHandler cacheFileHandler;
     private ConfigRefresher configRefresher;
     private RefreshTrigger refreshTrigger;
     private ListenersHandler listenersHandler = new ListenersHandler();
 
-    public ConfigContext(String profileCode, String appCode, String queriedAppCode, String serverUrl, String zkUrl, String cacheFilePath) {
-        this.configProperties = new DefaultConfigProperties();
-        this.serverQuerier = new ServerQuerier(serverUrl, profileCode, appCode, queriedAppCode);
-        this.cacheFileHandler = new CacheFileHandler(cacheFilePath);
-        this.configRefresher = new ConfigRefresher(this.configProperties, this.serverQuerier, this.cacheFileHandler, this.listenersHandler);
-        this.refreshTrigger = new RefreshTrigger(this, zkUrl, profileCode, queriedAppCode);
+    public ConfigContext(ConfigParams params) {
+        this.params = params;
+        serverQuerier = new ServerQuerier(params);
+        cacheFileHandler = new CacheFileHandler(params);
+        configRefresher = new ConfigRefresher(configProperties, serverQuerier, cacheFileHandler, listenersHandler);
     }
 
-    public ConfigProperties getProperties() {
+    public ConfigProperties getConfigProperties() {
         return configProperties;
     }
 
     public ListenersHandler getListenersHandler() {
         return listenersHandler;
+    }
+
+    public void startListenPropertiesModified() {
+        refreshTrigger = new RefreshTrigger(this, params);
     }
 
     public void refreshProperties() {
@@ -51,5 +55,62 @@ public class ConfigContext {
         refreshTrigger.close();
         serverQuerier.close();
         configRefresher.close();
+    }
+
+    public static class ConfigParams {
+        private String profileCode;
+        private String appCode;
+        private String queriedAppCode;
+        private String serverUrl;
+        private String zkUrl;
+        private String cacheFilePath;
+
+        public String getProfileCode() {
+            return profileCode;
+        }
+
+        public void setProfileCode(String profileCode) {
+            this.profileCode = profileCode;
+        }
+
+        public String getAppCode() {
+            return appCode;
+        }
+
+        public void setAppCode(String appCode) {
+            this.appCode = appCode;
+        }
+
+        public String getQueriedAppCode() {
+            return queriedAppCode;
+        }
+
+        public void setQueriedAppCode(String queriedAppCode) {
+            this.queriedAppCode = queriedAppCode;
+        }
+
+        public String getServerUrl() {
+            return serverUrl;
+        }
+
+        public void setServerUrl(String serverUrl) {
+            this.serverUrl = serverUrl;
+        }
+
+        public String getZkUrl() {
+            return zkUrl;
+        }
+
+        public void setZkUrl(String zkUrl) {
+            this.zkUrl = zkUrl;
+        }
+
+        public String getCacheFilePath() {
+            return cacheFilePath;
+        }
+
+        public void setCacheFilePath(String cacheFilePath) {
+            this.cacheFilePath = cacheFilePath;
+        }
     }
 }
