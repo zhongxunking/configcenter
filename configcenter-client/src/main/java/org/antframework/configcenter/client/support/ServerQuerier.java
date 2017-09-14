@@ -35,7 +35,7 @@ import java.util.Map;
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
     // 查询属性url
-    private static final String QUERY_PROPERTIES_SUFFIX_URL = "/queryProperties";
+    private static final String QUERY_PROPERTIES_SUFFIX_URL = "/config/queryProperties";
 
     // 发送给服务端的请求
     private HttpUriRequest request;
@@ -82,17 +82,18 @@ public class ServerQuerier {
     // 构建请求
     private HttpUriRequest buildRequest(ConfigContext.InitParams initParams) {
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("profileCode", initParams.getProfileCode()));
         params.add(new BasicNameValuePair("appCode", initParams.getAppCode()));
         params.add(new BasicNameValuePair("queriedAppCode", initParams.getQueriedAppCode()));
+        params.add(new BasicNameValuePair("profileCode", initParams.getProfileCode()));
 
         HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_PROPERTIES_SUFFIX_URL);
         httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
         return httpPost;
     }
 
-    // 服务端返回的结果
+    // 查询应用在特定环境中的配置result
     private static class QueryPropertiesResult extends AbstractResult {
+        // 属性（不存在该应用或环境，则返回null）
         private Map<String, String> properties;
 
         public Map<String, String> getProperties() {
