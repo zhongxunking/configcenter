@@ -31,7 +31,7 @@ public class RefreshTrigger {
     // 需监听的公共节点
     private static final String COMMON_NODE = "common";
 
-    // 属性刷新器
+    // 配置属性刷新器
     private PropertiesRefresher refresher;
     // zookeeper操作类
     private ZkTemplate zkTemplate;

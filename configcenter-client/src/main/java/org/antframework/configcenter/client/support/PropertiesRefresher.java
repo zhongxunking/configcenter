@@ -21,16 +21,16 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 属性刷新器
+ * 配置属性刷新器
  */
 public class PropertiesRefresher {
     private static final Logger logger = LoggerFactory.getLogger(PropertiesRefresher.class);
-    // 刷新属性
+    // 刷新配置
     private static final Object REFRESH_ELEMENT = new Object();
-    // 停止监听
+    // 停止刷新
     private static final Object STOP_ELEMENT = new Object();
 
-    // 属性
+    // 配置属性
     private ConfigurableConfigProperties properties;
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar;
@@ -38,9 +38,9 @@ public class PropertiesRefresher {
     private ServerQuerier serverQuerier;
     // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
-    // 用于刷新的线程
+    // 刷新配置的线程
     private RefreshThread refreshThread;
-    // 触发更新的队列
+    // 触发配置刷新的队列
     private BlockingQueue queue = new LinkedBlockingQueue();
 
     public PropertiesRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
@@ -70,15 +70,15 @@ public class PropertiesRefresher {
      */
     public void close() {
         try {
-            serverQuerier.close();
             queue.put(STOP_ELEMENT);
         } catch (InterruptedException e) {
-            logger.error("关闭刷新线程失败");
+            logger.error("关闭刷新配置的线程失败");
         }
+        serverQuerier.close();
     }
 
     /**
-     * 初始化属性
+     * 初始化配置属性
      * （先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
      */
     public void initProperties() {
@@ -87,10 +87,10 @@ public class PropertiesRefresher {
         try {
             newProperties = serverQuerier.queryProperties();
         } catch (Throwable e) {
-            logger.error("从服务端读取配置失败：{}", e.getMessage());
+            logger.error("从配置中心读取配置失败：{}", e.getMessage());
             logger.warn("尝试从缓存文件读取配置");
-            fromServer = false;
             newProperties = cacheFileHandler.readProperties();
+            fromServer = false;
         }
         properties.replaceProperties(newProperties);
         if (fromServer) {
@@ -98,7 +98,7 @@ public class PropertiesRefresher {
         }
     }
 
-    // 刷新线程
+    // 刷新配置的线程
     private class RefreshThread extends Thread {
         @Override
         public void run() {

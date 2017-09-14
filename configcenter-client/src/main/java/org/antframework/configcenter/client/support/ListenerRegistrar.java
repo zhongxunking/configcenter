@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
-import org.antframework.configcenter.client.PropertiesListener;
+import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ModifiedProperty;
 
 import java.util.List;
@@ -19,24 +19,24 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class ListenerRegistrar {
     // 监听器
-    private List<PropertiesListener> listeners = new CopyOnWriteArrayList<>();
+    private List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * 注册监听器
      */
-    public void register(PropertiesListener listener) {
+    public void register(ConfigListener listener) {
         listeners.add(listener);
     }
 
     /**
      * 删除监听器
      */
-    public void remove(PropertiesListener listener) {
+    public void remove(ConfigListener listener) {
         listeners.remove(listener);
     }
 
     /**
-     * 属性被修改触发监听器
+     * 配置被修改触发监听器
      *
      * @param modifiedProperties 被修改的属性
      */
@@ -44,7 +44,7 @@ public class ListenerRegistrar {
         if (modifiedProperties == null || modifiedProperties.size() <= 0) {
             return;
         }
-        for (PropertiesListener listener : listeners) {
+        for (ConfigListener listener : listeners) {
             listener.propertiesModified(modifiedProperties);
         }
     }
