@@ -9,18 +9,18 @@
 package org.antframework.configcenter.facade.api;
 
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppProfilePropertyOrder;
+import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryAppProfilePropertyResult;
+import org.antframework.configcenter.facade.result.QueryPropertiesResult;
 
 /**
  * 配置服务
  */
 public interface ConfigService {
     /**
-     * 环境公用配置应用编码
+     * 公共配置应用编码
      */
-    String PROFILE_COMMON_APP_CODE = "common";
+    String COMMON_APP_CODE = "common";
 
     /**
      * 查找应用
@@ -30,5 +30,5 @@ public interface ConfigService {
     /**
      * 查询应用在特定环境中的配置
      */
-    QueryAppProfilePropertyResult queryAppProfileProperty(QueryAppProfilePropertyOrder order);
+    QueryPropertiesResult queryProperties(QueryPropertiesOrder order);
 }

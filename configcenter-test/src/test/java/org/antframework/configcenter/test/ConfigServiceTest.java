@@ -11,9 +11,9 @@ package org.antframework.configcenter.test;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppProfilePropertyOrder;
+import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryAppProfilePropertyResult;
+import org.antframework.configcenter.facade.result.QueryPropertiesResult;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,21 +38,21 @@ public class ConfigServiceTest extends AbstractTest {
 
     @Test
     public void testQueryAppProfileProperty() {
-        QueryAppProfilePropertyOrder order = new QueryAppProfilePropertyOrder();
+        QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
         order.setOnlyCommon(false);
-        QueryAppProfilePropertyResult result = configService.queryAppProfileProperty(order);
+        QueryPropertiesResult result = configService.queryProperties(order);
         checkResult(result, Status.SUCCESS);
     }
 
     @Test
     public void testQueryAppProfileProperty_onlyCommon() {
-        QueryAppProfilePropertyOrder order = new QueryAppProfilePropertyOrder();
+        QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
         order.setOnlyCommon(true);
-        QueryAppProfilePropertyResult result = configService.queryAppProfileProperty(order);
+        QueryPropertiesResult result = configService.queryProperties(order);
         checkResult(result, Status.SUCCESS);
     }
 }
