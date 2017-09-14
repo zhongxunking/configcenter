@@ -18,10 +18,10 @@ import java.util.List;
 public interface ConfigListener {
 
     /**
-     * 当配置中属性被修改时触发本方法
+     * 当配置被修改时调用本方法
      *
      * @param modifiedProperties 被修改的属性
      */
-    void propertiesModified(List<ModifiedProperty> modifiedProperties);
+    void configModified(List<ModifiedProperty> modifiedProperties);
 
 }

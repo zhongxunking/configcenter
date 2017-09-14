@@ -40,12 +40,12 @@ public class ListenerRegistrar {
      *
      * @param modifiedProperties 被修改的属性
      */
-    public void propertiesModified(List<ModifiedProperty> modifiedProperties) {
+    public void configModified(List<ModifiedProperty> modifiedProperties) {
         if (modifiedProperties == null || modifiedProperties.size() <= 0) {
             return;
         }
         for (ConfigListener listener : listeners) {
-            listener.propertiesModified(modifiedProperties);
+            listener.configModified(modifiedProperties);
         }
     }
 }

@@ -21,10 +21,10 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
 /**
- * 配置属性刷新器
+ * 配置刷新器
  */
-public class PropertiesRefresher {
-    private static final Logger logger = LoggerFactory.getLogger(PropertiesRefresher.class);
+public class ConfigRefresher {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigRefresher.class);
     // 刷新配置
     private static final Object REFRESH_ELEMENT = new Object();
     // 停止刷新
@@ -43,7 +43,7 @@ public class PropertiesRefresher {
     // 触发配置刷新的队列
     private BlockingQueue queue = new LinkedBlockingQueue();
 
-    public PropertiesRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
+    public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
         this.serverQuerier = new ServerQuerier(initParams);
@@ -78,23 +78,23 @@ public class PropertiesRefresher {
     }
 
     /**
-     * 初始化配置属性
+     * 初始化配置
      * （先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
      */
-    public void initProperties() {
+    public void initConfig() {
         Map<String, String> newProperties;
         boolean fromServer = true;
         try {
-            newProperties = serverQuerier.queryProperties();
+            newProperties = serverQuerier.queryConfig();
         } catch (Throwable e) {
             logger.error("从配置中心读取配置失败：{}", e.getMessage());
             logger.warn("尝试从缓存文件读取配置");
-            newProperties = cacheFileHandler.readProperties();
+            newProperties = cacheFileHandler.readConfig();
             fromServer = false;
         }
         properties.replaceProperties(newProperties);
         if (fromServer) {
-            cacheFileHandler.writeProperties(newProperties);
+            cacheFileHandler.writeConfig(newProperties);
         }
     }
 
@@ -108,10 +108,10 @@ public class PropertiesRefresher {
                     if (element == STOP_ELEMENT) {
                         break;
                     }
-                    Map<String, String> newProperties = serverQuerier.queryProperties();
+                    Map<String, String> newProperties = serverQuerier.queryConfig();
                     List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
-                    cacheFileHandler.writeProperties(newProperties);
-                    listenerRegistrar.propertiesModified(modifiedProperties);
+                    cacheFileHandler.writeConfig(newProperties);
+                    listenerRegistrar.configModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：", e);
                 }

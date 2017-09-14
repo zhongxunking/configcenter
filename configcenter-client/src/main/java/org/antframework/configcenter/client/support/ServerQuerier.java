@@ -34,8 +34,8 @@ import java.util.Map;
  */
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
-    // 查询属性url
-    private static final String QUERY_PROPERTIES_SUFFIX_URL = "/config/queryProperties";
+    // 查询配置url
+    private static final String QUERY_CONFIG_SUFFIX_URL = "/config/queryProperties";
 
     // 发送给服务端的请求
     private HttpUriRequest request;
@@ -48,19 +48,19 @@ public class ServerQuerier {
     }
 
     /**
-     * 查询属性
+     * 查询配置
      */
-    public Map<String, String> queryProperties() {
+    public Map<String, String> queryConfig() {
         try {
-            logger.info("调用服务端读取配置，入参：{}", request);
+            logger.info("调用配置中心读取配置，入参：{}", request);
             String resultStr = httpClient.execute(request, new BasicResponseHandler());
-            logger.info("调用服务端读取配置，出参：{}", resultStr);
+            logger.info("调用配置中心读取配置，出参：{}", resultStr);
             QueryPropertiesResult result = JSON.parseObject(resultStr, QueryPropertiesResult.class);
             if (result == null) {
-                throw new RuntimeException("请求服务端失败");
+                throw new RuntimeException("请求配置中心失败");
             }
             if (!result.isSuccess() || result.getProperties() == null) {
-                throw new RuntimeException("查询配置失败：" + result.getMessage());
+                throw new RuntimeException("读取配置失败：" + result.getMessage());
             }
             return result.getProperties();
         } catch (IOException e) {
@@ -86,7 +86,7 @@ public class ServerQuerier {
         params.add(new BasicNameValuePair("queriedAppCode", initParams.getQueriedAppCode()));
         params.add(new BasicNameValuePair("profileCode", initParams.getProfileCode()));
 
-        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_PROPERTIES_SUFFIX_URL);
+        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_CONFIG_SUFFIX_URL);
         httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
         return httpPost;
     }

@@ -31,14 +31,14 @@ public class RefreshTrigger {
     // 需监听的公共节点
     private static final String COMMON_NODE = "common";
 
-    // 配置属性刷新器
-    private PropertiesRefresher refresher;
+    // 配置刷新器
+    private ConfigRefresher refresher;
     // zookeeper操作类
     private ZkTemplate zkTemplate;
     // 被监听的节点
     private List<NodeCache> nodeCaches;
 
-    public RefreshTrigger(PropertiesRefresher refresher, ConfigContext.InitParams initParams) {
+    public RefreshTrigger(ConfigRefresher refresher, ConfigContext.InitParams initParams) {
         this.refresher = refresher;
         this.zkTemplate = buildZkTemplate(initParams.getZkUrl());
         this.nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
@@ -58,7 +58,7 @@ public class RefreshTrigger {
         zkTemplate.getZkClient().close();
     }
 
-    // 构建 zookeeper操作类
+    // 构建zookeeper操作类
     private ZkTemplate buildZkTemplate(String zkUrl) {
         CuratorFramework zkClient = CuratorFrameworkFactory.builder()
                 .connectString(zkUrl)

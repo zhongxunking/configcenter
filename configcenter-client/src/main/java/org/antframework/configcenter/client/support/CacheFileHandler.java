@@ -29,9 +29,9 @@ public class CacheFileHandler {
     }
 
     /**
-     * 读取属性
+     * 读取配置
      */
-    public Map<String, String> readProperties() {
+    public Map<String, String> readConfig() {
         try {
             if (!cacheFile.exists()) {
                 throw new RuntimeException("不存在缓存文件：" + cacheFile.getPath());
@@ -53,15 +53,15 @@ public class CacheFileHandler {
     }
 
     /**
-     * 缓存属性
+     * 缓存配置
      */
-    public void writeProperties(Map<String, String> properties) {
+    public void writeConfig(Map<String, String> properties) {
         try {
             createFileIfAbsent(this.cacheFile);
             OutputStream out = null;
             try {
                 out = new FileOutputStream(cacheFile);
-                mapToProps(properties).store(out, "configcenter-client create at " + new Date());
+                mapToProps(properties).store(out, "configcenter create at " + new Date());
             } finally {
                 if (out != null) {
                     out.close();

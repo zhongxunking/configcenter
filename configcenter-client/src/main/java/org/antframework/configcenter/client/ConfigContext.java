@@ -10,29 +10,29 @@ package org.antframework.configcenter.client;
 
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
+import org.antframework.configcenter.client.support.ConfigRefresher;
 import org.antframework.configcenter.client.support.ListenerRegistrar;
-import org.antframework.configcenter.client.support.PropertiesRefresher;
 import org.antframework.configcenter.client.support.RefreshTrigger;
 
 /**
  * 配置上下文
  */
 public class ConfigContext {
-    // 属性
+    // 配置属性
     private ConfigurableConfigProperties properties = new DefaultConfigProperties();
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
     // 初始化参数
     private InitParams params;
-    // 属性刷新器
-    private PropertiesRefresher propertiesRefresher;
+    // 配置刷新器
+    private ConfigRefresher configRefresher;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
 
     public ConfigContext(InitParams params) {
         this.params = params;
-        propertiesRefresher = new PropertiesRefresher(properties, listenerRegistrar, params);
-        propertiesRefresher.initProperties();
+        configRefresher = new ConfigRefresher(properties, listenerRegistrar, params);
+        configRefresher.initConfig();
     }
 
     /**
@@ -50,17 +50,17 @@ public class ConfigContext {
     }
 
     /**
-     * 开始监听属性是否被修改
+     * 开始监听配置是否被修改
      */
-    public void listenPropertiesModified() {
-        refreshTrigger = new RefreshTrigger(propertiesRefresher, params);
+    public void listenConfigModified() {
+        refreshTrigger = new RefreshTrigger(configRefresher, params);
     }
 
     /**
-     * 刷新属性（异步）
+     * 刷新配置（异步）
      */
-    public void refreshProperties() {
-        propertiesRefresher.refresh();
+    public void refreshConfig() {
+        configRefresher.refresh();
     }
 
     /**
@@ -70,7 +70,7 @@ public class ConfigContext {
         if (refreshTrigger != null) {
             refreshTrigger.close();
         }
-        propertiesRefresher.close();
+        configRefresher.close();
     }
 
     /**
