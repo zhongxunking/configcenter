@@ -50,8 +50,6 @@ public class PropertiesRefresher {
         this.cacheFileHandler = new CacheFileHandler(initParams);
         this.refreshThread = new RefreshThread();
         this.refreshThread.start();
-        // 初始化属性
-        initProperties();
     }
 
     /**
@@ -79,8 +77,11 @@ public class PropertiesRefresher {
         }
     }
 
-    // 初始化属性
-    private void initProperties() {
+    /**
+     * 初始化属性
+     * （先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
+     */
+    public void initProperties() {
         Map<String, String> newProperties;
         boolean fromServer = true;
         try {

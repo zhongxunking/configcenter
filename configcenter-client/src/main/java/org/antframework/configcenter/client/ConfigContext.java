@@ -32,6 +32,7 @@ public class ConfigContext {
     public ConfigContext(InitParams params) {
         this.params = params;
         propertiesRefresher = new PropertiesRefresher(properties, listenerRegistrar, params);
+        propertiesRefresher.initProperties();
     }
 
     /**
