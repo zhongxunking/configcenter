@@ -86,7 +86,7 @@ public class ConfigContext {
         private String serverUrl;
         // 缓存文件路径（必须）
         private String cacheFilePath;
-        // zookeeper地址（可选）
+        // zookeeper地址（如果不需要监听属性被修改，可以不用传）
         private String zkUrl;
 
         public String getProfileCode() {
