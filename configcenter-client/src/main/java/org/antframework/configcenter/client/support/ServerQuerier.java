@@ -30,11 +30,14 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 服务查询器
+ * 服务端查询器
  */
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
-    // 发送服务端的请求
+    // 查询属性url
+    private static final String QUERY_PROPERTIES_SUFFIX_URL = "/queryProperties";
+
+    // 发送给服务端的请求
     private HttpUriRequest request;
     // 发送http请求的客户端
     private CloseableHttpClient httpClient;
@@ -66,7 +69,7 @@ public class ServerQuerier {
     }
 
     /**
-     * 关闭（释放资源）
+     * 关闭（释放相关资源）
      */
     public void close() {
         try {
@@ -83,7 +86,7 @@ public class ServerQuerier {
         params.add(new BasicNameValuePair("appCode", initParams.getAppCode()));
         params.add(new BasicNameValuePair("queriedAppCode", initParams.getQueriedAppCode()));
 
-        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + "/queryProperties");
+        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_PROPERTIES_SUFFIX_URL);
         httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
         return httpPost;
     }

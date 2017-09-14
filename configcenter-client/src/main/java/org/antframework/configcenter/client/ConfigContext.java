@@ -10,32 +10,28 @@ package org.antframework.configcenter.client;
 
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
-import org.antframework.configcenter.client.support.*;
+import org.antframework.configcenter.client.support.ListenerRegistrar;
+import org.antframework.configcenter.client.support.PropertiesRefresher;
+import org.antframework.configcenter.client.support.RefreshTrigger;
 
 /**
  * 配置上下文
  */
 public class ConfigContext {
-    // 参数
-    private InitParams params;
     // 属性
     private ConfigurableConfigProperties properties = new DefaultConfigProperties();
-    // 服务端查询器
-    private ServerQuerier serverQuerier;
-    // 缓存文件处理器
-    private CacheFileHandler cacheFileHandler;
+    // 监听器注册器
+    private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
+    // 初始化参数
+    private InitParams params;
     // 属性刷新器
     private PropertiesRefresher propertiesRefresher;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
-    // 监听器处理器
-    private ListenersHandler listenersHandler = new ListenersHandler();
 
     public ConfigContext(InitParams params) {
         this.params = params;
-        serverQuerier = new ServerQuerier(params);
-        cacheFileHandler = new CacheFileHandler(params);
-        propertiesRefresher = new PropertiesRefresher(properties, serverQuerier, cacheFileHandler, listenersHandler);
+        propertiesRefresher = new PropertiesRefresher(properties, listenerRegistrar, params);
     }
 
     /**
@@ -46,10 +42,10 @@ public class ConfigContext {
     }
 
     /**
-     * 获取监听器处理器
+     * 获取监听器注册器
      */
-    public ListenersHandler getListenersHandler() {
-        return listenersHandler;
+    public ListenerRegistrar getListenerRegistrar() {
+        return listenerRegistrar;
     }
 
     /**
@@ -67,13 +63,12 @@ public class ConfigContext {
     }
 
     /**
-     * 关闭上下文（释放相关资源）
+     * 关闭（释放相关资源）
      */
     public void close() {
         if (refreshTrigger != null) {
             refreshTrigger.close();
         }
-        serverQuerier.close();
         propertiesRefresher.close();
     }
 
@@ -81,18 +76,18 @@ public class ConfigContext {
      * 客户端初始化参数
      */
     public static class InitParams {
-        // 环境编码
+        // 环境编码（必须）
         private String profileCode;
-        // 主体应用编码
+        // 主体应用编码（必须）
         private String appCode;
-        // 被查询配置的应用编码
+        // 被查询配置的应用编码（必须）
         private String queriedAppCode;
-        // 服务端地址
+        // 服务端地址（必须）
         private String serverUrl;
-        // zookeeper地址
-        private String zkUrl;
-        // 缓存文件路径
+        // 缓存文件路径（必须）
         private String cacheFilePath;
+        // zookeeper地址（可选）
+        private String zkUrl;
 
         public String getProfileCode() {
             return profileCode;
@@ -126,20 +121,20 @@ public class ConfigContext {
             this.serverUrl = serverUrl;
         }
 
-        public String getZkUrl() {
-            return zkUrl;
-        }
-
-        public void setZkUrl(String zkUrl) {
-            this.zkUrl = zkUrl;
-        }
-
         public String getCacheFilePath() {
             return cacheFilePath;
         }
 
         public void setCacheFilePath(String cacheFilePath) {
             this.cacheFilePath = cacheFilePath;
+        }
+
+        public String getZkUrl() {
+            return zkUrl;
+        }
+
+        public void setZkUrl(String zkUrl) {
+            this.zkUrl = zkUrl;
         }
     }
 }

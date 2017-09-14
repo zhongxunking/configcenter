@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.ModifiedProperty;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -31,23 +32,22 @@ public class PropertiesRefresher {
 
     // 属性
     private ConfigurableConfigProperties configProperties;
-    // 服务查询器
+    // 监听器注册器
+    private ListenerRegistrar listenerRegistrar;
+    // 服务端查询器
     private ServerQuerier serverQuerier;
     // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
-    // 监听器处理器
-    private ListenersHandler listenersHandler;
-    // 触发更新的队列
-    private BlockingQueue queue;
     // 用于刷新的线程
     private RefreshThread refreshThread;
+    // 触发更新的队列
+    private BlockingQueue queue = new LinkedBlockingQueue();
 
-    public PropertiesRefresher(ConfigurableConfigProperties configProperties, ServerQuerier serverQuerier, CacheFileHandler cacheFileHandler, ListenersHandler listenersHandler) {
+    public PropertiesRefresher(ConfigurableConfigProperties configProperties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
         this.configProperties = configProperties;
-        this.serverQuerier = serverQuerier;
-        this.cacheFileHandler = cacheFileHandler;
-        this.listenersHandler = listenersHandler;
-        this.queue = new LinkedBlockingQueue();
+        this.listenerRegistrar = listenerRegistrar;
+        this.serverQuerier = new ServerQuerier(initParams);
+        this.cacheFileHandler = new CacheFileHandler(initParams);
         this.refreshThread = new RefreshThread();
         this.refreshThread.start();
     }
@@ -66,10 +66,11 @@ public class PropertiesRefresher {
     }
 
     /**
-     * 关闭（释放资源）
+     * 关闭（释放相关资源）
      */
     public void close() {
         try {
+            serverQuerier.close();
             queue.put(STOP_ELEMENT);
         } catch (InterruptedException e) {
             logger.error("关闭刷新线程失败");
@@ -89,7 +90,7 @@ public class PropertiesRefresher {
                     Map<String, String> properties = serverQuerier.queryProperties();
                     List<ModifiedProperty> modifiedProperties = configProperties.replaceProperties(properties);
                     cacheFileHandler.writeProperties(properties);
-                    listenersHandler.propertiesModified(modifiedProperties);
+                    listenerRegistrar.propertiesModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：", e);
                 }

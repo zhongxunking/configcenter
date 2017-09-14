@@ -45,7 +45,7 @@ public class RefreshTrigger {
     }
 
     /**
-     * 关闭（释放资源）
+     * 关闭（释放相关资源）
      */
     public void close() {
         for (NodeCache nodeCache : nodeCaches) {
@@ -75,7 +75,11 @@ public class RefreshTrigger {
         ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
             @Override
             public void nodeChanged() throws Exception {
-                refresher.refresh();
+                try {
+                    refresher.refresh();
+                } catch (Throwable e) {
+                    logger.error("触发刷新出错：", e);
+                }
             }
         };
         List<NodeCache> nodeCaches = new ArrayList<>();

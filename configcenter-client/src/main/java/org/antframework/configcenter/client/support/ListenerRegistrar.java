@@ -15,9 +15,9 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 监听器处理器
+ * 监听器注册器
  */
-public class ListenersHandler {
+public class ListenerRegistrar {
     // 监听器
     private List<PropertiesListener> listeners = new CopyOnWriteArrayList<>();
 
