@@ -38,10 +38,10 @@ public class RefreshTrigger {
     // 被监听的节点
     private List<NodeCache> nodeCaches;
 
-    public RefreshTrigger(PropertiesRefresher refresher, ConfigContext.ConfigParams configParams) {
+    public RefreshTrigger(PropertiesRefresher refresher, ConfigContext.InitParams initParams) {
         this.refresher = refresher;
-        this.zkTemplate = buildZkTemplate(configParams.getZkUrl());
-        this.nodeCaches = listenNodes(configParams.getProfileCode(), new String[]{COMMON_NODE, configParams.getQueriedAppCode()});
+        this.zkTemplate = buildZkTemplate(initParams.getZkUrl());
+        this.nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
     }
 
     /**

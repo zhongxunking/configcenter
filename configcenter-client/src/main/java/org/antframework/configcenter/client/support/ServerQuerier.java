@@ -39,8 +39,8 @@ public class ServerQuerier {
     // 发送http请求的客户端
     private CloseableHttpClient httpClient;
 
-    public ServerQuerier(ConfigContext.ConfigParams configParams) {
-        request = buildRequest(configParams);
+    public ServerQuerier(ConfigContext.InitParams initParams) {
+        request = buildRequest(initParams);
         httpClient = HttpClients.createDefault();
     }
 
@@ -77,13 +77,13 @@ public class ServerQuerier {
     }
 
     // 构建请求
-    private HttpUriRequest buildRequest(ConfigContext.ConfigParams configParams) {
+    private HttpUriRequest buildRequest(ConfigContext.InitParams initParams) {
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("profileCode", configParams.getProfileCode()));
-        params.add(new BasicNameValuePair("appCode", configParams.getAppCode()));
-        params.add(new BasicNameValuePair("queriedAppCode", configParams.getQueriedAppCode()));
+        params.add(new BasicNameValuePair("profileCode", initParams.getProfileCode()));
+        params.add(new BasicNameValuePair("appCode", initParams.getAppCode()));
+        params.add(new BasicNameValuePair("queriedAppCode", initParams.getQueriedAppCode()));
 
-        HttpPost httpPost = new HttpPost(configParams.getServerUrl() + "/queryProperties");
+        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + "/queryProperties");
         httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
         return httpPost;
     }

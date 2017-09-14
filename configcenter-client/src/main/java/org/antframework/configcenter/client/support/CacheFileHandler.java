@@ -24,8 +24,8 @@ public class CacheFileHandler {
     // 缓存文件
     private File cacheFile;
 
-    public CacheFileHandler(ConfigContext.ConfigParams configParams) {
-        this.cacheFile = new File(configParams.getCacheFilePath());
+    public CacheFileHandler(ConfigContext.InitParams initParams) {
+        this.cacheFile = new File(initParams.getCacheFilePath());
         createFileIfAbsent(this.cacheFile);
     }
 

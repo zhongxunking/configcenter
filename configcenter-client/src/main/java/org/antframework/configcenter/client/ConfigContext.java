@@ -17,21 +17,21 @@ import org.antframework.configcenter.client.support.*;
  */
 public class ConfigContext {
     // 参数
-    private ConfigParams params;
+    private InitParams params;
     // 属性
     private ConfigurableConfigProperties properties = new DefaultConfigProperties();
     // 服务端查询器
     private ServerQuerier serverQuerier;
     // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
-    // 配置刷新器
+    // 属性刷新器
     private PropertiesRefresher propertiesRefresher;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
     // 监听器处理器
     private ListenersHandler listenersHandler = new ListenersHandler();
 
-    public ConfigContext(ConfigParams params) {
+    public ConfigContext(InitParams params) {
         this.params = params;
         serverQuerier = new ServerQuerier(params);
         cacheFileHandler = new CacheFileHandler(params);
@@ -60,7 +60,7 @@ public class ConfigContext {
     }
 
     /**
-     * 刷新属性
+     * 刷新属性（异步）
      */
     public void refreshProperties() {
         propertiesRefresher.refresh();
@@ -80,7 +80,7 @@ public class ConfigContext {
     /**
      * 客户端初始化参数
      */
-    public static class ConfigParams {
+    public static class InitParams {
         // 环境编码
         private String profileCode;
         // 主体应用编码
