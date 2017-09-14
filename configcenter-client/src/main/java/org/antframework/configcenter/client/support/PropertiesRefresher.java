@@ -31,7 +31,7 @@ public class PropertiesRefresher {
     private static final Object STOP_ELEMENT = new Object();
 
     // 属性
-    private ConfigurableConfigProperties configProperties;
+    private ConfigurableConfigProperties properties;
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar;
     // 服务端查询器
@@ -43,13 +43,15 @@ public class PropertiesRefresher {
     // 触发更新的队列
     private BlockingQueue queue = new LinkedBlockingQueue();
 
-    public PropertiesRefresher(ConfigurableConfigProperties configProperties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
-        this.configProperties = configProperties;
+    public PropertiesRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
+        this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
         this.serverQuerier = new ServerQuerier(initParams);
         this.cacheFileHandler = new CacheFileHandler(initParams);
         this.refreshThread = new RefreshThread();
         this.refreshThread.start();
+        // 初始化属性
+        initProperties();
     }
 
     /**
@@ -77,6 +79,24 @@ public class PropertiesRefresher {
         }
     }
 
+    // 初始化属性
+    private void initProperties() {
+        Map<String, String> newProperties;
+        boolean fromServer = true;
+        try {
+            newProperties = serverQuerier.queryProperties();
+        } catch (Throwable e) {
+            logger.error("从服务端读取配置失败：{}", e.getMessage());
+            logger.warn("尝试从缓存文件读取配置");
+            fromServer = false;
+            newProperties = cacheFileHandler.readProperties();
+        }
+        properties.replaceProperties(newProperties);
+        if (fromServer) {
+            cacheFileHandler.writeProperties(newProperties);
+        }
+    }
+
     // 刷新线程
     private class RefreshThread extends Thread {
         @Override
@@ -87,9 +107,9 @@ public class PropertiesRefresher {
                     if (element == STOP_ELEMENT) {
                         break;
                     }
-                    Map<String, String> properties = serverQuerier.queryProperties();
-                    List<ModifiedProperty> modifiedProperties = configProperties.replaceProperties(properties);
-                    cacheFileHandler.writeProperties(properties);
+                    Map<String, String> newProperties = serverQuerier.queryProperties();
+                    List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
+                    cacheFileHandler.writeProperties(newProperties);
                     listenerRegistrar.propertiesModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：", e);
