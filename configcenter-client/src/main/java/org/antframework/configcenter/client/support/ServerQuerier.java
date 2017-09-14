@@ -52,9 +52,9 @@ public class ServerQuerier {
      */
     public Map<String, String> queryProperties() {
         try {
-            logger.info("调用服务端查询配置，入参：{}", request);
+            logger.info("调用服务端读取配置，入参：{}", request);
             String resultStr = httpClient.execute(request, new BasicResponseHandler());
-            logger.info("调用服务端查询配置，出参：{}", resultStr);
+            logger.info("调用服务端读取配置，出参：{}", resultStr);
             QueryPropertiesResult result = JSON.parseObject(resultStr, QueryPropertiesResult.class);
             if (result == null) {
                 throw new RuntimeException("请求服务端失败");
