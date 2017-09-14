@@ -64,7 +64,7 @@ public class ServerQuerier {
             }
             return result.getProperties();
         } catch (IOException e) {
-            return ExceptionUtils.wrapAndThrow(e);
+            return ExceptionUtils.rethrow(e);
         }
     }
 

@@ -61,7 +61,7 @@ public class PropertiesRefresher {
                 queue.put(REFRESH_ELEMENT);
             }
         } catch (InterruptedException e) {
-            ExceptionUtils.wrapAndThrow(e);
+            ExceptionUtils.rethrow(e);
         }
     }
 

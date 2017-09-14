@@ -46,7 +46,7 @@ public class CacheFileHandler {
                 }
             }
         } catch (IOException e) {
-            return ExceptionUtils.wrapAndThrow(e);
+            return ExceptionUtils.rethrow(e);
         }
     }
 
@@ -65,7 +65,7 @@ public class CacheFileHandler {
                 }
             }
         } catch (IOException e) {
-            ExceptionUtils.wrapAndThrow(e);
+            ExceptionUtils.rethrow(e);
         }
     }
 
@@ -84,7 +84,7 @@ public class CacheFileHandler {
                 throw new RuntimeException("创建文件失败：" + file.getPath());
             }
         } catch (IOException e) {
-            ExceptionUtils.wrapAndThrow(e);
+            ExceptionUtils.rethrow(e);
         }
     }
 
