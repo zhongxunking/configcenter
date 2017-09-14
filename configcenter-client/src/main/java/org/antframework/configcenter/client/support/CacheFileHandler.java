@@ -26,7 +26,6 @@ public class CacheFileHandler {
 
     public CacheFileHandler(ConfigContext.InitParams initParams) {
         this.cacheFile = new File(initParams.getCacheFilePath());
-        createFileIfAbsent(this.cacheFile);
     }
 
     /**
@@ -55,6 +54,7 @@ public class CacheFileHandler {
      */
     public void writeProperties(Map<String, String> properties) {
         try {
+            createFileIfAbsent(this.cacheFile);
             OutputStream out = null;
             try {
                 out = new FileOutputStream(cacheFile);
@@ -70,21 +70,17 @@ public class CacheFileHandler {
     }
 
     // 如果文件不存在，则创建文件
-    private static void createFileIfAbsent(File file) {
-        try {
-            if (file.exists()) {
-                return;
-            }
-            File parent = file.getParentFile();
-            if (parent != null) {
-                parent.mkdirs();
-            }
-            file.createNewFile();
-            if (!file.exists()) {
-                throw new RuntimeException("创建文件失败：" + file.getPath());
-            }
-        } catch (IOException e) {
-            ExceptionUtils.rethrow(e);
+    private static void createFileIfAbsent(File file) throws IOException {
+        if (file.exists()) {
+            return;
+        }
+        File parent = file.getParentFile();
+        if (parent != null) {
+            parent.mkdirs();
+        }
+        file.createNewFile();
+        if (!file.exists()) {
+            throw new RuntimeException("创建文件失败：" + file.getPath());
         }
     }
 
