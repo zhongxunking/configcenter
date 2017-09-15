@@ -94,7 +94,7 @@ public class ConfigRefresher {
         }
         properties.replaceProperties(newProperties);
         if (fromServer) {
-            cacheFileHandler.writeConfig(newProperties);
+            cacheFileHandler.storeConfig(newProperties);
         }
     }
 
@@ -110,7 +110,7 @@ public class ConfigRefresher {
                     }
                     Map<String, String> newProperties = serverQuerier.queryConfig();
                     List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
-                    cacheFileHandler.writeConfig(newProperties);
+                    cacheFileHandler.storeConfig(newProperties);
                     listenerRegistrar.configModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：", e);

@@ -55,7 +55,7 @@ public class CacheFileHandler {
     /**
      * 缓存配置
      */
-    public void writeConfig(Map<String, String> properties) {
+    public void storeConfig(Map<String, String> properties) {
         try {
             createFileIfAbsent(this.cacheFile);
             OutputStream out = null;
