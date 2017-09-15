@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>应用管理</title>
+    <script type="text/javascript" src="../js/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            query();
+        });
+
+        var pageNo = 1;
+        var pageSize = 10;
+        var totalPage = 0;
+
+        function query() {
+            var form = $("#queryAppForm");
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize() + "&pageNo=" + pageNo + "&pageSize=" + pageSize,
+                success: function (ajaxResult) {
+                    if (!ajaxResult.success) {
+                        alert("查询失败，原因：" + ajaxResult.message);
+                        return;
+                    }
+                    createTable(ajaxResult.infos);
+                    refreshPageFoot(ajaxResult.totalCount);
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
+        function createTable(infos) {
+            var table = "<table border=\"1\">";
+            table += createTableHead();
+            for (var i = 0; i < infos.length; i++) {
+                table += creteTableRow(infos[i]);
+            }
+            table += "</table>";
+
+            $("#tableDiv").html(table);
+        }
+
+        function createTableHead() {
+            var tr = "<tr>";
+            tr += "<th>应用编码</th>"
+            tr += "<th>备注</th>"
+            tr += "<th>操作</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info.appCode + "</td>";
+            tr += "<td>" + info.memo + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.appCode + "\")'>删除</button></td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function deleteEntity(appCode) {
+            $.ajax({
+                url: "../manage/app/deleteApp",
+                data: {
+                    appCode: appCode
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.description);
+                    }
+                }
+            });
+        }
+
+        function previousPage() {
+            if (pageNo > 1) {
+                pageNo--;
+                query();
+            }
+        }
+
+        function nextPage() {
+            if (pageNo < totalPage) {
+                pageNo++;
+                query();
+            }
+        }
+
+        function refreshPageFoot(totalCount) {
+            totalPage = parseInt((totalCount + pageSize - 1) / pageSize);
+            $("#currentPageNo").html(pageNo);
+            $("#totalPage").html(totalPage);
+        }
+
+    </script>
+</head>
+<body>
+<div>
+    <form id="queryAppForm" action="../manage/app/queryApp">
+        应用编码：<input type="text" name="appCode">
+        <input type="button" onclick="pageNo = 1;query();" value="查询">
+    </form>
+</div>
+<br/>
+<div id="tableDiv"></div>
+<div id="pageFoot">
+    <button onclick="previousPage()">上一页</button>
+    <span id="currentPageNo">1</span>
+    <button onclick="nextPage()">下一页</button>
+    总页数：<span id="totalPage"></span>
+</div>
+</body>
+</html>
