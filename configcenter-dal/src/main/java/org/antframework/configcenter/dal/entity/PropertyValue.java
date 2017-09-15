@@ -19,12 +19,8 @@ import javax.persistence.UniqueConstraint;
  * 属性value
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"profileCode", "appCode", "key"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appCode", "key", "profileCode"}))
 public class PropertyValue extends AbstractEntity {
-    // 环境编码
-    @Column(length = 64)
-    private String profileCode;
-
     // 应用编码
     @Column(length = 64)
     private String appCode;
@@ -33,17 +29,13 @@ public class PropertyValue extends AbstractEntity {
     @Column(name = "`key`", length = 128)
     private String key;
 
+    // 环境编码
+    @Column(length = 64)
+    private String profileCode;
+
     // 属性value
     @Column
     private String value;
-
-    public String getProfileCode() {
-        return profileCode;
-    }
-
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
-    }
 
     public String getAppCode() {
         return appCode;
@@ -59,6 +51,14 @@ public class PropertyValue extends AbstractEntity {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
     }
 
     public String getValue() {

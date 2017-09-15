@@ -61,7 +61,7 @@ public class FindAppProfilePropertyValueService {
         FindAppProfilePropertyValueOrder order = context.getOrder();
         FindAppProfilePropertyValueResult result = context.getResult();
 
-        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode());
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(order.getAppCode(), order.getProfileCode());
         result.setInfos(buildInfos(propertyValues));
     }
 

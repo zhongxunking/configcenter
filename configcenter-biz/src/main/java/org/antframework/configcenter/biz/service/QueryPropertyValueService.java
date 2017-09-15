@@ -43,14 +43,14 @@ public class QueryPropertyValueService {
     // 构建查询条件
     private Map<String, Object> buildSearchParams(QueryPropertyValueOrder queryPropertyValueOrder) {
         Map<String, Object> searchParams = new HashMap<>();
-        if (queryPropertyValueOrder.getProfileCode() != null) {
-            searchParams.put("LIKE_profileCode", "%" + queryPropertyValueOrder.getProfileCode() + "%");
-        }
         if (queryPropertyValueOrder.getAppCode() != null) {
             searchParams.put("LIKE_appCode", "%" + queryPropertyValueOrder.getAppCode() + "%");
         }
         if (queryPropertyValueOrder.getKey() != null) {
             searchParams.put("LIKE_key", "%" + queryPropertyValueOrder.getKey() + "%");
+        }
+        if (queryPropertyValueOrder.getProfileCode() != null) {
+            searchParams.put("LIKE_profileCode", "%" + queryPropertyValueOrder.getProfileCode() + "%");
         }
         return searchParams;
     }

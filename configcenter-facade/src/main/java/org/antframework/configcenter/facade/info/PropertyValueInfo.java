@@ -16,22 +16,14 @@ import java.io.Serializable;
  * 属性value信息
  */
 public class PropertyValueInfo implements Serializable {
-    // 环境编码
-    private String profileCode;
     // 应用编码
     private String appCode;
     // 属性key
     private String key;
+    // 环境编码
+    private String profileCode;
     // 属性value
     private String value;
-
-    public String getProfileCode() {
-        return profileCode;
-    }
-
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
-    }
 
     public String getAppCode() {
         return appCode;
@@ -47,6 +39,14 @@ public class PropertyValueInfo implements Serializable {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
     }
 
     public String getValue() {

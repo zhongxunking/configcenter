@@ -15,26 +15,18 @@ import org.hibernate.validator.constraints.NotBlank;
  * 设置属性value-order
  */
 public class SetPropertyValueOrder extends AbstractOrder {
-    // 环境编码
-    @NotBlank
-    private String profileCode;
     // 应用编码
     @NotBlank
     private String appCode;
     // key
     @NotBlank
     private String key;
+    // 环境编码
+    @NotBlank
+    private String profileCode;
     // value
     @NotBlank
     private String value;
-
-    public String getProfileCode() {
-        return profileCode;
-    }
-
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
-    }
 
     public String getAppCode() {
         return appCode;
@@ -50,6 +42,14 @@ public class SetPropertyValueOrder extends AbstractOrder {
 
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public String getProfileCode() {
+        return profileCode;
+    }
+
+    public void setProfileCode(String profileCode) {
+        this.profileCode = profileCode;
     }
 
     public String getValue() {

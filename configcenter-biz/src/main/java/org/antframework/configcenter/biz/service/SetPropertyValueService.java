@@ -45,16 +45,16 @@ public class SetPropertyValueService {
     public void execute(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
         SetPropertyValueOrder order = context.getOrder();
 
-        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
-        if (profile == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
-        }
         PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), order.getKey());
         if (propertyKey == null) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppCode(), order.getKey()));
         }
+        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
+        if (profile == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
+        }
 
-        PropertyValue propertyValue = propertyValueDao.findLockByProfileCodeAndAppCodeAndKey(order.getProfileCode(), order.getAppCode(), order.getKey());
+        PropertyValue propertyValue = propertyValueDao.findLockByAppCodeAndKeyAndProfileCode(order.getAppCode(), order.getKey(), order.getProfileCode());
         if (propertyValue == null) {
             propertyValue = buildPropertyValue(order);
         } else {
