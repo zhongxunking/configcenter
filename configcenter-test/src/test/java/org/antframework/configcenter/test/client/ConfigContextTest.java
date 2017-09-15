@@ -19,7 +19,7 @@ import org.junit.Test;
 public class ConfigContextTest {
 
     @Test
-    public void testConfigContext() {
+    public void testConfigContext() throws InterruptedException {
         ConfigContext.InitParams initParams = new ConfigContext.InitParams();
         initParams.setProfileCode("dev");
         initParams.setAppCode("scbfund");
@@ -29,6 +29,8 @@ public class ConfigContextTest {
         initParams.setZkUrl("localhost:2181");
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.listenConfigModified();
+        configContext.refreshConfig();
+        Thread.sleep(20000);
         configContext.close();
     }
 
