@@ -30,7 +30,7 @@ public class ConfigController {
     private ConfigService configService;
 
     /**
-     * 查询配置属性
+     * 查询应用的配置属性
      *
      * @param appCode        应用编码
      * @param queriedAppCode 被查询配置的应用编码
