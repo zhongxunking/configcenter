@@ -50,13 +50,13 @@ public class QueryPropertiesService {
     public void check(ServiceContext<QueryPropertiesOrder, QueryPropertiesResult> context) {
         QueryPropertiesOrder order = context.getOrder();
 
-        Profile profile = profileDao.findByProfileCode(order.getProfileCode());
-        if (profile == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
-        }
         App app = appDao.findByAppCode(order.getAppCode());
         if (app == null) {
             throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppCode()));
+        }
+        Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+        if (profile == null) {
+            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
         }
     }
 
@@ -83,7 +83,7 @@ public class QueryPropertiesService {
             }
             properties.put(propertyKey.getKey(), null);
         }
-        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(profileCode, appCode);
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(profileCode, appCode);
         for (PropertyValue propertyValue : propertyValues) {
             if (properties.containsKey(propertyValue.getKey())) {
                 properties.put(propertyValue.getKey(), propertyValue.getValue());
