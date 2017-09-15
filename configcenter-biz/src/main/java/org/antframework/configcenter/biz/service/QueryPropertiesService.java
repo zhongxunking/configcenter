@@ -28,7 +28,9 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 查询应用在特定环境中的配置服务
@@ -62,38 +64,32 @@ public class QueryPropertiesService {
     public void execute(ServiceContext<QueryPropertiesOrder, QueryPropertiesResult> context) {
         QueryPropertiesOrder order = context.getOrder();
         QueryPropertiesResult result = context.getResult();
-
-        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), ConfigService.COMMON_APP_CODE);
-        propertyValues.addAll(getAppPropertyValues(order));
-
-        Map<String, String> properties = new HashMap<>();
-        for (PropertyValue propertyValue : propertyValues) {
-            properties.put(propertyValue.getKey(), propertyValue.getValue());
-        }
+        // 获取公共配置
+        Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_CODE, order.getProfileCode(), false);
+        // 获取应用配置（覆盖公共配置）
+        properties.putAll(getAppProperties(order.getAppCode(), order.getProfileCode(), order.isOnlyCommon()));
 
         result.setProperties(properties);
     }
 
-    // 获取特定应用的属性value
-    private List<PropertyValue> getAppPropertyValues(QueryPropertiesOrder order) {
-        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(order.getProfileCode(), order.getAppCode());
+    // 获取应用配置
+    private Map<String, String> getAppProperties(String appCode, String profileCode, boolean onlyCommon) {
+        Map<String, String> properties = new HashMap<>();
 
-        if (order.isOnlyCommon()) {
-            // 如果只查询公共属性，则剔除掉私有属性
-            Set<String> commonKeys = new HashSet<>();
-            for (PropertyKey propertyKey : propertyKeyDao.findByAppCodeAndCommon(order.getAppCode(), true)) {
-                commonKeys.add(propertyKey.getKey());
+        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCode(appCode);
+        for (PropertyKey propertyKey : propertyKeys) {
+            if (onlyCommon && !propertyKey.getCommon()) {
+                continue;
             }
-            List<PropertyValue> commonPropertyValues = new ArrayList<>();
-            for (PropertyValue propertyValue : propertyValues) {
-                if (commonKeys.contains(propertyValue.getKey())) {
-                    commonPropertyValues.add(propertyValue);
-                }
+            properties.put(propertyKey.getKey(), null);
+        }
+        List<PropertyValue> propertyValues = propertyValueDao.findByProfileCodeAndAppCode(profileCode, appCode);
+        for (PropertyValue propertyValue : propertyValues) {
+            if (properties.containsKey(propertyValue.getKey())) {
+                properties.put(propertyValue.getKey(), propertyValue.getValue());
             }
-
-            propertyValues = commonPropertyValues;
         }
 
-        return propertyValues;
+        return properties;
     }
 }

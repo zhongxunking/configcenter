@@ -33,7 +33,7 @@ public interface PropertyKeyDao {
 
     boolean existsByAppCode(String appCode);
 
-    List<PropertyKey> findByAppCodeAndCommon(String appCode, Boolean common);
+    List<PropertyKey> findByAppCode(String appCode);
 
     Page<PropertyKey> query(Map<String, Object> searchParams, Pageable pageable);
 }
