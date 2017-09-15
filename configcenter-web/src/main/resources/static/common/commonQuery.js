@@ -6,6 +6,24 @@ $(document).ready(function () {
     query();
 });
 
+function requestServer(formName) {
+    var form = $("#" + formName);
+    $.ajax({
+        url: form.attr("action"),
+        data: form.serialize(),
+        success: function (ajaxResult) {
+            if (ajaxResult.success) {
+                query();
+            } else {
+                alert("失败，原因：" + ajaxResult.description);
+            }
+        },
+        error: function () {
+            alert("请求服务失败");
+        }
+    });
+}
+
 var pageNo = 1;
 var pageSize = 10;
 var totalPage = 0;

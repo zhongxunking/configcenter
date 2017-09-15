@@ -59,5 +59,12 @@
     <button onclick="nextPage()">下一页</button>
     总页数：<span id="totalPage"></span>
 </div>
+<div>
+    <form id="addOrModifyProfileForm" action="../manage/profile/addOrModifyProfile">
+        环境编码：<input type="text" name="profileCode">
+        备注：<input type="text" name="memo">
+        <input type="button" onclick="requestServer('addOrModifyProfileForm')" value="新增或修改环境">
+    </form>
+</div>
 </body>
 </html>

@@ -67,5 +67,14 @@
     <button onclick="nextPage()">下一页</button>
     总页数：<span id="totalPage"></span>
 </div>
+<div>
+    <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
+        环境编码：<input type="text" name="profileCode">
+        应用编码：<input type="text" name="appCode">
+        key：<input type="text" name="key">
+        value：<input type="text" name="value">
+        <input type="button" onclick="requestServer('setPropertyValueForm')" value="新增或修改属性value">
+    </form>
+</div>
 </body>
 </html>

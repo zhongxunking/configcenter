@@ -66,5 +66,14 @@
     <button onclick="nextPage()">下一页</button>
     总页数：<span id="totalPage"></span>
 </div>
+<div>
+    <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
+        应用编码：<input type="text" name="appCode">
+        key：<input type="text" name="key">
+        是否公用：<input type="text" name="common">
+        备注：<input type="text" name="memo">
+        <input type="button" onclick="requestServer('addOrModifyPropertyKeyForm')" value="新增或修改属性key">
+    </form>
+</div>
 </body>
 </html>

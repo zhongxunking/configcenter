@@ -42,6 +42,7 @@
                 }
             });
         }
+
     </script>
 </head>
 <body>
@@ -58,6 +59,13 @@
     <span id="currentPageNo">1</span>
     <button onclick="nextPage()">下一页</button>
     总页数：<span id="totalPage"></span>
+</div>
+<div>
+    <form id="addOrModifyAppForm" action="../manage/app//addOrModifyApp">
+        应用编码：<input type="text" name="appCode">
+        备注：<input type="text" name="memo">
+        <input type="button" onclick="requestServer('addOrModifyAppForm')" value="新增或修改应用">
+    </form>
 </div>
 </body>
 </html>
