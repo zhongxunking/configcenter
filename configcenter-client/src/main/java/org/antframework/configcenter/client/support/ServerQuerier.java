@@ -52,15 +52,13 @@ public class ServerQuerier {
      */
     public Map<String, String> queryConfig() {
         try {
-            logger.info("调用配置中心读取配置，入参：{}", request);
             String resultStr = httpClient.execute(request, new BasicResponseHandler());
-            logger.info("调用配置中心读取配置，出参：{}", resultStr);
             QueryPropertiesResult result = JSON.parseObject(resultStr, QueryPropertiesResult.class);
             if (result == null) {
                 throw new RuntimeException("请求配置中心失败");
             }
             if (!result.isSuccess() || result.getProperties() == null) {
-                throw new RuntimeException("读取配置失败：" + result.getMessage());
+                throw new RuntimeException("从配置中心读取配置失败：" + result.getMessage());
             }
             return result.getProperties();
         } catch (IOException e) {
