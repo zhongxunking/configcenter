@@ -9,9 +9,11 @@
 package org.antframework.configcenter.facade.api.manage;
 
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 
@@ -28,6 +30,11 @@ public interface PropertyValueManageService {
      * 删除属性value
      */
     DeletePropertyValueResult deletePropertyValue(DeletePropertyValueOrder order);
+
+    /**
+     * 查找应用在指定环境的所有属性value
+     */
+    FindAppProfilePropertyValueResult findAppProfilePropertyValue(FindAppProfilePropertyValueOrder order);
 
     /**
      * 查询属性value

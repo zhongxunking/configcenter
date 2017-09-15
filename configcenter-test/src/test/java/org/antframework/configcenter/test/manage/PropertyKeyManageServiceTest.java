@@ -12,9 +12,11 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
+import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
@@ -47,6 +49,14 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
         DeletePropertyKeyResult result = propertyKeyManageService.deletePropertyKey(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindAppPropertyKey() {
+        FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
+        order.setAppCode("scbfund");
+        FindAppPropertyKeyResult result = propertyKeyManageService.findAppPropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 

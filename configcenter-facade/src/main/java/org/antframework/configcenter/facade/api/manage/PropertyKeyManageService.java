@@ -10,9 +10,11 @@ package org.antframework.configcenter.facade.api.manage;
 
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
+import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 
 /**
@@ -28,6 +30,11 @@ public interface PropertyKeyManageService {
      * 删除属性key
      */
     DeletePropertyKeyResult deletePropertyKey(DeletePropertyKeyOrder order);
+
+    /**
+     * 查找应用所有的属性key
+     */
+    FindAppPropertyKeyResult findAppPropertyKey(FindAppPropertyKeyOrder order);
 
     /**
      * 查询属性key

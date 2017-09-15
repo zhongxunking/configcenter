@@ -10,9 +10,11 @@ package org.antframework.configcenter.biz.provider;
 
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.bekit.service.ServiceEngine;
@@ -35,6 +37,11 @@ public class PropertyValueManageServiceProvider implements PropertyValueManageSe
     @Override
     public DeletePropertyValueResult deletePropertyValue(DeletePropertyValueOrder order) {
         return serviceEngine.execute("deletePropertyValueService", order);
+    }
+
+    @Override
+    public FindAppProfilePropertyValueResult findAppProfilePropertyValue(FindAppProfilePropertyValueOrder order) {
+        return serviceEngine.execute("findAppProfilePropertyValueService", order);
     }
 
     @Override

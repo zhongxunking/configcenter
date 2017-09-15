@@ -11,9 +11,11 @@ package org.antframework.configcenter.test.manage;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -48,6 +50,15 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
         DeletePropertyValueResult result = propertyValueManageService.deletePropertyValue(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindAppProfilePropertyValue() {
+        FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
+        order.setAppCode("scbfund");
+        order.setProfileCode("dev");
+        FindAppProfilePropertyValueResult result = propertyValueManageService.findAppProfilePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 

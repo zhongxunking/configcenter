@@ -11,9 +11,11 @@ package org.antframework.configcenter.biz.provider;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
+import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +37,11 @@ public class PropertyKeyManageServiceProvider implements PropertyKeyManageServic
     @Override
     public DeletePropertyKeyResult deletePropertyKey(DeletePropertyKeyOrder order) {
         return serviceEngine.execute("deletePropertyKeyService", order);
+    }
+
+    @Override
+    public FindAppPropertyKeyResult findAppPropertyKey(FindAppPropertyKeyOrder order) {
+        return serviceEngine.execute("findAppPropertyKeyService", order);
     }
 
     @Override
