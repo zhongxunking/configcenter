@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
+ * 配置controller
  */
 @RestController
 @RequestMapping("/config")
@@ -29,6 +29,13 @@ public class ConfigController {
     @Autowired
     private ConfigService configService;
 
+    /**
+     * 查询配置属性
+     *
+     * @param appCode        应用编码
+     * @param queriedAppCode 被查询配置的应用编码
+     * @param profileCode    环境编码
+     */
     @RequestMapping("/queryProperties")
     public QueryPropertiesResult queryProperties(String appCode, String queriedAppCode, String profileCode) {
         FindAppResult findAppResult = configService.findApp(buildFindAppOrder(appCode));
@@ -39,12 +46,14 @@ public class ConfigController {
         return queryPropertiesResult;
     }
 
+    // 构建FindAppOrder
     private FindAppOrder buildFindAppOrder(String appCode) {
         FindAppOrder order = new FindAppOrder();
         order.setAppCode(appCode);
         return order;
     }
 
+    // 构建QueryPropertiesOrder
     private QueryPropertiesOrder buildQueryPropertiesOrder(String queriedAppCode, String profileCode, String appCode) {
         QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode(queriedAppCode);
