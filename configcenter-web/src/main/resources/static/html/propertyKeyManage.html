@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>属性key管理</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../common/commonQuery.js"></script>
+    <script type="text/javascript">
+
+        function createTableHead() {
+            var tr = "<tr>";
+            tr += "<th>应用编码</th>"
+            tr += "<th>属性key</th>"
+            tr += "<th>是否公用</th>"
+            tr += "<th>备注</th>"
+            tr += "<th>操作</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info.appCode + "</td>";
+            tr += "<td>" + info.key + "</td>";
+            tr += "<td>" + info.common + "</td>";
+            tr += "<td>" + info.memo + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.appCode + "\",\"" + info.key + "\")'>删除</button></td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function deleteEntity(appCode, key) {
+            $.ajax({
+                url: "../manage/propertyKey/deletePropertyKey",
+                data: {
+                    appCode: appCode,
+                    key: key
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.description);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div>
+    <form id="queryForm" action="../manage/propertyKey/queryPropertyKey">
+        应用编码：<input type="text" name="appCode">
+        key：<input type="text" name="key">
+        是否公用：<input type="text" name="common">
+        <input type="button" onclick="pageNo = 1;query();" value="查询">
+    </form>
+</div>
+<br/>
+<div id="tableDiv"></div>
+<div id="pageFoot">
+    <button onclick="previousPage()">上一页</button>
+    <span id="currentPageNo">1</span>
+    <button onclick="nextPage()">下一页</button>
+    总页数：<span id="totalPage"></span>
+</div>
+</body>
+</html>

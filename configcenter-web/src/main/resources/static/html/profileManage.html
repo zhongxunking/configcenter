@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>环境管理</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../common/commonQuery.js"></script>
+    <script type="text/javascript">
+
+        function createTableHead() {
+            var tr = "<tr>";
+            tr += "<th>环境编码</th>"
+            tr += "<th>备注</th>"
+            tr += "<th>操作</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info.profileCode + "</td>";
+            tr += "<td>" + info.memo + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.profileCode + "\")'>删除</button></td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function deleteEntity(profileCode) {
+            $.ajax({
+                url: "../manage/profile/deleteProfile",
+                data: {
+                    profileCode: profileCode
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.description);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+<div>
+    <form id="queryForm" action="../manage/profile/queryProfile">
+        环境编码：<input type="text" name="profileCode">
+        <input type="button" onclick="pageNo = 1;query();" value="查询">
+    </form>
+</div>
+<br/>
+<div id="tableDiv"></div>
+<div id="pageFoot">
+    <button onclick="previousPage()">上一页</button>
+    <span id="currentPageNo">1</span>
+    <button onclick="nextPage()">下一页</button>
+    总页数：<span id="totalPage"></span>
+</div>
+</body>
+</html>
