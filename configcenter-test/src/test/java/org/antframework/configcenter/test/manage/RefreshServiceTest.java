@@ -11,7 +11,9 @@ package org.antframework.configcenter.test.manage;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
 import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
+import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
 import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
+import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,6 +28,33 @@ public class RefreshServiceTest extends AbstractTest {
     @Test
     public void testSyncDataToZk() {
         SyncDataToZkResult result = refreshService.syncDataToZk(new SyncDataToZkOrder());
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testTriggerClientRefresh() {
+        TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
+        order.setAppCode("scbfund");
+        order.setProfileCode("dev");
+        TriggerClientRefreshResult result = refreshService.triggerClientRefresh(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new TriggerClientRefreshOrder();
+        order.setAppCode("scbfund");
+        order.setProfileCode(null);
+        result = refreshService.triggerClientRefresh(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new TriggerClientRefreshOrder();
+        order.setAppCode(null);
+        order.setProfileCode("dev");
+        result = refreshService.triggerClientRefresh(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new TriggerClientRefreshOrder();
+        order.setAppCode(null);
+        order.setProfileCode(null);
+        result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
     }
 }

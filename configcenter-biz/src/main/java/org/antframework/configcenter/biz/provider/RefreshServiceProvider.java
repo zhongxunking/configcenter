@@ -32,6 +32,6 @@ public class RefreshServiceProvider implements RefreshService {
 
     @Override
     public TriggerClientRefreshResult triggerClientRefresh(TriggerClientRefreshOrder order) {
-        return serviceEngine.execute("triggerClientRefresh", order);
+        return serviceEngine.execute("triggerClientRefreshService", order);
     }
 }
