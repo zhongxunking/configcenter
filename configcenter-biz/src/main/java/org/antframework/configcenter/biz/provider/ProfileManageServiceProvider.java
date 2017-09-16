@@ -11,11 +11,11 @@ package org.antframework.configcenter.biz.provider;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.manage.FindProfileOrder;
+import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
-import org.antframework.configcenter.facade.result.manage.FindProfileResult;
+import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,8 +40,8 @@ public class ProfileManageServiceProvider implements ProfileManageService {
     }
 
     @Override
-    public FindProfileResult findProfile(FindProfileOrder order) {
-        return serviceEngine.execute("findProfileService", order);
+    public FindAllProfileResult findAllProfile(FindAllProfileOrder order) {
+        return serviceEngine.execute("findAllProfileService", order);
     }
 
     @Override

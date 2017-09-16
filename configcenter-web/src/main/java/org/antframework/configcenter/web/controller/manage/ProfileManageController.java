@@ -11,11 +11,11 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.manage.FindProfileOrder;
+import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
-import org.antframework.configcenter.facade.result.manage.FindProfileResult;
+import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -59,16 +59,11 @@ public class ProfileManageController {
     }
 
     /**
-     * 查找环境
-     *
-     * @param profileCode 环境编码（必须）
+     * 查找所有环境
      */
-    @RequestMapping("/findProfile")
-    public FindProfileResult findProfile(String profileCode) {
-        FindProfileOrder order = new FindProfileOrder();
-        order.setProfileCode(profileCode);
-
-        return profileManageService.findProfile(order);
+    @RequestMapping("/findAllProfile")
+    public FindAllProfileResult findAllProfile() {
+        return profileManageService.findAllProfile(new FindAllProfileOrder());
     }
 
     /**

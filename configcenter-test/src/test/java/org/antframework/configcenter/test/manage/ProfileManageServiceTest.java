@@ -12,11 +12,11 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.manage.FindProfileOrder;
+import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
-import org.antframework.configcenter.facade.result.manage.FindProfileResult;
+import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
@@ -50,13 +50,9 @@ public class ProfileManageServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindProfile() {
-        FindProfileOrder order = new FindProfileOrder();
-        order.setProfileCode("dev");
-        FindProfileResult result = profileManageService.findProfile(order);
+    public void testFindAllProfile() {
+        FindAllProfileResult result = profileManageService.findAllProfile(new FindAllProfileOrder());
         checkResult(result, Status.SUCCESS);
-        Assert.assertNotEquals(null, result.getProfileInfo());
-        Assert.assertEquals("dev", result.getProfileInfo().getProfileCode());
     }
 
     @Test
