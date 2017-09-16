@@ -10,7 +10,9 @@ package org.antframework.configcenter.biz.provider;
 
 import org.antframework.configcenter.facade.api.manage.RefreshService;
 import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
+import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
 import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
+import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,5 +28,10 @@ public class RefreshServiceProvider implements RefreshService {
     @Override
     public SyncDataToZkResult syncDataToZk(SyncDataToZkOrder order) {
         return serviceEngine.execute("syncDataToZkService", order);
+    }
+
+    @Override
+    public TriggerClientRefreshResult triggerClientRefresh(TriggerClientRefreshOrder order) {
+        return serviceEngine.execute("triggerClientRefresh", order);
     }
 }
