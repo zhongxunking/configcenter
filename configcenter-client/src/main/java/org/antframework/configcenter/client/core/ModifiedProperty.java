@@ -31,9 +31,9 @@ public class ModifiedProperty {
         // 分析删除和修改的属性
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.DELETE, key, oldProperties.get(key), null));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.DELETE, key, DefaultConfigProperties.toRawValue(oldProperties.get(key)), null));
             } else if (!StringUtils.equals(newProperties.get(key), oldProperties.get(key))) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, oldProperties.get(key), newProperties.get(key)));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, DefaultConfigProperties.toRawValue(oldProperties.get(key)), newProperties.get(key)));
             }
         }
         // 分析新增的属性
@@ -57,7 +57,7 @@ public class ModifiedProperty {
             switch (modifiedProperty.getType()) {
                 case ADD:
                 case UPDATE:
-                    properties.put(modifiedProperty.getKey(), modifiedProperty.getNewValue());
+                    properties.put(modifiedProperty.getKey(), DefaultConfigProperties.toSavableValue(modifiedProperty.getNewValue()));
                     break;
                 case DELETE:
                     properties.remove(modifiedProperty.getKey());

@@ -9,6 +9,7 @@
 package org.antframework.configcenter.client.support;
 
 import org.antframework.configcenter.client.ConfigContext;
+import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import java.io.*;
@@ -91,7 +92,7 @@ public class CacheFileHandler {
     private static Map<String, String> propsToMap(Properties props) {
         Map<String, String> map = new HashMap<>();
         for (String key : props.stringPropertyNames()) {
-            map.put(key, props.getProperty(key));
+            map.put(key, DefaultConfigProperties.toRawValue(props.getProperty(key)));
         }
         return map;
     }
@@ -100,7 +101,7 @@ public class CacheFileHandler {
     private static Properties mapToProps(Map<String, String> map) {
         Properties props = new Properties();
         for (String key : map.keySet()) {
-            props.setProperty(key, map.get(key));
+            props.setProperty(key, DefaultConfigProperties.toSavableValue(map.get(key)));
         }
         return props;
     }

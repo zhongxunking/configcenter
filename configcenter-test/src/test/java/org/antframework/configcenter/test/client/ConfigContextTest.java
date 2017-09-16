@@ -30,7 +30,7 @@ public class ConfigContextTest {
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.listenConfigModified();
         configContext.refreshConfig();
-        Thread.sleep(20000);
+        Thread.sleep(200000);
         configContext.close();
     }
 
