@@ -113,7 +113,7 @@ public class ConfigRefresher {
                     cacheFileHandler.storeConfig(newProperties);
                     listenerRegistrar.configModified(modifiedProperties);
                 } catch (Throwable e) {
-                    logger.error("刷新配置出错：", e);
+                    logger.error("刷新配置出错：{}", e.getMessage());
                 }
             }
         }

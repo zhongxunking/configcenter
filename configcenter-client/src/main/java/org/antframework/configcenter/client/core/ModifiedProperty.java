@@ -32,7 +32,7 @@ public class ModifiedProperty {
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
                 modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.REMOVE, key, DefaultConfigProperties.toRawValue(oldProperties.get(key)), null));
-            } else if (!StringUtils.equals(newProperties.get(key), oldProperties.get(key))) {
+            } else if (!StringUtils.equals(newProperties.get(key), DefaultConfigProperties.toRawValue(oldProperties.get(key)))) {
                 modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, DefaultConfigProperties.toRawValue(oldProperties.get(key)), newProperties.get(key)));
             }
         }
