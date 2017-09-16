@@ -38,13 +38,13 @@ import java.util.Map;
 @Service
 public class QueryPropertiesService {
     @Autowired
-    private ProfileDao profileDao;
-    @Autowired
     private AppDao appDao;
     @Autowired
-    private PropertyValueDao propertyValueDao;
+    private ProfileDao profileDao;
     @Autowired
     private PropertyKeyDao propertyKeyDao;
+    @Autowired
+    private PropertyValueDao propertyValueDao;
 
     @ServiceCheck
     public void check(ServiceContext<QueryPropertiesOrder, QueryPropertiesResult> context) {
@@ -83,7 +83,7 @@ public class QueryPropertiesService {
             }
             properties.put(propertyKey.getKey(), null);
         }
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(profileCode, appCode);
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(appCode, profileCode);
         for (PropertyValue propertyValue : propertyValues) {
             if (properties.containsKey(propertyValue.getKey())) {
                 properties.put(propertyValue.getKey(), propertyValue.getValue());

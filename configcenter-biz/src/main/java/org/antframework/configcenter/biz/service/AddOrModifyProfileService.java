@@ -25,7 +25,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
 
 /**
- * 添加会修改环境服务
+ * 添加或修改环境服务
  */
 @Service(enableTx = true)
 public class AddOrModifyProfileService {

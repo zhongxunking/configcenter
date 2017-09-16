@@ -9,6 +9,7 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.zookeeper.ZkTemplate;
+import org.antframework.configcenter.common.ZkUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
@@ -43,6 +44,6 @@ public class DeletePropertyValueService {
     public void after(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
-        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), null);
+        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
     }
 }

@@ -11,17 +11,24 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.zookeeper.ZkTemplate;
+import org.antframework.configcenter.common.ZkUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
+import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
+import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.List;
 
 /**
  * 添加或修改属性key服务
@@ -32,6 +39,10 @@ public class AddOrModifyPropertyKeyService {
     private AppDao appDao;
     @Autowired
     private PropertyKeyDao propertyKeyDao;
+    @Autowired
+    private ProfileDao profileDao;
+    @Autowired
+    private ZkTemplate zkTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> context) {
@@ -49,6 +60,16 @@ public class AddOrModifyPropertyKeyService {
             propertyKey.setMemo(order.getMemo());
         }
         propertyKeyDao.save(propertyKey);
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> context) {
+        AddOrModifyPropertyKeyOrder order = context.getOrder();
+
+        List<Profile> profiles = profileDao.findAll();
+        for (Profile profile : profiles) {
+            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
+        }
     }
 
     // 构建属性key

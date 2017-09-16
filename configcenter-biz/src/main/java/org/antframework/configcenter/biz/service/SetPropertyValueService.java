@@ -12,6 +12,7 @@ import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
+import org.antframework.configcenter.common.ZkUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
@@ -67,7 +68,7 @@ public class SetPropertyValueService {
     public void after(ServiceContext<SetPropertyValueOrder, SetPropertyValueResult> context) {
         SetPropertyValueOrder order = context.getOrder();
 
-        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), null);
+        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
     }
 
     //构建属性value
