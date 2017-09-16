@@ -15,12 +15,14 @@ import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrd
 import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.antframework.configcenter.test.AbstractTest;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  */
+@Ignore
 public class RefreshServiceTest extends AbstractTest {
     @Autowired
     private RefreshService refreshService;
