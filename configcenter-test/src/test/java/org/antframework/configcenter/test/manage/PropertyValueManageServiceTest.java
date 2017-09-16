@@ -35,9 +35,9 @@ public class PropertyValueManageServiceTest extends AbstractTest {
     @Test
     public void testSetPropertyValue() {
         SetPropertyValueOrder order = new SetPropertyValueOrder();
-        order.setProfileCode("dev");
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
+        order.setProfileCode("dev");
         order.setValue("20170903200000000001");
         SetPropertyValueResult result = propertyValueManageService.setPropertyValue(order);
         checkResult(result, Status.SUCCESS);
@@ -46,9 +46,9 @@ public class PropertyValueManageServiceTest extends AbstractTest {
     @Test
     public void tesDeletePropertyValue() {
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-        order.setProfileCode("dev");
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
+        order.setProfileCode("dev");
         DeletePropertyValueResult result = propertyValueManageService.deletePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
