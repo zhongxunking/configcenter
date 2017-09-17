@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>应用管理</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../common/commonQuery.js"></script>
+    <script type="text/javascript">
+
+        function createTableHead() {
+            refreshProfiles();
+
+            var tr = "<tr>";
+            tr += "<th>应用编码</th>"
+            tr += "<th>备注</th>"
+            tr += "<th>环境</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info.appCode + "</td>";
+            tr += "<td>" + info.memo + "</td>";
+            tr += "<td>" + getProfilesLink(info.appCode) + "</td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function getProfilesLink(appCode) {
+            var links = "";
+            for (var i = 0; i < profiles.length; i++) {
+                links += "<a href='propertyValueManage.html?appCode=" + appCode + "&profile=" + profiles[i] + "'>" + profiles[i] + "</a>";
+                links += "&nbsp&nbsp";
+            }
+            return links;
+        }
+
+        var profiles;
+        function refreshProfiles() {
+            var newProfiles = new Array();
+            $.ajax({
+                url: "../manage/profile/findAllProfile",
+                data: {},
+                async:false,
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        var infos = ajaxResult.infos;
+                        for (var i = 0; i < infos.length; i++) {
+                            newProfiles[i] = infos[i].profileCode;
+                        }
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.description);
+                    }
+                }
+            });
+            profiles = newProfiles;
+        }
+
+    </script>
+</head>
+<body>
+<div>
+    <form id="queryForm" action="../manage/app/queryApp">
+        应用编码：<input type="text" name="appCode">
+        <input type="button" onclick="pageNo = 1;query();" value="查询">
+    </form>
+</div>
+<br/>
+<div id="tableDiv"></div>
+<div id="pageFoot">
+    <button onclick="previousPage()">上一页</button>
+    <span id="currentPageNo">1</span>
+    <button onclick="nextPage()">下一页</button>
+    总页数：<span id="totalPage"></span>
+</div>
+</body>
+</html>
