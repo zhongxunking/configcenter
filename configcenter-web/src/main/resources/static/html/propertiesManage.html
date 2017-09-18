@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>属性value管理</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+
+        $(document).ready(function () {
+            refresh();
+        });
+
+        function refresh() {
+            var appCode = getUrlParam("appCode");
+            var profileCode = getUrlParam("profileCode");
+            refreshProperties(appCode, profileCode, "appTableDiv")
+            refreshProperties("common", profileCode, "commonTableDiv")
+        }
+
+        function refreshProperties(appCode, profileCode, tableDiv) {
+            var keyInfos = getPropertyKeyInfos(appCode);
+            var valueInfos = getPropertyValueInfo(appCode, profileCode);
+            var propertyMap = getPropertyMap(keyInfos, valueInfos);
+            createTable(propertyMap, tableDiv)
+        }
+
+        function getPropertyKeyInfos(appCode) {
+            var keyInfos;
+            $.ajax({
+                url: "/manage/propertyKey/findAppPropertyKey",
+                data: {
+                    appCode: appCode
+                },
+                async: false,
+                success: function (ajaxResult) {
+                    if (!ajaxResult.success || ajaxResult.infos == null) {
+                        alert("查询失败，原因：" + ajaxResult.message);
+                    } else {
+                        keyInfos = ajaxResult.infos;
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+            return keyInfos;
+        }
+
+        function getPropertyValueInfo(appCode, profileCode) {
+            var valueInfos;
+            $.ajax({
+                url: "/manage/propertyValue/findAppProfilePropertyValue",
+                data: {
+                    appCode: appCode,
+                    profileCode: profileCode
+                },
+                async: false,
+                success: function (ajaxResult) {
+                    if (!ajaxResult.success || ajaxResult.infos == null) {
+                        alert("查询失败，原因：" + ajaxResult.message);
+                    } else {
+                        valueInfos = ajaxResult.infos;
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+            return valueInfos;
+        }
+
+        function getPropertyMap(keyInfos, valueInfos) {
+            var propertyMap = new Array();
+            for (var i = 0; i < keyInfos.length; i++) {
+                var property = new Array();
+                property["key"] = keyInfos[i].key;
+                property["common"] = keyInfos[i].common;
+                property["memo"] = keyInfos[i].memo;
+                property["value"] = "null";
+
+                propertyMap[keyInfos[i].key] = property;
+            }
+            for (var i = 0; i < valueInfos.length; i++) {
+                var property = propertyMap[valueInfos[i].key];
+                property["value"] = valueInfos[i].value;
+            }
+
+            return propertyMap;
+        }
+
+        function createTable(infos, tableDiv) {
+            var table = "<table border=\"1\">";
+            table += createTableHead();
+            for (var key in infos) {
+                table += creteTableRow(infos[key]);
+            }
+            table += "</table>";
+
+            $("#" + tableDiv).html(table);
+        }
+
+        function createTableHead() {
+            var tr = "<tr>";
+            tr += "<th>属性key</th>"
+            tr += "<th>是否公用</th>"
+            tr += "<th>备注</th>"
+            tr += "<th>属性value</th>"
+            tr += "<th>操作</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info["key"] + "</td>";
+            tr += "<td>" + info["common"] + "</td>";
+            tr += "<td>" + info["memo"] + "</td>";
+            tr += "<td>" + info["value"] + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.profileCode + "\",\"" + info.appCode + "\",\"" + info.key + "\")'>删除</button></td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function deleteEntity(profileCode, appCode, key) {
+            $.ajax({
+                url: "../manage/propertyValue/deletePropertyValue",
+                data: {
+                    profileCode: profileCode,
+                    appCode: appCode,
+                    key: key
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.description);
+                    }
+                }
+            });
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null)return unescape(r[2]);
+            return null;
+        }
+
+    </script>
+</head>
+<body>
+<div id="appTableDiv"></div>
+<div id="commonTableDiv"></div>
+<div>
+    <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
+        环境编码：<input type="text" name="profileCode">
+        应用编码：<input type="text" name="appCode">
+        key：<input type="text" name="key">
+        value：<input type="text" name="value">
+        <input type="button" onclick="requestServer('setPropertyValueForm')" value="新增或修改属性value">
+    </form>
+</div>
+</body>
+</html>
