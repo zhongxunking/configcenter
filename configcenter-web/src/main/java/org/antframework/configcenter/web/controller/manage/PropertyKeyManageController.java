@@ -11,9 +11,11 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
+import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -60,6 +62,19 @@ public class PropertyKeyManageController {
         order.setKey(key);
 
         return propertyKeyManageService.deletePropertyKey(order);
+    }
+
+    /**
+     * 查找应用所有的属性key
+     *
+     * @param appCode 应用编码（必须）
+     */
+    @RequestMapping("/findAppPropertyKey")
+    public FindAppPropertyKeyResult findAppPropertyKey(String appCode) {
+        FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
+        order.setAppCode(appCode);
+
+        return propertyKeyManageService.findAppPropertyKey(order);
     }
 
     /**

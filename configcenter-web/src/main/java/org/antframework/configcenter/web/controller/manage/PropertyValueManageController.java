@@ -10,9 +10,11 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,6 +64,21 @@ public class PropertyValueManageController {
         order.setKey(key);
 
         return propertyValueManageService.deletePropertyValue(order);
+    }
+
+    /**
+     * 查找应用在指定环境的所有属性value
+     *
+     * @param appCode     应用编码（必须）
+     * @param profileCode 环境编码（必须）
+     */
+    @RequestMapping("/findAppProfilePropertyValue")
+    public FindAppProfilePropertyValueResult findAppProfilePropertyValue(String appCode, String profileCode) {
+        FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
+        order.setAppCode(appCode);
+        order.setProfileCode(profileCode);
+
+        return propertyValueManageService.findAppProfilePropertyValue(order);
     }
 
     /**
