@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+        function changeDetailWindowUrl(newUrl) {
+            $("#detailWindow").attr("src", newUrl);
+        }
+    </script>
+</head>
+<body>
+<table width="100%" height="1000px">
+    <tr>
+        <td width="40%" valign="top">
+            <table border="1" align="right">
+                <tr>
+                    <td>
+                        <button onclick='changeDetailWindowUrl("index.html")'>首页</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick='changeDetailWindowUrl("appManage.html")'>项目管理</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick='changeDetailWindowUrl("profileManage.html")'>环境管理</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button onclick='changeDetailWindowUrl("userManage.html")'>用户管理</button>
+                    </td>
+                </tr>
+            </table>
+        </td>
+        <td width="60%">
+            <iframe id="detailWindow" src="index.html" width="100%" height="100%"></iframe>
+        </td>
+    </tr>
+</table>
+</body>
+</html>

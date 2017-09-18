@@ -13,7 +13,12 @@
         function refresh() {
             var appCode = getUrlParam("appCode");
             var profileCode = getUrlParam("profileCode");
-            refreshProperties(appCode, profileCode, "appTableDiv")
+            if (appCode != "common") {
+                $("#appDiv").show();
+                refreshProperties(appCode, profileCode, "appTableDiv")
+            } else {
+                $("#appDiv").hide();
+            }
             refreshProperties("common", profileCode, "commonTableDiv")
         }
 
@@ -76,7 +81,7 @@
                 property["key"] = keyInfos[i].key;
                 property["common"] = keyInfos[i].common;
                 property["memo"] = keyInfos[i].memo;
-                property["value"] = "null";
+                property["value"] = "";
 
                 propertyMap[keyInfos[i].key] = property;
             }
@@ -117,23 +122,23 @@
             tr += "<td>" + info["common"] + "</td>";
             tr += "<td>" + info["memo"] + "</td>";
             tr += "<td>" + info["value"] + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info.profileCode + "\",\"" + info.appCode + "\",\"" + info.key + "\")'>删除</button></td>"
+            tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置空</button></td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function deleteEntity(profileCode, appCode, key) {
+        function deleteEntity(key) {
             $.ajax({
                 url: "../manage/propertyValue/deletePropertyValue",
                 data: {
-                    profileCode: profileCode,
-                    appCode: appCode,
-                    key: key
+                    appCode: getUrlParam("appCode"),
+                    key: key,
+                    profileCode: getUrlParam("profileCode")
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
-                        query();
+                        refresh();
                     } else {
                         alert("删除失败，原因：" + ajaxResult.description);
                     }
@@ -148,19 +153,65 @@
             return null;
         }
 
+        function addOrModifyPropertyKey() {
+            var form = $("#addOrModifyPropertyKeyForm");
+            $.ajax({
+                url: "../manage/propertyKey/addOrModifyPropertyKey",
+                data: form.serialize() + "&appCode=" + getUrlParam("appCode"),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        refresh();
+                    } else {
+                        alert("失败，原因：" + ajaxResult.description);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
+        function setPropertyValue() {
+            var form = $("#setPropertyValueForm");
+            $.ajax({
+                url: "../manage/propertyValue/setPropertyValue",
+                data: form.serialize() + "&appCode=" + getUrlParam("appCode") + "&profileCode=" + getUrlParam("profileCode"),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        refresh();
+                    } else {
+                        alert("失败，原因：" + ajaxResult.description);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
     </script>
 </head>
 <body>
-<div id="appTableDiv"></div>
-<div id="commonTableDiv"></div>
 <div>
-    <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
-        环境编码：<input type="text" name="profileCode">
-        应用编码：<input type="text" name="appCode">
+    <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
         key：<input type="text" name="key">
-        value：<input type="text" name="value">
-        <input type="button" onclick="requestServer('setPropertyValueForm')" value="新增或修改属性value">
+        是否公用：<input type="text" name="common">
+        备注：<input type="text" name="memo">
+        <input type="button" onclick="addOrModifyPropertyKey()" value="新增或修改属性key">
     </form>
 </div>
+<div>
+    <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
+        key：<input type="text" name="key">
+        value：<input type="text" name="value">
+        <input type="button" onclick="setPropertyValue()" value="设置属性value">
+    </form>
+</div>
+<div id="appDiv">
+    自定义配置：
+    <div id="appTableDiv"></div>
+</div>
+公共配置：
+<div id="commonTableDiv"></div>
 </body>
 </html>
