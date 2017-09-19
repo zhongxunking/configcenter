@@ -203,23 +203,76 @@
     </script>
 </head>
 <body>
-<div>
-    新增或修改属性key:<br>
-    <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
-        key：<input type="text" name="key">
-        是否公用：<input type="text" name="common">
-        备注：<input type="text" name="memo">
-        <input type="button" onclick="addOrModifyPropertyKey()" value="">
-    </form>
-</div>
+<table>
+    <tr>
+        <td>
+            <div>
+                <table>
+                    <tr>
+                        <td>新增或修改属性key:</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
+                                <table>
+                                    <tr>
+                                        <td align="right">key：</td>
+                                        <td><input type="text" name="key"></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">是否公用：</td>
+                                        <td><input type="text" name="common"></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">备注：</td>
+                                        <td><input type="text" name="memo"></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><input type="button" onclick="addOrModifyPropertyKey()"
+                                                                 value="提交"></td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td width="100px"></td>
+        <td valign="top">
+            <div>
+                <table>
+                    <tr>
+                        <td>设置属性value:</td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
+                                <table>
+                                    <tr>
+                                        <td align="right">key：</td>
+                                        <td><input type="text" name="key"></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right">value：</td>
+                                        <td><input type="text" name="value"></td>
+                                    </tr>
+                                    <tr>
+                                        <td align="right"><input type="button" onclick="setPropertyValue()" value="提交">
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
 <br>
-<div>
-    <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
-        key：<input type="text" name="key">
-        value：<input type="text" name="value">
-        <input type="button" onclick="setPropertyValue()" value="设置属性value">
-    </form>
-</div>
 <br>
 自定义配置：
 <div id="appTableDiv"></div>
