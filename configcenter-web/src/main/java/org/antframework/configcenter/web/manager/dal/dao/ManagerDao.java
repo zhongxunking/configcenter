@@ -6,13 +6,15 @@
  * 修订记录:
  * @author 钟勋 2017-09-19 21:01 创建
  */
-package org.antframework.configcenter.dal.dao.manage;
+package org.antframework.configcenter.web.manager.dal.dao;
 
-import org.antframework.configcenter.dal.entity.manage.Manager;
+import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
+import javax.persistence.LockModeType;
 import java.util.Map;
 
 /**
@@ -26,6 +28,9 @@ public interface ManagerDao {
     void delete(Manager manager);
 
     Manager findByUserName(String userName);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Manager findLockByUserName(String userName);
 
     Page<Manager> query(Map<String, Object> searchParams, Pageable pageable);
 }

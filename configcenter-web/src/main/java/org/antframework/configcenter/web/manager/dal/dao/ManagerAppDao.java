@@ -6,9 +6,9 @@
  * 修订记录:
  * @author 钟勋 2017-09-19 21:03 创建
  */
-package org.antframework.configcenter.dal.dao.manage;
+package org.antframework.configcenter.web.manager.dal.dao;
 
-import org.antframework.configcenter.dal.entity.manage.ManagerApp;
+import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.RepositoryDefinition;

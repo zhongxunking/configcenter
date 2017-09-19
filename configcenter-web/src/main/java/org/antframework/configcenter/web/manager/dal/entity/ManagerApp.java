@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-19 16:55 创建
  */
-package org.antframework.configcenter.dal.entity.manage;
+package org.antframework.configcenter.web.manager.dal.entity;
 
 import org.antframework.boot.jpa.AbstractEntity;
 
