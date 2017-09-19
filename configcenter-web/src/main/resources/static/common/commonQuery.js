@@ -48,7 +48,7 @@ function query() {
 }
 
 function createTable(infos) {
-    var table = "<table border=\"1\">";
+    var table = "<table>";
     table += createTableHead();
     for (var i = 0; i < infos.length; i++) {
         table += creteTableRow(infos[i]);
