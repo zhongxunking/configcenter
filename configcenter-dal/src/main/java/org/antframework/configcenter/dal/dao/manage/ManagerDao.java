@@ -1,0 +1,31 @@
+/* 
+ * 作者：钟勋 (e-mail:zhongxunking@163.com)
+ */
+
+/*
+ * 修订记录:
+ * @author 钟勋 2017-09-19 21:01 创建
+ */
+package org.antframework.configcenter.dal.dao.manage;
+
+import org.antframework.configcenter.dal.entity.manage.Manager;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.RepositoryDefinition;
+
+import java.util.Map;
+
+/**
+ * 管理员实体dao
+ */
+@RepositoryDefinition(domainClass = Manager.class, idClass = Long.class)
+public interface ManagerDao {
+
+    void save(Manager manager);
+
+    void delete(Manager manager);
+
+    Manager findByUserName(String userName);
+
+    Page<Manager> query(Map<String, Object> searchParams, Pageable pageable);
+}
