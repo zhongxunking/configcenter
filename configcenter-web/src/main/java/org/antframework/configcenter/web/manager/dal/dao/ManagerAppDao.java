@@ -16,7 +16,7 @@ import org.springframework.data.repository.RepositoryDefinition;
 import java.util.Map;
 
 /**
- * 管理员管理的应用实体dao
+ * 管理员-应用实体dao
  */
 @RepositoryDefinition(domainClass = ManagerApp.class, idClass = Long.class)
 public interface ManagerAppDao {
@@ -24,6 +24,8 @@ public interface ManagerAppDao {
     void save(ManagerApp managerApp);
 
     void delete(ManagerApp managerApp);
+
+    ManagerApp findByUserNameAndAppCode(String userName, String appCode);
 
     Page<ManagerApp> query(Map<String, Object> searchParams, Pageable pageable);
 }

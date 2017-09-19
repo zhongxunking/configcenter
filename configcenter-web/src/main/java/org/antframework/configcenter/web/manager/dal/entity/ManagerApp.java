@@ -16,7 +16,7 @@ import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
 /**
- * 管理员管理的应用
+ * 管理员-应用
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(columnNames = {"userName", "appCode"}))

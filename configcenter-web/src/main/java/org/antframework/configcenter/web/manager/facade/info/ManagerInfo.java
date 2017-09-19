@@ -4,34 +4,24 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-09-19 16:55 创建
+ * @author 钟勋 2017-09-19 21:35 创建
  */
-package org.antframework.configcenter.web.manager.dal.entity;
+package org.antframework.configcenter.web.manager.facade.info;
 
-import org.antframework.boot.jpa.AbstractEntity;
+
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import java.io.Serializable;
 
 /**
- * 管理员
+ * 管理员信息
  */
-@Entity
-public class Manager extends AbstractEntity {
+public class ManagerInfo implements Serializable {
     // 用户名
-    @Column(unique = true, length = 64)
     private String userName;
-
     // 密码
-    @Column(length = 64)
     private String password;
-
     // 类型
-    @Column(length = 40)
-    @Enumerated(EnumType.STRING)
     private ManagerType type;
 
     public String getUserName() {
