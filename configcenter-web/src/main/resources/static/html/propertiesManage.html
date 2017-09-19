@@ -13,20 +13,20 @@
         function refresh() {
             var appCode = getUrlParam("appCode");
             var profileCode = getUrlParam("profileCode");
+            refreshProperties(appCode, profileCode, false)
             if (appCode != "common") {
-                $("#appDiv").show();
-                refreshProperties(appCode, profileCode, "appTableDiv")
+                $("#commonPropertiesDiv").show();
+                refreshProperties("common", profileCode, true)
             } else {
-                $("#appDiv").hide();
+                $("#commonPropertiesDiv").hide();
             }
-            refreshProperties("common", profileCode, "commonTableDiv")
         }
 
-        function refreshProperties(appCode, profileCode, tableDiv) {
+        function refreshProperties(appCode, profileCode, isCommonProperties) {
             var keyInfos = getPropertyKeyInfos(appCode);
             var valueInfos = getPropertyValueInfo(appCode, profileCode);
             var propertyMap = getPropertyMap(keyInfos, valueInfos);
-            createTable(propertyMap, tableDiv)
+            createTable(propertyMap, isCommonProperties)
         }
 
         function getPropertyKeyInfos(appCode) {
@@ -93,36 +93,47 @@
             return propertyMap;
         }
 
-        function createTable(infos, tableDiv) {
+        function createTable(infos, isCommonProperties) {
             var table = "<table border=\"1\">";
-            table += createTableHead();
+            table += createTableHead(isCommonProperties);
             for (var key in infos) {
-                table += creteTableRow(infos[key]);
+                table += creteTableRow(infos[key], isCommonProperties);
             }
             table += "</table>";
-
-            $("#" + tableDiv).html(table);
+            if (isCommonProperties) {
+                $("#commonTableDiv").html(table);
+            } else {
+                $("#appTableDiv").html(table);
+            }
         }
 
-        function createTableHead() {
+        function createTableHead(isCommonProperties) {
             var tr = "<tr>";
             tr += "<th>属性key</th>"
-            tr += "<th>是否公用</th>"
+            if (!isCommonProperties) {
+                tr += "<th>是否公用</th>"
+            }
             tr += "<th>备注</th>"
             tr += "<th>属性value</th>"
-            tr += "<th>操作</th>"
+            if (!isCommonProperties) {
+                tr += "<th>操作</th>"
+            }
             tr += "</tr>"
 
             return tr;
         }
 
-        function creteTableRow(info) {
+        function creteTableRow(info, isCommonProperties) {
             var tr = "<tr>";
             tr += "<td>" + info["key"] + "</td>";
-            tr += "<td>" + info["common"] + "</td>";
+            if (!isCommonProperties) {
+                tr += "<td>" + info["common"] + "</td>";
+            }
             tr += "<td>" + info["memo"] + "</td>";
             tr += "<td>" + info["value"] + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置空</button></td>"
+            if (!isCommonProperties) {
+                tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置空</button></td>"
+            }
             tr += "</tr>"
 
             return tr;
@@ -193,13 +204,15 @@
 </head>
 <body>
 <div>
+    新增或修改属性key:<br>
     <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
         key：<input type="text" name="key">
         是否公用：<input type="text" name="common">
         备注：<input type="text" name="memo">
-        <input type="button" onclick="addOrModifyPropertyKey()" value="新增或修改属性key">
+        <input type="button" onclick="addOrModifyPropertyKey()" value="">
     </form>
 </div>
+<br>
 <div>
     <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
         key：<input type="text" name="key">
@@ -207,11 +220,13 @@
         <input type="button" onclick="setPropertyValue()" value="设置属性value">
     </form>
 </div>
-<div id="appDiv">
-    自定义配置：
-    <div id="appTableDiv"></div>
+<br>
+自定义配置：
+<div id="appTableDiv"></div>
+<br><br>
+<div id="commonPropertiesDiv">
+    公共配置：
+    <div id="commonTableDiv"></div>
 </div>
-公共配置：
-<div id="commonTableDiv"></div>
 </body>
 </html>
