@@ -44,6 +44,11 @@ public class ManagerManageServiceProvider implements ManagerManageService {
     }
 
     @Override
+    public ModifyManagerNameResult modifyManagerName(ModifyManagerNameOrder order) {
+        return serviceEngine.execute("modifyManagerNameService", order);
+    }
+
+    @Override
     public QueryManagerResult queryManager(QueryManagerOrder order) {
         return serviceEngine.execute("queryManagerService", order);
     }

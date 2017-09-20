@@ -9,6 +9,13 @@
         function changeDetailWindowUrl(newUrl) {
             $("#detailWindow").attr("src", newUrl);
         }
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null)return unescape(r[2]);
+            return null;
+        }
+
     </script>
 </head>
 <body>
@@ -40,6 +47,11 @@
                     <tr>
                         <td>
                             <button onclick='changeDetailWindowUrl("managerAppManage.html")'>管理员与应用关联</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <button onclick='changeDetailWindowUrl("managerInfoModify.html?code="+getUrlParam("code"))'>修改个人信息</button>
                         </td>
                     </tr>
                 </table>

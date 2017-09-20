@@ -37,6 +37,11 @@ public interface ManagerManageService {
     ModifyManagerTypeResult modifyManagerType(ModifyManagerTypeOrder order);
 
     /**
+     * 修改管理员名称
+     */
+    ModifyManagerNameResult modifyManagerName(ModifyManagerNameOrder order);
+
+    /**
      * 查询管理员
      */
     QueryManagerResult queryManager(QueryManagerOrder order);

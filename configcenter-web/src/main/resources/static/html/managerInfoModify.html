@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>修改信息</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+
+        function requestServer(formName) {
+            var form = $("#" + formName);
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize() + "&code=" + getUrlParam("code"),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        alert("成功");
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
+        function getUrlParam(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null)return unescape(r[2]);
+            return null;
+        }
+
+    </script>
+</head>
+<body>
+<br>
+<div>
+    修改密码：
+    <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
+        <table>
+            <tr>
+                <td align="right">新密码：</td>
+                <td><input type="text" name="newPassword"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer('modifyManagerPasswordForm')" value="提交">
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<br><br>
+<br>
+<div>
+    修改名称：
+    <form id="modifyManagerNameForm" action="/manage/manager/modifyManagerName">
+        <table>
+            <tr>
+                <td align="right">新名称：</td>
+                <td><input type="text" name="newName"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer('modifyManagerNameForm')" value="提交">
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+</div>
+<br><br>
+</body>
+</html>

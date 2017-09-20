@@ -92,6 +92,22 @@ public class ManagerManageController extends AbstractController {
     }
 
     /**
+     * 修改管理员名称
+     *
+     * @param code    编码
+     * @param newName 新名称
+     */
+    @RequestMapping("/modifyManagerName")
+    public ModifyManagerNameResult modifyManagerName(String code, String newName) {
+        assertAdminOrMyself(code);
+        ModifyManagerNameOrder order = new ModifyManagerNameOrder();
+        order.setCode(code);
+        order.setNewName(newName);
+
+        return managerManageService.modifyManagerName(order);
+    }
+
+    /**
      * 查询管理员
      *
      * @param pageNo   页码（必须）

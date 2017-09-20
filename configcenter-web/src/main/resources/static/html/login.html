@@ -52,7 +52,7 @@
                 data: form.serialize(),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
-                        window.location.href = "main.html";
+                        window.location.href = "main.html?code="+ajaxResult.managerInfo.code+"&name="+ajaxResult.managerInfo.name+"&type="+ajaxResult.managerInfo.type;
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
                     }
