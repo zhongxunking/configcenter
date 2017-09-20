@@ -23,6 +23,10 @@ public class SessionAccessor {
         SESSION_HOLDER.set(session);
     }
 
+    public static void removeSession() {
+        SESSION_HOLDER.remove();
+    }
+
     public static void setManager(Manager manager) {
         SESSION_HOLDER.get().setAttribute(KEY_MANAGER, manager);
     }

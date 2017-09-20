@@ -25,7 +25,7 @@ public interface ManagerAppDao {
 
     void delete(ManagerApp managerApp);
 
-    ManagerApp findByUserNameAndAppCode(String userName, String appCode);
+    ManagerApp findByUsernameAndAppCode(String username, String appCode);
 
     Page<ManagerApp> query(Map<String, Object> searchParams, Pageable pageable);
 }

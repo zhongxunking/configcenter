@@ -4,34 +4,28 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-09-19 16:55 创建
+ * @author 钟勋 2017-09-20 10:40 创建
  */
-package org.antframework.configcenter.web.manager.dal.entity;
+package org.antframework.configcenter.web.manager.facade.order;
 
-import org.antframework.boot.jpa.AbstractEntity;
+import org.antframework.common.util.facade.AbstractOrder;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
+import org.hibernate.validator.constraints.NotBlank;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
+import javax.validation.constraints.NotNull;
 
 /**
- * 管理员
+ * 添加管理员order
  */
-@Entity
-public class Manager extends AbstractEntity {
+public class AddManagerOrder extends AbstractOrder {
     // 用户名
-    @Column(unique = true, length = 64)
+    @NotBlank
     private String username;
-
     // 密码
-    @Column(length = 64)
+    @NotBlank
     private String password;
-
     // 类型
-    @Column(length = 40)
-    @Enumerated(EnumType.STRING)
+    @NotNull
     private ManagerType type;
 
     public String getUsername() {

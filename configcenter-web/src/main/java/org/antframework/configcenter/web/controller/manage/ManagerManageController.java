@@ -32,18 +32,16 @@ public class ManagerManageController {
     @Autowired
     private ManagerDao managerDao;
 
-    @RequestMapping("/addOrModifyManager")
-    public AbstractResult addOrModifyManager(String userName, String password, ManagerType type) {
+    @RequestMapping("/addManager")
+    public AbstractResult addManager(String userName, String password, ManagerType type) {
         Manager manager = managerDao.findLockByUserName(userName);
-        if (manager == null) {
-            manager = new Manager();
-            manager.setUserName(userName);
-            manager.setPassword(password);
-            manager.setType(type);
-        } else {
-            manager.setPassword(password);
-            manager.setType(type);
+        if (manager != null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.UNKNOWN_ERROR.getCode(), "用户已存在");
         }
+        manager = new Manager();
+        manager.setUserName(userName);
+        manager.setPassword(password);
+        manager.setType(type);
         managerDao.save(manager);
         throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
     }
@@ -54,6 +52,17 @@ public class ManagerManageController {
         if (manager != null) {
             managerDao.delete(manager);
         }
+        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+    }
+
+    @RequestMapping("/modifyManagerType")
+    public AbstractResult modifyManagerType(String username, ManagerType type) {
+        Manager manager = managerDao.findLockByUserName(username);
+        if (manager == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.UNKNOWN_ERROR.getCode(), "用户不存在");
+        }
+        manager.setType(type);
+        managerDao.save(manager);
         throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
     }
 
