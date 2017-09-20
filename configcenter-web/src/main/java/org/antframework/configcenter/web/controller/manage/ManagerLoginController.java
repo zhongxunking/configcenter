@@ -32,13 +32,13 @@ public class ManagerLoginController {
     /**
      * 登陆
      *
-     * @param username 用户名（必填）
+     * @param code     编码（必填）
      * @param password 密码（必填）
      */
     @RequestMapping("/login")
-    public AbstractResult login(String username, String password) {
+    public ManagerLoginResult login(String code, String password) {
         ManagerLoginOrder order = new ManagerLoginOrder();
-        order.setUsername(username);
+        order.setCode(code);
         order.setPassword(password);
 
         ManagerLoginResult result = managerManageService.managerLogin(order);

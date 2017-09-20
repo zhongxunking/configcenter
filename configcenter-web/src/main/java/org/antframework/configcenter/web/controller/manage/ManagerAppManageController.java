@@ -8,65 +8,93 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
-import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
-import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
-import org.antframework.configcenter.web.manager.facade.info.ManagerAppInfo;
+import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
+import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder;
+import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
+import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
+import org.antframework.configcenter.web.manager.facade.order.QueryManagerAppOrder;
+import org.antframework.configcenter.web.manager.facade.result.AddManagerAppResult;
+import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
- * 管理管理员-应用controller
+ * 管理管理员与应用关联的controller
  */
 @RestController
 @RequestMapping("/manage/managerApp")
 public class ManagerAppManageController {
     @Autowired
-    private ManagerAppDao managerAppDao;
+    private ManagerAppManageService managerAppManageService;
 
+    /**
+     * 添加管理员与应用关联
+     *
+     * @param managerCode 管理员编码（必须）
+     * @param appCode     应用编码（必须）
+     */
     @RequestMapping("/addManagerApp")
-    public AbstractResult addManagerApp(String userName, String appCode) {
-        ManagerApp managerApp = managerAppDao.findByUserNameAndAppCode(userName, appCode);
-        if (managerApp == null) {
-            managerApp = new ManagerApp();
-            managerApp.setUserName(userName);
-            managerApp.setAppCode(appCode);
-            managerAppDao.save(managerApp);
-        }
-        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+    public AddManagerAppResult addManagerApp(String managerCode, String appCode) {
+        AddManagerAppOrder order = new AddManagerAppOrder();
+        order.setManagerCode(managerCode);
+        order.setAppCode(appCode);
+
+        return managerAppManageService.addManagerApp(order);
     }
 
+    /**
+     * 删除管理员与应用关联
+     *
+     * @param managerCode 管理员编码（必须）
+     * @param appCode     应用编码（必须）
+     */
     @RequestMapping("/deleteManagerApp")
-    public AbstractResult deleteManagerApp(String userName, String appCode) {
-        ManagerApp managerApp = managerAppDao.findByUserNameAndAppCode(userName, appCode);
-        if (managerApp != null) {
-            managerAppDao.delete(managerApp);
-        }
-        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+    public DeleteManagerAppResult deleteManagerApp(String managerCode, String appCode) {
+        DeleteManagerAppOrder order = new DeleteManagerAppOrder();
+        order.setManagerCode(managerCode);
+        order.setAppCode(appCode);
+
+        return managerAppManageService.deleteManagerApp(order);
     }
 
+    /**
+     * 查询被管理员管理的应用
+     *
+     * @param pageNo      页码（必须）
+     * @param pageSize    每页大小（必须）
+     * @param managerCode 管理员编码（必须）
+     * @param appCode     应用编码
+     */
+    @RequestMapping("/queryManagedApp")
+    public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String managerCode, String appCode) {
+        QueryManagedAppOrder order = new QueryManagedAppOrder();
+        order.setPageNo(pageNo);
+        order.setPageSize(pageSize);
+        order.setManagerCode(managerCode);
+        order.setAppCode(appCode);
+
+        return managerAppManageService.queryManagedApp(order);
+    }
+
+    /**
+     * 查询管理员与应用关联
+     *
+     * @param pageNo      页码（必须）
+     * @param pageSize    每页大小（必须）
+     * @param managerCode 管理员编码
+     * @param appCode     应用编码
+     */
     @RequestMapping("/queryManagerApp")
-    public AbstractQueryResult queryManagerApp(int pageNo, int pageSize, String userName, String appCode) {
-        if (pageNo < 1 || pageSize < 1) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), CommonResultCode.INVALID_PARAMETER.getMessage());
-        }
-        Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("LIKE_userName", "%" + userName + "%");
-        searchParams.put("LIKE_appCode", "%" + appCode + "%");
-        Page<ManagerApp> page = managerAppDao.query(searchParams, new PageRequest(pageNo - 1, pageSize));
-        AbstractQueryResult<ManagerAppInfo> result = new AbstractQueryResult<ManagerAppInfo>() {
-        };
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        FacadeUtils.setQueryResult(result, new FacadeUtils.SpringDataPageExtractor<>(page));
-        return result;
+    public QueryManagerAppResult queryManagerApp(int pageNo, int pageSize, String managerCode, String appCode) {
+        QueryManagerAppOrder order = new QueryManagerAppOrder();
+        order.setPageNo(pageNo);
+        order.setPageSize(pageSize);
+        order.setManagerCode(managerCode);
+        order.setAppCode(appCode);
+
+        return managerAppManageService.queryManagerApp(order);
     }
 }

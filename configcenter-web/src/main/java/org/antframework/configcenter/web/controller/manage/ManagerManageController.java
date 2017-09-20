@@ -8,15 +8,10 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.AbstractQueryResult;
-import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
-import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
-import org.antframework.configcenter.web.manager.facade.order.AddManagerOrder;
-import org.antframework.configcenter.web.manager.facade.order.DeleteManagerOrder;
-import org.antframework.configcenter.web.manager.facade.order.ModifyManagerTypeOrder;
-import org.antframework.configcenter.web.manager.facade.order.QueryManagerOrder;
+import org.antframework.configcenter.web.manager.facade.order.*;
+import org.antframework.configcenter.web.manager.facade.result.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,14 +28,16 @@ public class ManagerManageController {
     /**
      * 添加管理员
      *
-     * @param username 用户名（必须）
+     * @param code     编码（必须）
+     * @param name     名称（必须）
      * @param password 密码（必须）
      * @param type     类型（必须）
      */
     @RequestMapping("/addManager")
-    public AbstractResult addManager(String username, String password, ManagerType type) {
+    public AddManagerResult addManager(String code, String name, String password, ManagerType type) {
         AddManagerOrder order = new AddManagerOrder();
-        order.setUsername(username);
+        order.setCode(code);
+        order.setName(name);
         order.setPassword(password);
         order.setType(type);
 
@@ -50,26 +47,41 @@ public class ManagerManageController {
     /**
      * 删除管理员
      *
-     * @param username 用户名（必须）
+     * @param code 编码（必须）
      */
     @RequestMapping("/deleteManager")
-    public AbstractResult deleteManager(String username) {
+    public DeleteManagerResult deleteManager(String code) {
         DeleteManagerOrder order = new DeleteManagerOrder();
-        order.setUsername(username);
+        order.setCode(code);
 
         return managerManageService.deleteManager(order);
     }
 
     /**
+     * 修改管理员密码
+     *
+     * @param code        编码（必须）
+     * @param newPassword 新密码（必须）
+     */
+    @RequestMapping("/modifyManagerPassword")
+    public ModifyManagerPasswordResult modifyManagerPassword(String code, String newPassword) {
+        ModifyManagerPasswordOrder order = new ModifyManagerPasswordOrder();
+        order.setCode(code);
+        order.setNewPassword(newPassword);
+
+        return managerManageService.modifyManagerPassword(order);
+    }
+
+    /**
      * 修改管理员类型
      *
-     * @param username 用户名（必须）
-     * @param newType  新类型（必须）
+     * @param code    编码（必须）
+     * @param newType 新类型（必须）
      */
     @RequestMapping("/modifyManagerType")
-    public AbstractResult modifyManagerType(String username, ManagerType newType) {
+    public ModifyManagerTypeResult modifyManagerType(String code, ManagerType newType) {
         ModifyManagerTypeOrder order = new ModifyManagerTypeOrder();
-        order.setUsername(username);
+        order.setCode(code);
         order.setNewType(newType);
 
         return managerManageService.modifyManagerType(order);
@@ -80,15 +92,17 @@ public class ManagerManageController {
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param username 用户名（必须）
+     * @param code     编码（必须）
+     * @param name     名称（必须）
      * @param type     类型（必须）
      */
     @RequestMapping("/queryManager")
-    public AbstractQueryResult<ManagerInfo> queryManager(int pageNo, int pageSize, String username, ManagerType type) {
+    public QueryManagerResult queryManager(int pageNo, int pageSize, String code, String name, ManagerType type) {
         QueryManagerOrder order = new QueryManagerOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
-        order.setUsername(username);
+        order.setCode(code);
+        order.setName(name);
         order.setType(type);
 
         return managerManageService.queryManager(order);
