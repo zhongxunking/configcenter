@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理管理员</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../common/commonQuery.js"></script>
+    <link rel="stylesheet" href="../common/common.css" type="text/css">
+    <script type="text/javascript">
+
+        function createTableHead() {
+            var tr = "<tr>";
+            tr += "<th align='left'>管理员编码</th>"
+            tr += "<th align='left'>名称</th>"
+            tr += "<th align='left'>类型</th>"
+            tr += "<th align='left'>操作</th>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function creteTableRow(info) {
+            var tr = "<tr>";
+            tr += "<td>" + info.code + "</td>";
+            tr += "<td>" + info.name + "</td>";
+            tr += "<td>" + info.type + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.code + "\")'>删除</button></td>"
+            tr += "</tr>"
+
+            return tr;
+        }
+
+        function deleteEntity(code) {
+            $.ajax({
+                url: "/manage/manager/deleteManager",
+                data: {
+                    code: code
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                    } else {
+                        alert("删除失败，原因：" + ajaxResult.message);
+                    }
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<br>
+<div>
+    新增管理员：
+    <form id="addManagerForm" action="/manage/manager/addManager">
+        <table>
+            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
+            <tr><td align="right">名称：</td><td><input type="text" name="name"></td></tr>
+            <tr><td align="right">密码：</td><td><input type="password" name="password"></td></tr>
+            <tr><td align="right">类型：</td><td><input type="text" name="type"></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer('addManagerForm')" value="提交"></td><td></td></tr>
+        </table>
+    </form>
+</div>
+<br><br>
+<div>
+    修改密码：
+    <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
+        <table>
+            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
+            <tr><td align="right">新密码：</td><td><input type="text" name="newPassword"></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer('modifyManagerPasswordForm')" value="提交"></td><td></td></tr>
+        </table>
+    </form>
+</div>
+<br><br>
+<div>
+    修改类型：
+    <form id="modifyManagerTypeForm" action="/manage/manager/modifyManagerType">
+        <table>
+            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
+            <tr><td align="right">新类型：</td><td><input type="text" name="newType"></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer('modifyManagerTypeForm')" value="提交"></td><td></td></tr>
+        </table>
+    </form>
+</div>
+<br><br>
+<div>
+    <form id="queryForm" action="/manage/manager/queryManager">
+        编码：<input type="text" name="code">
+        名称：<input type="text" name="name">
+        类型：<input type="text" name="type">
+        <input type="button" onclick="pageNo = 1;query();" value="查询">
+    </form>
+</div>
+<div id="tableDiv" class="table-solid"></div>
+<div id="pageFoot">
+    <button onclick="previousPage()">上一页</button>
+    <span id="currentPageNo">1</span>
+    <button onclick="nextPage()">下一页</button>
+    总页数：<span id="totalPage"></span>
+</div>
+</body>
+</html>
