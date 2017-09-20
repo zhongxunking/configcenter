@@ -26,21 +26,21 @@ public abstract class AbstractController {
     @Autowired
     private ManagerAppManageService managerAppManageService;
 
-    public void assertLogin() {
+    public void assertLogined() {
         if (SessionAccessor.getManagerInfo() == null) {
             throw new AntBekitException(Status.FAIL, ResultCode.NOT_LOGIN.getCode(), ResultCode.NOT_LOGIN.getMessage());
         }
     }
 
     public void assertAdmin() {
-        assertLogin();
+        assertLogined();
         if (SessionAccessor.getManagerInfo().getType() != ManagerType.ADMIN) {
             throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), SessionAccessor.getManagerInfo().getCode() + "不是超级管理员");
         }
     }
 
     public void assertAdminOrMyself(String code) {
-        assertLogin();
+        assertLogined();
         if (SessionAccessor.getManagerInfo().getType() != ManagerType.ADMIN
                 && StringUtils.equals(SessionAccessor.getManagerInfo().getCode(), code)) {
             throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
@@ -48,7 +48,7 @@ public abstract class AbstractController {
     }
 
     public void canModifyApp(String appCode) {
-        assertLogin();
+        assertLogined();
         if (SessionAccessor.getManagerInfo().getType() == ManagerType.ADMIN) {
             return;
         }

@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
-public class PropertyKeyManageController {
+public class PropertyKeyManageController extends AbstractController {
     @Autowired
     private PropertyKeyManageService propertyKeyManageService;
 
@@ -40,6 +40,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public AddOrModifyPropertyKeyResult addOrModifyPropertyKey(String appCode, String key, boolean common, String memo) {
+        canModifyApp(appCode);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode(appCode);
         order.setKey(key);
@@ -57,6 +58,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/deletePropertyKey")
     public DeletePropertyKeyResult deletePropertyKey(String appCode, String key) {
+        canModifyApp(appCode);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode(appCode);
         order.setKey(key);
@@ -71,6 +73,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/findAppPropertyKey")
     public FindAppPropertyKeyResult findAppPropertyKey(String appCode) {
+        canModifyApp(appCode);
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
         order.setAppCode(appCode);
 
@@ -88,6 +91,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/queryPropertyKey")
     public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean common) {
+        canModifyApp(appCode);
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

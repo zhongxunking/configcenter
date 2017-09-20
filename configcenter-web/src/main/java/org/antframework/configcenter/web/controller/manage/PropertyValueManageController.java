@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/propertyValue")
-public class PropertyValueManageController {
+public class PropertyValueManageController extends AbstractController {
     @Autowired
     private PropertyValueManageService propertyValueManageService;
 
@@ -40,6 +40,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/setPropertyValue")
     public SetPropertyValueResult setPropertyValue(String profileCode, String appCode, String key, String value) {
+        canModifyApp(appCode);
         SetPropertyValueOrder order = new SetPropertyValueOrder();
         order.setProfileCode(profileCode);
         order.setAppCode(appCode);
@@ -58,6 +59,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/deletePropertyValue")
     public DeletePropertyValueResult deletePropertyValue(String profileCode, String appCode, String key) {
+        canModifyApp(appCode);
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setProfileCode(profileCode);
         order.setAppCode(appCode);
@@ -74,6 +76,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/findAppProfilePropertyValue")
     public FindAppProfilePropertyValueResult findAppProfilePropertyValue(String appCode, String profileCode) {
+        canModifyApp(appCode);
         FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
         order.setAppCode(appCode);
         order.setProfileCode(profileCode);
@@ -92,6 +95,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/queryPropertyValue")
     public QueryPropertyValueResult queryPropertyValue(int pageNo, int pageSize, String profileCode, String appCode, String key) {
+        canModifyApp(appCode);
         QueryPropertyValueOrder order = new QueryPropertyValueOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

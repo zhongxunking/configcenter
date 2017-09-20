@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/profile")
-public class ProfileManageController {
+public class ProfileManageController extends AbstractController {
     @Autowired
     private ProfileManageService profileManageService;
 
@@ -38,6 +38,7 @@ public class ProfileManageController {
      */
     @RequestMapping("/addOrModifyProfile")
     public AddOrModifyProfileResult addOrModifyProfile(String profileCode, String memo) {
+        assertAdmin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileCode(profileCode);
         order.setMemo(memo);
@@ -52,6 +53,7 @@ public class ProfileManageController {
      */
     @RequestMapping("/deleteProfile")
     public DeleteProfileResult deleteProfile(String profileCode) {
+        assertAdmin();
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode(profileCode);
 
@@ -63,6 +65,7 @@ public class ProfileManageController {
      */
     @RequestMapping("/findAllProfile")
     public FindAllProfileResult findAllProfile() {
+        assertLogined();
         return profileManageService.findAllProfile(new FindAllProfileOrder());
     }
 
@@ -75,6 +78,7 @@ public class ProfileManageController {
      */
     @RequestMapping("/queryProfile")
     public QueryProfileResult queryProfile(int pageNo, int pageSize, String profileCode) {
+        assertLogined();
         QueryProfileOrder order = new QueryProfileOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

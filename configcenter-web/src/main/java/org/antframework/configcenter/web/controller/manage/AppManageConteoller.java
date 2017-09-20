@@ -24,7 +24,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/app")
-public class AppManageConteoller {
+public class AppManageConteoller extends AbstractController {
     @Autowired
     private AppManageService appManageService;
 
@@ -36,6 +36,7 @@ public class AppManageConteoller {
      */
     @RequestMapping("/addOrModifyApp")
     public AddOrModifyAppResult addOrModifyApp(String appCode, String memo) {
+        assertAdmin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppCode(appCode);
         order.setMemo(memo);
@@ -50,6 +51,7 @@ public class AppManageConteoller {
      */
     @RequestMapping("/deleteApp")
     public DeleteAppResult deleteApp(String appCode) {
+        assertAdmin();
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode(appCode);
 
@@ -65,6 +67,7 @@ public class AppManageConteoller {
      */
     @RequestMapping("/queryApp")
     public QueryAppResult queryApp(int pageNo, int pageSize, String appCode) {
+        assertLogined();
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
