@@ -30,5 +30,7 @@ public interface ManagerDao {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Manager findLockByUsername(String username);
 
+    Manager findByUsername(String username);
+
     Page<Manager> query(Map<String, Object> searchParams, Pageable pageable);
 }
