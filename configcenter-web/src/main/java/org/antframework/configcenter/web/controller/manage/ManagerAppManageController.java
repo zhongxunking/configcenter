@@ -8,6 +8,12 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.facade.api.ConfigService;
+import org.antframework.configcenter.facade.order.FindAppOrder;
+import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
@@ -29,6 +35,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ManagerAppManageController extends AbstractController {
     @Autowired
     private ManagerAppManageService managerAppManageService;
+    @Autowired
+    private ConfigService configService;
 
     /**
      * 添加管理员与应用关联
@@ -39,6 +47,15 @@ public class ManagerAppManageController extends AbstractController {
     @RequestMapping("/addManagerApp")
     public AddManagerAppResult addManagerApp(String managerCode, String appCode) {
         assertAdmin();
+        FindAppOrder findAppOrder = new FindAppOrder();
+        findAppOrder.setAppCode(appCode);
+        FindAppResult findAppResult = configService.findApp(findAppOrder);
+        if (!findAppResult.isSuccess()) {
+            throw new AntBekitException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
+        }
+        if (findAppResult.getAppInfo() == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]不存在", appCode));
+        }
         AddManagerAppOrder order = new AddManagerAppOrder();
         order.setManagerCode(managerCode);
         order.setAppCode(appCode);

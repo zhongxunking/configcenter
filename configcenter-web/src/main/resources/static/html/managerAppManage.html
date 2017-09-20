@@ -48,7 +48,18 @@
     </script>
 </head>
 <body>
-
+<br>
+<div>
+    新增关联：
+    <form id="addManagerAppForm" action="/manage/managerApp/addManagerApp">
+        <table>
+            <tr><td align="right">管理员编码：</td><td><input type="text" name="managerCode"></td></tr>
+            <tr><td align="right">应用编码：</td><td><input type="text" name="appCode"></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer('addManagerAppForm')" value="提交"></td><td></td></tr>
+        </table>
+    </form>
+</div>
+<br><br>
 <div>
     <form id="queryForm" action="/manage/managerApp/queryManagerApp">
         管理员编码：<input type="text" name="managerCode">
