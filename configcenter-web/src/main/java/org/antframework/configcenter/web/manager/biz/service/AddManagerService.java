@@ -33,9 +33,9 @@ public class AddManagerService {
     public void execute(ServiceContext<AddManagerOrder, AddManagerResult> context) {
         AddManagerOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByUsername(order.getUsername());
+        Manager manager = managerDao.findLockByCode(order.getCode());
         if (manager != null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]已存在", order.getUsername()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]已存在", order.getCode()));
         }
         managerDao.save(buildManager(order));
     }

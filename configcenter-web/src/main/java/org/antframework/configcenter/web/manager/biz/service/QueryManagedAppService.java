@@ -43,9 +43,9 @@ public class QueryManagedAppService {
     public void check(ServiceContext<QueryManagedAppOrder, QueryManagedAppResult> context) {
         QueryManagedAppOrder order = context.getOrder();
 
-        Manager manager = managerDao.findByUsername(order.getUsername());
+        Manager manager = managerDao.findByCode(order.getManagerCode());
         if (manager == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getUsername()));
+            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
     }
 
@@ -60,7 +60,7 @@ public class QueryManagedAppService {
     // 构建searchParams
     public Map<String, Object> buildSearchParams(QueryManagedAppOrder queryManagedAppOrder) {
         Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("EQ_username", queryManagedAppOrder.getUsername());
+        searchParams.put("EQ_managerCode", queryManagedAppOrder.getManagerCode());
         if (queryManagedAppOrder.getAppCode() != null) {
             searchParams.put("LIKE_appCode", "%" + queryManagedAppOrder.getAppCode() + "%");
         }

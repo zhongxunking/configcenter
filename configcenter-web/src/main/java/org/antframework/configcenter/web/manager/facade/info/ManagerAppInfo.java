@@ -14,18 +14,17 @@ import java.io.Serializable;
  * 管理员-应用信息
  */
 public class ManagerAppInfo implements Serializable {
-    // 用户名
-    private String userName;
-
+    // 管理员编码
+    private String managerCode;
     // 被管理的应用编码
     private String appCode;
 
-    public String getUserName() {
-        return userName;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getAppCode() {

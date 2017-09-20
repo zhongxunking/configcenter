@@ -42,8 +42,8 @@ public class QueryManagerAppService {
     // 构建searchParams
     public Map<String, Object> buildSearchParams(QueryManagerAppOrder queryManagerAppOrder) {
         Map<String, Object> searchParams = new HashMap<>();
-        if (queryManagerAppOrder.getUsername() != null) {
-            searchParams.put("LIKE_username", "%" + queryManagerAppOrder.getUsername() + "%");
+        if (queryManagerAppOrder.getManagerCode() != null) {
+            searchParams.put("LIKE_managerCode", "%" + queryManagerAppOrder.getManagerCode() + "%");
         }
         if (queryManagerAppOrder.getAppCode() != null) {
             searchParams.put("LIKE_appCode", "%" + queryManagerAppOrder.getAppCode() + "%");

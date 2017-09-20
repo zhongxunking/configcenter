@@ -36,9 +36,9 @@ public class ManagerLoginService {
         ManagerLoginOrder order = context.getOrder();
         ManagerLoginResult result = context.getResult();
 
-        Manager manager = managerDao.findByUsername(order.getUsername());
+        Manager manager = managerDao.findByCode(order.getCode());
         if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getUsername()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getCode()));
         }
         if (!StringUtils.equals(order.getPassword(), manager.getPassword())) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "密码不正确");

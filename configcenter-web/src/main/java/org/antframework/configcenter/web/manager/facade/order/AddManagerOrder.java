@@ -18,9 +18,12 @@ import javax.validation.constraints.NotNull;
  * 添加管理员order
  */
 public class AddManagerOrder extends AbstractOrder {
-    // 用户名
+    // 编码
     @NotBlank
-    private String username;
+    private String code;
+    // 名称
+    @NotBlank
+    private String name;
     // 密码
     @NotBlank
     private String password;
@@ -28,12 +31,20 @@ public class AddManagerOrder extends AbstractOrder {
     @NotNull
     private ManagerType type;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPassword() {

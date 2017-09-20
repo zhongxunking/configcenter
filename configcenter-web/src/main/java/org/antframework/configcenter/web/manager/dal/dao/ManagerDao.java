@@ -28,9 +28,9 @@ public interface ManagerDao {
     void delete(Manager manager);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Manager findLockByUsername(String username);
+    Manager findLockByCode(String code);
 
-    Manager findByUsername(String username);
+    Manager findByCode(String code);
 
     Page<Manager> query(Map<String, Object> searchParams, Pageable pageable);
 }

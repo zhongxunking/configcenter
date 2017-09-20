@@ -34,8 +34,8 @@ public class ManagerManageServiceProvider implements ManagerManageService {
     }
 
     @Override
-    public ModifyPasswordResult modifyPassword(ModifyPasswordOrder order) {
-        return serviceEngine.execute("modifyPasswordService", order);
+    public ModifyManagerPasswordResult modifyManagerPassword(ModifyManagerPasswordOrder order) {
+        return serviceEngine.execute("modifyManagerPasswordService", order);
     }
 
     @Override

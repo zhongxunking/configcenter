@@ -21,9 +21,13 @@ import javax.persistence.Enumerated;
  */
 @Entity
 public class Manager extends AbstractEntity {
-    // 用户名
+    // 编码
     @Column(unique = true, length = 64)
-    private String username;
+    private String code;
+
+    // 名称
+    @Column(length = 64)
+    private String name;
 
     // 密码
     @Column(length = 64)
@@ -34,12 +38,20 @@ public class Manager extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private ManagerType type;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getPassword() {

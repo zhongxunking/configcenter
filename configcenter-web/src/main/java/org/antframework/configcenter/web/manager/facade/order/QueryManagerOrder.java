@@ -15,17 +15,27 @@ import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
  * 查询管理员order
  */
 public class QueryManagerOrder extends AbstractQueryOrder {
-    // 用户名
-    private String username;
+    // 编码
+    private String code;
+    // 名称
+    private String name;
     // 类型
     private ManagerType type;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public ManagerType getType() {

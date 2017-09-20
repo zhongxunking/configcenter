@@ -13,5 +13,5 @@ import org.antframework.common.util.facade.AbstractResult;
 /**
  * 修改密码result
  */
-public class ModifyPasswordResult extends AbstractResult {
+public class ModifyManagerPasswordResult extends AbstractResult {
 }

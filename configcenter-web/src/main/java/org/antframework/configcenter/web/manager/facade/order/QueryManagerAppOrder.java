@@ -14,17 +14,17 @@ import org.antframework.common.util.facade.AbstractQueryOrder;
  * 查询管理员和应用关联order
  */
 public class QueryManagerAppOrder extends AbstractQueryOrder {
-    // 用户名
-    private String username;
+    // 管理员编码
+    private String managerCode;
     // 被管理的应用编码
     private String appCode;
 
-    public String getUsername() {
-        return username;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getAppCode() {

@@ -15,18 +15,18 @@ import org.hibernate.validator.constraints.NotBlank;
  * 查询被管理员管理的应用order
  */
 public class QueryManagedAppOrder extends AbstractQueryOrder {
-    // 用户名
+    // 管理员编码
     @NotBlank
-    private String username;
+    private String managerCode;
     // 应用编码
     private String appCode;
 
-    public String getUsername() {
-        return username;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getAppCode() {

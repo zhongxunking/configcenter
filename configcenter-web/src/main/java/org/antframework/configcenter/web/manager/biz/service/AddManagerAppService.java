@@ -37,11 +37,11 @@ public class AddManagerAppService {
     public void execute(ServiceContext<AddManagerAppOrder, AddManagerAppResult> context) {
         AddManagerAppOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByUsername(order.getUsername());
+        Manager manager = managerDao.findLockByCode(order.getManagerCode());
         if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getUsername()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
-        ManagerApp managerApp = managerAppDao.findLockByUsernameAndAppCode(order.getUsername(), order.getAppCode());
+        ManagerApp managerApp = managerAppDao.findLockByManagerCodeAndAppCode(order.getManagerCode(), order.getAppCode());
         if (managerApp == null) {
             managerApp = buildManagerApp(order);
             managerAppDao.save(managerApp);

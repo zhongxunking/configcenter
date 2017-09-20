@@ -27,9 +27,9 @@ public interface ManagerManageService {
     DeleteManagerResult deleteManager(DeleteManagerOrder order);
 
     /**
-     * 修改密码
+     * 修改管理员密码
      */
-    ModifyPasswordResult modifyPassword(ModifyPasswordOrder order);
+    ModifyManagerPasswordResult modifyManagerPassword(ModifyManagerPasswordOrder order);
 
     /**
      * 修改管理员类型

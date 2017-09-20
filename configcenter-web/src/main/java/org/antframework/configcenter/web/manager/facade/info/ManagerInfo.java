@@ -17,17 +17,27 @@ import java.io.Serializable;
  * 管理员信息
  */
 public class ManagerInfo implements Serializable {
-    // 用户名
-    private String userName;
+    // 编码
+    private String code;
+    // 名称
+    private String name;
     // 类型
     private ManagerType type;
 
-    public String getUserName() {
-        return userName;
+    public String getCode() {
+        return code;
     }
 
-    public void setUserName(String userName) {
-        this.userName = userName;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public ManagerType getType() {

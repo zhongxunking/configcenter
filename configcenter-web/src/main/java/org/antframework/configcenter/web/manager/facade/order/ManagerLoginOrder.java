@@ -15,19 +15,19 @@ import org.hibernate.validator.constraints.NotBlank;
  * 管理员登陆order
  */
 public class ManagerLoginOrder extends AbstractOrder {
-    // 用户名
+    // 编码
     @NotBlank
-    private String username;
+    private String code;
     // 密码
     @NotBlank
     private String password;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public String getPassword() {

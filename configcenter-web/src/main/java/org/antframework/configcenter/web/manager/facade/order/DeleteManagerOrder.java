@@ -15,15 +15,15 @@ import org.hibernate.validator.constraints.NotBlank;
  * 删除管理员order
  */
 public class DeleteManagerOrder extends AbstractOrder {
-    // 用户名
+    // 编码
     @NotBlank
-    private String username;
+    private String code;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
     }
 }

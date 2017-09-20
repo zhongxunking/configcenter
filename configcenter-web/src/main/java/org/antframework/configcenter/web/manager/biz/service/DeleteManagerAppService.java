@@ -29,7 +29,7 @@ public class DeleteManagerAppService {
     public void execute(ServiceContext<DeleteManagerAppOrder, DeleteManagerAppResult> context) {
         DeleteManagerAppOrder order = context.getOrder();
 
-        ManagerApp managerApp = managerAppDao.findLockByUsernameAndAppCode(order.getUsername(), order.getAppCode());
+        ManagerApp managerApp = managerAppDao.findLockByManagerCodeAndAppCode(order.getManagerCode(), order.getAppCode());
         if (managerApp != null) {
             managerAppDao.delete(managerApp);
         }

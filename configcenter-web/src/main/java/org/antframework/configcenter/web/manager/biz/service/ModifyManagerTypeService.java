@@ -32,9 +32,9 @@ public class ModifyManagerTypeService {
     public void execute(ServiceContext<ModifyManagerTypeOrder, ModifyManagerTypeResult> context) {
         ModifyManagerTypeOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByUsername(order.getUsername());
+        Manager manager = managerDao.findLockByCode(order.getCode());
         if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getUsername()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getCode()));
         }
         manager.setType(order.getNewType());
         managerDao.save(manager);

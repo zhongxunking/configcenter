@@ -19,22 +19,22 @@ import javax.persistence.UniqueConstraint;
  * 管理员与应用关联
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"userName", "appCode"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"managerCode", "appCode"}))
 public class ManagerApp extends AbstractEntity {
-    // 用户名
+    // 管理员编码
     @Column(length = 64)
-    private String username;
+    private String managerCode;
 
     // 被管理的应用编码
     @Column(length = 64)
     private String appCode;
 
-    public String getUsername() {
-        return username;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getAppCode() {

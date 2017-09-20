@@ -15,19 +15,19 @@ import org.hibernate.validator.constraints.NotBlank;
  * 删除管理员与应用关联order
  */
 public class DeleteManagerAppOrder extends AbstractOrder {
-    // 用户名
+    // 管理员编码
     @NotBlank
-    private String username;
+    private String managerCode;
     // 被管理的应用编码
     @NotBlank
     private String appCode;
 
-    public String getUsername() {
-        return username;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getAppCode() {

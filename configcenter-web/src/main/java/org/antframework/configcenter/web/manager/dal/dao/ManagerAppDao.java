@@ -28,9 +28,9 @@ public interface ManagerAppDao {
     void delete(ManagerApp managerApp);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    ManagerApp findLockByUsernameAndAppCode(String username, String appCode);
+    ManagerApp findLockByManagerCodeAndAppCode(String managerCode, String appCode);
 
-    boolean existsByUsername(String username);
+    boolean existsByManagerCode(String managerCode);
 
     Page<ManagerApp> query(Map<String, Object> searchParams, Pageable pageable);
 }

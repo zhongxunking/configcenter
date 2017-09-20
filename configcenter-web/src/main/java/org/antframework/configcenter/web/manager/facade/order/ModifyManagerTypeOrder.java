@@ -18,19 +18,19 @@ import javax.validation.constraints.NotNull;
  * 修改管理员类型order
  */
 public class ModifyManagerTypeOrder extends AbstractOrder {
-    // 用户名
+    // 编码
     @NotBlank
-    private String username;
+    private String code;
     // 新类型
     @NotNull
     private ManagerType newType;
 
-    public String getUsername() {
-        return username;
+    public String getCode() {
+        return code;
     }
 
-    public void setUsername(String username) {
-        this.username = username;
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public ManagerType getNewType() {
