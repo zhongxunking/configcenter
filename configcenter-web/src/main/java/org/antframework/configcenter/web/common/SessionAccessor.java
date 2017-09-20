@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.common;
 
-import org.antframework.configcenter.web.manager.dal.entity.Manager;
+import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
 
 import javax.servlet.http.HttpSession;
 
@@ -27,15 +27,15 @@ public class SessionAccessor {
         SESSION_HOLDER.remove();
     }
 
-    public static void setManager(Manager manager) {
-        SESSION_HOLDER.get().setAttribute(KEY_MANAGER, manager);
+    public static void setManagerInfo(ManagerInfo managerInfo) {
+        SESSION_HOLDER.get().setAttribute(KEY_MANAGER, managerInfo);
     }
 
-    public static void removeManager() {
+    public static void removeManagerInfo() {
         SESSION_HOLDER.get().removeAttribute(KEY_MANAGER);
     }
 
-    public static Manager getManager() {
-        return (Manager) SESSION_HOLDER.get().getAttribute(KEY_MANAGER);
+    public static ManagerInfo getManagerInfo() {
+        return (ManagerInfo) SESSION_HOLDER.get().getAttribute(KEY_MANAGER);
     }
 }

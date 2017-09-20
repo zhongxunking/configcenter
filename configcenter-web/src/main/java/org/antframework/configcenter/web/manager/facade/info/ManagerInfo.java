@@ -19,8 +19,6 @@ import java.io.Serializable;
 public class ManagerInfo implements Serializable {
     // 用户名
     private String userName;
-    // 密码
-    private String password;
     // 类型
     private ManagerType type;
 
@@ -30,14 +28,6 @@ public class ManagerInfo implements Serializable {
 
     public void setUserName(String userName) {
         this.userName = userName;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
     }
 
     public ManagerType getType() {

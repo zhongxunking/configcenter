@@ -13,38 +13,47 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.common.SessionAccessor;
-import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
-import org.antframework.configcenter.web.manager.dal.entity.Manager;
-import org.apache.commons.lang3.StringUtils;
+import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
+import org.antframework.configcenter.web.manager.facade.order.ManagerLoginOrder;
+import org.antframework.configcenter.web.manager.facade.result.ManagerLoginResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
- *
+ * 管理员登陆controller
  */
 @RestController
-@RequestMapping("/manage/login")
-public class LoginController {
+@RequestMapping("/manage/managerLogin")
+public class ManagerLoginController {
     @Autowired
-    private ManagerDao managerDao;
+    private ManagerManageService managerManageService;
 
+    /**
+     * 登陆
+     *
+     * @param username 用户名（必填）
+     * @param password 密码（必填）
+     */
     @RequestMapping("/login")
     public AbstractResult login(String username, String password) {
-        Manager manager = managerDao.findByUserName(username);
-        if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.UNKNOWN_ERROR.getCode(), String.format("用户[%s]不存在", username));
+        ManagerLoginOrder order = new ManagerLoginOrder();
+        order.setUsername(username);
+        order.setPassword(password);
+
+        ManagerLoginResult result = managerManageService.managerLogin(order);
+        if (result.isSuccess()) {
+            SessionAccessor.setManagerInfo(result.getManagerInfo());
         }
-        if (!StringUtils.equals(password, manager.getPassword())) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.UNKNOWN_ERROR.getCode(), "密码不正确");
-        }
-        SessionAccessor.setManager(manager);
-        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+        return result;
     }
 
+    /**
+     * 退出
+     */
     @RequestMapping("/logout")
     public AbstractResult logout() {
-        SessionAccessor.removeManager();
+        SessionAccessor.removeManagerInfo();
         throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
     }
 }

@@ -40,4 +40,9 @@ public interface ManagerManageService {
      * 查询管理员
      */
     QueryManagerResult queryManager(QueryManagerOrder order);
+
+    /**
+     * 管理员登录
+     */
+    ManagerLoginResult managerLogin(ManagerLoginOrder order);
 }

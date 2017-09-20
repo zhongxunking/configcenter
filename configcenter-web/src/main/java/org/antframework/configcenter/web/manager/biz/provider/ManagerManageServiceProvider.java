@@ -47,4 +47,9 @@ public class ManagerManageServiceProvider implements ManagerManageService {
     public QueryManagerResult queryManager(QueryManagerOrder order) {
         return serviceEngine.execute("queryManagerService", order);
     }
+
+    @Override
+    public ManagerLoginResult managerLogin(ManagerLoginOrder order) {
+        return serviceEngine.execute("managerLoginService", order);
+    }
 }
