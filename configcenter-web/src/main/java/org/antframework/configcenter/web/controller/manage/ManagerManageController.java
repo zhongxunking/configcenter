@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/manager")
-public class ManagerManageController {
+public class ManagerManageController extends AbstractController {
     @Autowired
     private ManagerManageService managerManageService;
 
@@ -35,6 +35,7 @@ public class ManagerManageController {
      */
     @RequestMapping("/addManager")
     public AddManagerResult addManager(String code, String name, String password, ManagerType type) {
+        assertAdmin();
         AddManagerOrder order = new AddManagerOrder();
         order.setCode(code);
         order.setName(name);
@@ -51,6 +52,7 @@ public class ManagerManageController {
      */
     @RequestMapping("/deleteManager")
     public DeleteManagerResult deleteManager(String code) {
+        assertAdmin();
         DeleteManagerOrder order = new DeleteManagerOrder();
         order.setCode(code);
 
@@ -65,6 +67,7 @@ public class ManagerManageController {
      */
     @RequestMapping("/modifyManagerPassword")
     public ModifyManagerPasswordResult modifyManagerPassword(String code, String newPassword) {
+        assertAdminOrMyself(code);
         ModifyManagerPasswordOrder order = new ModifyManagerPasswordOrder();
         order.setCode(code);
         order.setNewPassword(newPassword);
@@ -80,6 +83,7 @@ public class ManagerManageController {
      */
     @RequestMapping("/modifyManagerType")
     public ModifyManagerTypeResult modifyManagerType(String code, ManagerType newType) {
+        assertAdmin();
         ModifyManagerTypeOrder order = new ModifyManagerTypeOrder();
         order.setCode(code);
         order.setNewType(newType);
@@ -98,6 +102,7 @@ public class ManagerManageController {
      */
     @RequestMapping("/queryManager")
     public QueryManagerResult queryManager(int pageNo, int pageSize, String code, String name, ManagerType type) {
+        assertAdmin();
         QueryManagerOrder order = new QueryManagerOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

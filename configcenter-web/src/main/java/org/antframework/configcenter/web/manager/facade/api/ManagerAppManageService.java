@@ -8,14 +8,8 @@
  */
 package org.antframework.configcenter.web.manager.facade.api;
 
-import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
-import org.antframework.configcenter.web.manager.facade.order.QueryManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.AddManagerAppResult;
-import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppResult;
-import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
-import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
+import org.antframework.configcenter.web.manager.facade.order.*;
+import org.antframework.configcenter.web.manager.facade.result.*;
 
 /**
  * 管理员关联应用管理服务
@@ -31,6 +25,11 @@ public interface ManagerAppManageService {
      * 删除管理员与应用关联
      */
     DeleteManagerAppResult deleteManagerApp(DeleteManagerAppOrder order);
+
+    /**
+     * 查找管理员与应用关联
+     */
+    FindManagerAppResult findManagerApp(FindManagerAppOrder order);
 
     /**
      * 查询被管理员管理的应用

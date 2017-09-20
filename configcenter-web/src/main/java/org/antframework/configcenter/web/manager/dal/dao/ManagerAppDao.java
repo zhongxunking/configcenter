@@ -30,6 +30,8 @@ public interface ManagerAppDao {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     ManagerApp findLockByManagerCodeAndAppCode(String managerCode, String appCode);
 
+    ManagerApp findByManagerCodeAndAppCode(String managerCode, String appCode);
+
     boolean existsByManagerCode(String managerCode);
 
     Page<ManagerApp> query(Map<String, Object> searchParams, Pageable pageable);

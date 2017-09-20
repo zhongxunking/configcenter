@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/managerApp")
-public class ManagerAppManageController {
+public class ManagerAppManageController extends AbstractController {
     @Autowired
     private ManagerAppManageService managerAppManageService;
 
@@ -38,6 +38,7 @@ public class ManagerAppManageController {
      */
     @RequestMapping("/addManagerApp")
     public AddManagerAppResult addManagerApp(String managerCode, String appCode) {
+        assertAdmin();
         AddManagerAppOrder order = new AddManagerAppOrder();
         order.setManagerCode(managerCode);
         order.setAppCode(appCode);
@@ -53,6 +54,7 @@ public class ManagerAppManageController {
      */
     @RequestMapping("/deleteManagerApp")
     public DeleteManagerAppResult deleteManagerApp(String managerCode, String appCode) {
+        assertAdmin();
         DeleteManagerAppOrder order = new DeleteManagerAppOrder();
         order.setManagerCode(managerCode);
         order.setAppCode(appCode);
@@ -70,6 +72,7 @@ public class ManagerAppManageController {
      */
     @RequestMapping("/queryManagedApp")
     public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String managerCode, String appCode) {
+        assertAdminOrMyself(managerCode);
         QueryManagedAppOrder order = new QueryManagedAppOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
@@ -89,6 +92,7 @@ public class ManagerAppManageController {
      */
     @RequestMapping("/queryManagerApp")
     public QueryManagerAppResult queryManagerApp(int pageNo, int pageSize, String managerCode, String appCode) {
+        assertAdmin();
         QueryManagerAppOrder order = new QueryManagerAppOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

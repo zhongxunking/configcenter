@@ -12,4 +12,6 @@ package org.antframework.configcenter.web.manager.facade.enums;
  *
  */
 public enum ManagerType {
+    ADMIN,
+    NORMAL
 }
