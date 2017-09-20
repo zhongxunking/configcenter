@@ -9,12 +9,12 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.enums.ResultCode;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.bekit.service.annotation.service.Service;
@@ -44,7 +44,7 @@ public class DeleteProfileService {
             return;
         }
         if (propertyValueDao.existsByProfileCode(order.getProfileCode())) {
-            throw new AntBekitException(Status.FAIL, ResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]还存在属性值，不能删除", order.getProfileCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]还存在属性值，不能删除", order.getProfileCode()));
         }
 
         profileDao.delete(profile);

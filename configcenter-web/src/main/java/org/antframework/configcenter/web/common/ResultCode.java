@@ -13,8 +13,6 @@ package org.antframework.configcenter.web.common;
  */
 public enum ResultCode {
 
-    ILLEGAL_STATE("configcenter-0001", "非法内部状态"),
-
     NOT_LOGIN("configcenter-1001", "未登录"),
 
     NO_PERMISSION("configcenter-1002", "无权限"),;

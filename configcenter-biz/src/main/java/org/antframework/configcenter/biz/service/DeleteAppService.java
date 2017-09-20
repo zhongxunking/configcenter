@@ -9,6 +9,7 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
@@ -16,7 +17,6 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.enums.ResultCode;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.bekit.service.annotation.service.Service;
@@ -50,7 +50,7 @@ public class DeleteAppService {
             return;
         }
         if (propertyKeyDao.existsByAppCode(order.getAppCode())) {
-            throw new AntBekitException(Status.FAIL, ResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppCode()));
         }
 
         appDao.delete(app);

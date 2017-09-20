@@ -9,11 +9,11 @@
 package org.antframework.configcenter.web.manager.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
-import org.antframework.configcenter.web.manager.facade.enums.ResultCode;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerOrder;
 import org.antframework.configcenter.web.manager.facade.result.DeleteManagerResult;
 import org.bekit.service.annotation.service.Service;
@@ -40,7 +40,7 @@ public class DeleteManagerService {
             return;
         }
         if (managerAppDao.existsByManagerCode(order.getCode())) {
-            throw new AntBekitException(Status.FAIL, ResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getCode()));
         }
         managerDao.delete(manager);
     }
