@@ -15,7 +15,7 @@ function requestServer(formName) {
             if (ajaxResult.success) {
                 query();
             } else {
-                alert("失败，原因：" + ajaxResult.description);
+                alert("失败，原因：" + ajaxResult.message);
             }
         },
         error: function () {

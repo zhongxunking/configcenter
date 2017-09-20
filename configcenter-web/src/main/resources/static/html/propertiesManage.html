@@ -152,7 +152,7 @@
                     if (ajaxResult.success) {
                         refresh();
                     } else {
-                        alert("删除失败，原因：" + ajaxResult.description);
+                        alert("删除失败，原因：" + ajaxResult.message);
                     }
                 }
             });
@@ -174,7 +174,7 @@
                     if (ajaxResult.success) {
                         refresh();
                     } else {
-                        alert("失败，原因：" + ajaxResult.description);
+                        alert("失败，原因：" + ajaxResult.message);
                     }
                 },
                 error: function () {
@@ -192,7 +192,7 @@
                     if (ajaxResult.success) {
                         refresh();
                     } else {
-                        alert("失败，原因：" + ajaxResult.description);
+                        alert("失败，原因：" + ajaxResult.message);
                     }
                 },
                 error: function () {
