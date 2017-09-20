@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登陆</title>
+    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript">
+
+
+        $(document).ready(function () {
+            $.ajax({
+                url: "/manage/managerLogin/shouldInitAdmin",
+                data: {},
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        $("#initAdminFormDiv").show();
+                        $("#loginFormDiv").hide();
+                    } else {
+                        $("#initAdminFormDiv").hide();
+                        $("#loginFormDiv").show();
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        });
+
+
+        function initAdmin() {
+            var form = $("#initAdminForm");
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        window.location.reload();
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
+        function login() {
+            var form = $("#loginForm");
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        window.location.href = "main.html";
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
+
+    </script>
+</head>
+<body>
+<div id="initAdminFormDiv" style="display:none;">
+    <form id="initAdminForm" action="../manage/managerLogin/initAdmin">
+        超级管理员编码：<input type="text" name="code"><br/>
+        名称：<input type="text" name="name"><br/>
+        密码：<input type="password" name="password"><br/>
+        <input type="button" onclick="initAdmin()" value="提交">
+    </form>
+</div>
+<div id="loginFormDiv" style="display:none;">
+    <form id="loginForm" action="../manage/managerLogin/login">
+        管理员编码：<input type="text" name="code"><br/>
+        密码：<input type="password" name="password"><br/>
+        <input type="button" onclick="login()" value="提交">
+    </form>
+</div>
+</body>
+</html>
