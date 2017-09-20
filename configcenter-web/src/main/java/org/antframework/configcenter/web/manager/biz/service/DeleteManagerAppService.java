@@ -20,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 删除管理员与应用关联服务
  */
-@Service
+@Service(enableTx = true)
 public class DeleteManagerAppService {
     @Autowired
     private ManagerAppDao managerAppDao;

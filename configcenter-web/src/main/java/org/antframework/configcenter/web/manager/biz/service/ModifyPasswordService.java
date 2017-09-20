@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 修改密码服务
  */
-@Service
+@Service(enableTx = true)
 public class ModifyPasswordService {
     @Autowired
     private ManagerDao managerDao;

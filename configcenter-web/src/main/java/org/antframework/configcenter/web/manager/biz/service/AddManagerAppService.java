@@ -8,7 +8,12 @@
  */
 package org.antframework.configcenter.web.manager.biz.service;
 
+import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
+import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
+import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
 import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder;
 import org.antframework.configcenter.web.manager.facade.result.AddManagerAppResult;
@@ -21,8 +26,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 添加管理员与应用关联服务
  */
-@Service
+@Service(enableTx = true)
 public class AddManagerAppService {
+    @Autowired
+    private ManagerDao managerDao;
     @Autowired
     private ManagerAppDao managerAppDao;
 
@@ -30,6 +37,10 @@ public class AddManagerAppService {
     public void execute(ServiceContext<AddManagerAppOrder, AddManagerAppResult> context) {
         AddManagerAppOrder order = context.getOrder();
 
+        Manager manager = managerDao.findLockByUsername(order.getUsername());
+        if (manager == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getUsername()));
+        }
         ManagerApp managerApp = managerAppDao.findLockByUsernameAndAppCode(order.getUsername(), order.getAppCode());
         if (managerApp == null) {
             managerApp = buildManagerApp(order);

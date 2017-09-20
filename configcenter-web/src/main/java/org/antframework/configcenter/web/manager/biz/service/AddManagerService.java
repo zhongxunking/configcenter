@@ -24,7 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 添加管理员服务
  */
-@Service
+@Service(enableTx = true)
 public class AddManagerService {
     @Autowired
     private ManagerDao managerDao;

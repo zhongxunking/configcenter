@@ -8,8 +8,12 @@
  */
 package org.antframework.configcenter.web.manager.biz.service;
 
+import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
+import org.antframework.configcenter.web.manager.facade.enums.ResultCode;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerOrder;
 import org.antframework.configcenter.web.manager.facade.result.DeleteManagerResult;
 import org.bekit.service.annotation.service.Service;
@@ -20,18 +24,24 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 删除管理员服务
  */
-@Service
+@Service(enableTx = true)
 public class DeleteManagerService {
     @Autowired
     private ManagerDao managerDao;
+    @Autowired
+    private ManagerAppDao managerAppDao;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteManagerOrder, DeleteManagerResult> context) {
         DeleteManagerOrder order = context.getOrder();
 
         Manager manager = managerDao.findLockByUsername(order.getUsername());
-        if (manager != null) {
-            managerDao.delete(manager);
+        if (manager == null) {
+            return;
         }
+        if (managerAppDao.existsByUsername(order.getUsername())) {
+            throw new AntBekitException(Status.FAIL, ResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还存在管理的应用，不能删除", order.getUsername()));
+        }
+        managerDao.delete(manager);
     }
 }

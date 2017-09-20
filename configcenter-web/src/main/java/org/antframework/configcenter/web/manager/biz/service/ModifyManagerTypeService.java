@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 修改管理员类型服务
  */
-@Service
+@Service(enableTx = true)
 public class ModifyManagerTypeService {
     @Autowired
     private ManagerDao managerDao;
