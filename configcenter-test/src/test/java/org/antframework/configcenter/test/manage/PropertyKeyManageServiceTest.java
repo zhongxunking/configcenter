@@ -41,6 +41,13 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         order.setMemo("归集户帐号");
         AddOrModifyPropertyKeyResult result = propertyKeyManageService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
+        order = new AddOrModifyPropertyKeyOrder();
+        order.setAppCode("scbfund");
+        order.setKey("cashier.url");
+        order.setCommon(true);
+        order.setMemo("收银台地址");
+        result = propertyKeyManageService.addOrModifyPropertyKey(order);
+        checkResult(result, Status.SUCCESS);
     }
 
     @Test

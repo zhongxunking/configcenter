@@ -13,11 +13,11 @@ import org.antframework.configcenter.facade.api.manage.PropertyValueManageServic
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -34,12 +34,18 @@ public class PropertyValueManageServiceTest extends AbstractTest {
 
     @Test
     public void testSetPropertyValue() {
-        SetPropertyValueOrder order = new SetPropertyValueOrder();
+        SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppCode("scbfund");
-        order.setKey("collection.accNo");
         order.setProfileCode("dev");
-        order.setValue("20170903200000000001");
-        SetPropertyValueResult result = propertyValueManageService.setPropertyValue(order);
+        SetPropertyValuesOrder.KeyValue keyValue1 = new SetPropertyValuesOrder.KeyValue();
+        keyValue1.setKey("collection.accNo");
+        keyValue1.setValue("20170903200000000001");
+        order.addKeyValue(keyValue1);
+        SetPropertyValuesOrder.KeyValue keyValue2 = new SetPropertyValuesOrder.KeyValue();
+        keyValue2.setKey("cashier.url");
+        keyValue2.setValue("http://localhost:8080/cashier");
+        order.addKeyValue(keyValue2);
+        SetPropertyValuesResult result = propertyValueManageService.setPropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 
