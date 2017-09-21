@@ -93,10 +93,10 @@ public class ManagerLoginController extends AbstractController {
     }
 
     /**
-     * 查找已经登陆的管理员
+     * 获取已经登陆的管理员
      */
-    @RequestMapping("/findLoginedManager")
-    public FindLoginedManagerResult findLoginedManager() {
+    @RequestMapping("/getLoginedManager")
+    public FindLoginedManagerResult getLoginedManager() {
         FindLoginedManagerResult result = new FindLoginedManagerResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());

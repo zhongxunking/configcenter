@@ -6,22 +6,43 @@
     <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
     <script type="text/javascript">
+        var managerInfo = null;
         $(document).ready(function () {
-            if (getUrlParam("type")=="ADMIN"){
+            managerInfo=getLoginedManager();
+            if (managerInfo.type == "ADMIN") {
                 $("#adminOptions").show();
-            }else {
+            } else {
                 $("#adminOptions").hide();
             }
         });
 
+        function getLoginedManager() {
+            var managerInfo;
+            $.ajax({
+                url: "/manage/managerLogin/getLoginedManager",
+                data: {},
+                async: false,
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        if (ajaxResult.managerInfo == null) {
+                            alert("未登录，或登录超时，请重新登陆");
+                            window.location.href = "login.html";
+                        } else {
+                            managerInfo = ajaxResult.managerInfo;
+                        }
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+            return managerInfo;
+        }
+
         function changeDetailWindowUrl(newUrl) {
             $("#detailWindow").attr("src", newUrl);
-        }
-        function getUrlParam(name) {
-            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
-            var r = window.location.search.substr(1).match(reg);
-            if (r != null)return unescape(r[2]);
-            return null;
         }
 
     </script>
@@ -58,7 +79,8 @@
                                     </tr>
                                     <tr>
                                         <td>
-                                            <button onclick='changeDetailWindowUrl("managerAppManage.html")'>管理员与应用关联</button>
+                                            <button onclick='changeDetailWindowUrl("managerAppManage.html")'>管理员与应用关联
+                                            </button>
                                         </td>
                                     </tr>
                                 </table>
@@ -67,7 +89,9 @@
                     </tr>
                     <tr>
                         <td>
-                            <button onclick='changeDetailWindowUrl("managerInfoModify.html?code="+getUrlParam("code"))'>修改个人信息</button>
+                            <button onclick='changeDetailWindowUrl("managerInfoModify.html?code="+getUrlParam("code"))'>
+                                修改个人信息
+                            </button>
                         </td>
                     </tr>
                 </table>
