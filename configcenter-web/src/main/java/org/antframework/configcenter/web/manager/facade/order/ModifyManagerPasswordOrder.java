@@ -15,19 +15,19 @@ import org.hibernate.validator.constraints.NotBlank;
  * 修改密码order
  */
 public class ModifyManagerPasswordOrder extends AbstractOrder {
-    // 编码
+    // 管理员编码
     @NotBlank
-    private String code;
+    private String managerCode;
     // 新密码
     @NotBlank
     private String newPassword;
 
-    public String getCode() {
-        return code;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getNewPassword() {

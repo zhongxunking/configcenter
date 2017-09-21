@@ -41,8 +41,8 @@ public class QueryManagerService {
 
     public Map<String, Object> buildSearchParams(QueryManagerOrder queryManagerOrder) {
         Map<String, Object> searchParams = new HashMap<>();
-        if (queryManagerOrder.getCode() != null) {
-            searchParams.put("LIKE_code", "%" + queryManagerOrder.getCode() + "%");
+        if (queryManagerOrder.getManagerCode() != null) {
+            searchParams.put("LIKE_managerCode", "%" + queryManagerOrder.getManagerCode() + "%");
         }
         if (queryManagerOrder.getName() != null) {
             searchParams.put("LIKE_name", "%" + queryManagerOrder.getName() + "%");

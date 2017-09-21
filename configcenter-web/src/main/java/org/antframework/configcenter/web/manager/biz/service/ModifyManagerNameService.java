@@ -32,9 +32,9 @@ public class ModifyManagerNameService {
     public void execute(ServiceContext<ModifyManagerNameOrder, ModifyManagerNameResult> context) {
         ModifyManagerNameOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByCode(order.getCode());
+        Manager manager = managerDao.findLockByManagerCode(order.getManagerCode());
         if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
         manager.setName(order.getNewName());
         managerDao.save(manager);

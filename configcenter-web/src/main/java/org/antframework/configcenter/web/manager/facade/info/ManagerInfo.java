@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.manager.facade.info;
 
 
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 
 import java.io.Serializable;
@@ -17,19 +18,19 @@ import java.io.Serializable;
  * 管理员信息
  */
 public class ManagerInfo implements Serializable {
-    // 编码
-    private String code;
+    // 管理员编码
+    private String managerCode;
     // 名称
     private String name;
     // 类型
     private ManagerType type;
 
-    public String getCode() {
-        return code;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getName() {
@@ -46,5 +47,10 @@ public class ManagerInfo implements Serializable {
 
     public void setType(ManagerType type) {
         this.type = type;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }

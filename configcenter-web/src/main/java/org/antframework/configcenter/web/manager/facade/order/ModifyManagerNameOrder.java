@@ -15,19 +15,19 @@ import org.hibernate.validator.constraints.NotBlank;
  * 修改管理员名称order
  */
 public class ModifyManagerNameOrder extends AbstractOrder {
-    // 编码
+    // 管理员编码
     @NotBlank
-    private String code;
+    private String managerCode;
     // 新名称
     @NotBlank
     private String newName;
 
-    public String getCode() {
-        return code;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getNewName() {

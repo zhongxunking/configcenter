@@ -37,7 +37,7 @@ public class AddManagerAppService {
     public void execute(ServiceContext<AddManagerAppOrder, AddManagerAppResult> context) {
         AddManagerAppOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByCode(order.getManagerCode());
+        Manager manager = managerDao.findLockByManagerCode(order.getManagerCode());
         if (manager == null) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }

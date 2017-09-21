@@ -21,9 +21,9 @@ import javax.persistence.Enumerated;
  */
 @Entity
 public class Manager extends AbstractEntity {
-    // 编码
+    // 管理员编码
     @Column(unique = true, length = 64)
-    private String code;
+    private String managerCode;
 
     // 名称
     @Column(length = 64)
@@ -38,12 +38,12 @@ public class Manager extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     private ManagerType type;
 
-    public String getCode() {
-        return code;
+    public String getManagerCode() {
+        return managerCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setManagerCode(String managerCode) {
+        this.managerCode = managerCode;
     }
 
     public String getName() {

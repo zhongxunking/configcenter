@@ -35,12 +35,12 @@ public class DeleteManagerService {
     public void execute(ServiceContext<DeleteManagerOrder, DeleteManagerResult> context) {
         DeleteManagerOrder order = context.getOrder();
 
-        Manager manager = managerDao.findLockByCode(order.getCode());
+        Manager manager = managerDao.findLockByManagerCode(order.getManagerCode());
         if (manager == null) {
             return;
         }
-        if (managerAppDao.existsByManagerCode(order.getCode())) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getCode()));
+        if (managerAppDao.existsByManagerCode(order.getManagerCode())) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getManagerCode()));
         }
         managerDao.delete(manager);
     }
