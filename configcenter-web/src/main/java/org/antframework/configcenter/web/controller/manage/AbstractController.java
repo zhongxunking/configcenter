@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.web.common.ResultCode;
 import org.antframework.configcenter.web.common.SessionAccessor;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
@@ -50,6 +51,27 @@ public abstract class AbstractController {
     public void canModifyApp(String appCode) {
         assertLogined();
         if (SessionAccessor.getManagerInfo().getType() == ManagerType.ADMIN) {
+            return;
+        }
+        FindManagerAppOrder order = new FindManagerAppOrder();
+        order.setManagerCode(SessionAccessor.getManagerInfo().getCode());
+        order.setAppCode(appCode);
+
+        FindManagerAppResult result = managerAppManageService.findManagerApp(order);
+        if (!result.isSuccess()) {
+            throw new AntBekitException(Status.FAIL, result.getCode(), result.getMessage());
+        }
+        if (result.getInfo() == null) {
+            throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), String.format("管理员[%s]无权限操作应用[%s]", SessionAccessor.getManagerInfo().getCode(), appCode));
+        }
+    }
+
+    public void canReadApp(String appCode) {
+        assertLogined();
+        if (SessionAccessor.getManagerInfo().getType() == ManagerType.ADMIN) {
+            return;
+        }
+        if (StringUtils.equals(appCode, ConfigService.COMMON_APP_CODE)) {
             return;
         }
         FindManagerAppOrder order = new FindManagerAppOrder();

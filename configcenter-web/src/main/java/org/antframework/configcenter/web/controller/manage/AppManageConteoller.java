@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractQueryResult;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
@@ -104,6 +105,9 @@ public class AppManageConteoller extends AbstractController {
             }
             AbstractQueryResult<AppInfo> result = new AbstractQueryResult<AppInfo>() {
             };
+            result.setStatus(Status.SUCCESS);
+            result.setCode(CommonResultCode.SUCCESS.getCode());
+            result.setMessage(CommonResultCode.SUCCESS.getMessage());
             for (ManagerAppInfo info : queryManagedAppResult.getInfos()) {
                 FindAppOrder findAppOrder = new FindAppOrder();
                 findAppOrder.setAppCode(info.getAppCode());

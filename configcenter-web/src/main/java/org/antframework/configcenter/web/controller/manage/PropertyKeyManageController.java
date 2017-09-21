@@ -73,7 +73,7 @@ public class PropertyKeyManageController extends AbstractController {
      */
     @RequestMapping("/findAppPropertyKey")
     public FindAppPropertyKeyResult findAppPropertyKey(String appCode) {
-        canModifyApp(appCode);
+        canReadApp(appCode);
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
         order.setAppCode(appCode);
 

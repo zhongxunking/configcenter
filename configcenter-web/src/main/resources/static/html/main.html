@@ -6,6 +6,14 @@
     <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
     <script type="text/javascript">
+        $(document).ready(function () {
+            if (getUrlParam("type")=="ADMIN"){
+                $("#adminOptions").show();
+            }else {
+                $("#adminOptions").hide();
+            }
+        });
+
         function changeDetailWindowUrl(newUrl) {
             $("#detailWindow").attr("src", newUrl);
         }
@@ -31,22 +39,30 @@
                     </tr>
                     <tr>
                         <td>
-                            <button onclick='changeDetailWindowUrl("appManage.html")'>项目</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button onclick='changeDetailWindowUrl("profileManage.html")'>环境</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button onclick='changeDetailWindowUrl("managerManage.html")'>管理员</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button onclick='changeDetailWindowUrl("managerAppManage.html")'>管理员与应用关联</button>
+                            <div id="adminOptions" style="display:none;">
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <button onclick='changeDetailWindowUrl("appManage.html")'>项目</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <button onclick='changeDetailWindowUrl("profileManage.html")'>环境</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <button onclick='changeDetailWindowUrl("managerManage.html")'>管理员</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <button onclick='changeDetailWindowUrl("managerAppManage.html")'>管理员与应用关联</button>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
                         </td>
                     </tr>
                     <tr>

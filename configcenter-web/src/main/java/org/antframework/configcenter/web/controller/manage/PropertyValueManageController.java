@@ -76,7 +76,7 @@ public class PropertyValueManageController extends AbstractController {
      */
     @RequestMapping("/findAppProfilePropertyValue")
     public FindAppProfilePropertyValueResult findAppProfilePropertyValue(String appCode, String profileCode) {
-        canModifyApp(appCode);
+        canReadApp(appCode);
         FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
         order.setAppCode(appCode);
         order.setProfileCode(profileCode);
