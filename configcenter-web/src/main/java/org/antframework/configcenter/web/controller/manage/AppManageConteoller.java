@@ -8,27 +8,16 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractQueryResult;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
-import org.antframework.configcenter.web.common.SessionAccessor;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
-import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
-import org.antframework.configcenter.web.manager.facade.info.ManagerAppInfo;
-import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
-import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,39 +74,61 @@ public class AppManageConteoller extends AbstractController {
      */
     @RequestMapping("/queryApp")
     public AbstractQueryResult<AppInfo> queryApp(int pageNo, int pageSize, String appCode) {
-        assertLogined();
-        ManagerInfo managerInfo = SessionAccessor.getManagerInfo();
-        if (managerInfo.getType() == ManagerType.ADMIN) {
-            QueryAppOrder order = new QueryAppOrder();
-            order.setPageNo(pageNo);
-            order.setPageSize(pageSize);
-            order.setAppCode(appCode);
-            return appManageService.queryApp(order);
-        } else {
-            QueryManagedAppOrder order = new QueryManagedAppOrder();
-            order.setPageNo(pageNo);
-            order.setPageSize(pageSize);
-            order.setManagerCode(managerInfo.getCode());
-            order.setAppCode(appCode);
-            QueryManagedAppResult queryManagedAppResult = managerAppManageService.queryManagedApp(order);
-            if (!queryManagedAppResult.isSuccess()) {
-                throw new AntBekitException(Status.FAIL, queryManagedAppResult.getCode(), queryManagedAppResult.getMessage());
-            }
-            AbstractQueryResult<AppInfo> result = new AbstractQueryResult<AppInfo>() {
-            };
-            result.setStatus(Status.SUCCESS);
-            result.setCode(CommonResultCode.SUCCESS.getCode());
-            result.setMessage(CommonResultCode.SUCCESS.getMessage());
-            for (ManagerAppInfo info : queryManagedAppResult.getInfos()) {
-                FindAppOrder findAppOrder = new FindAppOrder();
-                findAppOrder.setAppCode(info.getAppCode());
-                FindAppResult findAppResult = configService.findApp(findAppOrder);
-                if (!findAppResult.isSuccess()) {
-                    throw new AntBekitException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
-                }
-                result.addInfo(findAppResult.getAppInfo());
-            }
-            return result;
-        }
+        assertAdmin();
+        QueryAppOrder order = new QueryAppOrder();
+        order.setPageNo(pageNo);
+        order.setPageSize(pageSize);
+        order.setAppCode(appCode);
+        return appManageService.queryApp(order);
     }
+
+//    // 超级管理员查询应用
+//    private QueryAppResult queryAppByAdmin(int pageNo, int pageSize, String appCode) {
+//        QueryAppOrder order = new QueryAppOrder();
+//        order.setPageNo(pageNo);
+//        order.setPageSize(pageSize);
+//        order.setAppCode(appCode);
+//        return appManageService.queryApp(order);
+//    }
+//
+//    // 普通管理员查询应用
+//    private AbstractQueryResult<AppInfo> queryAppByNormalManager(int pageNo, int pageSize, String appCode) {
+//        QueryManagedAppOrder order = new QueryManagedAppOrder();
+//        order.setPageNo(pageNo);
+//        order.setPageSize(pageSize);
+//        order.setManagerCode(SessionAccessor.getManagerInfo().getManagerCode());
+//        order.setAppCode(appCode);
+//        QueryManagedAppResult queryManagedAppResult = managerAppManageService.queryManagedApp(order);
+//        if (!queryManagedAppResult.isSuccess()) {
+//            throw new AntBekitException(Status.FAIL, queryManagedAppResult.getCode(), queryManagedAppResult.getMessage());
+//        }
+//
+//        AbstractQueryResult<AppInfo> result = new AbstractQueryResult<AppInfo>() {
+//        };
+//        result.setStatus(Status.SUCCESS);
+//        result.setCode(CommonResultCode.SUCCESS.getCode());
+//        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+//        result.setTotalCount(queryManagedAppResult.getTotalCount());
+//        for (AppInfo appInfo : getAppInfos(queryManagedAppResult.getInfos())) {
+//            result.addInfo(appInfo);
+//        }
+//
+//        return result;
+//    }
+//
+//    // 获取应用信息
+//    private List<AppInfo> getAppInfos(List<ManagerAppInfo> managerAppInfos) {
+//        List<AppInfo> appInfos = new ArrayList<>();
+//        for (ManagerAppInfo info : managerAppInfos) {
+//            FindAppOrder order = new FindAppOrder();
+//            order.setAppCode(info.getAppCode());
+//            FindAppResult result = configService.findApp(order);
+//            if (!result.isSuccess()) {
+//                throw new AntBekitException(Status.FAIL, result.getCode(), result.getMessage());
+//            }
+//            appInfos.add(result.getAppInfo());
+//        }
+//
+//        return appInfos;
+//    }
 }

@@ -35,16 +35,16 @@ public class PropertyKeyManageController extends AbstractController {
      *
      * @param appCode 应用编码（必须）
      * @param key     key（必须）
-     * @param common  是否公用（必须）
+     * @param outward 是否公用（必须）
      * @param memo    备注（可选）
      */
     @RequestMapping("/addOrModifyPropertyKey")
-    public AddOrModifyPropertyKeyResult addOrModifyPropertyKey(String appCode, String key, boolean common, String memo) {
+    public AddOrModifyPropertyKeyResult addOrModifyPropertyKey(String appCode, String key, boolean outward, String memo) {
         canModifyApp(appCode);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode(appCode);
         order.setKey(key);
-        order.setCommon(common);
+        order.setOutward(outward);
         order.setMemo(memo);
 
         return propertyKeyManageService.addOrModifyPropertyKey(order);
@@ -87,17 +87,17 @@ public class PropertyKeyManageController extends AbstractController {
      * @param pageSize 每页大小（必须）
      * @param appCode  应用编码（可选，有值会进行模糊查询）
      * @param key      key（可选，有值会进行模糊查询）
-     * @param common   是否公用（可选，有值会进行模糊查询）
+     * @param outward  是否公用（可选，有值会进行模糊查询）
      */
     @RequestMapping("/queryPropertyKey")
-    public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean common) {
-        canModifyApp(appCode);
+    public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean outward) {
+        assertAdmin();
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppCode(appCode);
         order.setKey(key);
-        order.setCommon(common);
+        order.setOutward(outward);
 
         return propertyKeyManageService.queryPropertyKey(order);
     }

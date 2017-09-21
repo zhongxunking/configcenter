@@ -9,7 +9,7 @@
 package org.antframework.configcenter.web.common;
 
 /**
- *
+ * 结果码
  */
 public enum ResultCode {
 

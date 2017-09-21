@@ -16,6 +16,7 @@ import org.antframework.configcenter.web.common.ResultCode;
 import org.antframework.configcenter.web.common.SessionAccessor;
 import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
+import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
 import org.antframework.configcenter.web.manager.facade.order.AddManagerOrder;
 import org.antframework.configcenter.web.manager.facade.order.ManagerLoginOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagerOrder;
@@ -31,20 +32,20 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/managerLogin")
-public class ManagerLoginController {
+public class ManagerLoginController extends AbstractController {
     @Autowired
     private ManagerManageService managerManageService;
 
     /**
      * 登陆
      *
-     * @param code     编码（必填）
-     * @param password 密码（必填）
+     * @param managerCode 管理员编码（必填）
+     * @param password    密码（必填）
      */
     @RequestMapping("/login")
-    public ManagerLoginResult login(String code, String password) {
+    public ManagerLoginResult login(String managerCode, String password) {
         ManagerLoginOrder order = new ManagerLoginOrder();
-        order.setCode(code);
+        order.setManagerCode(managerCode);
         order.setPassword(password);
 
         ManagerLoginResult result = managerManageService.managerLogin(order);
@@ -60,27 +61,30 @@ public class ManagerLoginController {
     @RequestMapping("/logout")
     public AbstractResult logout() {
         SessionAccessor.removeManagerInfo();
-        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+        return buildSuccessResult();
     }
 
+    /**
+     * 是否应该初始化超级管理员
+     */
     @RequestMapping("/shouldInitAdmin")
     public AbstractResult shouldInitAdmin() {
-        canInitAdmin();
-        throw new AntBekitException(Status.SUCCESS, CommonResultCode.SUCCESS.getCode(), CommonResultCode.SUCCESS.getMessage());
+        assertInitAdmin();
+        return buildSuccessResult();
     }
 
     /**
      * 初始化超级管理员
      *
-     * @param code     编码
-     * @param name     名称
-     * @param password 密码
+     * @param managerCode 管理员编码（必填）
+     * @param name        名称（必填）
+     * @param password    密码（必填）
      */
     @RequestMapping("/initAdmin")
-    public AddManagerResult initAdmin(String code, String name, String password) {
-        canInitAdmin();
+    public AddManagerResult initAdmin(String managerCode, String name, String password) {
+        assertInitAdmin();
         AddManagerOrder order = new AddManagerOrder();
-        order.setCode(code);
+        order.setManagerCode(managerCode);
         order.setName(name);
         order.setPassword(password);
         order.setType(ManagerType.ADMIN);
@@ -88,7 +92,22 @@ public class ManagerLoginController {
         return managerManageService.addManager(order);
     }
 
-    private void canInitAdmin() {
+    /**
+     * 查找已经登陆的管理员
+     */
+    @RequestMapping("/findLoginedManager")
+    public FindLoginedManagerResult findLoginedManager() {
+        FindLoginedManagerResult result = new FindLoginedManagerResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        result.setManagerInfo(SessionAccessor.getManagerInfo());
+
+        return result;
+    }
+
+    // 断言是否能初始化超级管理员
+    private void assertInitAdmin() {
         QueryManagerOrder order = new QueryManagerOrder();
         order.setPageNo(1);
         order.setPageSize(1);
@@ -98,6 +117,20 @@ public class ManagerLoginController {
         }
         if (result.getTotalCount() > 0) {
             throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), "已存在管理员，不能初始化超级管理员");
+        }
+    }
+
+    // 查找登陆的管理员result
+    private static class FindLoginedManagerResult extends AbstractResult {
+        // 管理员信息
+        private ManagerInfo managerInfo;
+
+        public ManagerInfo getManagerInfo() {
+            return managerInfo;
+        }
+
+        public void setManagerInfo(ManagerInfo managerInfo) {
+            this.managerInfo = managerInfo;
         }
     }
 }

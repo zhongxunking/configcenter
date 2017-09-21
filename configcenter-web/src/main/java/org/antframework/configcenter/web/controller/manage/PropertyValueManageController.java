@@ -8,15 +8,19 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -31,39 +35,48 @@ public class PropertyValueManageController extends AbstractController {
     private PropertyValueManageService propertyValueManageService;
 
     /**
-     * 设置属性value
+     * 设置多个属性value
      *
-     * @param profileCode 环境编码（必须）
      * @param appCode     应用编码（必须）
-     * @param key         key（必须）
-     * @param value       value（必须）
+     * @param profileCode 环境编码（必须）
+     * @param keys        key（必须，多个以“,”相隔）
+     * @param values      value（必须，多个以“,”相隔）
      */
     @RequestMapping("/setPropertyValue")
-    public SetPropertyValueResult setPropertyValue(String profileCode, String appCode, String key, String value) {
+    public SetPropertyValuesResult setPropertyValues(String appCode, String profileCode, String keys, String values) {
         canModifyApp(appCode);
-        SetPropertyValueOrder order = new SetPropertyValueOrder();
-        order.setProfileCode(profileCode);
+        String[] propertyKeys = StringUtils.split(keys, ',');
+        String[] propertyValues = StringUtils.split(values, ',');
+        if (propertyKeys.length != propertyValues.length) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
+        }
+        SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppCode(appCode);
-        order.setKey(key);
-        order.setValue(value);
+        order.setProfileCode(profileCode);
+        for (int i = 0; i < propertyKeys.length; i++) {
+            SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
+            keyValue.setKey(propertyKeys[i]);
+            keyValue.setValue(propertyValues[i]);
+            order.addKeyValue(keyValue);
+        }
 
-        return propertyValueManageService.setPropertyValue(order);
+        return propertyValueManageService.setPropertyValues(order);
     }
 
     /**
      * 删除属性value
      *
-     * @param profileCode 环境编码（必须）
      * @param appCode     应用编码（必须）
      * @param key         key（必须）
+     * @param profileCode 环境编码（必须）
      */
     @RequestMapping("/deletePropertyValue")
-    public DeletePropertyValueResult deletePropertyValue(String profileCode, String appCode, String key) {
+    public DeletePropertyValueResult deletePropertyValue(String appCode, String key, String profileCode) {
         canModifyApp(appCode);
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-        order.setProfileCode(profileCode);
         order.setAppCode(appCode);
         order.setKey(key);
+        order.setProfileCode(profileCode);
 
         return propertyValueManageService.deletePropertyValue(order);
     }
@@ -89,19 +102,19 @@ public class PropertyValueManageController extends AbstractController {
      *
      * @param pageNo      页码（必须）
      * @param pageSize    每页大小（必须）
-     * @param profileCode 环境编码（可选，有值会进行模糊查询）
      * @param appCode     应用编码（可选，有值会进行模糊查询）
      * @param key         key（可选，有值会进行模糊查询）
+     * @param profileCode 环境编码（可选，有值会进行模糊查询）
      */
     @RequestMapping("/queryPropertyValue")
-    public QueryPropertyValueResult queryPropertyValue(int pageNo, int pageSize, String profileCode, String appCode, String key) {
-        canModifyApp(appCode);
+    public QueryPropertyValueResult queryPropertyValue(int pageNo, int pageSize, String appCode, String key, String profileCode) {
+        assertAdmin();
         QueryPropertyValueOrder order = new QueryPropertyValueOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
-        order.setProfileCode(profileCode);
         order.setAppCode(appCode);
         order.setKey(key);
+        order.setProfileCode(profileCode);
 
         return propertyValueManageService.queryPropertyValue(order);
     }

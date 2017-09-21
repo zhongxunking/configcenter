@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
 /**
- *
+ * 绑定session的filter
  */
 @Component
 public class SessionBindFilter implements Filter {

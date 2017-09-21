@@ -13,7 +13,7 @@ import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
 import javax.servlet.http.HttpSession;
 
 /**
- *
+ * session访问器
  */
 public class SessionAccessor {
     private static final ThreadLocal<HttpSession> SESSION_HOLDER = new ThreadLocal<>();
