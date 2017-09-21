@@ -30,6 +30,18 @@ public class ConfigController {
     private ConfigService configService;
 
     /**
+     * 查找应用
+     *
+     * @param appCode 应用编码
+     */
+    @RequestMapping("/findApp")
+    public FindAppResult findApp(String appCode) {
+        FindAppOrder order = new FindAppOrder();
+        order.setAppCode(appCode);
+        return configService.findApp(order);
+    }
+
+    /**
      * 查询应用的配置属性
      *
      * @param appCode        应用编码
