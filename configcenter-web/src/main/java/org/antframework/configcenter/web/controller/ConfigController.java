@@ -58,7 +58,7 @@ public class ConfigController {
         QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode(queriedAppCode);
         order.setProfileCode(profileCode);
-        order.setOnlyCommon(!StringUtils.equals(queriedAppCode, appCode));
+        order.setOnlyOutward(!StringUtils.equals(queriedAppCode, appCode));
         return order;
     }
 }
