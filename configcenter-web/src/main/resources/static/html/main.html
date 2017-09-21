@@ -5,8 +5,8 @@
     <title>管理</title>
     <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
+    <script type="text/javascript" src="../common/commonManager.js"></script>
     <script type="text/javascript">
-        var managerInfo = null;
         $(document).ready(function () {
             managerInfo=getLoginedManager();
             if (managerInfo.type == "ADMIN") {
@@ -15,31 +15,6 @@
                 $("#adminOptions").hide();
             }
         });
-
-        function getLoginedManager() {
-            var managerInfo;
-            $.ajax({
-                url: "/manage/managerLogin/getLoginedManager",
-                data: {},
-                async: false,
-                success: function (ajaxResult) {
-                    if (ajaxResult.success) {
-                        if (ajaxResult.managerInfo == null) {
-                            alert("未登录，或登录超时，请重新登陆");
-                            window.location.href = "login.html";
-                        } else {
-                            managerInfo = ajaxResult.managerInfo;
-                        }
-                    } else {
-                        alert("失败，原因：" + ajaxResult.message);
-                    }
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
-            return managerInfo;
-        }
 
         function changeDetailWindowUrl(newUrl) {
             $("#detailWindow").attr("src", newUrl);
@@ -89,7 +64,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <button onclick='changeDetailWindowUrl("managerInfoModify.html?code="+getUrlParam("code"))'>
+                            <button onclick='changeDetailWindowUrl("managerInfoModify.html")'>
                                 修改个人信息
                             </button>
                         </td>

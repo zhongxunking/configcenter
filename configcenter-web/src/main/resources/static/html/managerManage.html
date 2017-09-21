@@ -21,20 +21,20 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" + info.code + "</td>";
+            tr += "<td>" + info.managerCode + "</td>";
             tr += "<td>" + info.name + "</td>";
             tr += "<td>" + info.type + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info.code + "\")'>删除</button></td>"
+            tr += "<td><button onclick='deleteEntity(\"" + info.managerCode + "\")'>删除</button></td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function deleteEntity(code) {
+        function deleteEntity(managerCode) {
             $.ajax({
                 url: "/manage/manager/deleteManager",
                 data: {
-                    code: code
+                    managerCode: managerCode
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -42,6 +42,25 @@
                     } else {
                         alert("删除失败，原因：" + ajaxResult.message);
                     }
+                }
+            });
+        }
+
+        function requestServer2(formName) {
+            var form = $("#" + formName);
+            $.ajax({
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        query();
+                        alert("成功")
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
                 }
             });
         }
@@ -54,11 +73,11 @@
     新增管理员：
     <form id="addManagerForm" action="/manage/manager/addManager">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
+            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
             <tr><td align="right">名称：</td><td><input type="text" name="name"></td></tr>
             <tr><td align="right">密码：</td><td><input type="password" name="password"></td></tr>
             <tr><td align="right">类型：</td><td><input type="text" name="type"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer('addManagerForm')" value="提交"></td><td></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer2('addManagerForm')" value="提交"></td><td></td></tr>
         </table>
     </form>
 </div>
@@ -67,9 +86,9 @@
     修改密码：
     <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
-            <tr><td align="right">新密码：</td><td><input type="text" name="newPassword"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer('modifyManagerPasswordForm')" value="提交"></td><td></td></tr>
+            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
+            <tr><td align="right">新密码：</td><td><input type="password" name="newPassword"></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer2('modifyManagerPasswordForm')" value="提交"></td><td></td></tr>
         </table>
     </form>
 </div>
@@ -78,16 +97,16 @@
     修改类型：
     <form id="modifyManagerTypeForm" action="/manage/manager/modifyManagerType">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="code"></td></tr>
+            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
             <tr><td align="right">新类型：</td><td><input type="text" name="newType"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer('modifyManagerTypeForm')" value="提交"></td><td></td></tr>
+            <tr><td align="right"><input type="button" onclick="requestServer2('modifyManagerTypeForm')" value="提交"></td><td></td></tr>
         </table>
     </form>
 </div>
 <br><br>
 <div>
     <form id="queryForm" action="/manage/manager/queryManager">
-        编码：<input type="text" name="code">
+        编码：<input type="text" name="managerCode">
         名称：<input type="text" name="name">
         类型：<input type="text" name="type">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
