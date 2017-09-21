@@ -41,17 +41,17 @@ public class ConfigServiceTest extends AbstractTest {
         QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
-        order.setOnlyCommon(false);
+        order.setOnlyOutward(false);
         QueryPropertiesResult result = configService.queryProperties(order);
         checkResult(result, Status.SUCCESS);
     }
 
     @Test
-    public void testQueryAppProfileProperty_onlyCommon() {
+    public void testQueryAppProfileProperty_onlyOutward() {
         QueryPropertiesOrder order = new QueryPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
-        order.setOnlyCommon(true);
+        order.setOnlyOutward(true);
         QueryPropertiesResult result = configService.queryProperties(order);
         checkResult(result, Status.SUCCESS);
     }

@@ -37,14 +37,14 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
-        order.setCommon(false);
+        order.setOutward(false);
         order.setMemo("归集户帐号");
         AddOrModifyPropertyKeyResult result = propertyKeyManageService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
         order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("cashier.url");
-        order.setCommon(true);
+        order.setOutward(true);
         order.setMemo("收银台地址");
         result = propertyKeyManageService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
@@ -74,6 +74,5 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         order.setPageSize(10);
         QueryPropertyKeyResult result = propertyKeyManageService.queryPropertyKey(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals(1, result.getInfos().size());
     }
 }
