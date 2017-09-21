@@ -245,19 +245,19 @@
             <div>
                 <table>
                     <tr>
-                        <td>设置属性value:</td>
+                        <td>设置属性value（多个key和value的个数要相等）:</td>
                     </tr>
                     <tr>
                         <td>
                             <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
                                 <table>
                                     <tr>
-                                        <td align="right">key：</td>
-                                        <td><input type="text" name="key"></td>
+                                        <td align="right">key（如果多个用“,”隔开）：</td>
+                                        <td><input type="text" name="keys"></td>
                                     </tr>
                                     <tr>
-                                        <td align="right">value：</td>
-                                        <td><input type="text" name="value"></td>
+                                        <td align="right">value（如果多个用“,”隔开）：</td>
+                                        <td><input type="text" name="values"></td>
                                     </tr>
                                     <tr>
                                         <td align="right"><input type="button" onclick="setPropertyValue()" value="提交">
