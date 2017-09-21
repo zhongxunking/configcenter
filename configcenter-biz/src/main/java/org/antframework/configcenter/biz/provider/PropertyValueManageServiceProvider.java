@@ -12,11 +12,11 @@ import org.antframework.configcenter.facade.api.manage.PropertyValueManageServic
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,8 +30,8 @@ public class PropertyValueManageServiceProvider implements PropertyValueManageSe
     private ServiceEngine serviceEngine;
 
     @Override
-    public SetPropertyValueResult setPropertyValue(SetPropertyValueOrder order) {
-        return serviceEngine.execute("setPropertyValueService", order);
+    public SetPropertyValuesResult setPropertyValues(SetPropertyValuesOrder order) {
+        return serviceEngine.execute("setPropertyValuesService", order);
     }
 
     @Override

@@ -11,20 +11,20 @@ package org.antframework.configcenter.facade.api.manage;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.SetPropertyValueOrder;
+import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValueResult;
+import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 
 /**
  * 属性value管理服务
  */
 public interface PropertyValueManageService {
     /**
-     * 设置属性value
+     * 设置多个属性value
      */
-    SetPropertyValueResult setPropertyValue(SetPropertyValueOrder order);
+    SetPropertyValuesResult setPropertyValues(SetPropertyValuesOrder order);
 
     /**
      * 删除属性value
