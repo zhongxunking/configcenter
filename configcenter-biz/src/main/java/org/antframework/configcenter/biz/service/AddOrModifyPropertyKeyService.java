@@ -56,7 +56,7 @@ public class AddOrModifyPropertyKeyService {
         if (propertyKey == null) {
             propertyKey = buildPropertyKey(order);
         } else {
-            propertyKey.setCommon(order.isCommon());
+            propertyKey.setOutward(order.isOutward());
             propertyKey.setMemo(order.getMemo());
         }
         propertyKeyDao.save(propertyKey);

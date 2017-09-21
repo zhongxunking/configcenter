@@ -18,8 +18,8 @@ public class QueryPropertyKeyOrder extends AbstractQueryOrder {
     private String appCode;
     // 属性key
     private String key;
-    // 是否公用
-    private Boolean common;
+    // 是否是公开的
+    private Boolean outward;
 
     public String getAppCode() {
         return appCode;
@@ -37,11 +37,11 @@ public class QueryPropertyKeyOrder extends AbstractQueryOrder {
         this.key = key;
     }
 
-    public Boolean getCommon() {
-        return common;
+    public Boolean getOutward() {
+        return outward;
     }
 
-    public void setCommon(Boolean common) {
-        this.common = common;
+    public void setOutward(Boolean outward) {
+        this.outward = outward;
     }
 }

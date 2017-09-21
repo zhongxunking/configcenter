@@ -21,8 +21,8 @@ public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
     // key
     @NotBlank
     private String key;
-    // 是否公用
-    private boolean common;
+    // 是否公开
+    private boolean outward;
     // 备注
     private String memo;
 
@@ -42,12 +42,12 @@ public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
         this.key = key;
     }
 
-    public boolean isCommon() {
-        return common;
+    public boolean isOutward() {
+        return outward;
     }
 
-    public void setCommon(boolean common) {
-        this.common = common;
+    public void setOutward(boolean outward) {
+        this.outward = outward;
     }
 
     public String getMemo() {

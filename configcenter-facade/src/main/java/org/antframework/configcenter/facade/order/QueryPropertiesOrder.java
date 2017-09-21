@@ -21,8 +21,8 @@ public class QueryPropertiesOrder extends AbstractOrder {
     // 环境编码
     @NotBlank
     private String profileCode;
-    // 是否只查询公用属性
-    private boolean onlyCommon;
+    // 是否只查询公开的属性
+    private boolean onlyOutward;
 
     public String getAppCode() {
         return appCode;
@@ -40,11 +40,11 @@ public class QueryPropertiesOrder extends AbstractOrder {
         this.profileCode = profileCode;
     }
 
-    public boolean isOnlyCommon() {
-        return onlyCommon;
+    public boolean isOnlyOutward() {
+        return onlyOutward;
     }
 
-    public void setOnlyCommon(boolean onlyCommon) {
-        this.onlyCommon = onlyCommon;
+    public void setOnlyOutward(boolean onlyOutward) {
+        this.onlyOutward = onlyOutward;
     }
 }

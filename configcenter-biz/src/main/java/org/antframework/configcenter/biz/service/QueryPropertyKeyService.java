@@ -49,8 +49,8 @@ public class QueryPropertyKeyService {
         if (queryPropertyKeyOrder.getKey() != null) {
             searchParams.put("LIKE_key", "%" + queryPropertyKeyOrder.getKey() + "%");
         }
-        if (queryPropertyKeyOrder.getCommon() != null) {
-            searchParams.put("EQ_common", queryPropertyKeyOrder.getCommon());
+        if (queryPropertyKeyOrder.getOutward() != null) {
+            searchParams.put("EQ_outward", queryPropertyKeyOrder.getOutward());
         }
         return searchParams;
     }

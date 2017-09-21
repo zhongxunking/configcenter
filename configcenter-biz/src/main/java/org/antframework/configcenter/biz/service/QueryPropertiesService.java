@@ -67,18 +67,18 @@ public class QueryPropertiesService {
         // 获取公共配置
         Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_CODE, order.getProfileCode(), false);
         // 获取应用配置（覆盖公共配置）
-        properties.putAll(getAppProperties(order.getAppCode(), order.getProfileCode(), order.isOnlyCommon()));
+        properties.putAll(getAppProperties(order.getAppCode(), order.getProfileCode(), order.isOnlyOutward()));
 
         result.setProperties(properties);
     }
 
     // 获取应用配置
-    private Map<String, String> getAppProperties(String appCode, String profileCode, boolean onlyCommon) {
+    private Map<String, String> getAppProperties(String appCode, String profileCode, boolean onlyOutward) {
         Map<String, String> properties = new HashMap<>();
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCode(appCode);
         for (PropertyKey propertyKey : propertyKeys) {
-            if (onlyCommon && !propertyKey.getCommon()) {
+            if (onlyOutward && !propertyKey.getOutward()) {
                 continue;
             }
             properties.put(propertyKey.getKey(), null);
