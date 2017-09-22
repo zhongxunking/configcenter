@@ -87,7 +87,7 @@ public class PropertyKeyManageController extends AbstractController {
      * @param pageSize 每页大小（必须）
      * @param appCode  应用编码（可选，有值会进行模糊查询）
      * @param key      key（可选，有值会进行模糊查询）
-     * @param outward  是否公用（可选，有值会进行模糊查询）
+     * @param outward  是否公用（可选）
      */
     @RequestMapping("/queryPropertyKey")
     public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean outward) {
