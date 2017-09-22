@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.manager.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.web.common.PasswordUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
@@ -40,7 +41,7 @@ public class ManagerLoginService {
         if (manager == null) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
-        if (!StringUtils.equals(order.getPassword(), manager.getPassword())) {
+        if (!StringUtils.equals(PasswordUtils.digest(order.getPassword()), manager.getPassword())) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "密码不正确");
         }
         result.setManagerInfo(buildInfo(manager));

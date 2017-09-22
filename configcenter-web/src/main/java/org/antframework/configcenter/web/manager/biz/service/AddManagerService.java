@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.manager.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.web.common.PasswordUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.antframework.configcenter.web.manager.facade.order.AddManagerOrder;
@@ -44,6 +45,7 @@ public class AddManagerService {
     private Manager buildManager(AddManagerOrder addManagerOrder) {
         Manager manager = new Manager();
         BeanUtils.copyProperties(addManagerOrder, manager);
+        manager.setPassword(PasswordUtils.digest(addManagerOrder.getPassword()));
         return manager;
     }
 }

@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.manager.biz.service;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.web.common.PasswordUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.antframework.configcenter.web.manager.facade.order.ModifyManagerPasswordOrder;
@@ -36,7 +37,7 @@ public class ModifyManagerPasswordService {
         if (manager == null) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
-        manager.setPassword(order.getNewPassword());
+        manager.setPassword(PasswordUtils.digest(order.getNewPassword()));
         managerDao.save(manager);
     }
 }
