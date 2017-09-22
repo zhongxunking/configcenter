@@ -14,20 +14,20 @@
         function refresh() {
             var appCode = getUrlParam("appCode");
             var profileCode = getUrlParam("profileCode");
-            refreshProperties(appCode, profileCode, false)
+            refreshProperties(appCode, profileCode, "appTableDiv", appCode != "common", true)
             if (appCode != "common") {
                 $("#commonPropertiesDiv").show();
-                refreshProperties("common", profileCode, true)
+                refreshProperties("common", profileCode, "commonTableDiv", false, false)
             } else {
                 $("#commonPropertiesDiv").hide();
             }
         }
 
-        function refreshProperties(appCode, profileCode, isCommonProperties) {
+        function refreshProperties(appCode, profileCode, tableDiv, showOutward, showOptions) {
             var keyInfos = getPropertyKeyInfos(appCode);
             var valueInfos = getPropertyValueInfo(appCode, profileCode);
             var propertyMap = getPropertyMap(keyInfos, valueInfos);
-            createTable(propertyMap, isCommonProperties)
+            createTable(propertyMap, tableDiv, showOutward, showOptions)
         }
 
         function getPropertyKeyInfos(appCode) {
@@ -80,9 +80,9 @@
             for (var i = 0; i < keyInfos.length; i++) {
                 var property = new Array();
                 property["key"] = keyInfos[i].key;
-                property["common"] = keyInfos[i].common;
+                property["outward"] = keyInfos[i].outward;
                 property["memo"] = keyInfos[i].memo;
-                property["value"] = "";
+                property["value"] = "null";
 
                 propertyMap[keyInfos[i].key] = property;
             }
@@ -94,29 +94,25 @@
             return propertyMap;
         }
 
-        function createTable(infos, isCommonProperties) {
+        function createTable(infos, tableDiv, showOutward, showOptions) {
             var table = "<table width='80%'>";
-            table += createTableHead(isCommonProperties);
+            table += createTableHead(showOutward, showOptions);
             for (var key in infos) {
-                table += creteTableRow(infos[key], isCommonProperties);
+                table += creteTableRow(infos[key],showOutward, showOptions);
             }
             table += "</table>";
-            if (isCommonProperties) {
-                $("#commonTableDiv").html(table);
-            } else {
-                $("#appTableDiv").html(table);
-            }
+            $("#" + tableDiv).html(table);
         }
 
-        function createTableHead(isCommonProperties) {
+        function createTableHead(showOutward, showOptions) {
             var tr = "<tr>";
             tr += "<th align='left'>属性key</th>"
-            if (!isCommonProperties) {
-                tr += "<th align='left'>是否公用</th>"
+            if (showOutward) {
+                tr += "<th align='left'>是否公开</th>"
             }
             tr += "<th align='left'>备注</th>"
             tr += "<th align='left'>属性value</th>"
-            if (!isCommonProperties) {
+            if (showOptions) {
                 tr += "<th align='left'>操作</th>"
             }
             tr += "</tr>"
@@ -124,20 +120,28 @@
             return tr;
         }
 
-        function creteTableRow(info, isCommonProperties) {
+        function creteTableRow(info, showOutward, showOptions) {
             var tr = "<tr>";
             tr += "<td>" + info["key"] + "</td>";
-            if (!isCommonProperties) {
-                tr += "<td>" + info["common"] + "</td>";
+            if (showOutward) {
+                tr += "<td>" + outwardToReadStr(info["outward"]) + "</td>";
             }
             tr += "<td>" + info["memo"] + "</td>";
             tr += "<td>" + info["value"] + "</td>";
-            if (!isCommonProperties) {
-                tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置空</button></td>"
+            if (showOptions) {
+                tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置null</button></td>"
             }
             tr += "</tr>"
 
             return tr;
+        }
+
+        function outwardToReadStr(outward) {
+            if (outward) {
+                return "公开";
+            } else {
+                return "私有";
+            }
         }
 
         function deleteEntity(key) {
@@ -216,8 +220,8 @@
             var table = "<table>";
             for (var i = 0; i < setValueNumber; i++) {
                 table += "<tr>"
-                table += "<td>key：<input type=\"text\" name=\"keys\"></td>";
-                table += "<td>value：<input type=\"text\" name=\"values\"></td>";
+                table += "<td>key" + (i + 1) + "：<input type=\"text\" name=\"keys\"></td>";
+                table += "<td>value" + (i + 1) + "：<input type=\"text\" name=\"values\"></td>";
                 table += "</tr>";
             }
             table += "<tr>";
@@ -253,8 +257,13 @@
                                         <td><input type="text" name="key"></td>
                                     </tr>
                                     <tr>
-                                        <td align="right">是否公用：</td>
-                                        <td><input type="text" name="common"></td>
+                                        <td align="right">是否公开：</td>
+                                        <td>
+                                            <select name="outward">
+                                                <option value="false" selected="true">私有</option>
+                                                <option value="true">公开</option>
+                                            </select>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td align="right">备注：</td>
@@ -288,7 +297,8 @@
                                             <td>value：<input type="text" name="values"></td>
                                         </tr>
                                         <tr>
-                                            <td align="right"><input type="button" onclick="addSetValuesForm()" value="+"></td>
+                                            <td align="right"><input type="button" onclick="addSetValuesForm()"
+                                                                     value="+"></td>
                                             <td><input type="button" onclick="subSetValuesForm()" value="-"></td>
                                         </tr>
                                         <tr>
