@@ -20,6 +20,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class QueryPropertyValueService {
     public void execute(ServiceContext<QueryPropertyValueOrder, QueryPropertyValueResult> context) {
         QueryPropertyValueOrder order = context.getOrder();
 
-        Page<PropertyValue> page = propertyValueDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<PropertyValue> page = propertyValueDao.query(buildSearchParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
 
@@ -53,5 +55,11 @@ public class QueryPropertyValueService {
             searchParams.put("LIKE_profileCode", "%" + queryPropertyValueOrder.getProfileCode() + "%");
         }
         return searchParams;
+    }
+
+    // 构建分页
+    private Pageable buildPageable(QueryPropertyValueOrder queryPropertyValueOrder) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        return new PageRequest(queryPropertyValueOrder.getPageNo() - 1, queryPropertyValueOrder.getPageSize(), sort);
     }
 }

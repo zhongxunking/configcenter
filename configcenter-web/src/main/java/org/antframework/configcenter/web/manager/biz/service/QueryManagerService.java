@@ -19,6 +19,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -35,11 +37,11 @@ public class QueryManagerService {
     public void execute(ServiceContext<QueryManagerOrder, QueryManagerResult> context) {
         QueryManagerOrder order = context.getOrder();
 
-        Page<Manager> page = managerDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<Manager> page = managerDao.query(buildSearchParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new FacadeUtils.SpringDataPageExtractor<>(page));
     }
 
-    public Map<String, Object> buildSearchParams(QueryManagerOrder queryManagerOrder) {
+    private Map<String, Object> buildSearchParams(QueryManagerOrder queryManagerOrder) {
         Map<String, Object> searchParams = new HashMap<>();
         if (queryManagerOrder.getManagerCode() != null) {
             searchParams.put("LIKE_managerCode", "%" + queryManagerOrder.getManagerCode() + "%");
@@ -51,5 +53,11 @@ public class QueryManagerService {
             searchParams.put("EQ_type", queryManagerOrder.getType());
         }
         return searchParams;
+    }
+
+    // 构建分页
+    private Pageable buildPageable(QueryManagerOrder queryManagerOrder) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        return new PageRequest(queryManagerOrder.getPageNo() - 1, queryManagerOrder.getPageSize(), sort);
     }
 }

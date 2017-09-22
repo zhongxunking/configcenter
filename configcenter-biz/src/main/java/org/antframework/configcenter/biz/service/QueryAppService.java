@@ -20,6 +20,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class QueryAppService {
     public void execute(ServiceContext<QueryAppOrder, QueryAppResult> context) {
         QueryAppOrder order = context.getOrder();
 
-        Page<App> page = appDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<App> page = appDao.query(buildSearchParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
 
@@ -47,5 +49,11 @@ public class QueryAppService {
             searchParams.put("LIKE_appCode", "%" + queryAppOrder.getAppCode() + "%");
         }
         return searchParams;
+    }
+
+    // 构建分页
+    private Pageable buildPageable(QueryAppOrder queryAppOrder) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        return new PageRequest(queryAppOrder.getPageNo() - 1, queryAppOrder.getPageSize(), sort);
     }
 }

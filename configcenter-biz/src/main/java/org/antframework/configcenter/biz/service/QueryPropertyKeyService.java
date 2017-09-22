@@ -20,6 +20,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -36,7 +38,7 @@ public class QueryPropertyKeyService {
     public void execute(ServiceContext<QueryPropertyKeyOrder, QueryPropertyKeyResult> context) {
         QueryPropertyKeyOrder order = context.getOrder();
 
-        Page<PropertyKey> page = propertyKeyDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<PropertyKey> page = propertyKeyDao.query(buildSearchParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new SpringDataPageExtractor<>(page));
     }
 
@@ -53,5 +55,11 @@ public class QueryPropertyKeyService {
             searchParams.put("EQ_outward", queryPropertyKeyOrder.getOutward());
         }
         return searchParams;
+    }
+
+    // 构建分页
+    private Pageable buildPageable(QueryPropertyKeyOrder queryPropertyKeyOrder) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        return new PageRequest(queryPropertyKeyOrder.getPageNo() - 1, queryPropertyKeyOrder.getPageSize(), sort);
     }
 }

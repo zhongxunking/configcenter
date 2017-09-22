@@ -25,6 +25,8 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -53,17 +55,23 @@ public class QueryManagedAppService {
     public void execute(ServiceContext<QueryManagedAppOrder, QueryManagedAppResult> context) {
         QueryManagedAppOrder order = context.getOrder();
 
-        Page<ManagerApp> page = managerAppDao.query(buildSearchParams(order), new PageRequest(order.getPageNo() - 1, order.getPageSize()));
+        Page<ManagerApp> page = managerAppDao.query(buildSearchParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new FacadeUtils.SpringDataPageExtractor<>(page));
     }
 
     // 构建searchParams
-    public Map<String, Object> buildSearchParams(QueryManagedAppOrder queryManagedAppOrder) {
+    private Map<String, Object> buildSearchParams(QueryManagedAppOrder queryManagedAppOrder) {
         Map<String, Object> searchParams = new HashMap<>();
         searchParams.put("EQ_managerCode", queryManagedAppOrder.getManagerCode());
         if (queryManagedAppOrder.getAppCode() != null) {
             searchParams.put("LIKE_appCode", "%" + queryManagedAppOrder.getAppCode() + "%");
         }
         return searchParams;
+    }
+
+    // 构建分页
+    private Pageable buildPageable(QueryManagedAppOrder queryManagedAppOrder) {
+        Sort sort = new Sort(Sort.Direction.DESC, "id");
+        return new PageRequest(queryManagedAppOrder.getPageNo() - 1, queryManagedAppOrder.getPageSize(), sort);
     }
 }
