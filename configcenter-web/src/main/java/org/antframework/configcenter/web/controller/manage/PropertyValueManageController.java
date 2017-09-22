@@ -20,7 +20,6 @@ import org.antframework.configcenter.facade.result.manage.DeletePropertyValueRes
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -39,24 +38,22 @@ public class PropertyValueManageController extends AbstractController {
      *
      * @param appCode     应用编码（必须）
      * @param profileCode 环境编码（必须）
-     * @param keys        key（必须，多个以“,”相隔）
-     * @param values      value（必须，多个以“,”相隔）
+     * @param keys        一个或多个key（必须）
+     * @param values      与keys数量对应的value（必须）
      */
     @RequestMapping("/setPropertyValue")
-    public SetPropertyValuesResult setPropertyValues(String appCode, String profileCode, String keys, String values) {
+    public SetPropertyValuesResult setPropertyValues(String appCode, String profileCode, String[] keys, String[] values) {
         canModifyApp(appCode);
-        String[] propertyKeys = StringUtils.split(keys, ',');
-        String[] propertyValues = StringUtils.split(values, ',');
-        if (propertyKeys.length != propertyValues.length) {
+        if (keys.length != values.length) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
         }
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppCode(appCode);
         order.setProfileCode(profileCode);
-        for (int i = 0; i < propertyKeys.length; i++) {
+        for (int i = 0; i < keys.length; i++) {
             SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
-            keyValue.setKey(propertyKeys[i]);
-            keyValue.setValue(propertyValues[i]);
+            keyValue.setKey(keys[i]);
+            keyValue.setValue(values[i]);
             order.addKeyValue(keyValue);
         }
 
