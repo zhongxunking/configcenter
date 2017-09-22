@@ -6,7 +6,6 @@
     <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
     <script type="text/javascript">
 
-
         $(document).ready(function () {
             $.ajax({
                 url: "/manage/managerLogin/shouldInitAdmin",
@@ -26,7 +25,6 @@
             });
         });
 
-
         function initAdmin() {
             var form = $("#initAdminForm");
             $.ajax({
@@ -34,6 +32,7 @@
                 data: form.serialize(),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
+                        alert("设置成功，进行登陆")
                         window.location.reload();
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
@@ -66,21 +65,81 @@
     </script>
 </head>
 <body>
+<br><br><br><br><br><br><br><br>
 <div id="initAdminFormDiv" style="display:none;">
-    初始化超级管理员：<br>
-    <form id="initAdminForm" action="../manage/managerLogin/initAdmin">
-        超级管理员编码：<input type="text" name="managerCode"><br/>
-        名称：<input type="text" name="name"><br/>
-        密码：<input type="password" name="password"><br/>
-        <input type="button" onclick="initAdmin()" value="提交">
+    <form id="initAdminForm" action="/manage/managerLogin/initAdmin">
+        <table width="100%">
+            <tr>
+                <td align="right" width="50%">
+                    首次使用需设置超级管理员&nbsp;&nbsp;&nbsp;
+                </td>
+                <td width="50%"></td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    管理员编码：
+                </td>
+                <td>
+                    <input type="text" name="managerCode">
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    名称：
+                </td>
+                <td>
+                    <input type="text" name="name">
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    密码：
+                </td>
+                <td>
+                    <input type="password" name="password">
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    <input type="button" onclick="initAdmin()" value="提交">
+                </td>
+                <td width="50%"></td>
+            </tr>
+        </table>
     </form>
 </div>
 <div id="loginFormDiv" style="display:none;">
-    登陆：<br>
-    <form id="loginForm" action="../manage/managerLogin/login">
-        管理员编码：<input type="text" name="managerCode"><br/>
-        密码：<input type="password" name="password"><br/>
-        <input type="button" onclick="login()" value="提交">
+    <form id="loginForm" action="/manage/managerLogin/login">
+        <table width="100%">
+            <tr>
+                <td align="right" width="50%">
+                    登陆&nbsp;&nbsp;&nbsp;
+                </td>
+                <td width="50%"></td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    管理员编码：
+                </td>
+                <td width="50%">
+                    <input type="text" name="managerCode">
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    密码：
+                </td>
+                <td width="50%">
+                    <input type="password" name="password">
+                </td>
+            </tr>
+            <tr>
+                <td align="right" width="50%">
+                    <input type="button" onclick="login()" value="提交">
+                </td>
+                <td width="50%"></td>
+            </tr>
+        </table>
     </form>
 </div>
 </body>

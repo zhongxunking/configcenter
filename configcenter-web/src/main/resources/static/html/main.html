@@ -10,10 +10,10 @@
         $(document).ready(function () {
             if (managerInfo.type == "ADMIN") {
                 $("#adminOptions").show();
-                $("#managerNameDiv").html("超级管理员：&nbsp;" + managerInfo.name);
+                $("#managerNameDiv").html("超级管理员：;" + managerInfo.name);
             } else {
                 $("#adminOptions").hide();
-                $("#managerNameDiv").html("普通管理员：&nbsp;" + managerInfo.name);
+                $("#managerNameDiv").html("普通管理员：;" + managerInfo.name);
             }
             changeDetailWindowUrl("managedApp.html")
         });
