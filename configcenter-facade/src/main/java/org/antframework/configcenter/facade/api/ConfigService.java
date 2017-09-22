@@ -9,9 +9,9 @@
 package org.antframework.configcenter.facade.api;
 
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryPropertiesResult;
+import org.antframework.configcenter.facade.result.FindPropertiesResult;
 
 /**
  * 配置服务
@@ -28,7 +28,7 @@ public interface ConfigService {
     FindAppResult findApp(FindAppOrder order);
 
     /**
-     * 查询应用在特定环境中的配置
+     * 查找应用在特定环境中的配置
      */
-    QueryPropertiesResult queryProperties(QueryPropertiesOrder order);
+    FindPropertiesResult findProperties(FindPropertiesOrder order);
 }

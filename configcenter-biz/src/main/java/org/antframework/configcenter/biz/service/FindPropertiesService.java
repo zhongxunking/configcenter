@@ -20,8 +20,8 @@ import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
-import org.antframework.configcenter.facade.result.QueryPropertiesResult;
+import org.antframework.configcenter.facade.order.FindPropertiesOrder;
+import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceCheck;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -33,10 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 查询应用在特定环境中的配置服务
+ * 查找应用在特定环境中的配置服务
  */
 @Service
-public class QueryPropertiesService {
+public class FindPropertiesService {
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -47,8 +47,8 @@ public class QueryPropertiesService {
     private PropertyValueDao propertyValueDao;
 
     @ServiceCheck
-    public void check(ServiceContext<QueryPropertiesOrder, QueryPropertiesResult> context) {
-        QueryPropertiesOrder order = context.getOrder();
+    public void check(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
+        FindPropertiesOrder order = context.getOrder();
 
         App app = appDao.findByAppCode(order.getAppCode());
         if (app == null) {
@@ -61,9 +61,9 @@ public class QueryPropertiesService {
     }
 
     @ServiceExecute
-    public void execute(ServiceContext<QueryPropertiesOrder, QueryPropertiesResult> context) {
-        QueryPropertiesOrder order = context.getOrder();
-        QueryPropertiesResult result = context.getResult();
+    public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
+        FindPropertiesOrder order = context.getOrder();
+        FindPropertiesResult result = context.getResult();
         // 获取公共配置
         Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_CODE, order.getProfileCode(), false);
         // 获取应用配置（覆盖公共配置）

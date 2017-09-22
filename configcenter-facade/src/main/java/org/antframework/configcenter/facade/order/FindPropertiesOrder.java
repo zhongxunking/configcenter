@@ -12,9 +12,9 @@ import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 查询应用在特定环境中的配置order
+ * 查找应用在特定环境中的配置order
  */
-public class QueryPropertiesOrder extends AbstractOrder {
+public class FindPropertiesOrder extends AbstractOrder {
     // 应用编码
     @NotBlank
     private String appCode;

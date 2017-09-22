@@ -13,9 +13,9 @@ import org.antframework.common.util.facade.AbstractResult;
 import java.util.Map;
 
 /**
- * 查询应用在特定环境中的配置result
+ * 查找应用在特定环境中的配置result
  */
-public class QueryPropertiesResult extends AbstractResult {
+public class FindPropertiesResult extends AbstractResult {
     // 属性（不存在该应用或环境，则返回null）
     private Map<String, String> properties;
 
