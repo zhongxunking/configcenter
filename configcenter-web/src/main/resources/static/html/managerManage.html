@@ -23,11 +23,19 @@
             var tr = "<tr>";
             tr += "<td>" + info.managerCode + "</td>";
             tr += "<td>" + info.name + "</td>";
-            tr += "<td>" + info.type + "</td>";
+            tr += "<td>" + typeToReadStr(info.type) + "</td>";
             tr += "<td><button onclick='deleteEntity(\"" + info.managerCode + "\")'>删除</button></td>"
             tr += "</tr>"
 
             return tr;
+        }
+
+        function typeToReadStr(type) {
+            if (type == 'ADMIN') {
+                return "超级管理员";
+            } else {
+                return "普通管理员";
+            }
         }
 
         function deleteEntity(managerCode) {
@@ -73,11 +81,31 @@
     新增管理员：
     <form id="addManagerForm" action="/manage/manager/addManager">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
-            <tr><td align="right">名称：</td><td><input type="text" name="name"></td></tr>
-            <tr><td align="right">密码：</td><td><input type="password" name="password"></td></tr>
-            <tr><td align="right">类型：</td><td><input type="text" name="type"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer2('addManagerForm')" value="提交"></td><td></td></tr>
+            <tr>
+                <td align="right">编码：</td>
+                <td><input type="text" name="managerCode"></td>
+            </tr>
+            <tr>
+                <td align="right">名称：</td>
+                <td><input type="text" name="name"></td>
+            </tr>
+            <tr>
+                <td align="right">密码：</td>
+                <td><input type="password" name="password"></td>
+            </tr>
+            <tr>
+                <td align="right">类型：</td>
+                <td>
+                    <select name="type">
+                        <option value="NORMAL" selected="true">普通管理员</option>
+                        <option value="ADMIN">超级管理员</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer2('addManagerForm')" value="提交"></td>
+                <td></td>
+            </tr>
         </table>
     </form>
 </div>
@@ -86,9 +114,19 @@
     修改密码：
     <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
-            <tr><td align="right">新密码：</td><td><input type="password" name="newPassword"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer2('modifyManagerPasswordForm')" value="提交"></td><td></td></tr>
+            <tr>
+                <td align="right">编码：</td>
+                <td><input type="text" name="managerCode"></td>
+            </tr>
+            <tr>
+                <td align="right">新密码：</td>
+                <td><input type="password" name="newPassword"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer2('modifyManagerPasswordForm')" value="提交">
+                </td>
+                <td></td>
+            </tr>
         </table>
     </form>
 </div>
@@ -97,9 +135,24 @@
     修改类型：
     <form id="modifyManagerTypeForm" action="/manage/manager/modifyManagerType">
         <table>
-            <tr><td align="right">编码：</td><td><input type="text" name="managerCode"></td></tr>
-            <tr><td align="right">新类型：</td><td><input type="text" name="newType"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer2('modifyManagerTypeForm')" value="提交"></td><td></td></tr>
+            <tr>
+                <td align="right">编码：</td>
+                <td><input type="text" name="managerCode"></td>
+            </tr>
+            <tr>
+                <td align="right">新类型：</td>
+                <td>
+                    <select name="newType">
+                        <option value="NORMAL" selected="true">普通管理员</option>
+                        <option value="ADMIN">超级管理员</option>
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer2('modifyManagerTypeForm')" value="提交">
+                </td>
+                <td></td>
+            </tr>
         </table>
     </form>
 </div>
@@ -108,7 +161,12 @@
     <form id="queryForm" action="/manage/manager/queryManager">
         编码：<input type="text" name="managerCode">
         名称：<input type="text" name="name">
-        类型：<input type="text" name="type">
+        类型：
+        <select name="type">
+            <option value="" selected="true"></option>
+            <option value="NORMAL">普通管理员</option>
+            <option value="ADMIN">超级管理员</option>
+        </select>
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
 </div>
