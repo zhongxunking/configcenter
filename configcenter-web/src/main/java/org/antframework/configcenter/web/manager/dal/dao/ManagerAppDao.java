@@ -27,6 +27,8 @@ public interface ManagerAppDao {
 
     void delete(ManagerApp managerApp);
 
+    void deleteByAppCode(String appCode);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     ManagerApp findLockByManagerCodeAndAppCode(String managerCode, String appCode);
 

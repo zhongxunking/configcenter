@@ -27,6 +27,11 @@ public interface ManagerAppManageService {
     DeleteManagerAppResult deleteManagerApp(DeleteManagerAppOrder order);
 
     /**
+     * 删除所有管理员与指定应用的关联
+     */
+    DeleteManagerAppByAppResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order);
+
+    /**
      * 查找管理员与应用关联
      */
     FindManagerAppResult findManagerApp(FindManagerAppOrder order);

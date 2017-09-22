@@ -34,6 +34,11 @@ public class ManagerAppManageServiceProvider implements ManagerAppManageService 
     }
 
     @Override
+    public DeleteManagerAppByAppResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order) {
+        return serviceEngine.execute("deleteManagerAppByAppService", order);
+    }
+
+    @Override
     public FindManagerAppResult findManagerApp(FindManagerAppOrder order) {
         return serviceEngine.execute("findManagerAppService", order);
     }
