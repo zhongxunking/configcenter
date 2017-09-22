@@ -42,7 +42,7 @@ public class ConfigController {
     }
 
     /**
-     * 查询应用的配置属性
+     * 查找应用在特定环境中的配置
      *
      * @param appCode        应用编码
      * @param queriedAppCode 被查询配置的应用编码

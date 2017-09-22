@@ -35,7 +35,7 @@ import java.util.Map;
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
     // 查询配置url
-    private static final String QUERY_CONFIG_SUFFIX_URL = "/config/queryProperties";
+    private static final String QUERY_CONFIG_SUFFIX_URL = "/config/findProperties";
 
     // 发送给服务端的请求
     private HttpUriRequest request;
@@ -53,7 +53,7 @@ public class ServerQuerier {
     public Map<String, String> queryConfig() {
         try {
             String resultStr = httpClient.execute(request, new BasicResponseHandler());
-            QueryPropertiesResult result = JSON.parseObject(resultStr, QueryPropertiesResult.class);
+            FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
             if (result == null) {
                 throw new RuntimeException("请求配置中心失败");
             }
@@ -89,8 +89,8 @@ public class ServerQuerier {
         return httpPost;
     }
 
-    // 查询应用在特定环境中的配置result
-    private static class QueryPropertiesResult extends AbstractResult {
+    // 查找应用在特定环境中的配置result
+    private static class FindPropertiesResult extends AbstractResult {
         // 属性（不存在该应用或环境，则返回null）
         private Map<String, String> properties;
 
