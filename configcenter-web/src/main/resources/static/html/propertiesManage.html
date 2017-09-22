@@ -148,9 +148,9 @@
 
         function outwardToReadStr(outward) {
             if (outward) {
-                return "公开";
+                return "是";
             } else {
-                return "私有";
+                return "否";
             }
         }
 
@@ -252,10 +252,10 @@
         function refreshOutwardDiv(isCommonApp) {
             var divHtml = "<select name=\"outward\">";
             if (isCommonApp) {
-                divHtml += "<option value=\"true\" selected=\"true\">公开</option>";
+                divHtml += "<option value=\"true\" selected=\"true\">是</option>";
             } else {
-                divHtml += "<option value=\"false\" selected=\"true\">私有</option>";
-                divHtml += "<option value=\"true\">公开</option>";
+                divHtml += "<option value=\"false\" selected=\"true\">否</option>";
+                divHtml += "<option value=\"true\">是</option>";
             }
             divHtml += "</select>";
 
