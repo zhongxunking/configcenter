@@ -8,7 +8,6 @@
     <script type="text/javascript" src="../common/commonManager.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            managerInfo = getLoginedManager();
             if (managerInfo.type == "ADMIN") {
                 $("#adminOptions").show();
                 $("#managerNameDiv").html("超级管理员：&nbsp;" + managerInfo.name);
@@ -16,7 +15,7 @@
                 $("#adminOptions").hide();
                 $("#managerNameDiv").html("普通管理员：&nbsp;" + managerInfo.name);
             }
-
+            changeDetailWindowUrl("managedApp.html")
         });
 
         function changeDetailWindowUrl(newUrl) {
@@ -64,7 +63,7 @@
                                 <table>
                                     <tr>
                                         <td>
-                                            <button onclick='changeDetailWindowUrl("appManage.html")'>项目</button>
+                                            <button onclick='changeDetailWindowUrl("appManage.html")'>应用</button>
                                         </td>
                                     </tr>
                                     <tr>
@@ -97,7 +96,7 @@
                 </table>
             </td>
             <td width="70%">
-                <iframe id="detailWindow" src="managedApp.html" width="100%" height="100%"></iframe>
+                <iframe id="detailWindow" src="#" width="100%" height="100%"></iframe>
             </td>
         </tr>
     </table>

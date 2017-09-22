@@ -9,12 +9,22 @@
 
         $(document).ready(function () {
             refresh();
+            var appCode = getUrlParam("appCode");
+            var profileCode = getUrlParam("profileCode");
+            $("#appCodeDiv").html(appCode);
+            $("#profileCodeDiv").html(profileCode);
+
+            if (appCode != "common") {
+                refreshOutwardDiv(false)
+            } else {
+                refreshOutwardDiv(true)
+            }
         });
 
         function refresh() {
             var appCode = getUrlParam("appCode");
             var profileCode = getUrlParam("profileCode");
-            refreshProperties(appCode, profileCode, "appTableDiv", appCode != "common", true)
+            refreshProperties(appCode, profileCode, "appTableDiv", true, true)
             if (appCode != "common") {
                 $("#commonPropertiesDiv").show();
                 refreshProperties("common", profileCode, "commonTableDiv", false, false)
@@ -98,7 +108,7 @@
             var table = "<table width='80%'>";
             table += createTableHead(showOutward, showOptions);
             for (var key in infos) {
-                table += creteTableRow(infos[key],showOutward, showOptions);
+                table += creteTableRow(infos[key], showOutward, showOptions);
             }
             table += "</table>";
             $("#" + tableDiv).html(table);
@@ -237,9 +247,26 @@
 
             $("#setValuesDiv").html(table);
         }
+
+
+        function refreshOutwardDiv(isCommonApp) {
+            var divHtml = "<select name=\"outward\">";
+            if (isCommonApp) {
+                divHtml += "<option value=\"true\" selected=\"true\">公开</option>";
+            } else {
+                divHtml += "<option value=\"false\" selected=\"true\">私有</option>";
+                divHtml += "<option value=\"true\">公开</option>";
+            }
+            divHtml += "</select>";
+
+            $("#outwardDiv").html(divHtml);
+        }
+
     </script>
 </head>
 <body>
+应用：<span id="appCodeDiv"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 环境：<span id="profileCodeDiv"></span>
+<br><br>
 <table>
     <tr>
         <td>
@@ -259,10 +286,7 @@
                                     <tr>
                                         <td align="right">是否公开：</td>
                                         <td>
-                                            <select name="outward">
-                                                <option value="false" selected="true">私有</option>
-                                                <option value="true">公开</option>
-                                            </select>
+                                            <div id="outwardDiv"></div>
                                         </td>
                                     </tr>
                                     <tr>
