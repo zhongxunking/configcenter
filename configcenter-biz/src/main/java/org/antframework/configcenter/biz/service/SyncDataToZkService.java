@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 同步同步所有环境、应用到zookeeper服务
+ * 同步所有环境、应用到zookeeper服务
  */
 @Service
 public class SyncDataToZkService {

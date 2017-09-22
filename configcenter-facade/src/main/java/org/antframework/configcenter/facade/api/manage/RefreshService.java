@@ -19,7 +19,7 @@ import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshRe
 public interface RefreshService {
 
     /**
-     * 同步同步所有环境、应用到zookeeper
+     * 同步所有环境、应用到zookeeper
      */
     SyncDataToZkResult syncDataToZk(SyncDataToZkOrder order);
 

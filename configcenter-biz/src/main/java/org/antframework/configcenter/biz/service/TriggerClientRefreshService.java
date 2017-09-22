@@ -17,6 +17,7 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
 import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.bekit.service.annotation.service.Service;
@@ -43,29 +44,24 @@ public class TriggerClientRefreshService {
     public void execute(ServiceContext<TriggerClientRefreshOrder, TriggerClientRefreshResult> context) {
         TriggerClientRefreshOrder order = context.getOrder();
 
-        List<App> apps = getApps(order);
+        App app = getApp(order);
         List<Profile> profiles = getProfiles(order);
         for (Profile profile : profiles) {
-            for (App app : apps) {
-                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), app.getAppCode()), ZkUtils.getCurrentDate());
-            }
+            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), app.getAppCode()), ZkUtils.getCurrentDate());
         }
     }
 
     // 获取需要刷新的应用
-    private List<App> getApps(TriggerClientRefreshOrder order) {
-        List<App> apps = new ArrayList<>();
-        if (order.getAppCode() == null) {
-            apps.addAll(appDao.findAll());
-        } else {
-            App app = appDao.findByAppCode(order.getAppCode());
-            if (app == null) {
-                throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppCode()));
-            }
-            apps.add(app);
+    private App getApp(TriggerClientRefreshOrder order) {
+        String appCode = order.getAppCode();
+        if (appCode == null) {
+            appCode = ConfigService.COMMON_APP_CODE;
         }
-
-        return apps;
+        App app = appDao.findByAppCode(appCode);
+        if (app == null) {
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appCode));
+        }
+        return app;
     }
 
     // 获取需要刷新的环境
