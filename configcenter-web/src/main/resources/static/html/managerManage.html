@@ -115,28 +115,6 @@
         </td>
         <td valign="top" width="30%">
             <div>
-                修改密码：
-                <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
-                    <table>
-                        <tr>
-                            <td align="right">编码：</td>
-                            <td><input type="text" name="managerCode"></td>
-                        </tr>
-                        <tr>
-                            <td align="right">新密码：</td>
-                            <td><input type="password" name="newPassword"></td>
-                        </tr>
-                        <tr>
-                            <td align="right"><input type="button" onclick="requestServer2('modifyManagerPasswordForm')" value="提交">
-                            </td>
-                            <td></td>
-                        </tr>
-                    </table>
-                </form>
-            </div>
-        </td>
-        <td valign="top" width="40%">
-            <div>
                 修改类型：
                 <form id="modifyManagerTypeForm" action="/manage/manager/modifyManagerType">
                     <table>
@@ -155,6 +133,28 @@
                         </tr>
                         <tr>
                             <td align="right"><input type="button" onclick="requestServer2('modifyManagerTypeForm')" value="提交">
+                            </td>
+                            <td></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </td>
+        <td valign="top" width="40%">
+            <div>
+                修改密码：
+                <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
+                    <table>
+                        <tr>
+                            <td align="right">编码：</td>
+                            <td><input type="text" name="managerCode"></td>
+                        </tr>
+                        <tr>
+                            <td align="right">新密码：</td>
+                            <td><input type="password" name="newPassword"></td>
+                        </tr>
+                        <tr>
+                            <td align="right"><input type="button" onclick="requestServer2('modifyManagerPasswordForm')" value="提交">
                             </td>
                             <td></td>
                         </tr>
