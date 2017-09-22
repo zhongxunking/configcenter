@@ -11,9 +11,9 @@ package org.antframework.configcenter.test;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryPropertiesResult;
+import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -37,22 +37,22 @@ public class ConfigServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testQueryAppProfileProperty() {
-        QueryPropertiesOrder order = new QueryPropertiesOrder();
+    public void testFindProperties() {
+        FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
         order.setOnlyOutward(false);
-        QueryPropertiesResult result = configService.queryProperties(order);
+        FindPropertiesResult result = configService.findProperties(order);
         checkResult(result, Status.SUCCESS);
     }
 
     @Test
-    public void testQueryAppProfileProperty_onlyOutward() {
-        QueryPropertiesOrder order = new QueryPropertiesOrder();
+    public void testFindProperties_onlyOutward() {
+        FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
         order.setOnlyOutward(true);
-        QueryPropertiesResult result = configService.queryProperties(order);
+        FindPropertiesResult result = configService.findProperties(order);
         checkResult(result, Status.SUCCESS);
     }
 }

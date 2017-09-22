@@ -12,9 +12,9 @@ import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryPropertiesResult;
+import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,14 +48,14 @@ public class ConfigController {
      * @param queriedAppCode 被查询配置的应用编码
      * @param profileCode    环境编码
      */
-    @RequestMapping("/queryProperties")
-    public QueryPropertiesResult queryProperties(String appCode, String queriedAppCode, String profileCode) {
+    @RequestMapping("/findProperties")
+    public FindPropertiesResult findProperties(String appCode, String queriedAppCode, String profileCode) {
         FindAppResult findAppResult = configService.findApp(buildFindAppOrder(appCode));
         if (!findAppResult.isSuccess() || findAppResult.getAppInfo() == null) {
             throw new AntBekitException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
         }
-        QueryPropertiesResult queryPropertiesResult = configService.queryProperties(buildQueryPropertiesOrder(queriedAppCode, profileCode, appCode));
-        return queryPropertiesResult;
+        FindPropertiesResult findPropertiesResult = configService.findProperties(buildFindPropertiesOrder(queriedAppCode, profileCode, appCode));
+        return findPropertiesResult;
     }
 
     // 构建FindAppOrder
@@ -65,9 +65,9 @@ public class ConfigController {
         return order;
     }
 
-    // 构建QueryPropertiesOrder
-    private QueryPropertiesOrder buildQueryPropertiesOrder(String queriedAppCode, String profileCode, String appCode) {
-        QueryPropertiesOrder order = new QueryPropertiesOrder();
+    // 构建FindPropertiesOrder
+    private FindPropertiesOrder buildFindPropertiesOrder(String queriedAppCode, String profileCode, String appCode) {
+        FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppCode(queriedAppCode);
         order.setProfileCode(profileCode);
         order.setOnlyOutward(!StringUtils.equals(queriedAppCode, appCode));
