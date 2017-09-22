@@ -156,7 +156,7 @@
 
         function deleteEntity(key) {
             $.ajax({
-                url: "../manage/propertyValue/deletePropertyValue",
+                url: "/manage/propertyValue/deletePropertyValue",
                 data: {
                     appCode: getUrlParam("appCode"),
                     key: key,
@@ -182,7 +182,7 @@
         function addOrModifyPropertyKey() {
             var form = $("#addOrModifyPropertyKeyForm");
             $.ajax({
-                url: "../manage/propertyKey/addOrModifyPropertyKey",
+                url: "/manage/propertyKey/addOrModifyPropertyKey",
                 data: form.serialize() + "&appCode=" + getUrlParam("appCode"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -200,7 +200,7 @@
         function setPropertyValue() {
             var form = $("#setPropertyValueForm");
             $.ajax({
-                url: "../manage/propertyValue/setPropertyValue",
+                url: "/manage/propertyValue/setPropertyValue",
                 data: form.serialize() + "&appCode=" + getUrlParam("appCode") + "&profileCode=" + getUrlParam("profileCode"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -277,7 +277,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <form id="addOrModifyPropertyKeyForm" action="../manage/propertyKey/addOrModifyPropertyKey">
+                            <form id="addOrModifyPropertyKeyForm" action="/manage/propertyKey/addOrModifyPropertyKey">
                                 <table>
                                     <tr>
                                         <td align="right">key：</td>
@@ -313,7 +313,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
+                            <form id="setPropertyValueForm" action="/manage/propertyValue/setPropertyValue">
                                 <div id="setValuesDiv">
                                     <table>
                                         <tr>

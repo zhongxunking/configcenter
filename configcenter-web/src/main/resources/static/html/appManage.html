@@ -30,7 +30,7 @@
 
         function deleteEntity(appCode) {
             $.ajax({
-                url: "../manage/app/deleteApp",
+                url: "/manage/app/deleteApp",
                 data: {
                     appCode: appCode
                 },
@@ -49,7 +49,7 @@
 <body>
 <div>
     新增或修改应用：
-    <form id="addOrModifyAppForm" action="../manage/app//addOrModifyApp">
+    <form id="addOrModifyAppForm" action="/manage/app//addOrModifyApp">
         <table>
             <tr><td align="right">应用编码：</td><td><input type="text" name="appCode"></td></tr>
             <tr><td align="right">备注：</td><td><input type="text" name="memo"></td></tr>
@@ -60,7 +60,7 @@
 <br/>
 <br/>
 <div>
-    <form id="queryForm" action="../manage/app/queryApp">
+    <form id="queryForm" action="/manage/app/queryApp">
         应用编码：<input type="text" name="appCode">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>

@@ -30,7 +30,7 @@
 
         function deleteEntity(profileCode) {
             $.ajax({
-                url: "../manage/profile/deleteProfile",
+                url: "/manage/profile/deleteProfile",
                 data: {
                     profileCode: profileCode
                 },
@@ -48,7 +48,7 @@
 <body>
 <div>
     新增或修改环境：
-    <form id="addOrModifyProfileForm" action="../manage/profile/addOrModifyProfile">
+    <form id="addOrModifyProfileForm" action="/manage/profile/addOrModifyProfile">
         <table>
             <tr><td align="right">环境编码：</td><td><input type="text" name="profileCode"></td></tr>
             <tr><td align="right">备注：</td><td><input type="text" name="memo"></td></tr>
@@ -59,7 +59,7 @@
 <br/>
 <br/>
 <div>
-    <form id="queryForm" action="../manage/profile/queryProfile">
+    <form id="queryForm" action="/manage/profile/queryProfile">
         环境编码：<input type="text" name="profileCode">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
