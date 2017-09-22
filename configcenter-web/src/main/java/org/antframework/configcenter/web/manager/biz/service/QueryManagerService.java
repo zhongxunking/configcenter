@@ -41,6 +41,7 @@ public class QueryManagerService {
         FacadeUtils.setQueryResult(context.getResult(), new FacadeUtils.SpringDataPageExtractor<>(page));
     }
 
+    // 构建查询条件
     private Map<String, Object> buildSearchParams(QueryManagerOrder queryManagerOrder) {
         Map<String, Object> searchParams = new HashMap<>();
         if (queryManagerOrder.getManagerCode() != null) {
