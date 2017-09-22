@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.common.util.tostring.format.Mask;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -20,6 +21,7 @@ public class ModifyManagerPasswordOrder extends AbstractOrder {
     private String managerCode;
     // 新密码
     @NotBlank
+    @Mask(allMask = true)
     private String newPassword;
 
     public String getManagerCode() {

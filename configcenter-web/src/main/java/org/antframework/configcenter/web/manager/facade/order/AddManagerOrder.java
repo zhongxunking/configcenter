@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.common.util.tostring.format.Mask;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 import org.hibernate.validator.constraints.NotBlank;
 
@@ -26,6 +27,7 @@ public class AddManagerOrder extends AbstractOrder {
     private String name;
     // 密码
     @NotBlank
+    @Mask(allMask = true)
     private String password;
     // 类型
     @NotNull
