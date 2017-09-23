@@ -68,10 +68,13 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 
 #### 登录链接：http://localhost:8080/html/login.html
 #### 第一次使用时会让你设置一个超级管理员：
+
 ![image](http://note.youdao.com/yws/api/personal/file/85F715EF5C574FAC866F327D7D35396E?method=download&shareKey=2dd73f83d6700c3651513834078e5739)
 
 #### 然后进行登陆进入管理页面：
+
 ![image](http://note.youdao.com/yws/api/personal/file/BCC71043C36A4B1694DAFD6058652AA1?method=download&shareKey=e14cd88177df559477464d4a71f2c7eb)
 
 #### 点击相应按钮进入进入相应页面，在此仅展示配置管理页面（点击上图中的环境链接）
+
 ![image](http://note.youdao.com/yws/api/personal/file/EDEF433FBF2F4F109F44D952B2A43249?method=download&shareKey=ea2c3fc801049b76128c6b6ffc4ec261)
