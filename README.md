@@ -57,7 +57,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         // 客户端启动好了，现在可以获取配置了，调用configContext.getProperties()
         // 比如需要和spring集成的话，可以在spring启动前将客户端包装成Environment的一个属性资源，这样配置中心里的配置就可以应用的spring了
 
-        // 当要关闭当前系统时，调用下面方法会关闭客户端释放相关资源（zookeeper链接，http客户端）。
+        // 当要关闭当前系统时，需调用下面方法关闭客户端，用于释放相关资源（zookeeper链接，http客户端）。
         // 想省事的话，可以直接将客户端注入到spring容器，spring容器在关闭时会自动调用close方法.
         configContext.close();
         
