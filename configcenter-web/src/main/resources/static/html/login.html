@@ -6,7 +6,32 @@
     <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
     <script type="text/javascript">
 
+        function getLoginedManager() {
+            var managerInfo = null;
+            $.ajax({
+                url: "/manage/managerLogin/getLoginedManager",
+                data: {},
+                async: false,
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        managerInfo = ajaxResult.managerInfo;
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+            return managerInfo;
+        }
+
         $(document).ready(function () {
+            var managerInfo = getLoginedManager();
+            if (managerInfo != null) {
+                window.location.href = "main.html";
+                return;
+            }
             $.ajax({
                 url: "/manage/managerLogin/shouldInitAdmin",
                 data: {},

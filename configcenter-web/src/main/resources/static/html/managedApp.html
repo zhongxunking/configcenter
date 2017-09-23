@@ -10,6 +10,11 @@
 
         $(document).ready(function () {
             query();
+            if (managerInfo.type == "ADMIN") {
+                $("#refreshZkAndClientDiv").show();
+            } else {
+                $("#refreshZkAndClientDiv").hide();
+            }
         });
 
         var pageNo = 1;
@@ -18,7 +23,7 @@
 
         function query() {
             if (managerInfo.type == 'ADMIN') {
-                refreshByAdmin()
+                refreshByAdmin();
             } else {
                 refreshByNormalManager();
             }
@@ -198,7 +203,9 @@
                 </form>
             </td>
             <td width="60%">
-                <button onclick="refreshZkAndClient()">触发所有客户端刷新</button>
+                <div id="refreshZkAndClientDiv" style="display:none;">
+                    <button onclick="refreshZkAndClient()">触发所有客户端刷新</button>
+                </div>
             </td>
         </tr>
     </table>
