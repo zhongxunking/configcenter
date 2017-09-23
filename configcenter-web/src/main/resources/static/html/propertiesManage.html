@@ -262,10 +262,33 @@
             $("#outwardDiv").html(divHtml);
         }
 
+        function refreshZkAndClient(appCode, profileCode) {
+            $.ajax({
+                url: "/refresh/refreshZkAndClient",
+                data: {
+                    appCode: appCode,
+                    profileCode: profileCode
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        alert("成功");
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
     </script>
 </head>
 <body>
-应用：<span id="appCodeDiv"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 环境：<span id="profileCodeDiv"></span>
+应用：<span id="appCodeDiv"></span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+环境：<span id="profileCodeDiv"></span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+<button onclick="refreshZkAndClient(getUrlParam('appCode'),getUrlParam('profileCode'))">触发客户端刷新</button>
 <br><br>
 <table>
     <tr>

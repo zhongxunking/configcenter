@@ -47,7 +47,7 @@
             var form = $("#queryForm");
             $.ajax({
                 url: "/manage/managerApp/queryManagedApp",
-                data: form.serialize()+"&managerCode="+managerInfo.managerCode + "&pageNo=" + pageNo + "&pageSize=" + pageSize,
+                data: form.serialize() + "&managerCode=" + managerInfo.managerCode + "&pageNo=" + pageNo + "&pageSize=" + pageSize,
                 success: function (ajaxResult) {
                     if (!ajaxResult.success) {
                         alert("查询失败，原因：" + ajaxResult.message);
@@ -169,14 +169,39 @@
             profiles = newProfiles;
         }
 
+        function refreshZkAndClient() {
+            $.ajax({
+                url: "/refresh/refreshZkAndClient",
+                data: {},
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        alert("成功");
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+        }
     </script>
 </head>
 <body>
 <div>
-    <form id="queryForm">
-        应用编码：<input type="text" name="appCode">
-        <input type="button" onclick="pageNo = 1;query();" value="查询">
-    </form>
+    <table width="100%">
+        <tr>
+            <td width="40%">
+                <form id="queryForm">
+                    应用编码：<input type="text" name="appCode">
+                    <input type="button" onclick="pageNo = 1;query();" value="查询">
+                </form>
+            </td>
+            <td width="60%">
+                <button onclick="refreshZkAndClient()">触发所有客户端刷新</button>
+            </td>
+        </tr>
+    </table>
 </div>
 <br/>
 <div id="tableDiv" class="table-solid"></div>
