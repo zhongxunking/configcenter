@@ -139,7 +139,9 @@
             tr += "<td>" + info["memo"] + "</td>";
             tr += "<td>" + info["value"] + "</td>";
             if (showOptions) {
-                tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置null</button></td>"
+                tr += "<td><button onclick='deleteEntity1(\"" + info["key"] + "\")'>置null</button>" +
+                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+                    "<button onclick='deleteEntity2(\"" + info["key"] + "\")'>删除key</button></td>"
             }
             tr += "</tr>"
 
@@ -154,7 +156,7 @@
             }
         }
 
-        function deleteEntity(key) {
+        function deleteEntity1(key) {
             $.ajax({
                 url: "/manage/propertyValue/deletePropertyValue",
                 data: {
@@ -166,7 +168,24 @@
                     if (ajaxResult.success) {
                         refresh();
                     } else {
-                        alert("删除失败，原因：" + ajaxResult.message);
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                }
+            });
+        }
+
+        function deleteEntity2(key) {
+            $.ajax({
+                url: "/manage/propertyKey/deletePropertyKey",
+                data: {
+                    appCode: getUrlParam("appCode"),
+                    key: key
+                },
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        refresh();
+                    } else {
+                        alert("失败，请先将所有环境中该key置null再删除key，原因：" + ajaxResult.message);
                     }
                 }
             });
