@@ -136,7 +136,7 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" + info.appCode + "</td>";
+            tr += "<td>" +"<a href='appPropertyKey.html?appCode="+info.appCode+"'>"+info.appCode+"</a>" + "</td>";
             tr += "<td>" + info.memo + "</td>";
             tr += "<td>" + getProfilesLink(info.appCode) + "</td>"
             tr += "</tr>"

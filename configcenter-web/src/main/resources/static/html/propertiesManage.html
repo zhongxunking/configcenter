@@ -139,9 +139,7 @@
             tr += "<td>" + info["memo"] + "</td>";
             tr += "<td>" + info["value"] + "</td>";
             if (showOptions) {
-                tr += "<td><button onclick='deleteEntity1(\"" + info["key"] + "\")'>置null</button>" +
-                    "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
-                    "<button onclick='deleteEntity2(\"" + info["key"] + "\")'>删除key</button></td>"
+                tr += "<td><button onclick='deleteEntity(\"" + info["key"] + "\")'>置null</button></td>"
             }
             tr += "</tr>"
 
@@ -156,7 +154,7 @@
             }
         }
 
-        function deleteEntity1(key) {
+        function deleteEntity(key) {
             $.ajax({
                 url: "/manage/propertyValue/deletePropertyValue",
                 data: {
@@ -169,23 +167,6 @@
                         refresh();
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
-                    }
-                }
-            });
-        }
-
-        function deleteEntity2(key) {
-            $.ajax({
-                url: "/manage/propertyKey/deletePropertyKey",
-                data: {
-                    appCode: getUrlParam("appCode"),
-                    key: key
-                },
-                success: function (ajaxResult) {
-                    if (ajaxResult.success) {
-                        refresh();
-                    } else {
-                        alert("失败，请先将所有环境中该key置null再删除key，原因：" + ajaxResult.message);
                     }
                 }
             });
@@ -311,42 +292,6 @@
 <br><br>
 <table>
     <tr>
-        <td>
-            <div>
-                <table>
-                    <tr>
-                        <td>新增或修改属性key：</td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <form id="addOrModifyPropertyKeyForm" action="/manage/propertyKey/addOrModifyPropertyKey">
-                                <table>
-                                    <tr>
-                                        <td align="right">key：</td>
-                                        <td><input type="text" name="key"></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right">是否公开：</td>
-                                        <td>
-                                            <div id="outwardDiv"></div>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right">备注：</td>
-                                        <td><input type="text" name="memo"></td>
-                                    </tr>
-                                    <tr>
-                                        <td align="right"><input type="button" onclick="addOrModifyPropertyKey()"
-                                                                 value="提交"></td>
-                                    </tr>
-                                </table>
-                            </form>
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </td>
-        <td width="100px"></td>
         <td valign="top">
             <div>
                 <table>
