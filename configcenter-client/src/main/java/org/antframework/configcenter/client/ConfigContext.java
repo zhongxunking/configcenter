@@ -79,26 +79,18 @@ public class ConfigContext {
      * 客户端初始化参数
      */
     public static class InitParams {
-        // 环境编码（必须）
-        private String profileCode;
         // 主体应用编码（必须）
         private String appCode;
         // 被查询配置的应用编码（必须）
         private String queriedAppCode;
+        // 环境编码（必须）
+        private String profileCode;
         // 服务端地址（必须）
         private String serverUrl;
         // 缓存文件路径（必须）
         private String cacheFilePath;
         // zookeeper地址（多个zookeeper地址的话以“,”相隔。如果不需要监听配置是否被修改，可以不用传）
         private String zkUrl;
-
-        public String getProfileCode() {
-            return profileCode;
-        }
-
-        public void setProfileCode(String profileCode) {
-            this.profileCode = profileCode;
-        }
 
         public String getAppCode() {
             return appCode;
@@ -114,6 +106,14 @@ public class ConfigContext {
 
         public void setQueriedAppCode(String queriedAppCode) {
             this.queriedAppCode = queriedAppCode;
+        }
+
+        public String getProfileCode() {
+            return profileCode;
+        }
+
+        public void setProfileCode(String profileCode) {
+            this.profileCode = profileCode;
         }
 
         public String getServerUrl() {
