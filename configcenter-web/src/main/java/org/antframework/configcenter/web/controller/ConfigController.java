@@ -8,8 +8,6 @@
  */
 package org.antframework.configcenter.web.controller;
 
-import org.antframework.boot.bekit.AntBekitException;
-import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
@@ -38,6 +36,7 @@ public class ConfigController {
     public FindAppResult findApp(String appCode) {
         FindAppOrder order = new FindAppOrder();
         order.setAppCode(appCode);
+
         return configService.findApp(order);
     }
 
@@ -50,27 +49,11 @@ public class ConfigController {
      */
     @RequestMapping("/findProperties")
     public FindPropertiesResult findProperties(String appCode, String queriedAppCode, String profileCode) {
-        FindAppResult findAppResult = configService.findApp(buildFindAppOrder(appCode));
-        if (!findAppResult.isSuccess() || findAppResult.getAppInfo() == null) {
-            throw new AntBekitException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
-        }
-        FindPropertiesResult findPropertiesResult = configService.findProperties(buildFindPropertiesOrder(queriedAppCode, profileCode, appCode));
-        return findPropertiesResult;
-    }
-
-    // 构建FindAppOrder
-    private FindAppOrder buildFindAppOrder(String appCode) {
-        FindAppOrder order = new FindAppOrder();
-        order.setAppCode(appCode);
-        return order;
-    }
-
-    // 构建FindPropertiesOrder
-    private FindPropertiesOrder buildFindPropertiesOrder(String queriedAppCode, String profileCode, String appCode) {
         FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppCode(queriedAppCode);
         order.setProfileCode(profileCode);
         order.setOnlyOutward(!StringUtils.equals(queriedAppCode, appCode));
-        return order;
+
+        return configService.findProperties(order);
     }
 }
