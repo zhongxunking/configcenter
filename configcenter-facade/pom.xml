@@ -11,8 +11,8 @@
     <artifactId>configcenter-facade</artifactId>
 
     <properties>
-        <!--deploy时跳过本模块-->
-        <maven.deploy.skip>true</maven.deploy.skip>
+        <!--install时跳过本模块-->
+            <maven.install.skip>true</maven.install.skip>
     </properties>
 
     <dependencies>
