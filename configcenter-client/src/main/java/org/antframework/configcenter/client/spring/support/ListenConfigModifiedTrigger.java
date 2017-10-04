@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-25 22:21 创建
  */
-package org.antframework.configcenter.client.spring.boot;
+package org.antframework.configcenter.client.spring.support;
 
 import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.ConfigListener;
