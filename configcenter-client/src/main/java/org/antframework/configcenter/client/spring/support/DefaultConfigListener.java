@@ -26,6 +26,7 @@ import java.util.Map;
  * 默认的配置监听器
  */
 public class DefaultConfigListener implements ConfigListener {
+    // key的分隔符
     private static final char KEY_SEPARATOR = '.';
 
     // 配置上下文名称
@@ -75,7 +76,7 @@ public class DefaultConfigListener implements ConfigListener {
         }
         // 将分拣的属性通过递归继续分拣
         for (String prefix : dispatchedMPs.keySet()) {
-            dispatch(prefixKey + KEY_SEPARATOR + prefix, dispatchedMPs.get(prefixKey));
+            dispatch(prefixKey + KEY_SEPARATOR + prefix, dispatchedMPs.get(prefix));
         }
         // 发送事件
         eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey, modifiedProperties));
