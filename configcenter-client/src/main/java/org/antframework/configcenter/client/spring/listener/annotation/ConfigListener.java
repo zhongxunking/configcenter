@@ -21,9 +21,13 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Listener(type = ConfigListenerType.class)
 public @interface ConfigListener {
+    /**
+     * 默认的配置上下文名称
+     */
+    String DEFAULT_CONFIG_CONTEXT_NAME = "default";
 
     /**
      * 被监听的配置上下文的名称
      */
-    String configContextName() default "";
+    String configContextName() default DEFAULT_CONFIG_CONTEXT_NAME;
 }
