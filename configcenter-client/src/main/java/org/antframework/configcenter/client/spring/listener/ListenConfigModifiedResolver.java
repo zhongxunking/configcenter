@@ -9,6 +9,7 @@
 package org.antframework.configcenter.client.spring.listener;
 
 import org.antframework.configcenter.client.core.ModifiedProperty;
+import org.antframework.configcenter.client.spring.listener.annotation.ConfigListener;
 import org.antframework.configcenter.client.spring.listener.annotation.ListenConfigModified;
 import org.bekit.event.extension.ListenResolver;
 import org.springframework.core.ResolvableType;
@@ -26,6 +27,10 @@ public class ListenConfigModifiedResolver implements ListenResolver {
 
     @Override
     public void init(Method listenMethod) {
+        ConfigListener configListenerAnnotation = AnnotatedElementUtils.findMergedAnnotation(listenMethod, ConfigListener.class);
+        if (configListenerAnnotation == null) {
+            throw new IllegalArgumentException("@ListenConfigModified只能标注在配置监听器（@ConfigListener）的方法上");
+        }
         // 校验入参
         Class[] parameterTypes = listenMethod.getParameterTypes();
         if (parameterTypes.length != 1) {
@@ -40,7 +45,7 @@ public class ListenConfigModifiedResolver implements ListenResolver {
         }
         // 设置事件类型
         ListenConfigModified listenConfigModifiedAnnotation = AnnotatedElementUtils.findMergedAnnotation(listenMethod, ListenConfigModified.class);
-        eventType = new ConfigModifiedEventType(listenConfigModifiedAnnotation.propertyNamePrefix());
+        eventType = new ConfigModifiedEventType(configListenerAnnotation.configContextName(), listenConfigModifiedAnnotation.propertyNamePrefix());
     }
 
     @Override

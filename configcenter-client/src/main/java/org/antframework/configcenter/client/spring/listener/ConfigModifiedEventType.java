@@ -16,16 +16,19 @@ import java.util.Objects;
  * 配置被修改事件类型
  */
 public class ConfigModifiedEventType {
+    // 配置上下文名称
+    private String configContextName;
     // 被修改的属性名前缀
     private String propertyNamePrefix;
 
-    public ConfigModifiedEventType(String propertyNamePrefix) {
+    public ConfigModifiedEventType(String configContextName, String propertyNamePrefix) {
+        this.configContextName = configContextName;
         this.propertyNamePrefix = propertyNamePrefix;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(propertyNamePrefix);
+        return Objects.hash(configContextName, propertyNamePrefix);
     }
 
     @Override
@@ -34,6 +37,7 @@ public class ConfigModifiedEventType {
             return false;
         }
         ConfigModifiedEventType other = (ConfigModifiedEventType) obj;
-        return StringUtils.equals(propertyNamePrefix, other.propertyNamePrefix);
+        return StringUtils.equals(configContextName, other.configContextName)
+                && StringUtils.equals(propertyNamePrefix, other.propertyNamePrefix);
     }
 }

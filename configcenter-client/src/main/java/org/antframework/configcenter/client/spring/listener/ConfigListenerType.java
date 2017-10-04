@@ -30,7 +30,8 @@ public class ConfigListenerType implements ListenerType {
             if (!(event instanceof ConfigModifiedEvent)) {
                 throw new IllegalArgumentException("无法识别的事件：" + event);
             }
-            return new ConfigModifiedEventType(((ConfigModifiedEvent) event).getPropertyNamePrefix());
+            ConfigModifiedEvent configModifiedEvent = (ConfigModifiedEvent) event;
+            return new ConfigModifiedEventType(configModifiedEvent.getConfigContextName(), configModifiedEvent.getPropertyNamePrefix());
         }
     }
 }

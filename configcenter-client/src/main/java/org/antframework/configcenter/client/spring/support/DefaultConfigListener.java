@@ -68,7 +68,7 @@ public class DefaultConfigListener implements ConfigListener {
         for (String key : map.keySet()) {
             publish(prefixKey + '.' + key, map.get(key));
         }
-        eventPublisher.publish(new ConfigModifiedEvent(prefixKey, modifiedProperties));
+        eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey, modifiedProperties));
     }
 
     private String getPrefix(String propertyKey) {

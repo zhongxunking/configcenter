@@ -21,4 +21,9 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Listener(type = ConfigListenerType.class)
 public @interface ConfigListener {
+
+    /**
+     * 被监听的配置上下文的名称
+     */
+    String configContextName() default "";
 }
