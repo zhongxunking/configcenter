@@ -39,7 +39,7 @@ public class ListenConfigModifiedResolver implements ListenResolver {
         if (parameterTypes[0] != List.class) {
             throw new RuntimeException("监听配置被修改方法" + ClassUtils.getQualifiedMethodName(listenMethod) + "的入参必须是（List<ModifiedProperty>）");
         }
-        ResolvableType resolvableType = ResolvableType.forType(parameterTypes[0]);
+        ResolvableType resolvableType = ResolvableType.forMethodParameter(listenMethod, 0);
         if (resolvableType.getGeneric(0).resolve(Object.class) != ModifiedProperty.class) {
             throw new RuntimeException("监听配置被修改方法" + ClassUtils.getQualifiedMethodName(listenMethod) + "的入参必须是（List<ModifiedProperty>）");
         }

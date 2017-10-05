@@ -12,7 +12,6 @@ import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ModifiedProperty;
 import org.antframework.configcenter.client.spring.listener.ConfigListenerType;
 import org.antframework.configcenter.client.spring.listener.ConfigModifiedEvent;
-import org.apache.commons.lang3.StringUtils;
 import org.bekit.event.EventPublisher;
 import org.bekit.event.bus.EventBusHolder;
 import org.bekit.event.publisher.DefaultEventPublisher;
@@ -59,7 +58,7 @@ public class DefaultConfigListener implements ConfigListener {
 
     @Override
     public void configModified(List<ModifiedProperty> modifiedProperties) {
-        dispatch(NONE_PREFIX, modifiedProperties);
+        dispatch(null, modifiedProperties);
     }
 
     // 将被修改的属性按照属性名前缀进行递归分派
@@ -81,11 +80,11 @@ public class DefaultConfigListener implements ConfigListener {
         }
         // 将分拣过的属性通过递归继续分拣
         for (String prefix : dispatchedMPs.keySet()) {
-            String nextPrefixKey = StringUtils.equals(prefixKey, NONE_PREFIX) ? prefix : prefixKey + KEY_SEPARATOR + prefix;
+            String nextPrefixKey = prefixKey == null ? prefix : prefixKey + KEY_SEPARATOR + prefix;
             dispatch(nextPrefixKey, dispatchedMPs.get(prefix));
         }
         // 发送事件
-        eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey, mps));
+        eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey == null ? NONE_PREFIX : prefixKey, mps));
     }
 
     // 获取前缀（aa.bb.cc返回aa）
