@@ -11,6 +11,7 @@ package org.antframework.configcenter.client.support;
 import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 import java.io.*;
 import java.util.Date;
@@ -62,7 +63,7 @@ public class CacheFileHandler {
             OutputStream out = null;
             try {
                 out = new FileOutputStream(cacheFile);
-                mapToProps(properties).store(out, "configcenter create at " + new Date());
+                mapToProps(properties).store(out, "updated at " + DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss"));
             } finally {
                 if (out != null) {
                     out.close();
