@@ -12,6 +12,7 @@ import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ModifiedProperty;
 import org.antframework.configcenter.client.spring.listener.ConfigListenerType;
 import org.antframework.configcenter.client.spring.listener.ConfigModifiedEvent;
+import org.apache.commons.lang3.StringUtils;
 import org.bekit.event.EventPublisher;
 import org.bekit.event.bus.EventBusHolder;
 import org.bekit.event.publisher.DefaultEventPublisher;
@@ -26,6 +27,10 @@ import java.util.Map;
  * 默认的配置监听器
  */
 public class DefaultConfigListener implements ConfigListener {
+    /**
+     * 无前缀
+     */
+    public static final String NONE_PREFIX = "";
     // key的分隔符
     private static final char KEY_SEPARATOR = '.';
 
@@ -54,36 +59,37 @@ public class DefaultConfigListener implements ConfigListener {
 
     @Override
     public void configModified(List<ModifiedProperty> modifiedProperties) {
-        dispatch("", modifiedProperties);
+        dispatch(NONE_PREFIX, modifiedProperties);
     }
 
     // 将被修改的属性按照属性名前缀进行递归分派
-    private void dispatch(String prefixKey, List<ModifiedProperty> modifiedProperties) {
+    private void dispatch(String prefixKey, List<ModifiedProperty> mps) {
         Map<String, List<ModifiedProperty>> dispatchedMPs = new HashMap<>();
         // 根据属性key前缀进行分拣
-        for (ModifiedProperty mp : modifiedProperties) {
+        for (ModifiedProperty mp : mps) {
             if (mp.getKey() == null) {
                 continue;
             }
-            String prefix = getKeyPrefix(mp.getKey());
-            ModifiedProperty dispatchedMp = new ModifiedProperty(mp.getType(), getSuffixKey(mp.getKey()), mp.getOldValue(), mp.getNewValue());
-            List<ModifiedProperty> mps = dispatchedMPs.get(prefix);
-            if (mps == null) {
-                mps = new ArrayList<>();
-                dispatchedMPs.put(prefix, mps);
+            String prefix = getPrefix(mp.getKey());
+            ModifiedProperty nextMp = new ModifiedProperty(mp.getType(), getSuffix(mp.getKey()), mp.getOldValue(), mp.getNewValue());
+            List<ModifiedProperty> nextMps = dispatchedMPs.get(prefix);
+            if (nextMps == null) {
+                nextMps = new ArrayList<>();
+                dispatchedMPs.put(prefix, nextMps);
             }
-            mps.add(dispatchedMp);
+            nextMps.add(nextMp);
         }
-        // 将分拣的属性通过递归继续分拣
+        // 将分拣过的属性通过递归继续分拣
         for (String prefix : dispatchedMPs.keySet()) {
-            dispatch(prefixKey + KEY_SEPARATOR + prefix, dispatchedMPs.get(prefix));
+            String nextPrefixKey = StringUtils.equals(prefixKey, NONE_PREFIX) ? prefix : prefixKey + KEY_SEPARATOR + prefix;
+            dispatch(nextPrefixKey, dispatchedMPs.get(prefix));
         }
         // 发送事件
-        eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey, modifiedProperties));
+        eventPublisher.publish(new ConfigModifiedEvent(configContextName, prefixKey, mps));
     }
 
-    // 获取key前缀（aa.bb.cc返回aa）
-    private String getKeyPrefix(String key) {
+    // 获取前缀（aa.bb.cc返回aa）
+    private String getPrefix(String key) {
         int index = key.indexOf(KEY_SEPARATOR);
         if (index < 0) {
             return key;
@@ -92,8 +98,8 @@ public class DefaultConfigListener implements ConfigListener {
         }
     }
 
-    // 获取key后缀（aa.bb.cc返回bb.cc）
-    private String getSuffixKey(String key) {
+    // 获取后缀（aa.bb.cc返回bb.cc）
+    private String getSuffix(String key) {
         int index = key.indexOf(KEY_SEPARATOR);
         if (index < 0) {
             return null;

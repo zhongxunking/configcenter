@@ -19,16 +19,16 @@ public class ConfigModifiedEventType {
     // 配置上下文名称
     private String configContextName;
     // 被修改的属性名前缀
-    private String propertyNamePrefix;
+    private String prefix;
 
-    public ConfigModifiedEventType(String configContextName, String propertyNamePrefix) {
+    public ConfigModifiedEventType(String configContextName, String prefix) {
         this.configContextName = configContextName;
-        this.propertyNamePrefix = propertyNamePrefix;
+        this.prefix = prefix;
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(configContextName, propertyNamePrefix);
+        return Objects.hash(configContextName, prefix);
     }
 
     @Override
@@ -38,6 +38,6 @@ public class ConfigModifiedEventType {
         }
         ConfigModifiedEventType other = (ConfigModifiedEventType) obj;
         return StringUtils.equals(configContextName, other.configContextName)
-                && StringUtils.equals(propertyNamePrefix, other.propertyNamePrefix);
+                && StringUtils.equals(prefix, other.prefix);
     }
 }

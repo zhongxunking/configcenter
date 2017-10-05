@@ -19,13 +19,13 @@ public class ConfigModifiedEvent {
     // 配置上下文名称
     private String configContextName;
     // 被修改的属性名前缀
-    private String propertyNamePrefix;
+    private String prefix;
     // 被修改的属性
     private List<ModifiedProperty> modifiedProperties;
 
-    public ConfigModifiedEvent(String configContextName, String propertyNamePrefix, List<ModifiedProperty> modifiedProperties) {
+    public ConfigModifiedEvent(String configContextName, String prefix, List<ModifiedProperty> modifiedProperties) {
         this.configContextName = configContextName;
-        this.propertyNamePrefix = propertyNamePrefix;
+        this.prefix = prefix;
         this.modifiedProperties = modifiedProperties;
     }
 
@@ -33,8 +33,8 @@ public class ConfigModifiedEvent {
         return configContextName;
     }
 
-    public String getPropertyNamePrefix() {
-        return propertyNamePrefix;
+    public String getPrefix() {
+        return prefix;
     }
 
     public List<ModifiedProperty> getModifiedProperties() {

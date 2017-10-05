@@ -25,5 +25,5 @@ public @interface ListenConfigModified {
     /**
      * 被监听的属性名前缀
      */
-    String propertyNamePrefix();
+    String prefix();
 }
