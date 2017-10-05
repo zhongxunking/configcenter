@@ -27,7 +27,7 @@ public class ListenConfigModifiedResolver implements ListenResolver {
 
     @Override
     public void init(Method listenMethod) {
-        ConfigListener configListenerAnnotation = AnnotatedElementUtils.findMergedAnnotation(listenMethod, ConfigListener.class);
+        ConfigListener configListenerAnnotation = AnnotatedElementUtils.findMergedAnnotation(listenMethod.getDeclaringClass(), ConfigListener.class);
         if (configListenerAnnotation == null) {
             throw new IllegalArgumentException("@ListenConfigModified只能标注在配置监听器（@ConfigListener）的方法上");
         }
