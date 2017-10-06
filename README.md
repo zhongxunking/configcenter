@@ -28,7 +28,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 
 ### 3. 集成客户端
 
-1. 引入客户端依赖
+##### 1. 引入客户端依赖
 
         <dependency>
             <groupId>org.antframework.configcenter</groupId>
@@ -36,7 +36,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
             <version>1.0-SNAPSHOT</version>
         </dependency>
 
-2. 使用客户端
+##### 2. 使用客户端
 
     客户端就是Java类，直接new就可以，只是需要传给它相应参数。
 
@@ -65,17 +65,17 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         // 想省事的话，可以直接将客户端注入到spring容器，spring容器在关闭时会自动调用close方法.
         configContext.close();
         
-3. 与spring集成
+##### 3. 与spring集成
 
 上面介绍的是客户端的核心功能，使用这些功能进行开发是已经足够的。但是光使用这些核心功能进行开发是很繁琐的，为此，提供了一些附加能力：与spring集成的属性资源类（ConfigcenterPropertySource）、注解形式的配置监听器（@ConfigListener）。
 
-3.1 将配置中心加入到spring的environment中：
+###### 3.1 将配置中心加入到spring的environment中：
 
         // 将配置中心设置到environment中
         ConfigcenterPropertySource propertySource = new ConfigcenterPropertySource(ConfigcenterPropertySource.PROPERTY_SOURCE_NAME, configContext);
         environment.getPropertySources().addLast(propertySource);
         
-3.2 使用注解形式的配置监听器
+###### 3.2 使用注解形式的配置监听器
 
 使用时可以参考[ant-boot集成配置中心部分](https://github.com/zhongxunking/ant-boot/tree/master/ant-boot-starters/ant-boot-starter-config/src/main/java/org/antframework/boot/config/boot)
 
