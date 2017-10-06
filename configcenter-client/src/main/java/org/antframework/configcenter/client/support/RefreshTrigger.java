@@ -84,7 +84,7 @@ public class RefreshTrigger {
         };
         List<NodeCache> nodeCaches = new ArrayList<>();
         for (String appCode : appCodes) {
-            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileCode, appCode), listener);
+            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileCode, appCode), false, listener);
             nodeCaches.add(nodeCache);
         }
         return nodeCaches;

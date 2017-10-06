@@ -35,5 +35,7 @@ public class ListenConfigModifiedTrigger implements ApplicationListener<ContextR
         }
         // 开始监听配置
         configContext.listenConfigModified();
+        // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
+        configContext.refreshConfig();
     }
 }
