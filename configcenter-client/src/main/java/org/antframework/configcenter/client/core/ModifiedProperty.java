@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.client.core;
 
+import org.antframework.common.util.tostring.ToString;
+
 /**
  * 被修改的属性
  */
@@ -42,6 +44,11 @@ public class ModifiedProperty {
 
     public String getNewValue() {
         return newValue;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 
     /**
