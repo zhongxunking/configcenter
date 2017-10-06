@@ -10,6 +10,7 @@ package org.antframework.configcenter.client.spring.listener.annotation;
 
 import org.antframework.configcenter.client.spring.listener.ConfigListenerType;
 import org.bekit.event.annotation.listener.Listener;
+import org.springframework.core.annotation.AliasFor;
 
 import java.lang.annotation.*;
 
@@ -30,4 +31,10 @@ public @interface ConfigListener {
      * 被监听的配置上下文的名称
      */
     String configContextName() default DEFAULT_CONFIG_CONTEXT_NAME;
+
+    /**
+     * 优先级
+     */
+    @AliasFor(annotation = Listener.class, attribute = "priority")
+    int priority() default Integer.MAX_VALUE;
 }
