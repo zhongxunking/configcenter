@@ -6,6 +6,7 @@
 2. 环境要求：
 > * 服务端：jdk1.8
 > * 客户端：jdk1.8
+> * zookeeper
 
 > 注意：本系统还未上传到maven中央库（近期会上传）
 
@@ -48,12 +49,14 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         initParams.setServerUrl("http://localhost:8080");  // 服务端地址
         initParams.setCacheFilePath("/var/config/demo.properties");  // 配置缓存文件路径
         initParams.setZkUrl("localhost:2181");  // zookeeper地址
+        
         // 启动客户端（启动时会读取配置，读取不成功会抛异常。一个应用可以new多个客户端，各个客户端之间互不影响）
         ConfigContext configContext = new ConfigContext(initParams);
+        
+        // 注册配置监听器（用于监听配置变更，xxxListener是你自己定义的配置监听器）
+        configContext.getListenerRegistrar().register(xxxListener);
         // 触发客户端向zookeeper注册监听器
         configContext.listenConfigModified();
-        // 手动触发客户端刷新配置（异步），可以不用手动触发，在此只是演示下
-        configContext.refreshConfig();
 
         // 客户端启动好了，现在可以获取配置了，调用configContext.getProperties()
         // 比如需要和spring集成的话，可以在spring启动前将客户端包装成Environment的一个属性资源，这样配置中心里的配置就可以应用的spring了
@@ -62,7 +65,59 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         // 想省事的话，可以直接将客户端注入到spring容器，spring容器在关闭时会自动调用close方法.
         configContext.close();
         
+3. 与spring集成
+
+上面介绍的是客户端的核心功能，使用这些功能进行开发是已经足够的。但是光使用这些核心功能进行开发是很繁琐的，为此，提供了一些附加能力：与spring集成的属性资源类（ConfigcenterPropertySource）、注解形式的配置监听器（@ConfigListener）。
+
+3.1 将配置中心加入到spring的environment中：
+
+        // 将配置中心设置到environment中
+        ConfigcenterPropertySource propertySource = new ConfigcenterPropertySource(ConfigcenterPropertySource.PROPERTY_SOURCE_NAME, configContext);
+        environment.getPropertySources().addLast(propertySource);
         
+3.2 使用注解形式的配置监听器
+
+使用时可以参考[ant-boot集成配置中心部分](https://github.com/zhongxunking/ant-boot/tree/master/ant-boot-starters/ant-boot-starter-config/src/main/java/org/antframework/boot/config/boot)
+
+引入事件总线依赖（不了解事件总线也没有关系，如果想进一步了解可以查看[事件总线文档](https://github.com/zhongxunking/bekit)）：
+
+        <dependency>
+            <groupId>org.bekit</groupId>
+            <artifactId>event</artifactId>
+            <version>1.2.2.RELEASE</version>
+        </dependency>
+
+配置事件总线与配置监听器：
+
+        @Configuration
+        @Import(EventBusConfiguration.class)
+        public class ConfigConfiguration {
+            // 监听属性被修改触发器
+            @Bean
+            public ListenConfigModifiedTrigger listenConfigModifiedTrigger(DefaultConfigListener defaultConfigListener) {
+                return new ListenConfigModifiedTrigger(ConfigContextHolder.get(), defaultConfigListener);
+            }
+        
+            // 默认的配置监听器
+            @Bean
+            public DefaultConfigListener defaultConfigListener() {
+                return new DefaultConfigListener();
+            }
+        }
+
+使用注解形式的配置监听器：
+
+        @ConfigListener
+        public class ThreadPoolConfigListener {
+        
+            // 监听属性被修改，prefix表示需要监听的属性前缀。当以“pool.”开头的属性被修改时，会调用本方法，被修改的属性回座位入参。比如pool.aa、pool.aa.bb等被修改时都会调用本方法
+            @ListenConfigModified(prefix = "pool")  
+            public void listenPool(List<ModifiedProperty> modifiedProperties) {
+                logger.info("监听到线程池配置被修改：" + modifiedProperties);
+            }
+        }
+
+
 ### 4. 管理配置
 后台管理中管理员有两种：超级管理员、普通管理员。超级管理员可以管理所有配置，也可以管理其他管理员；普通管理员只能管理分配给他的应用的配置。
 
