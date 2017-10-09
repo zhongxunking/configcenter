@@ -27,11 +27,6 @@
             <version>${project.parent.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.antframework.configcenter</groupId>
-            <artifactId>configcenter-integration</artifactId>
-            <version>${project.parent.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.antframework.boot</groupId>
             <artifactId>ant-boot-starter-bekit</artifactId>
         </dependency>

@@ -20,7 +20,6 @@
         <module>configcenter-facade</module>
         <module>configcenter-common</module>
         <module>configcenter-dal</module>
-        <module>configcenter-integration</module>
         <module>configcenter-biz</module>
         <module>configcenter-web</module>
         <module>configcenter-assemble</module>
