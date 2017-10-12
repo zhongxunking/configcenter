@@ -21,7 +21,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 
 应用编码为common的应用会作为公共配置，所有应用的配置都会继承公共配置。同时每个应用可以将部分配置设置为公开，这样其他应用可以读取这个应用的公开配置（对于一个应用需要写客户端给其他应用使用时，这个特性特别好用）。
 
-![image](http://note.youdao.com/yws/api/personal/file/1B8BF06B204942A292E2268381A3F54E?method=download&shareKey=e0553eddaa6d5758c4a48c7fe104eeb5)
+![image](http://note.youdao.com/yws/api/personal/file/4E2BD7EC88CD4DE18716157F592EC18D?method=download&shareKey=34b9f8760af2efc3d6dca89654fb814c)
 
 ### 2. 启动服务端
 服务端使用的springboot，直接命令启动jar包即可。（等上传到maven中央库后再详细介绍）
