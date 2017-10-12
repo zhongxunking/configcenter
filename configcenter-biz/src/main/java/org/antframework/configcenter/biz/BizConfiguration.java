@@ -37,10 +37,7 @@ public class BizConfiguration {
                 .retryPolicy(new ExponentialBackoffRetry(1000, 10))
                 .build();
         zkClient.start();
-        if (!zkClient.getZookeeperClient().blockUntilConnectedOrTimedOut()) {
-            zkClient.close();
-            throw new RuntimeException(String.format("连接zookeeper[%s]失败", zkUrl));
-        }
+
         return zkClient;
     }
 

@@ -48,7 +48,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         initParams.setQueriedAppCode("demo");  // 被查询应用编码（在服务端配置。当前应用可能需要查询其他应用的配置，需传对应应用的编码，只能查询到其他应用公开的配置）
         initParams.setServerUrl("http://localhost:8080");  // 服务端地址
         initParams.setCacheFilePath("/var/config/demo.properties");  // 配置缓存文件路径
-        initParams.setZkUrl("localhost:2181");  // zookeeper地址
+        initParams.setZkUrls("localhost:2181");  // zookeeper地址
         
         // 启动客户端（启动时会读取配置，读取不成功会抛异常。一个应用可以new多个客户端，各个客户端之间互不影响）
         ConfigContext configContext = new ConfigContext(initParams);
