@@ -16,6 +16,7 @@ import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,7 +41,10 @@ public class RefreshTrigger {
 
     public RefreshTrigger(ConfigRefresher refresher, ConfigContext.InitParams initParams) {
         this.refresher = refresher;
-        this.zkTemplate = buildZkTemplate(initParams.getZkUrl());
+        if (initParams.getZkUrls() == null || initParams.getZkUrls().length == 0) {
+            throw new IllegalArgumentException("未设置zookeeper地址");
+        }
+        this.zkTemplate = buildZkTemplate(initParams.getZkUrls());
         this.nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
     }
 
@@ -59,9 +63,9 @@ public class RefreshTrigger {
     }
 
     // 构建zookeeper操作类
-    private ZkTemplate buildZkTemplate(String zkUrl) {
+    private ZkTemplate buildZkTemplate(String[] zkUrls) {
         CuratorFramework zkClient = CuratorFrameworkFactory.builder()
-                .connectString(zkUrl)
+                .connectString(StringUtils.arrayToCommaDelimitedString(zkUrls))
                 .namespace(ZK_CONFIG_NAMESPACE)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 10))
                 .build();

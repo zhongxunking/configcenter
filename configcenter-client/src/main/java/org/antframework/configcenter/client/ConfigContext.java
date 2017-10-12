@@ -89,8 +89,8 @@ public class ConfigContext {
         private String serverUrl;
         // 缓存文件路径（必须）
         private String cacheFilePath;
-        // zookeeper地址（多个zookeeper地址的话以“,”相隔。如果不需要监听配置是否被修改，可以不用传）
-        private String zkUrl;
+        // zookeeper地址（如果不需要监听配置是否被修改，可以不用传）
+        private String[] zkUrls;
 
         public String getAppCode() {
             return appCode;
@@ -132,12 +132,12 @@ public class ConfigContext {
             this.cacheFilePath = cacheFilePath;
         }
 
-        public String getZkUrl() {
-            return zkUrl;
+        public String[] getZkUrls() {
+            return zkUrls;
         }
 
-        public void setZkUrl(String zkUrl) {
-            this.zkUrl = zkUrl;
+        public void setZkUrls(String... zkUrls) {
+            this.zkUrls = zkUrls;
         }
     }
 }
