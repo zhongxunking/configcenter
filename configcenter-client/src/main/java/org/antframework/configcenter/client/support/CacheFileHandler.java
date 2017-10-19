@@ -75,17 +75,24 @@ public class CacheFileHandler {
     }
 
     // 如果文件不存在，则创建文件
-    private static void createFileIfAbsent(File file) throws IOException {
+    private static void createFileIfAbsent(File file) {
         if (file.exists()) {
             return;
         }
         File parent = file.getParentFile();
         if (parent != null) {
             parent.mkdirs();
+            if (!parent.exists()) {
+                throw new IllegalStateException("无权限创建文件夹：" + parent.getPath());
+            }
         }
-        file.createNewFile();
+        try {
+            file.createNewFile();
+        } catch (Throwable e) {
+            throw new IllegalStateException(String.format("创建文件[%s]失败：%s", file.getPath(), e.getMessage()), e);
+        }
         if (!file.exists()) {
-            throw new RuntimeException("创建文件失败：" + file.getPath());
+            throw new IllegalStateException("无权限创建文件：" + file.getPath());
         }
     }
 
