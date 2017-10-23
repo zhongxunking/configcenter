@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.antframework.common.util.file.FileUtils;
 import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -59,7 +60,8 @@ public class CacheFileHandler {
      */
     public void storeConfig(Map<String, String> properties) {
         try {
-            createFileIfAbsent(this.cacheFile);
+            // 如果缓存文件不存在，则创建
+            FileUtils.createFileIfAbsent(cacheFile.getPath());
             OutputStream out = null;
             try {
                 out = new FileOutputStream(cacheFile);
@@ -71,28 +73,6 @@ public class CacheFileHandler {
             }
         } catch (IOException e) {
             ExceptionUtils.rethrow(e);
-        }
-    }
-
-    // 如果文件不存在，则创建文件
-    private static void createFileIfAbsent(File file) {
-        if (file.exists()) {
-            return;
-        }
-        File parent = file.getParentFile();
-        if (parent != null) {
-            parent.mkdirs();
-            if (!parent.exists()) {
-                throw new IllegalStateException("无权限创建文件夹：" + parent.getPath());
-            }
-        }
-        try {
-            file.createNewFile();
-        } catch (Throwable e) {
-            throw new IllegalStateException(String.format("创建文件[%s]失败：%s", file.getPath(), e.getMessage()), e);
-        }
-        if (!file.exists()) {
-            throw new IllegalStateException("无权限创建文件：" + file.getPath());
         }
     }
 

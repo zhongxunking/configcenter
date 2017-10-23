@@ -33,7 +33,7 @@ public class ConfigContextTest {
         initParams.setAppCode("scbfund");
         initParams.setQueriedAppCode("scbfund");
         initParams.setServerUrl("http://localhost:8080");
-        initParams.setCacheFilePath("/aa/config/scbfund.properties");
+        initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
         initParams.setZkUrls("localhost:2181");
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.getListenerRegistrar().register(new ConfigListener() {
