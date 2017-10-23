@@ -15,7 +15,7 @@ import org.springframework.boot.SpringApplication;
 /**
  * 程序启动入口
  */
-@AntBootApplication(appCode = "configcenter", httpPort = 8080)
+@AntBootApplication(appCode = "configcenter")
 public class Main {
     public static void main(String[] args) {
         Apps.setProfileIfNotExists("offline");
