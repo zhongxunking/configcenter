@@ -28,7 +28,7 @@ public class AbstractTest {
 
     static {
         // 设置使用环境
-        Apps.setProfileIfNotExists("offline");
+        Apps.setProfileIfNotExists("dev");
     }
 
     protected void checkResult(AbstractResult result, Status status) {
