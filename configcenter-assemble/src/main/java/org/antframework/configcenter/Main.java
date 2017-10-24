@@ -18,7 +18,7 @@ import org.springframework.boot.SpringApplication;
 @AntBootApplication(appCode = "configcenter")
 public class Main {
     public static void main(String[] args) {
-        Apps.setProfileIfNotExists("offline");
+        Apps.setProfileIfNotExists("dev");
         SpringApplication.run(Main.class, args);
     }
 }
