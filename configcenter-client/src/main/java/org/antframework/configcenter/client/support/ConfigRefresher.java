@@ -47,7 +47,9 @@ public class ConfigRefresher {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
         this.serverQuerier = new ServerQuerier(initParams);
-        this.cacheFileHandler = new CacheFileHandler(initParams);
+        if (initParams.getCacheFilePath() != null) {
+            this.cacheFileHandler = new CacheFileHandler(initParams.getCacheFilePath());
+        }
         this.refreshThread = new RefreshThread();
         this.refreshThread.start();
     }
@@ -89,12 +91,16 @@ public class ConfigRefresher {
                 newProperties = serverQuerier.queryConfig();
             } catch (Throwable e) {
                 logger.error("从配置中心读取配置失败：{}", e.getMessage());
-                logger.warn("尝试从缓存文件读取配置");
-                newProperties = cacheFileHandler.readConfig();
-                fromServer = false;
+                if (cacheFileHandler != null) {
+                    logger.warn("尝试从缓存文件读取配置");
+                    newProperties = cacheFileHandler.readConfig();
+                    fromServer = false;
+                } else {
+                    throw e;
+                }
             }
             properties.replaceProperties(newProperties);
-            if (fromServer) {
+            if (fromServer && cacheFileHandler != null) {
                 cacheFileHandler.storeConfig(newProperties);
             }
         } catch (Throwable e) {
@@ -115,7 +121,9 @@ public class ConfigRefresher {
                     }
                     Map<String, String> newProperties = serverQuerier.queryConfig();
                     List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
-                    cacheFileHandler.storeConfig(newProperties);
+                    if (cacheFileHandler != null) {
+                        cacheFileHandler.storeConfig(newProperties);
+                    }
                     listenerRegistrar.configModified(modifiedProperties);
                 } catch (Throwable e) {
                     logger.error("刷新配置出错：{}", e.getMessage());

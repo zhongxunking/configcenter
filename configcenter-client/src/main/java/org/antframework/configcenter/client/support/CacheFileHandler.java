@@ -9,7 +9,6 @@
 package org.antframework.configcenter.client.support;
 
 import org.antframework.common.util.file.FileUtils;
-import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.commons.lang3.time.DateFormatUtils;
@@ -27,8 +26,8 @@ public class CacheFileHandler {
     // 缓存文件
     private File cacheFile;
 
-    public CacheFileHandler(ConfigContext.InitParams initParams) {
-        this.cacheFile = new File(initParams.getCacheFilePath());
+    public CacheFileHandler(String cacheFilePath) {
+        this.cacheFile = new File(cacheFilePath);
     }
 
     /**

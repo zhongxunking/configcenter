@@ -79,17 +79,17 @@ public class ConfigContext {
      * 客户端初始化参数
      */
     public static class InitParams {
-        // 主体应用编码（必须）
+        // 必填：主体应用编码
         private String appCode;
-        // 被查询配置的应用编码（必须）
+        // 必填：被查询配置的应用编码
         private String queriedAppCode;
-        // 环境编码（必须）
+        // 必填：环境编码
         private String profileCode;
-        // 服务端地址（必须）
+        // 必填：服务端地址
         private String serverUrl;
-        // 缓存文件路径（必须）
+        // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
         private String cacheFilePath;
-        // zookeeper地址（如果不需要监听配置是否被修改，可以不用传）
+        // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigModified()触发监听配置是否被修改，可以不用填）
         private String[] zkUrls;
 
         public String getAppCode() {
