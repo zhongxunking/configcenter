@@ -37,7 +37,7 @@ public class CacheFileHandler {
     public Map<String, String> readConfig() {
         try {
             if (!cacheFile.exists()) {
-                throw new RuntimeException("不存在缓存文件：" + cacheFile.getPath());
+                throw new IllegalStateException("不存在缓存文件：" + cacheFile.getPath());
             }
             InputStream in = null;
             try {

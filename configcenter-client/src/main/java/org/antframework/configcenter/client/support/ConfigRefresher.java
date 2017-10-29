@@ -82,19 +82,24 @@ public class ConfigRefresher {
      * （先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
      */
     public void initConfig() {
-        Map<String, String> newProperties;
-        boolean fromServer = true;
         try {
-            newProperties = serverQuerier.queryConfig();
+            Map<String, String> newProperties;
+            boolean fromServer = true;
+            try {
+                newProperties = serverQuerier.queryConfig();
+            } catch (Throwable e) {
+                logger.error("从配置中心读取配置失败：{}", e.getMessage());
+                logger.warn("尝试从缓存文件读取配置");
+                newProperties = cacheFileHandler.readConfig();
+                fromServer = false;
+            }
+            properties.replaceProperties(newProperties);
+            if (fromServer) {
+                cacheFileHandler.storeConfig(newProperties);
+            }
         } catch (Throwable e) {
-            logger.error("从配置中心读取配置失败：{}", e.getMessage());
-            logger.warn("尝试从缓存文件读取配置");
-            newProperties = cacheFileHandler.readConfig();
-            fromServer = false;
-        }
-        properties.replaceProperties(newProperties);
-        if (fromServer) {
-            cacheFileHandler.storeConfig(newProperties);
+            close();
+            throw e;
         }
     }
 
