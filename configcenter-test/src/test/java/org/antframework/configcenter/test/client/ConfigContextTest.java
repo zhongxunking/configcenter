@@ -51,4 +51,28 @@ public class ConfigContextTest {
         configContext.close();
     }
 
+    @Test
+    public void testConfigContext_noCacheFile() throws InterruptedException {
+        ConfigContext.InitParams initParams = new ConfigContext.InitParams();
+        initParams.setProfileCode("dev");
+        initParams.setAppCode("scbfund");
+        initParams.setQueriedAppCode("scbfund");
+        initParams.setServerUrl("http://localhost:8080");
+        initParams.setZkUrls("localhost:2181");
+        ConfigContext configContext = new ConfigContext(initParams);
+        configContext.getListenerRegistrar().register(new ConfigListener() {
+            @Override
+            public void configModified(List<ModifiedProperty> modifiedProperties) {
+                logger.info("监听到配置更新：");
+                for (ModifiedProperty modifiedProperty : modifiedProperties) {
+                    logger.info(ToString.toString(modifiedProperty));
+                }
+            }
+        });
+        configContext.listenConfigModified();
+        configContext.refreshConfig();
+        Thread.sleep(200000);
+        configContext.close();
+    }
+
 }
