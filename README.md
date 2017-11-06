@@ -33,7 +33,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         <dependency>
             <groupId>org.antframework.configcenter</groupId>
             <artifactId>configcenter-client</artifactId>
-            <version>1.0-SNAPSHOT</version>
+            <version>1.0.0.RELEASE</version>
         </dependency>
 
 ##### 2. 使用客户端

@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.antframework.boot</groupId>
         <artifactId>ant-boot-starter-parent</artifactId>
-        <version>1.0-SNAPSHOT</version>
+        <version>1.0.0.RELEASE</version>
     </parent>
 
     <groupId>org.antframework.configcenter</groupId>
     <artifactId>configcenter</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>1.0.0.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>configcenter</name>
