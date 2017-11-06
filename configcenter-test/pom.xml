@@ -11,8 +11,8 @@
     <artifactId>configcenter-test</artifactId>
 
     <properties>
-        <!--install时跳过本模块-->
-        <maven.install.skip>true</maven.install.skip>
+        <!--deploy时跳过本模块-->
+        <maven.deploy.skip>true</maven.deploy.skip>
     </properties>
 
     <dependencies>
