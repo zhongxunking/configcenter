@@ -8,31 +8,33 @@
  */
 package org.antframework.configcenter.biz;
 
+import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.facade.constant.ZkConstant;
 import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.hibernate.validator.constraints.NotBlank;
-import org.springframework.beans.factory.annotation.Value;
+import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.util.StringUtils;
+
+import java.util.Set;
 
 /**
  * biz层配置
  */
 @Configuration
 public class BizConfiguration {
-
-    @Value("${config.zookeeper.url}")
-    @NotBlank
-    private String zkUrl;
+    // 属性
+    private ConfigcenterProperties properties = Contexts.buildProperties(ConfigcenterProperties.class);
 
     // zookeeper客户端
     @Bean
     public CuratorFramework zkClient() throws InterruptedException {
         CuratorFramework zkClient = CuratorFrameworkFactory.builder()
-                .connectString(zkUrl)
+                .connectString(StringUtils.collectionToCommaDelimitedString(properties.getZkUrls()))
                 .namespace(ZkConstant.ZK_CONFIG_NAMESPACE)
                 .retryPolicy(new ExponentialBackoffRetry(1000, 10))
                 .build();
@@ -45,5 +47,30 @@ public class BizConfiguration {
     @Bean
     public ZkTemplate zkTemplate(CuratorFramework zkClient) {
         return new ZkTemplate(zkClient);
+    }
+
+    /**
+     * 配置中心属性
+     */
+    @ConfigurationProperties(ConfigcenterProperties.PREFIX)
+    public static class ConfigcenterProperties {
+        /**
+         * 属性前缀
+         */
+        public static final String PREFIX = "configcenter";
+
+        /**
+         * 必填：配置中心使用的zookeeper地址，存在多个zookeeper的话以“,”分隔（比如：192.168.0.1:2181,192.168.0.2:2181）
+         */
+        @NotEmpty
+        private Set<String> zkUrls;
+
+        public Set<String> getZkUrls() {
+            return zkUrls;
+        }
+
+        public void setZkUrls(Set<String> zkUrls) {
+            this.zkUrls = zkUrls;
+        }
     }
 }
