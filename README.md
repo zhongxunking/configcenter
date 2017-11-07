@@ -24,10 +24,10 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 ![image](http://note.youdao.com/yws/api/personal/file/4E2BD7EC88CD4DE18716157F592EC18D?method=download&shareKey=34b9f8760af2efc3d6dca89654fb814c)
 
 ### 2. 启动服务端
-[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.0.0.RELEASE/configcenter-assemble-1.0.0.RELEASE-exec.jar)。服务端说明：
+[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.0.0.RELEASE/configcenter-assemble-1.0.0.RELEASE-exec.jar)。说明：
 1. 服务端使用的springboot，直接命令启动下载好的jar包即可，无需部署tomcat。
-2. 服务端使用hibernate自动生成表结构，无需倒入sql。
-3. 服务端在启动时会在"/var/apps"下创建日志文件，请确保服务端对该目录拥有写权限。
+2. 服务端使用hibernate自动生成表结构，无需导入sql。
+3. 服务端在启动时会在"/var/apps/"下创建日志文件，请确保服务端对该目录拥有写权限。
 4. 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有非线上环境配置）；二是线上环境配置中心（管理线上环境配置）。
 5. 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）
 
@@ -133,6 +133,8 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 
 ### 4. 管理配置
 后台管理中管理员有两种：超级管理员、普通管理员。超级管理员可以管理所有配置，也可以管理其他管理员；普通管理员只能管理分配给他的应用的配置。
+
+> 根据下面的介绍登陆成功后，请添加一个应用编码为“common”的应用，该编码的应用会作为公共配置，也就是说所有应用的配置都会继承编码为“common”应用的配置。
 
 #### 页面挺丑的，但功能是全的。
 
