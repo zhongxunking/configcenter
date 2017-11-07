@@ -8,7 +8,7 @@
 > * 客户端：jdk1.8
 > * zookeeper
 
-> 注意：本系统还未上传到maven中央库（近期会上传）
+> 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
 
 ### 1. 整体设计
 配置就是不同应用在不同环境的一些键值对。本配置中心内的角色有：服务端、客户端、zookeeper。
@@ -24,7 +24,20 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
 ![image](http://note.youdao.com/yws/api/personal/file/4E2BD7EC88CD4DE18716157F592EC18D?method=download&shareKey=34b9f8760af2efc3d6dca89654fb814c)
 
 ### 2. 启动服务端
-服务端使用的springboot，直接命令启动jar包即可。（等上传到maven中央库后再详细介绍）
+[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.0.0.RELEASE/configcenter-assemble-1.0.0.RELEASE-exec.jar)。服务端说明：
+1. 服务端使用的springboot，直接命令启动下载好的jar包即可，无需部署tomcat。
+2. 服务端使用hibernate自动生成表结构，无需倒入sql。
+3. 服务端在启动时会在"/var/apps"下创建日志文件，请确保服务端对该目录拥有写权限。
+4. 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有非线上环境配置）；二是线上环境配置中心（管理线上环境配置）。
+5. 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）
+
+启动命令：
+
+    java -jar configcenter-assemble-1.0.0.RELEASE-exec.jar --spring.profiles.active="环境编码" --server.port="端口" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --configcenter.zk-urls="配置中心使用的zookeeper地址,如果存在多个zookeeper以英文逗号分隔"
+
+比如我本地开发时启动命令：
+
+    java -jar configcenter-assemble-1.0.0.RELEASE-exec.jar --spring.profiles.active="offline" --server.port="9090" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --configcenter.zk-urls="localhost:2181"
 
 ### 3. 集成客户端
 
@@ -33,7 +46,7 @@ zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有�
         <dependency>
             <groupId>org.antframework.configcenter</groupId>
             <artifactId>configcenter-client</artifactId>
-            <version>1.0.0.RELEASE</version>
+            <version>1.0-SNAPSHOT</version>
         </dependency>
 
 ##### 2. 使用客户端
