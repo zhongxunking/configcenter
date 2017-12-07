@@ -38,12 +38,12 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
     }
 
     @Override
-    public boolean containKey(String key) {
+    public boolean contains(String key) {
         return properties.containsKey(key);
     }
 
     @Override
-    public List<ModifiedProperty> replaceProperties(Map<String, String> newProperties) {
+    public synchronized List<ModifiedProperty> replaceProperties(Map<String, String> newProperties) {
         List<ModifiedProperty> modifiedProperties = analyseModify(properties, newProperties);
         applyModify(properties, modifiedProperties);
         return modifiedProperties;
