@@ -26,7 +26,7 @@ public class ConfigcenterPropertySource extends EnumerablePropertySource<ConfigC
 
     @Override
     public boolean containsProperty(String name) {
-        return source.getProperties().containKey(name);
+        return source.getProperties().contains(name);
     }
 
     @Override

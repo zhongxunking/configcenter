@@ -26,7 +26,7 @@ public interface ConfigProperties {
     String[] getPropertyKeys();
 
     /**
-     * 是否包含属性key
+     * 是否包含属性
      */
-    boolean containKey(String key);
+    boolean contains(String key);
 }
