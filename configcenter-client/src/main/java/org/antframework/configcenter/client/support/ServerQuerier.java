@@ -57,7 +57,7 @@ public class ServerQuerier {
             if (result == null) {
                 throw new RuntimeException("请求配置中心失败");
             }
-            if (!result.isSuccess() || result.getProperties() == null) {
+            if (!result.isSuccess()) {
                 throw new RuntimeException("从配置中心读取配置失败：" + result.getMessage());
             }
             return result.getProperties();
