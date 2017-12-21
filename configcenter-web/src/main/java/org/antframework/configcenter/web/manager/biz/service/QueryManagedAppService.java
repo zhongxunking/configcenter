@@ -14,6 +14,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.jpa.query.QueryOperator;
 import org.antframework.common.util.jpa.query.QueryParam;
+import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
@@ -28,7 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -74,7 +74,6 @@ public class QueryManagedAppService {
 
     // 构建分页
     private Pageable buildPageable(QueryManagedAppOrder queryManagedAppOrder) {
-        Sort sort = new Sort(Sort.Direction.DESC, "id");
-        return new PageRequest(queryManagedAppOrder.getPageNo() - 1, queryManagedAppOrder.getPageSize(), sort);
+        return new PageRequest(queryManagedAppOrder.getPageNo() - 1, queryManagedAppOrder.getPageSize(), QueryUtils.QUERY_SORT);
     }
 }
