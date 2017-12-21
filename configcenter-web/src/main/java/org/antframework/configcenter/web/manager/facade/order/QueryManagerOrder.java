@@ -9,6 +9,8 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryEQ;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 
 /**
@@ -16,10 +18,13 @@ import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
  */
 public class QueryManagerOrder extends AbstractQueryOrder {
     // 管理员编码
+    @QueryLike
     private String managerCode;
     // 名称
+    @QueryLike
     private String name;
     // 类型
+    @QueryEQ
     private ManagerType type;
 
     public String getManagerCode() {

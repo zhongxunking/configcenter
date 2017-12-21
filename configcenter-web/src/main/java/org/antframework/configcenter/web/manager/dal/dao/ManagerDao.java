@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.manager.dal.dao;
 
+import org.antframework.common.util.jpa.query.QueryParam;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -15,7 +16,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
-import java.util.Map;
+import java.util.Collection;
 
 /**
  * 管理员实体dao
@@ -32,5 +33,5 @@ public interface ManagerDao {
 
     Manager findByManagerCode(String managerCode);
 
-    Page<Manager> query(Map<String, Object> searchParams, Pageable pageable);
+    Page<Manager> query(Collection<QueryParam> queryParams, Pageable pageable);
 }
