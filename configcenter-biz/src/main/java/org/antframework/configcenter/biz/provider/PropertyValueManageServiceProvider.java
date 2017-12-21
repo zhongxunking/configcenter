@@ -8,6 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.configcenter.biz.util.QueryUtils;
+import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
@@ -46,6 +50,7 @@ public class PropertyValueManageServiceProvider implements PropertyValueManageSe
 
     @Override
     public QueryPropertyValueResult queryPropertyValue(QueryPropertyValueOrder order) {
-        return serviceEngine.execute("queryPropertyValueService", order);
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(PropertyValueDao.class));
+        return result.convertTo(QueryPropertyValueResult.class);
     }
 }

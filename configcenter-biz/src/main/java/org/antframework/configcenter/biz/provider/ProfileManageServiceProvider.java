@@ -8,6 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.configcenter.biz.util.QueryUtils;
+import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
@@ -46,6 +50,7 @@ public class ProfileManageServiceProvider implements ProfileManageService {
 
     @Override
     public QueryProfileResult queryProfile(QueryProfileOrder order) {
-        return serviceEngine.execute("queryProfileService", order);
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(ProfileDao.class));
+        return result.convertTo(QueryProfileResult.class);
     }
 }

@@ -8,6 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.configcenter.biz.util.QueryUtils;
+import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
@@ -22,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- *
+ * 属性key管理服务提供者
  */
 @Service
 public class PropertyKeyManageServiceProvider implements PropertyKeyManageService {
@@ -46,6 +50,7 @@ public class PropertyKeyManageServiceProvider implements PropertyKeyManageServic
 
     @Override
     public QueryPropertyKeyResult queryPropertyKey(QueryPropertyKeyOrder order) {
-        return serviceEngine.execute("queryPropertyKeyService", order);
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(PropertyKeyDao.class));
+        return result.convertTo(QueryPropertyKeyResult.class);
     }
 }

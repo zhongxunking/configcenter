@@ -9,12 +9,14 @@
 package org.antframework.configcenter.facade.order.manage;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
 
 /**
  * 查询应用order
  */
 public class QueryAppOrder extends AbstractQueryOrder {
     // 应用编码
+    @QueryLike
     private String appCode;
 
     public String getAppCode() {

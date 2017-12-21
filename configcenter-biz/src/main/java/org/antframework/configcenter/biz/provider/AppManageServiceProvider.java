@@ -8,6 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.configcenter.biz.util.QueryUtils;
+import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
@@ -39,6 +43,7 @@ public class AppManageServiceProvider implements AppManageService {
 
     @Override
     public QueryAppResult queryApp(QueryAppOrder order) {
-        return serviceEngine.execute("queryAppService", order);
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(AppDao.class));
+        return result.convertTo(QueryAppResult.class);
     }
 }

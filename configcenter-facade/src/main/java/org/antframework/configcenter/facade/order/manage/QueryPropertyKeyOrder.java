@@ -9,16 +9,21 @@
 package org.antframework.configcenter.facade.order.manage;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryEQ;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
 
 /**
  * 查询属性key-order
  */
 public class QueryPropertyKeyOrder extends AbstractQueryOrder {
     // 应用编码
+    @QueryLike
     private String appCode;
     // 属性key
+    @QueryLike
     private String key;
     // 是否是公开的
+    @QueryEQ
     private Boolean outward;
 
     public String getAppCode() {

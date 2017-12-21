@@ -9,12 +9,14 @@
 package org.antframework.configcenter.facade.order.manage;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
 
 /**
  * 查询环境order
  */
 public class QueryProfileOrder extends AbstractQueryOrder {
     // 环境编码
+    @QueryLike
     private String profileCode;
 
     public String getProfileCode() {
