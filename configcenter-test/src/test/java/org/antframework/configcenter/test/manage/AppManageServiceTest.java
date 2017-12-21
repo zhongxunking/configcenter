@@ -17,7 +17,6 @@ import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.test.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,9 +51,7 @@ public class AppManageServiceTest extends AbstractTest {
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        order.setAppCode("scbfund");
         QueryAppResult result = appManageService.queryApp(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals(1, result.getInfos().size());
     }
 }

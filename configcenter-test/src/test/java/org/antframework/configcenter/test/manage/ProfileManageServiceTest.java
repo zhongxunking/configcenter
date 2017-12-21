@@ -19,7 +19,6 @@ import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.antframework.configcenter.test.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,6 +62,5 @@ public class ProfileManageServiceTest extends AbstractTest {
         order.setProfileCode("dev");
         QueryProfileResult result = profileManageService.queryProfile(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals(1, result.getInfos().size());
     }
 }

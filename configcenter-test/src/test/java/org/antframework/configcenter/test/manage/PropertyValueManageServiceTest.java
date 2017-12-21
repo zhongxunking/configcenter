@@ -19,7 +19,6 @@ import org.antframework.configcenter.facade.result.manage.FindAppProfileProperty
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 import org.antframework.configcenter.test.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,6 +74,5 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         order.setPageSize(10);
         QueryPropertyValueResult result = propertyValueManageService.queryPropertyValue(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals(1, result.getInfos().size());
     }
 }
