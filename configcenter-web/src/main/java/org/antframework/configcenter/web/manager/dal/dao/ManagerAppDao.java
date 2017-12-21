@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.manager.dal.dao;
 
-import org.antframework.common.util.jpa.query.QueryParam;
+import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

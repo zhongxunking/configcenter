@@ -9,7 +9,7 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
-import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
+import org.antframework.common.util.query.annotation.operator.QueryLike;
 
 /**
  * 查询管理员和应用关联order

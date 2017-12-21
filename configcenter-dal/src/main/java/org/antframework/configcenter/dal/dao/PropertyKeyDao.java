@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.dal.dao;
 
-import org.antframework.common.util.jpa.query.QueryParam;
+import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
