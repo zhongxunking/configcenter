@@ -8,14 +8,12 @@
  */
 package org.antframework.configcenter.facade.info;
 
-import org.antframework.common.util.tostring.ToString;
-
-import java.io.Serializable;
+import org.antframework.common.util.facade.AbstractInfo;
 
 /**
  * 环境信息
  */
-public class ProfileInfo implements Serializable {
+public class ProfileInfo extends AbstractInfo {
     // 环境编码
     private String profileCode;
     // 备注
@@ -35,10 +33,5 @@ public class ProfileInfo implements Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
-    }
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
     }
 }

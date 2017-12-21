@@ -8,14 +8,12 @@
  */
 package org.antframework.configcenter.facade.info;
 
-import org.antframework.common.util.tostring.ToString;
-
-import java.io.Serializable;
+import org.antframework.common.util.facade.AbstractInfo;
 
 /**
  * 属性value信息
  */
-public class PropertyValueInfo implements Serializable {
+public class PropertyValueInfo extends AbstractInfo {
     // 应用编码
     private String appCode;
     // 属性key
@@ -55,10 +53,5 @@ public class PropertyValueInfo implements Serializable {
 
     public void setValue(String value) {
         this.value = value;
-    }
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
     }
 }

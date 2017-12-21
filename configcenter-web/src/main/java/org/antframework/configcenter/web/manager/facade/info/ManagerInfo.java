@@ -8,16 +8,13 @@
  */
 package org.antframework.configcenter.web.manager.facade.info;
 
-
-import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
-
-import java.io.Serializable;
 
 /**
  * 管理员信息
  */
-public class ManagerInfo implements Serializable {
+public class ManagerInfo extends AbstractInfo {
     // 管理员编码
     private String managerCode;
     // 名称
@@ -47,10 +44,5 @@ public class ManagerInfo implements Serializable {
 
     public void setType(ManagerType type) {
         this.type = type;
-    }
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
     }
 }

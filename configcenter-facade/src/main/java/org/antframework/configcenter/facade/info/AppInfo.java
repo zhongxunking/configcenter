@@ -8,14 +8,12 @@
  */
 package org.antframework.configcenter.facade.info;
 
-import org.antframework.common.util.tostring.ToString;
-
-import java.io.Serializable;
+import org.antframework.common.util.facade.AbstractInfo;
 
 /**
  * 应用信息
  */
-public class AppInfo implements Serializable {
+public class AppInfo extends AbstractInfo {
     // 应用编码
     private String appCode;
     // 备注
@@ -35,10 +33,5 @@ public class AppInfo implements Serializable {
 
     public void setMemo(String memo) {
         this.memo = memo;
-    }
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
     }
 }
