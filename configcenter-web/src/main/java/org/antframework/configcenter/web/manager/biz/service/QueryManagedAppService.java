@@ -12,6 +12,8 @@ import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.jpa.query.QueryOperator;
+import org.antframework.common.util.jpa.query.QueryParam;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
@@ -28,8 +30,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * 查询被管理员管理的应用服务
@@ -55,18 +57,19 @@ public class QueryManagedAppService {
     public void execute(ServiceContext<QueryManagedAppOrder, QueryManagedAppResult> context) {
         QueryManagedAppOrder order = context.getOrder();
 
-        Page<ManagerApp> page = managerAppDao.query(buildSearchParams(order), buildPageable(order));
+        Page<ManagerApp> page = managerAppDao.query(buildQueryParams(order), buildPageable(order));
         FacadeUtils.setQueryResult(context.getResult(), new FacadeUtils.SpringDataPageExtractor<>(page));
     }
 
-    // 构建searchParams
-    private Map<String, Object> buildSearchParams(QueryManagedAppOrder queryManagedAppOrder) {
-        Map<String, Object> searchParams = new HashMap<>();
-        searchParams.put("EQ_managerCode", queryManagedAppOrder.getManagerCode());
+    // 构建queryParams
+    private Collection<QueryParam> buildQueryParams(QueryManagedAppOrder queryManagedAppOrder) {
+        Collection<QueryParam> queryParams = new ArrayList<>();
+        queryParams.add(new QueryParam("managerCode", QueryOperator.EQ, queryManagedAppOrder.getManagerCode()));
         if (queryManagedAppOrder.getAppCode() != null) {
-            searchParams.put("LIKE_appCode", "%" + queryManagedAppOrder.getAppCode() + "%");
+            queryParams.add(new QueryParam("appCode", QueryOperator.LIKE, "%" + queryManagedAppOrder.getAppCode() + "%"));
         }
-        return searchParams;
+
+        return queryParams;
     }
 
     // 构建分页

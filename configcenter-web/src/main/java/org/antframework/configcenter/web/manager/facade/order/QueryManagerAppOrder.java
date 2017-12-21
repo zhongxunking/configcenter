@@ -9,14 +9,17 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.jpa.query.annotation.operator.QueryLike;
 
 /**
  * 查询管理员和应用关联order
  */
 public class QueryManagerAppOrder extends AbstractQueryOrder {
     // 管理员编码
+    @QueryLike
     private String managerCode;
     // 被管理的应用编码
+    @QueryLike
     private String appCode;
 
     public String getManagerCode() {
