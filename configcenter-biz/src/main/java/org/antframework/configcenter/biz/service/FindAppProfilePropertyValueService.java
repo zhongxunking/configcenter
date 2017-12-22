@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
@@ -24,8 +25,8 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceCheck;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
 
@@ -34,6 +35,9 @@ import java.util.List;
  */
 @Service
 public class FindAppProfilePropertyValueService {
+    // info转换器
+    private static final Converter<PropertyValue, PropertyValueInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyValueInfo.class);
+
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -62,10 +66,7 @@ public class FindAppProfilePropertyValueService {
 
         List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(order.getAppCode(), order.getProfileCode());
         for (PropertyValue propertyValue : propertyValues) {
-            PropertyValueInfo info = new PropertyValueInfo();
-            BeanUtils.copyProperties(propertyValue, info);
-
-            result.addInfo(info);
+            result.addInfo(INFO_CONVERTER.convert(propertyValue));
         }
     }
 }
