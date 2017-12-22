@@ -11,6 +11,7 @@ package org.antframework.configcenter.facade.result.manage;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,13 +19,13 @@ import java.util.List;
  */
 public class FindAppPropertyKeyResult extends AbstractResult {
     // 属性key数据
-    private List<PropertyKeyInfo> infos;
+    private List<PropertyKeyInfo> infos = new ArrayList<>();
 
     public List<PropertyKeyInfo> getInfos() {
         return infos;
     }
 
-    public void setInfos(List<PropertyKeyInfo> infos) {
-        this.infos = infos;
+    public void addInfo(PropertyKeyInfo info) {
+        infos.add(info);
     }
 }

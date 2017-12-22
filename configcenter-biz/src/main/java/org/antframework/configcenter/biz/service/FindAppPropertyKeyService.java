@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
@@ -22,10 +23,9 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceCheck;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -33,6 +33,9 @@ import java.util.List;
  */
 @Service
 public class FindAppPropertyKeyService {
+    // info转换器
+    private static final Converter<PropertyKey, PropertyKeyInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
+
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -44,7 +47,7 @@ public class FindAppPropertyKeyService {
 
         App app = appDao.findByAppCode(order.getAppCode());
         if (app == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
         }
     }
 
@@ -54,16 +57,8 @@ public class FindAppPropertyKeyService {
         FindAppPropertyKeyResult result = context.getResult();
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCode(order.getAppCode());
-        result.setInfos(buildInfos(propertyKeys));
-    }
-
-    private List<PropertyKeyInfo> buildInfos(List<PropertyKey> propertyKeys) {
-        List<PropertyKeyInfo> infos = new ArrayList<>();
         for (PropertyKey propertyKey : propertyKeys) {
-            PropertyKeyInfo info = new PropertyKeyInfo();
-            BeanUtils.copyProperties(propertyKey, info);
-            infos.add(info);
+            result.addInfo(INFO_CONVERTER.convert(propertyKey));
         }
-        return infos;
     }
 }
