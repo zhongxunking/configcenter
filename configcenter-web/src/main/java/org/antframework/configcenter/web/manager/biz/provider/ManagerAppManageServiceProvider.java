@@ -15,7 +15,9 @@ import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.*;
-import org.antframework.configcenter.web.manager.facade.result.*;
+import org.antframework.configcenter.web.manager.facade.result.FindManagerAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -34,12 +36,12 @@ public class ManagerAppManageServiceProvider implements ManagerAppManageService 
     }
 
     @Override
-    public DeleteManagerAppResult deleteManagerApp(DeleteManagerAppOrder order) {
+    public EmptyResult deleteManagerApp(DeleteManagerAppOrder order) {
         return serviceEngine.execute("deleteManagerAppService", order);
     }
 
     @Override
-    public DeleteManagerAppByAppResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order) {
+    public EmptyResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order) {
         return serviceEngine.execute("deleteManagerAppByAppService", order);
     }
 

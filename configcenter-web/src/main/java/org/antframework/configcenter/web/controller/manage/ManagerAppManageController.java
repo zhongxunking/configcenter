@@ -20,7 +20,6 @@ import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppResult;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,7 @@ public class ManagerAppManageController extends AbstractController {
      * @param appCode     应用编码（必须）
      */
     @RequestMapping("/deleteManagerApp")
-    public DeleteManagerAppResult deleteManagerApp(String managerCode, String appCode) {
+    public EmptyResult deleteManagerApp(String managerCode, String appCode) {
         assertAdmin();
         DeleteManagerAppOrder order = new DeleteManagerAppOrder();
         order.setManagerCode(managerCode);

@@ -10,7 +10,9 @@ package org.antframework.configcenter.web.manager.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.web.manager.facade.order.*;
-import org.antframework.configcenter.web.manager.facade.result.*;
+import org.antframework.configcenter.web.manager.facade.result.FindManagerAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
 
 /**
  * 管理员关联应用管理服务
@@ -25,12 +27,12 @@ public interface ManagerAppManageService {
     /**
      * 删除管理员与应用关联
      */
-    DeleteManagerAppResult deleteManagerApp(DeleteManagerAppOrder order);
+    EmptyResult deleteManagerApp(DeleteManagerAppOrder order);
 
     /**
      * 删除所有管理员与指定应用的关联
      */
-    DeleteManagerAppByAppResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order);
+    EmptyResult deleteManagerAppByApp(DeleteManagerAppByAppOrder order);
 
     /**
      * 查找管理员与应用关联

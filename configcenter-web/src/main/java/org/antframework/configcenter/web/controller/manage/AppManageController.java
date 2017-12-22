@@ -8,10 +8,8 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
@@ -19,7 +17,6 @@ import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppByAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppByAppResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -62,14 +59,16 @@ public class AppManageController extends AbstractController {
         // 先删除管理员和应用关联
         DeleteManagerAppByAppOrder byAppOrder = new DeleteManagerAppByAppOrder();
         byAppOrder.setAppCode(appCode);
-        DeleteManagerAppByAppResult byAppResult = managerAppManageService.deleteManagerAppByApp(byAppOrder);
-        if (!byAppResult.isSuccess()) {
-            throw new AntBekitException(Status.FAIL, byAppResult.getCode(), byAppResult.getMessage());
+        EmptyResult result = managerAppManageService.deleteManagerAppByApp(byAppOrder);
+        if (!result.isSuccess()) {
+            return result;
         }
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode(appCode);
-        return appManageService.deleteApp(order);
+        result = appManageService.deleteApp(order);
+
+        return result;
     }
 
     /**

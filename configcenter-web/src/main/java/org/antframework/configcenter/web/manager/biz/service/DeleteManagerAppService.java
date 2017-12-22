@@ -8,10 +8,10 @@
  */
 package org.antframework.configcenter.web.manager.biz.service;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -26,7 +26,7 @@ public class DeleteManagerAppService {
     private ManagerAppDao managerAppDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeleteManagerAppOrder, DeleteManagerAppResult> context) {
+    public void execute(ServiceContext<DeleteManagerAppOrder, EmptyResult> context) {
         DeleteManagerAppOrder order = context.getOrder();
 
         ManagerApp managerApp = managerAppDao.findLockByManagerCodeAndAppCode(order.getManagerCode(), order.getAppCode());
