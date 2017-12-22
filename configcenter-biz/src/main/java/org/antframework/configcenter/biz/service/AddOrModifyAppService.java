@@ -8,13 +8,13 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -37,7 +37,7 @@ public class AddOrModifyAppService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<AddOrModifyAppOrder, AddOrModifyAppResult> context) {
+    public void execute(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
@@ -50,7 +50,7 @@ public class AddOrModifyAppService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<AddOrModifyAppOrder, AddOrModifyAppResult> context) {
+    public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
 
         List<Profile> profiles = profileDao.findAll();

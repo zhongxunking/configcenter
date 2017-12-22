@@ -9,10 +9,10 @@
 package org.antframework.configcenter.facade.api.manage;
 
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 
@@ -23,7 +23,7 @@ public interface AppManageService {
     /**
      * 添加或修改应用
      */
-    AddOrModifyAppResult addOrModifyApp(AddOrModifyAppOrder order);
+    EmptyResult addOrModifyApp(AddOrModifyAppOrder order);
 
     /**
      * 删除应用

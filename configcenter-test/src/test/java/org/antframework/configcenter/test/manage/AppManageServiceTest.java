@@ -8,12 +8,12 @@
  */
 package org.antframework.configcenter.test.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -34,7 +34,7 @@ public class AppManageServiceTest extends AbstractTest {
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppCode("scbfund");
         order.setMemo("升财宝");
-        AddOrModifyAppResult result = appManageService.addOrModifyApp(order);
+        EmptyResult result = appManageService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
     }
 

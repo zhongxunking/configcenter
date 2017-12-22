@@ -10,13 +10,13 @@ package org.antframework.configcenter.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueryConstant;
 import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.bekit.service.ServiceEngine;
@@ -32,7 +32,7 @@ public class AppManageServiceProvider implements AppManageService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public AddOrModifyAppResult addOrModifyApp(AddOrModifyAppOrder order) {
+    public EmptyResult addOrModifyApp(AddOrModifyAppOrder order) {
         return serviceEngine.execute("addOrModifyAppService", order);
     }
 

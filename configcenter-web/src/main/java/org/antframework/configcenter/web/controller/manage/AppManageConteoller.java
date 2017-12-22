@@ -10,13 +10,13 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractQueryResult;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyAppResult;
 import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppByAppOrder;
@@ -43,7 +43,7 @@ public class AppManageConteoller extends AbstractController {
      * @param memo    备注（可选）
      */
     @RequestMapping("/addOrModifyApp")
-    public AddOrModifyAppResult addOrModifyApp(String appCode, String memo) {
+    public EmptyResult addOrModifyApp(String appCode, String memo) {
         assertAdmin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppCode(appCode);
