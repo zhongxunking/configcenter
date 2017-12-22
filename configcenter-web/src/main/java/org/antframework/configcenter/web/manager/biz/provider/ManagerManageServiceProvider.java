@@ -10,11 +10,13 @@ package org.antframework.configcenter.web.manager.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueryConstant;
 import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
 import org.antframework.configcenter.web.manager.facade.order.*;
-import org.antframework.configcenter.web.manager.facade.result.*;
+import org.antframework.configcenter.web.manager.facade.result.ManagerLoginResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,27 +30,27 @@ public class ManagerManageServiceProvider implements ManagerManageService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public AddManagerResult addManager(AddManagerOrder order) {
+    public EmptyResult addManager(AddManagerOrder order) {
         return serviceEngine.execute("addManagerService", order);
     }
 
     @Override
-    public DeleteManagerResult deleteManager(DeleteManagerOrder order) {
+    public EmptyResult deleteManager(DeleteManagerOrder order) {
         return serviceEngine.execute("deleteManagerService", order);
     }
 
     @Override
-    public ModifyManagerPasswordResult modifyManagerPassword(ModifyManagerPasswordOrder order) {
+    public EmptyResult modifyManagerPassword(ModifyManagerPasswordOrder order) {
         return serviceEngine.execute("modifyManagerPasswordService", order);
     }
 
     @Override
-    public ModifyManagerTypeResult modifyManagerType(ModifyManagerTypeOrder order) {
+    public EmptyResult modifyManagerType(ModifyManagerTypeOrder order) {
         return serviceEngine.execute("modifyManagerTypeService", order);
     }
 
     @Override
-    public ModifyManagerNameResult modifyManagerName(ModifyManagerNameOrder order) {
+    public EmptyResult modifyManagerName(ModifyManagerNameOrder order) {
         return serviceEngine.execute("modifyManagerNameService", order);
     }
 

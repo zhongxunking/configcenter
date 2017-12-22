@@ -10,11 +10,11 @@ package org.antframework.configcenter.web.manager.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
 import org.antframework.configcenter.web.manager.facade.order.ModifyManagerTypeOrder;
-import org.antframework.configcenter.web.manager.facade.result.ModifyManagerTypeResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -29,7 +29,7 @@ public class ModifyManagerTypeService {
     private ManagerDao managerDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<ModifyManagerTypeOrder, ModifyManagerTypeResult> context) {
+    public void execute(ServiceContext<ModifyManagerTypeOrder, EmptyResult> context) {
         ModifyManagerTypeOrder order = context.getOrder();
 
         Manager manager = managerDao.findLockByManagerCode(order.getManagerCode());

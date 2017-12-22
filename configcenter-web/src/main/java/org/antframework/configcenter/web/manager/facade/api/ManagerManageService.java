@@ -8,8 +8,10 @@
  */
 package org.antframework.configcenter.web.manager.facade.api;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.web.manager.facade.order.*;
-import org.antframework.configcenter.web.manager.facade.result.*;
+import org.antframework.configcenter.web.manager.facade.result.ManagerLoginResult;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerResult;
 
 /**
  * 管理员管理服务
@@ -19,27 +21,27 @@ public interface ManagerManageService {
     /**
      * 添加管理员
      */
-    AddManagerResult addManager(AddManagerOrder order);
+    EmptyResult addManager(AddManagerOrder order);
 
     /**
      * 删除管理员
      */
-    DeleteManagerResult deleteManager(DeleteManagerOrder order);
+    EmptyResult deleteManager(DeleteManagerOrder order);
 
     /**
      * 修改管理员密码
      */
-    ModifyManagerPasswordResult modifyManagerPassword(ModifyManagerPasswordOrder order);
+    EmptyResult modifyManagerPassword(ModifyManagerPasswordOrder order);
 
     /**
      * 修改管理员类型
      */
-    ModifyManagerTypeResult modifyManagerType(ModifyManagerTypeOrder order);
+    EmptyResult modifyManagerType(ModifyManagerTypeOrder order);
 
     /**
      * 修改管理员名称
      */
-    ModifyManagerNameResult modifyManagerName(ModifyManagerNameOrder order);
+    EmptyResult modifyManagerName(ModifyManagerNameOrder order);
 
     /**
      * 查询管理员

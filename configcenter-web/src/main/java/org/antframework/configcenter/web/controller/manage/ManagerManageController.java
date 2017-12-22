@@ -8,10 +8,11 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 import org.antframework.configcenter.web.manager.facade.order.*;
-import org.antframework.configcenter.web.manager.facade.result.*;
+import org.antframework.configcenter.web.manager.facade.result.QueryManagerResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class ManagerManageController extends AbstractController {
      * @param type        类型（必须）
      */
     @RequestMapping("/addManager")
-    public AddManagerResult addManager(String managerCode, String name, String password, ManagerType type) {
+    public EmptyResult addManager(String managerCode, String name, String password, ManagerType type) {
         assertAdmin();
         AddManagerOrder order = new AddManagerOrder();
         order.setManagerCode(managerCode);
@@ -51,7 +52,7 @@ public class ManagerManageController extends AbstractController {
      * @param managerCode 管理员编码（必须）
      */
     @RequestMapping("/deleteManager")
-    public DeleteManagerResult deleteManager(String managerCode) {
+    public EmptyResult deleteManager(String managerCode) {
         assertAdmin();
         DeleteManagerOrder order = new DeleteManagerOrder();
         order.setManagerCode(managerCode);
@@ -66,7 +67,7 @@ public class ManagerManageController extends AbstractController {
      * @param newType     新类型（必须）
      */
     @RequestMapping("/modifyManagerType")
-    public ModifyManagerTypeResult modifyManagerType(String managerCode, ManagerType newType) {
+    public EmptyResult modifyManagerType(String managerCode, ManagerType newType) {
         assertAdmin();
         ModifyManagerTypeOrder order = new ModifyManagerTypeOrder();
         order.setManagerCode(managerCode);
@@ -82,7 +83,7 @@ public class ManagerManageController extends AbstractController {
      * @param newPassword 新密码（必须）
      */
     @RequestMapping("/modifyManagerPassword")
-    public ModifyManagerPasswordResult modifyManagerPassword(String managerCode, String newPassword) {
+    public EmptyResult modifyManagerPassword(String managerCode, String newPassword) {
         assertAdminOrMyself(managerCode);
         ModifyManagerPasswordOrder order = new ModifyManagerPasswordOrder();
         order.setManagerCode(managerCode);
@@ -98,7 +99,7 @@ public class ManagerManageController extends AbstractController {
      * @param newName     新名称
      */
     @RequestMapping("/modifyManagerName")
-    public ModifyManagerNameResult modifyManagerName(String managerCode, String newName) {
+    public EmptyResult modifyManagerName(String managerCode, String newName) {
         assertAdminOrMyself(managerCode);
         ModifyManagerNameOrder order = new ModifyManagerNameOrder();
         order.setManagerCode(managerCode);

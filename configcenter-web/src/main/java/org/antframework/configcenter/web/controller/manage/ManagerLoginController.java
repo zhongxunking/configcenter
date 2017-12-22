@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.common.ResultCode;
 import org.antframework.configcenter.web.common.SessionAccessor;
@@ -20,7 +21,6 @@ import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
 import org.antframework.configcenter.web.manager.facade.order.AddManagerOrder;
 import org.antframework.configcenter.web.manager.facade.order.ManagerLoginOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagerOrder;
-import org.antframework.configcenter.web.manager.facade.result.AddManagerResult;
 import org.antframework.configcenter.web.manager.facade.result.ManagerLoginResult;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagerResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -81,7 +81,7 @@ public class ManagerLoginController extends AbstractController {
      * @param password    密码（必填）
      */
     @RequestMapping("/initAdmin")
-    public AddManagerResult initAdmin(String managerCode, String name, String password) {
+    public EmptyResult initAdmin(String managerCode, String name, String password) {
         assertInitAdmin();
         AddManagerOrder order = new AddManagerOrder();
         order.setManagerCode(managerCode);
