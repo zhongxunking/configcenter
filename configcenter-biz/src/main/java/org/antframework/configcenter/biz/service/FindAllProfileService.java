@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
@@ -16,8 +17,8 @@ import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
 
@@ -26,6 +27,9 @@ import java.util.List;
  */
 @Service
 public class FindAllProfileService {
+    // info转换器
+    private static final Converter<Profile, ProfileInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ProfileInfo.class);
+
     @Autowired
     private ProfileDao profileDao;
 
@@ -35,9 +39,7 @@ public class FindAllProfileService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            ProfileInfo info = new ProfileInfo();
-            BeanUtils.copyProperties(profile, info);
-            result.addInfo(info);
+            result.addInfo(INFO_CONVERTER.convert(profile));
         }
     }
 }
