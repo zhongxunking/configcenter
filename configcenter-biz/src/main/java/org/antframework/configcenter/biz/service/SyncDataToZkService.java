@@ -8,13 +8,13 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
-import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -36,7 +36,7 @@ public class SyncDataToZkService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<SyncDataToZkOrder, SyncDataToZkResult> context) {
+    public void execute(ServiceContext<EmptyOrder, EmptyResult> context) {
         // 同步环境
         List<String> profileCodes = new ArrayList<>();
         for (Profile profile : profileDao.findAll()) {

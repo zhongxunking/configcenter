@@ -8,9 +8,9 @@
  */
 package org.antframework.configcenter.facade.api.manage;
 
-import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
+import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 
 /**
@@ -21,7 +21,7 @@ public interface RefreshService {
     /**
      * 同步所有环境、应用到zookeeper
      */
-    SyncDataToZkResult syncDataToZk(SyncDataToZkOrder order);
+    EmptyResult syncDataToZk(EmptyOrder order);
 
     /**
      * 触发客户端刷新配置

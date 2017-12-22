@@ -9,10 +9,10 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
-import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -35,7 +35,7 @@ public class RefreshController {
     @RequestMapping("/refreshZkAndClient")
     public AbstractResult refreshZkAndClient(String appCode, String profileCode) {
         // 同步数据到zookeeper
-        SyncDataToZkResult syncDataToZkResult = refreshService.syncDataToZk(new SyncDataToZkOrder());
+        EmptyResult syncDataToZkResult = refreshService.syncDataToZk(new EmptyOrder());
         if (!syncDataToZkResult.isSuccess()) {
             return syncDataToZkResult;
         }

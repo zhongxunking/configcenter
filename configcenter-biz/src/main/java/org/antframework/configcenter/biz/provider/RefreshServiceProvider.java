@@ -8,10 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
-import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +26,7 @@ public class RefreshServiceProvider implements RefreshService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public SyncDataToZkResult syncDataToZk(SyncDataToZkOrder order) {
+    public EmptyResult syncDataToZk(EmptyOrder order) {
         return serviceEngine.execute("syncDataToZkService", order);
     }
 

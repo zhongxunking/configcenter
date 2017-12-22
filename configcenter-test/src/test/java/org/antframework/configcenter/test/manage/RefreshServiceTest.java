@@ -8,11 +8,11 @@
  */
 package org.antframework.configcenter.test.manage;
 
+import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
-import org.antframework.configcenter.facade.order.manage.SyncDataToZkOrder;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.SyncDataToZkResult;
 import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -29,7 +29,7 @@ public class RefreshServiceTest extends AbstractTest {
 
     @Test
     public void testSyncDataToZk() {
-        SyncDataToZkResult result = refreshService.syncDataToZk(new SyncDataToZkOrder());
+        EmptyResult result = refreshService.syncDataToZk(new EmptyOrder());
         checkResult(result, Status.SUCCESS);
     }
 
