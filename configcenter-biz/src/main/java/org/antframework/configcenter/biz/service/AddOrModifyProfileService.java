@@ -8,13 +8,13 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -37,7 +37,7 @@ public class AddOrModifyProfileService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
+    public void execute(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
@@ -50,7 +50,7 @@ public class AddOrModifyProfileService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<AddOrModifyProfileOrder, AddOrModifyProfileResult> context) {
+    public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
         zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode()));

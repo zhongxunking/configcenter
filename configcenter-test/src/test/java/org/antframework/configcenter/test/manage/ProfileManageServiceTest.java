@@ -8,13 +8,13 @@
  */
 package org.antframework.configcenter.test.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
@@ -36,7 +36,7 @@ public class ProfileManageServiceTest extends AbstractTest {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileCode("dev");
         order.setMemo("开发环境");
-        AddOrModifyProfileResult result = profileManageService.addOrModifyProfile(order);
+        EmptyResult result = profileManageService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 

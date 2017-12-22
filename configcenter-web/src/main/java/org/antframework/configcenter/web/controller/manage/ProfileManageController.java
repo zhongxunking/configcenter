@@ -8,12 +8,12 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.ProfileManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyProfileResult;
 import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
@@ -37,7 +37,7 @@ public class ProfileManageController extends AbstractController {
      * @param memo        备注（可选）
      */
     @RequestMapping("/addOrModifyProfile")
-    public AddOrModifyProfileResult addOrModifyProfile(String profileCode, String memo) {
+    public EmptyResult addOrModifyProfile(String profileCode, String memo) {
         assertAdmin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileCode(profileCode);
