@@ -15,7 +15,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyO
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -54,7 +53,7 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
-        DeletePropertyKeyResult result = propertyKeyManageService.deletePropertyKey(order);
+        EmptyResult result = propertyKeyManageService.deletePropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 

@@ -18,7 +18,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyO
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.bekit.service.ServiceEngine;
@@ -39,7 +38,7 @@ public class PropertyKeyManageServiceProvider implements PropertyKeyManageServic
     }
 
     @Override
-    public DeletePropertyKeyResult deletePropertyKey(DeletePropertyKeyOrder order) {
+    public EmptyResult deletePropertyKey(DeletePropertyKeyOrder order) {
         return serviceEngine.execute("deletePropertyKeyService", order);
     }
 

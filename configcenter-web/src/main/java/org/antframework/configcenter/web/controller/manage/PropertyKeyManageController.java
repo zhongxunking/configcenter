@@ -14,7 +14,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyO
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,7 +56,7 @@ public class PropertyKeyManageController extends AbstractController {
      * @param key     key（必须）
      */
     @RequestMapping("/deletePropertyKey")
-    public DeletePropertyKeyResult deletePropertyKey(String appCode, String key) {
+    public EmptyResult deletePropertyKey(String appCode, String key) {
         canModifyApp(appCode);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode(appCode);
