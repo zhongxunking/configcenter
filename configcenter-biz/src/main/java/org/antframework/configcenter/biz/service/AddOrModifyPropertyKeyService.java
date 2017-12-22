@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.common.ZkUtils;
@@ -20,7 +21,6 @@ import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -45,7 +45,7 @@ public class AddOrModifyPropertyKeyService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> context) {
+    public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, EmptyResult> context) {
         AddOrModifyPropertyKeyOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
@@ -63,7 +63,7 @@ public class AddOrModifyPropertyKeyService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<AddOrModifyPropertyKeyOrder, AddOrModifyPropertyKeyResult> context) {
+    public void after(ServiceContext<AddOrModifyPropertyKeyOrder, EmptyResult> context) {
         AddOrModifyPropertyKeyOrder order = context.getOrder();
 
         List<Profile> profiles = profileDao.findAll();

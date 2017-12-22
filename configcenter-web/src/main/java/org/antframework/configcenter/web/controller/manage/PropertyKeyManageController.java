@@ -8,12 +8,12 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
@@ -39,7 +39,7 @@ public class PropertyKeyManageController extends AbstractController {
      * @param memo    备注（可选）
      */
     @RequestMapping("/addOrModifyPropertyKey")
-    public AddOrModifyPropertyKeyResult addOrModifyPropertyKey(String appCode, String key, boolean outward, String memo) {
+    public EmptyResult addOrModifyPropertyKey(String appCode, String key, boolean outward, String memo) {
         canModifyApp(appCode);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode(appCode);

@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueryConstant;
 import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
@@ -17,7 +18,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyO
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
@@ -34,7 +34,7 @@ public class PropertyKeyManageServiceProvider implements PropertyKeyManageServic
     private ServiceEngine serviceEngine;
 
     @Override
-    public AddOrModifyPropertyKeyResult addOrModifyPropertyKey(AddOrModifyPropertyKeyOrder order) {
+    public EmptyResult addOrModifyPropertyKey(AddOrModifyPropertyKeyOrder order) {
         return serviceEngine.execute("addOrModifyPropertyKeyService", order);
     }
 

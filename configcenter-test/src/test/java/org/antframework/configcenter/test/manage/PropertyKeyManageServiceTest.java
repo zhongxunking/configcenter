@@ -8,18 +8,17 @@
  */
 package org.antframework.configcenter.test.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.AddOrModifyPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
 import org.antframework.configcenter.test.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,7 +38,7 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         order.setKey("collection.accNo");
         order.setOutward(false);
         order.setMemo("归集户帐号");
-        AddOrModifyPropertyKeyResult result = propertyKeyManageService.addOrModifyPropertyKey(order);
+        EmptyResult result = propertyKeyManageService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
         order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode("scbfund");
