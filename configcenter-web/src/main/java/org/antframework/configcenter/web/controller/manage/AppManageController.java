@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/app")
-public class AppManageConteoller extends AbstractController {
+public class AppManageController extends AbstractController {
     @Autowired
     private AppManageService appManageService;
     @Autowired
