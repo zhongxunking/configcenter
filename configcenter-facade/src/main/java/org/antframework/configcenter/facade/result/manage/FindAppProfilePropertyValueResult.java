@@ -11,6 +11,7 @@ package org.antframework.configcenter.facade.result.manage;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -18,13 +19,13 @@ import java.util.List;
  */
 public class FindAppProfilePropertyValueResult extends AbstractResult {
     // 属性value数据
-    private List<PropertyValueInfo> infos;
+    private List<PropertyValueInfo> infos = new ArrayList<>();
 
     public List<PropertyValueInfo> getInfos() {
         return infos;
     }
 
-    public void setInfos(List<PropertyValueInfo> infos) {
-        this.infos = infos;
+    public void addInfo(PropertyValueInfo info) {
+        infos.add(info);
     }
 }

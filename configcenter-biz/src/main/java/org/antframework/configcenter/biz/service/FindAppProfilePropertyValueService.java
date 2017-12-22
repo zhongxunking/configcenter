@@ -27,7 +27,6 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,11 +47,11 @@ public class FindAppProfilePropertyValueService {
 
         App app = appDao.findByAppCode(order.getAppCode());
         if (app == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
         }
         Profile profile = profileDao.findByProfileCode(order.getProfileCode());
         if (profile == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileCode()));
         }
     }
 
@@ -62,17 +61,11 @@ public class FindAppProfilePropertyValueService {
         FindAppProfilePropertyValueResult result = context.getResult();
 
         List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(order.getAppCode(), order.getProfileCode());
-        result.setInfos(buildInfos(propertyValues));
-    }
-
-    // 构建infos
-    private List<PropertyValueInfo> buildInfos(List<PropertyValue> propertyValues) {
-        List<PropertyValueInfo> infos = new ArrayList<>();
         for (PropertyValue propertyValue : propertyValues) {
             PropertyValueInfo info = new PropertyValueInfo();
             BeanUtils.copyProperties(propertyValue, info);
-            infos.add(info);
+
+            result.addInfo(info);
         }
-        return infos;
     }
 }
