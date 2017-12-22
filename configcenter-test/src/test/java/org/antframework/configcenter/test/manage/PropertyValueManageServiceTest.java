@@ -15,7 +15,6 @@ import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrde
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -54,7 +53,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
         order.setProfileCode("dev");
-        DeletePropertyValueResult result = propertyValueManageService.deletePropertyValue(order);
+        EmptyResult result = propertyValueManageService.deletePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 

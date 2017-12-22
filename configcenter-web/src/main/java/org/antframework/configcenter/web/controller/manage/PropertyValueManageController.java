@@ -17,7 +17,6 @@ import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrde
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,7 +67,7 @@ public class PropertyValueManageController extends AbstractController {
      * @param profileCode 环境编码（必须）
      */
     @RequestMapping("/deletePropertyValue")
-    public DeletePropertyValueResult deletePropertyValue(String appCode, String key, String profileCode) {
+    public EmptyResult deletePropertyValue(String appCode, String key, String profileCode) {
         canModifyApp(appCode);
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppCode(appCode);

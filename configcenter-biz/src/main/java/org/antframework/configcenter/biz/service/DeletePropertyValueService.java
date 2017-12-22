@@ -8,12 +8,12 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.common.ZkUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -31,7 +31,7 @@ public class DeletePropertyValueService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
+    public void execute(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
         PropertyValue propertyValue = propertyValueDao.findLockByAppCodeAndKeyAndProfileCode(order.getAppCode(), order.getKey(), order.getProfileCode());
@@ -41,7 +41,7 @@ public class DeletePropertyValueService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<DeletePropertyValueOrder, DeletePropertyValueResult> context) {
+    public void after(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
         zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
