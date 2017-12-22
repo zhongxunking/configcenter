@@ -16,7 +16,7 @@ import java.util.Map;
  * 查找应用在特定环境中的配置result
  */
 public class FindPropertiesResult extends AbstractResult {
-    // 属性（不存在该应用或环境，则返回null）
+    // 属性
     private Map<String, String> properties;
 
     public Map<String, String> getProperties() {
