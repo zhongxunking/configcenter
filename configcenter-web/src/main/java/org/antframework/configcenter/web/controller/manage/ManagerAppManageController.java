@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
@@ -19,7 +20,6 @@ import org.antframework.configcenter.web.manager.facade.order.AddManagerAppOrder
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagerAppOrder;
-import org.antframework.configcenter.web.manager.facade.result.AddManagerAppResult;
 import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppResult;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagerAppResult;
@@ -45,7 +45,7 @@ public class ManagerAppManageController extends AbstractController {
      * @param appCode     应用编码（必须）
      */
     @RequestMapping("/addManagerApp")
-    public AddManagerAppResult addManagerApp(String managerCode, String appCode) {
+    public EmptyResult addManagerApp(String managerCode, String appCode) {
         assertAdmin();
         FindAppOrder findAppOrder = new FindAppOrder();
         findAppOrder.setAppCode(appCode);

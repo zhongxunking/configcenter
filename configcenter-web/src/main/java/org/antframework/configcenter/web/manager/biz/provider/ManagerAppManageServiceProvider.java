@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.manager.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueryConstant;
 import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
@@ -28,7 +29,7 @@ public class ManagerAppManageServiceProvider implements ManagerAppManageService 
     private ServiceEngine serviceEngine;
 
     @Override
-    public AddManagerAppResult addManagerApp(AddManagerAppOrder order) {
+    public EmptyResult addManagerApp(AddManagerAppOrder order) {
         return serviceEngine.execute("addManagerAppService", order);
     }
 

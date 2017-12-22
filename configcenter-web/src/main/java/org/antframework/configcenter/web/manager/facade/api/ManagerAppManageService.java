@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.manager.facade.api;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.web.manager.facade.order.*;
 import org.antframework.configcenter.web.manager.facade.result.*;
 
@@ -19,7 +20,7 @@ public interface ManagerAppManageService {
     /**
      * 添加管理员与应用关联
      */
-    AddManagerAppResult addManagerApp(AddManagerAppOrder order);
+    EmptyResult addManagerApp(AddManagerAppOrder order);
 
     /**
      * 删除管理员与应用关联
