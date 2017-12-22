@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.test.manage;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
@@ -17,7 +18,6 @@ import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -44,7 +44,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         keyValue2.setKey("cashier.url");
         keyValue2.setValue("http://localhost:8080/cashier");
         order.addKeyValue(keyValue2);
-        SetPropertyValuesResult result = propertyValueManageService.setPropertyValues(order);
+        EmptyResult result = propertyValueManageService.setPropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 

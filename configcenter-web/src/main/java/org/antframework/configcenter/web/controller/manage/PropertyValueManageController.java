@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
@@ -19,7 +20,6 @@ import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.manage.DeletePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
 import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.SetPropertyValuesResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -42,7 +42,7 @@ public class PropertyValueManageController extends AbstractController {
      * @param values      与keys数量对应的value（必须）
      */
     @RequestMapping("/setPropertyValue")
-    public SetPropertyValuesResult setPropertyValues(String appCode, String profileCode, String[] keys, String[] values) {
+    public EmptyResult setPropertyValues(String appCode, String profileCode, String[] keys, String[] values) {
         canModifyApp(appCode);
         if (keys.length != values.length) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
