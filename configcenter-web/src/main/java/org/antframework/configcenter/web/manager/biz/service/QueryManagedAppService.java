@@ -9,29 +9,22 @@
 package org.antframework.configcenter.web.manager.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueryResult;
 import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.common.util.query.QueryOperator;
-import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerAppDao;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
 import org.antframework.configcenter.web.manager.dal.entity.Manager;
-import org.antframework.configcenter.web.manager.dal.entity.ManagerApp;
 import org.antframework.configcenter.web.manager.facade.order.QueryManagedAppOrder;
 import org.antframework.configcenter.web.manager.facade.result.QueryManagedAppResult;
+import org.bekit.service.ServiceEngine;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceCheck;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * 查询被管理员管理的应用服务
@@ -41,7 +34,7 @@ public class QueryManagedAppService {
     @Autowired
     private ManagerDao managerDao;
     @Autowired
-    private ManagerAppDao managerAppDao;
+    private ServiceEngine serviceEngine;
 
     @ServiceCheck
     public void check(ServiceContext<QueryManagedAppOrder, QueryManagedAppResult> context) {
@@ -56,24 +49,9 @@ public class QueryManagedAppService {
     @ServiceExecute
     public void execute(ServiceContext<QueryManagedAppOrder, QueryManagedAppResult> context) {
         QueryManagedAppOrder order = context.getOrder();
+        QueryManagedAppResult result = context.getResult();
 
-        Page<ManagerApp> page = managerAppDao.query(buildQueryParams(order), buildPageable(order));
-        FacadeUtils.setQueryResult(context.getResult(), new FacadeUtils.SpringDataPageExtractor<>(page));
-    }
-
-    // 构建queryParams
-    private Collection<QueryParam> buildQueryParams(QueryManagedAppOrder queryManagedAppOrder) {
-        Collection<QueryParam> queryParams = new ArrayList<>();
-        queryParams.add(new QueryParam("managerCode", QueryOperator.EQ, queryManagedAppOrder.getManagerCode()));
-        if (queryManagedAppOrder.getAppCode() != null) {
-            queryParams.add(new QueryParam("appCode", QueryOperator.LIKE, "%" + queryManagedAppOrder.getAppCode() + "%"));
-        }
-
-        return queryParams;
-    }
-
-    // 构建分页
-    private Pageable buildPageable(QueryManagedAppOrder queryManagedAppOrder) {
-        return new PageRequest(queryManagedAppOrder.getPageNo() - 1, queryManagedAppOrder.getPageSize(), QueryUtils.QUERY_SORT);
+        CommonQueryResult commonQueryResult = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(ManagerAppDao.class));
+        commonQueryResult.convertTo(result, null);
     }
 }

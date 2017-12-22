@@ -9,6 +9,8 @@
 package org.antframework.configcenter.web.manager.facade.order;
 
 import org.antframework.common.util.facade.AbstractQueryOrder;
+import org.antframework.common.util.query.annotation.operator.QueryEQ;
+import org.antframework.common.util.query.annotation.operator.QueryLike;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
@@ -16,9 +18,11 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 public class QueryManagedAppOrder extends AbstractQueryOrder {
     // 管理员编码
+    @QueryEQ
     @NotBlank
     private String managerCode;
     // 应用编码
+    @QueryLike
     private String appCode;
 
     public String getManagerCode() {
