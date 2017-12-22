@@ -59,7 +59,7 @@ public class ManagerLoginController extends AbstractController {
      * 退出
      */
     @RequestMapping("/logout")
-    public AbstractResult logout() {
+    public EmptyResult logout() {
         SessionAccessor.removeManagerInfo();
         return buildSuccessResult();
     }
@@ -68,7 +68,7 @@ public class ManagerLoginController extends AbstractController {
      * 是否应该初始化超级管理员
      */
     @RequestMapping("/shouldInitAdmin")
-    public AbstractResult shouldInitAdmin() {
+    public EmptyResult shouldInitAdmin() {
         assertInitAdmin();
         return buildSuccessResult();
     }

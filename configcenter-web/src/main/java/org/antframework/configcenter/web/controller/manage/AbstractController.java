@@ -9,8 +9,8 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.boot.bekit.AntBekitException;
-import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.web.common.ResultCode;
@@ -30,23 +30,11 @@ public abstract class AbstractController {
     private ManagerAppManageService managerAppManageService;
 
     // 构建成功result
-    protected AbstractResult buildSuccessResult() {
-        AbstractResult result = new AbstractResult() {
-        };
+    protected EmptyResult buildSuccessResult() {
+        EmptyResult result = new EmptyResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
-
-        return result;
-    }
-
-    // 构建失败result
-    protected AbstractResult buildFailResult() {
-        AbstractResult result = new AbstractResult() {
-        };
-        result.setStatus(Status.FAIL);
-        result.setCode(CommonResultCode.UNKNOWN_ERROR.getCode());
-        result.setMessage(CommonResultCode.UNKNOWN_ERROR.getMessage());
 
         return result;
     }

@@ -8,13 +8,12 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
-import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
+import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppByAppOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -79,7 +78,7 @@ public class AppManageController extends AbstractController {
      * @param appCode  应用编码（可选，有值会进行模糊查询）
      */
     @RequestMapping("/queryApp")
-    public AbstractQueryResult<AppInfo> queryApp(int pageNo, int pageSize, String appCode) {
+    public QueryAppResult queryApp(int pageNo, int pageSize, String appCode) {
         assertAdmin();
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(pageNo);
