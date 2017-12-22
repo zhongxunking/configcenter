@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.manager.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.web.common.PasswordUtils;
 import org.antframework.configcenter.web.manager.dal.dao.ManagerDao;
@@ -21,14 +22,17 @@ import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.convert.converter.Converter;
 
 /**
  * 管理员登录服务
  */
 @Service
 public class ManagerLoginService {
+    // info转换器
+    private static final Converter<Manager, ManagerInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ManagerInfo.class);
+
     @Autowired
     private ManagerDao managerDao;
 
@@ -44,13 +48,6 @@ public class ManagerLoginService {
         if (!StringUtils.equals(PasswordUtils.digest(order.getPassword()), manager.getPassword())) {
             throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "密码不正确");
         }
-        result.setManagerInfo(buildInfo(manager));
-    }
-
-    // 构建info
-    private ManagerInfo buildInfo(Manager manager) {
-        ManagerInfo info = new ManagerInfo();
-        BeanUtils.copyProperties(manager, info);
-        return info;
+        result.setManagerInfo(INFO_CONVERTER.convert(manager));
     }
 }

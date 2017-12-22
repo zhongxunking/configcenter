@@ -49,7 +49,7 @@ public class QueryManagedAppService {
 
         Manager manager = managerDao.findByManagerCode(order.getManagerCode());
         if (manager == null) {
-            throw new AntBekitException(Status.SUCCESS, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
+            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
     }
 
