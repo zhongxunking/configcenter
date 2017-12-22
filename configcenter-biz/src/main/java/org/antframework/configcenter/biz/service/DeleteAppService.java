@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.AppDao;
@@ -18,7 +19,6 @@ import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -42,7 +42,7 @@ public class DeleteAppService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeleteAppOrder, DeleteAppResult> context) {
+    public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {
         DeleteAppOrder order = context.getOrder();
 
         App app = appDao.findLockByAppCode(order.getAppCode());
@@ -57,7 +57,7 @@ public class DeleteAppService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<DeleteAppOrder, DeleteAppResult> context) {
+    public void after(ServiceContext<DeleteAppOrder, EmptyResult> context) {
         DeleteAppOrder order = context.getOrder();
 
         List<Profile> profiles = profileDao.findAll();

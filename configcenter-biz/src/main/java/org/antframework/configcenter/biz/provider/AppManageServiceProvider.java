@@ -17,7 +17,6 @@ import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +36,7 @@ public class AppManageServiceProvider implements AppManageService {
     }
 
     @Override
-    public DeleteAppResult deleteApp(DeleteAppOrder order) {
+    public EmptyResult deleteApp(DeleteAppOrder order) {
         return serviceEngine.execute("deleteAppService", order);
     }
 

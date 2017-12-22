@@ -14,7 +14,6 @@ import org.antframework.configcenter.facade.api.manage.AppManageService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -42,7 +41,7 @@ public class AppManageServiceTest extends AbstractTest {
     public void testDeleteApp() {
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode("scbfund");
-        DeleteAppResult result = appManageService.deleteApp(order);
+        EmptyResult result = appManageService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
     }
 

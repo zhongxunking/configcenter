@@ -17,7 +17,6 @@ import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteAppResult;
 import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
 import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppByAppOrder;
 import org.antframework.configcenter.web.manager.facade.result.DeleteManagerAppByAppResult;
@@ -58,7 +57,7 @@ public class AppManageController extends AbstractController {
      * @param appCode 应用编码（必须）
      */
     @RequestMapping("/deleteApp")
-    public DeleteAppResult deleteApp(String appCode) {
+    public EmptyResult deleteApp(String appCode) {
         assertAdmin();
         // 先删除管理员和应用关联
         DeleteManagerAppByAppOrder byAppOrder = new DeleteManagerAppByAppOrder();
