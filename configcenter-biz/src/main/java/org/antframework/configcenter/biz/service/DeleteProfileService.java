@@ -10,13 +10,13 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -36,7 +36,7 @@ public class DeleteProfileService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
+    public void execute(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
         DeleteProfileOrder order = context.getOrder();
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
@@ -51,7 +51,7 @@ public class DeleteProfileService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<DeleteProfileOrder, DeleteProfileResult> context) {
+    public void after(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
         DeleteProfileOrder order = context.getOrder();
 
         zkTemplate.deleteNode(ZkTemplate.buildPath(order.getProfileCode()));

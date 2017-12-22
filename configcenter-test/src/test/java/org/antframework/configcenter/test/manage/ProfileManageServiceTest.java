@@ -15,7 +15,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -44,7 +43,7 @@ public class ProfileManageServiceTest extends AbstractTest {
     public void testDeleteProfile() {
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode("dev");
-        DeleteProfileResult result = profileManageService.deleteProfile(order);
+        EmptyResult result = profileManageService.deleteProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 

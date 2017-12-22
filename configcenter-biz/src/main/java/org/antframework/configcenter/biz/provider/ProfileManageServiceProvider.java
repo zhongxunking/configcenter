@@ -18,7 +18,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.bekit.service.ServiceEngine;
@@ -39,7 +38,7 @@ public class ProfileManageServiceProvider implements ProfileManageService {
     }
 
     @Override
-    public DeleteProfileResult deleteProfile(DeleteProfileOrder order) {
+    public EmptyResult deleteProfile(DeleteProfileOrder order) {
         return serviceEngine.execute("deleteProfileService", order);
     }
 

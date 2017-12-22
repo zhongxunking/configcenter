@@ -14,7 +14,6 @@ import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.DeleteProfileResult;
 import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,7 +51,7 @@ public class ProfileManageController extends AbstractController {
      * @param profileCode 环境编码（必须）
      */
     @RequestMapping("/deleteProfile")
-    public DeleteProfileResult deleteProfile(String profileCode) {
+    public EmptyResult deleteProfile(String profileCode) {
         assertAdmin();
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode(profileCode);
