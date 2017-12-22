@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -38,7 +37,7 @@ public class RefreshServiceTest extends AbstractTest {
         TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
-        TriggerClientRefreshResult result = refreshService.triggerClientRefresh(order);
+        EmptyResult result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
 
         order = new TriggerClientRefreshOrder();

@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.manage.RefreshService;
@@ -33,16 +32,18 @@ public class RefreshController {
      * @param profileCode 环境编码（不传表示刷新所有环境）
      */
     @RequestMapping("/refreshZkAndClient")
-    public AbstractResult refreshZkAndClient(String appCode, String profileCode) {
+    public EmptyResult refreshZkAndClient(String appCode, String profileCode) {
         // 同步数据到zookeeper
-        EmptyResult syncDataToZkResult = refreshService.syncDataToZk(new EmptyOrder());
-        if (!syncDataToZkResult.isSuccess()) {
-            return syncDataToZkResult;
+        EmptyResult result = refreshService.syncDataToZk(new EmptyOrder());
+        if (!result.isSuccess()) {
+            return result;
         }
         // 触发客户端刷新配置
         TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
         order.setAppCode(appCode);
         order.setProfileCode(profileCode);
-        return refreshService.triggerClientRefresh(order);
+        result = refreshService.triggerClientRefresh(order);
+
+        return result;
     }
 }

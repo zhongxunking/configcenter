@@ -10,6 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.common.ZkUtils;
@@ -19,7 +20,6 @@ import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
-import org.antframework.configcenter.facade.result.manage.TriggerClientRefreshResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -41,7 +41,7 @@ public class TriggerClientRefreshService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<TriggerClientRefreshOrder, TriggerClientRefreshResult> context) {
+    public void execute(ServiceContext<TriggerClientRefreshOrder, EmptyResult> context) {
         TriggerClientRefreshOrder order = context.getOrder();
 
         App app = getApp(order);
