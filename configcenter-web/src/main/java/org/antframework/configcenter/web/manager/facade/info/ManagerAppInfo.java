@@ -11,7 +11,7 @@ package org.antframework.configcenter.web.manager.facade.info;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
- * 管理员与应用关联信息
+ * 管理员与应用关联info
  */
 public class ManagerAppInfo extends AbstractInfo {
     // 管理员编码

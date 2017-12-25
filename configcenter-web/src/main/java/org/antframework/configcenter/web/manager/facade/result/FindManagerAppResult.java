@@ -15,7 +15,7 @@ import org.antframework.configcenter.web.manager.facade.info.ManagerAppInfo;
  * 查找管理员与应用关联result
  */
 public class FindManagerAppResult extends AbstractResult {
-    // 管理员与应用关联信息
+    // 管理员与应用关联info
     private ManagerAppInfo info;
 
     public ManagerAppInfo getInfo() {

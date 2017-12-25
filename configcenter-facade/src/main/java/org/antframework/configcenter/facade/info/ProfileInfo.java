@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.info;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
- * 环境信息
+ * 环境info
  */
 public class ProfileInfo extends AbstractInfo {
     // 环境编码

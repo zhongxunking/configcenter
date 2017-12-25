@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.info;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
- * 属性key信息
+ * 属性key-info
  */
 public class PropertyKeyInfo extends AbstractInfo {
     // 应用编码

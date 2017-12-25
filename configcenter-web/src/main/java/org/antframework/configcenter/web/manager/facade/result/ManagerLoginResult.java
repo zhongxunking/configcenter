@@ -15,7 +15,7 @@ import org.antframework.configcenter.web.manager.facade.info.ManagerInfo;
  * 管理员登陆result
  */
 public class ManagerLoginResult extends AbstractResult {
-    // 管理员信息
+    // 管理员info
     private ManagerInfo managerInfo;
 
     public ManagerInfo getManagerInfo() {

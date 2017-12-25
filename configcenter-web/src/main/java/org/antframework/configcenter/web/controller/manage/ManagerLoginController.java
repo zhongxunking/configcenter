@@ -122,7 +122,7 @@ public class ManagerLoginController extends AbstractController {
 
     // 查找登陆的管理员result
     private static class FindLoginedManagerResult extends AbstractResult {
-        // 管理员信息
+        // 管理员info
         private ManagerInfo managerInfo;
 
         public ManagerInfo getManagerInfo() {

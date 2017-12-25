@@ -18,7 +18,7 @@ import java.util.List;
  * 查找所有环境result
  */
 public class FindAllProfileResult extends AbstractResult {
-    // 环境信息
+    // 环境info
     private List<ProfileInfo> infos = new ArrayList<>();
 
     public List<ProfileInfo> getInfos() {

@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.info;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
- * 应用信息
+ * 应用info
  */
 public class AppInfo extends AbstractInfo {
     // 应用编码

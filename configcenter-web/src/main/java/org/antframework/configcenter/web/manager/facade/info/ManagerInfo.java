@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.web.manager.facade.enums.ManagerType;
 
 /**
- * 管理员信息
+ * 管理员info
  */
 public class ManagerInfo extends AbstractInfo {
     // 管理员编码
