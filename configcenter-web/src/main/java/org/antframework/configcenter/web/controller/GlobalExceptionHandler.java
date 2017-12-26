@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.controller;
 import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,24 +27,23 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AntBekitException.class)
     public AbstractResult handleAntBekitException(AntBekitException e) {
-        return new AbstractResult() {
-            {
-                setStatus(e.getStatus());
-                setCode(e.getCode());
-                setMessage(e.getMessage());
-            }
-        };
+        EmptyResult result = new EmptyResult();
+        result.setStatus(e.getStatus());
+        result.setCode(e.getCode());
+        result.setMessage(e.getMessage());
+
+        return result;
     }
 
     @ExceptionHandler(Exception.class)
     public AbstractResult handleException(Exception e) {
         logger.error("web层发生异常：", e);
-        return new AbstractResult() {
-            {
-                setStatus(Status.PROCESSING);
-                setCode(CommonResultCode.UNKNOWN_ERROR.getCode());
-                setMessage(e.getMessage());
-            }
-        };
+
+        EmptyResult result = new EmptyResult();
+        result.setStatus(Status.PROCESSING);
+        result.setCode(CommonResultCode.UNKNOWN_ERROR.getCode());
+        result.setMessage(e.getMessage());
+
+        return result;
     }
 }
