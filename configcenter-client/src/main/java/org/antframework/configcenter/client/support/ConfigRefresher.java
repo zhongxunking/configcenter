@@ -88,10 +88,10 @@ public class ConfigRefresher {
                     throw e;
                 }
             }
-            properties.replaceProperties(newProperties);
             if (fromServer && cacheFileHandler != null) {
                 cacheFileHandler.storeConfig(newProperties);
             }
+            properties.replaceProperties(newProperties);
         } catch (Throwable e) {
             close();
             throw e;
@@ -104,10 +104,10 @@ public class ConfigRefresher {
         public void run() {
             try {
                 Map<String, String> newProperties = serverRequester.queryConfig();
-                List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
                 if (cacheFileHandler != null) {
                     cacheFileHandler.storeConfig(newProperties);
                 }
+                List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
                 listenerRegistrar.configModified(modifiedProperties);
             } catch (Throwable e) {
                 logger.error("刷新配置出错：{}", e.getMessage());
