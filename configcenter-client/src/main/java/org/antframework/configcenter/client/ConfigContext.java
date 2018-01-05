@@ -23,15 +23,15 @@ public class ConfigContext {
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
     // 初始化参数
-    private InitParams params;
+    private InitParams initParams;
     // 配置刷新器
     private ConfigRefresher configRefresher;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
 
-    public ConfigContext(InitParams params) {
-        this.params = params;
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, params);
+    public ConfigContext(InitParams initParams) {
+        this.initParams = initParams;
+        configRefresher = new ConfigRefresher(properties, listenerRegistrar, initParams);
         configRefresher.initConfig();
     }
 
@@ -54,7 +54,7 @@ public class ConfigContext {
      */
     public synchronized void listenConfigModified() {
         if (refreshTrigger == null) {
-            refreshTrigger = new RefreshTrigger(configRefresher, params);
+            refreshTrigger = new RefreshTrigger(configRefresher, initParams);
         }
     }
 
