@@ -13,11 +13,11 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.client.ConfigContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicResponseHandler;
-import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 import org.slf4j.Logger;
@@ -34,17 +34,16 @@ import java.util.Map;
  */
 public class ServerQuerier {
     private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
+    // 发送http请求的客户端
+    private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
     // 查询配置url
     private static final String QUERY_CONFIG_SUFFIX_URL = "/config/findProperties";
 
     // 发送给服务端的请求
     private HttpUriRequest request;
-    // 发送http请求的客户端
-    private CloseableHttpClient httpClient;
 
     public ServerQuerier(ConfigContext.InitParams initParams) {
         request = buildRequest(initParams);
-        httpClient = HttpClients.createDefault();
     }
 
     /**
@@ -52,7 +51,7 @@ public class ServerQuerier {
      */
     public Map<String, String> queryConfig() {
         try {
-            String resultStr = httpClient.execute(request, new BasicResponseHandler());
+            String resultStr = HTTP_CLIENT.execute(request, new BasicResponseHandler());
             FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
             if (result == null) {
                 throw new RuntimeException("请求配置中心失败");
@@ -63,17 +62,6 @@ public class ServerQuerier {
             return result.getProperties();
         } catch (IOException e) {
             return ExceptionUtils.rethrow(e);
-        }
-    }
-
-    /**
-     * 关闭（释放相关资源）
-     */
-    public void close() {
-        try {
-            httpClient.close();
-        } catch (IOException e) {
-            logger.error("关闭httpClient失败：", e);
         }
     }
 

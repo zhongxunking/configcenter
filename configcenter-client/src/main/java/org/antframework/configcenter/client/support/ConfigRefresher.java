@@ -76,7 +76,6 @@ public class ConfigRefresher {
         } catch (InterruptedException e) {
             logger.error("关闭刷新配置的线程失败");
         }
-        serverQuerier.close();
     }
 
     /**
