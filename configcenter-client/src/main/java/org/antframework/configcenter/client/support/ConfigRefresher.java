@@ -34,8 +34,8 @@ public class ConfigRefresher {
     private ConfigurableConfigProperties properties;
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar;
-    // 服务端查询器
-    private ServerQuerier serverQuerier;
+    // 服务端请求器
+    private ServerRequester serverRequester;
     // 缓存文件处理器
     private CacheFileHandler cacheFileHandler;
     // 刷新配置的线程
@@ -46,7 +46,7 @@ public class ConfigRefresher {
     public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
-        this.serverQuerier = new ServerQuerier(initParams);
+        this.serverRequester = new ServerRequester(initParams);
         if (initParams.getCacheFilePath() != null) {
             this.cacheFileHandler = new CacheFileHandler(initParams.getCacheFilePath());
         }
@@ -87,7 +87,7 @@ public class ConfigRefresher {
             Map<String, String> newProperties;
             boolean fromServer = true;
             try {
-                newProperties = serverQuerier.queryConfig();
+                newProperties = serverRequester.queryConfig();
             } catch (Throwable e) {
                 logger.error("从配置中心读取配置失败：{}", e.getMessage());
                 if (cacheFileHandler != null) {
@@ -118,7 +118,7 @@ public class ConfigRefresher {
                     if (element == STOP_ELEMENT) {
                         break;
                     }
-                    Map<String, String> newProperties = serverQuerier.queryConfig();
+                    Map<String, String> newProperties = serverRequester.queryConfig();
                     List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
                     if (cacheFileHandler != null) {
                         cacheFileHandler.storeConfig(newProperties);

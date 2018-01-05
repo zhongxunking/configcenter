@@ -20,8 +20,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicResponseHandler;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -30,10 +28,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 服务端查询器
+ * 服务端请求器
  */
-public class ServerQuerier {
-    private static final Logger logger = LoggerFactory.getLogger(ServerQuerier.class);
+public class ServerRequester {
     // 发送http请求的客户端
     private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
     // 查询配置url
@@ -42,7 +39,7 @@ public class ServerQuerier {
     // 发送给服务端的请求
     private HttpUriRequest request;
 
-    public ServerQuerier(ConfigContext.InitParams initParams) {
+    public ServerRequester(ConfigContext.InitParams initParams) {
         request = buildRequest(initParams);
     }
 
