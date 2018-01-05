@@ -32,16 +32,15 @@ public class ConfigContextTest {
         initParams.setProfileCode("dev");
         initParams.setAppCode("scbfund");
         initParams.setQueriedAppCode("scbfund");
-        initParams.setServerUrl("http://localhost:8080");
+        initParams.setServerUrl("http://localhost:6220");
         initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
         initParams.setZkUrls("localhost:2181");
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void configModified(List<ModifiedProperty> modifiedProperties) {
-                logger.info("监听到配置更新：");
                 for (ModifiedProperty modifiedProperty : modifiedProperties) {
-                    logger.info(ToString.toString(modifiedProperty));
+                    logger.info("监听到配置更新：{}", ToString.toString(modifiedProperty));
                 }
             }
         });
