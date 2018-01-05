@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -48,7 +48,7 @@ public class SetPropertyValuesService {
 
         Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
         if (profile == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
         }
 
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
@@ -67,7 +67,7 @@ public class SetPropertyValuesService {
     private void setSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
         PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), keyValue.getKey());
         if (propertyKey == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppCode(), keyValue.getKey()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppCode(), keyValue.getKey()));
         }
 
         PropertyValue propertyValue = propertyValueDao.findLockByAppCodeAndKeyAndProfileCode(order.getAppCode(), keyValue.getKey(), order.getProfileCode());

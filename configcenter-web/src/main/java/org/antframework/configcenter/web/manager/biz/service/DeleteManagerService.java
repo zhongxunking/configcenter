@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.manager.biz.service;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -40,7 +40,7 @@ public class DeleteManagerService {
             return;
         }
         if (managerAppDao.existsByManagerCode(order.getManagerCode())) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getManagerCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("管理员[%s]还管理着应用，不能删除", order.getManagerCode()));
         }
         managerDao.delete(manager);
     }

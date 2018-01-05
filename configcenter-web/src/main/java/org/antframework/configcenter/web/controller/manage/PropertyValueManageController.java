@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -44,7 +44,7 @@ public class PropertyValueManageController extends AbstractController {
     public EmptyResult setPropertyValues(String appCode, String profileCode, String[] keys, String[] values) {
         canModifyApp(appCode);
         if (keys.length != values.length) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
         }
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppCode(appCode);

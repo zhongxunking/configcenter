@@ -8,9 +8,9 @@
  */
 package org.antframework.configcenter.web.manager.biz.service;
 
-import org.antframework.boot.bekit.AntBekitException;
 import org.antframework.boot.bekit.CommonQueryConstant;
 import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.QueryUtils;
@@ -42,7 +42,7 @@ public class QueryManagedAppService {
 
         Manager manager = managerDao.findByManagerCode(order.getManagerCode());
         if (manager == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("管理员[%s]不存在", order.getManagerCode()));
         }
     }
 

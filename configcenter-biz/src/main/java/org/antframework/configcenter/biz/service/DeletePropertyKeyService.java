@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -51,7 +51,7 @@ public class DeletePropertyKeyService {
             return;
         }
         if (propertyValueDao.existsByAppCodeAndKey(order.getAppCode(), order.getKey())) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]的属性key[%s]还存在属性值，不能删除", order.getAppCode(), order.getKey()));
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]的属性key[%s]还存在属性值，不能删除", order.getAppCode(), order.getKey()));
         }
 
         propertyKeyDao.delete(propertyKey);

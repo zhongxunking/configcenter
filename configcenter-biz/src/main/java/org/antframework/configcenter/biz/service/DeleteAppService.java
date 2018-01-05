@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -50,7 +50,7 @@ public class DeleteAppService {
             return;
         }
         if (propertyKeyDao.existsByAppCode(order.getAppCode())) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppCode()));
         }
 
         appDao.delete(app);

@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -50,10 +50,10 @@ public class ManagerAppManageController extends AbstractController {
         findAppOrder.setAppCode(appCode);
         FindAppResult findAppResult = configService.findApp(findAppOrder);
         if (!findAppResult.isSuccess()) {
-            throw new AntBekitException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
+            throw new BizException(Status.FAIL, findAppResult.getCode(), findAppResult.getMessage());
         }
         if (findAppResult.getAppInfo() == null) {
-            throw new AntBekitException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]不存在", appCode));
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]不存在", appCode));
         }
         AddManagerAppOrder order = new AddManagerAppOrder();
         order.setManagerCode(managerCode);

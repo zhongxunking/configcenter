@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
@@ -42,7 +42,7 @@ public abstract class AbstractController {
     // 确保已经登陆了
     public void assertLogined() {
         if (SessionAccessor.getManagerInfo() == null) {
-            throw new AntBekitException(Status.FAIL, ResultCode.NOT_LOGIN.getCode(), ResultCode.NOT_LOGIN.getMessage());
+            throw new BizException(Status.FAIL, ResultCode.NOT_LOGIN.getCode(), ResultCode.NOT_LOGIN.getMessage());
         }
     }
 
@@ -50,7 +50,7 @@ public abstract class AbstractController {
     public void assertAdmin() {
         assertLogined();
         if (SessionAccessor.getManagerInfo().getType() != ManagerType.ADMIN) {
-            throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
+            throw new BizException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
         }
     }
 
@@ -59,7 +59,7 @@ public abstract class AbstractController {
         assertLogined();
         if (SessionAccessor.getManagerInfo().getType() != ManagerType.ADMIN
                 && !StringUtils.equals(SessionAccessor.getManagerInfo().getManagerCode(), managerCode)) {
-            throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
+            throw new BizException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
         }
     }
 
@@ -92,10 +92,10 @@ public abstract class AbstractController {
 
         FindManagerAppResult result = managerAppManageService.findManagerApp(order);
         if (!result.isSuccess()) {
-            throw new AntBekitException(Status.FAIL, result.getCode(), result.getMessage());
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }
         if (result.getInfo() == null) {
-            throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
+            throw new BizException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), ResultCode.NO_PERMISSION.getMessage());
         }
     }
 }

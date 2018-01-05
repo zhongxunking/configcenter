@@ -8,11 +8,7 @@
  */
 package org.antframework.configcenter.web.controller;
 
-import org.antframework.boot.bekit.AntBekitException;
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -25,8 +21,8 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
     private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
-    @ExceptionHandler(AntBekitException.class)
-    public AbstractResult handleAntBekitException(AntBekitException e) {
+    @ExceptionHandler(BizException.class)
+    public AbstractResult handleBizException(BizException e) {
         EmptyResult result = new EmptyResult();
         result.setStatus(e.getStatus());
         result.setCode(e.getCode());

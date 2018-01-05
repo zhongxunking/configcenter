@@ -8,11 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.boot.bekit.AntBekitException;
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.web.common.ResultCode;
 import org.antframework.configcenter.web.common.SessionAccessor;
 import org.antframework.configcenter.web.manager.facade.api.ManagerManageService;
@@ -113,10 +109,10 @@ public class ManagerLoginController extends AbstractController {
         order.setPageSize(1);
         QueryManagerResult result = managerManageService.queryManager(order);
         if (!result.isSuccess()) {
-            throw new AntBekitException(Status.FAIL, result.getCode(), result.getMessage());
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }
         if (result.getTotalCount() > 0) {
-            throw new AntBekitException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), "已存在管理员，不能初始化超级管理员");
+            throw new BizException(Status.FAIL, ResultCode.NO_PERMISSION.getCode(), "已存在管理员，不能初始化超级管理员");
         }
     }
 
