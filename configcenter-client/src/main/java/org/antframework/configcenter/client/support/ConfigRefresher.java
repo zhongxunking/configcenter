@@ -48,9 +48,9 @@ public class ConfigRefresher {
     public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
-        this.serverRequester = new ServerRequester(initParams);
+        serverRequester = new ServerRequester(initParams);
         if (initParams.getCacheFilePath() != null) {
-            this.cacheFileHandler = new CacheFileHandler(initParams.getCacheFilePath());
+            cacheFileHandler = new CacheFileHandler(initParams.getCacheFilePath());
         }
     }
 

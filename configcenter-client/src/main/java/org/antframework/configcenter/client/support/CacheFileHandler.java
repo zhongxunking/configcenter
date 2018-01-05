@@ -27,7 +27,7 @@ public class CacheFileHandler {
     private File cacheFile;
 
     public CacheFileHandler(String cacheFilePath) {
-        this.cacheFile = new File(cacheFilePath);
+        cacheFile = new File(cacheFilePath);
     }
 
     /**

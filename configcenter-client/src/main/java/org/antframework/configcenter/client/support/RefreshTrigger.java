@@ -44,8 +44,8 @@ public class RefreshTrigger {
         if (initParams.getZkUrls() == null || initParams.getZkUrls().length == 0) {
             throw new IllegalArgumentException("未设置zookeeper地址");
         }
-        this.zkTemplate = buildZkTemplate(initParams.getZkUrls());
-        this.nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
+        zkTemplate = buildZkTemplate(initParams.getZkUrls());
+        nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
     }
 
     /**
