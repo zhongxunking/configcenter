@@ -24,12 +24,12 @@ public class QueryUtils {
     public static final Sort QUERY_SORT = new Sort(Sort.Direction.DESC, "id");
 
     /**
-     * 构建查询附件
+     * 构建通用查询附件
      *
      * @param daoClass dao类型
      * @return 附件
      */
-    public static Map<Object, Object> buildQueryAttachment(Class daoClass) {
+    public static Map<Object, Object> buildCommonQueryAttachment(Class daoClass) {
         Map<Object, Object> attachment = new HashMap<>();
         attachment.put(CommonQueryConstant.DAO_CLASS_KEY, daoClass);
         attachment.put(CommonQueryConstant.SORT_KEY, QUERY_SORT);

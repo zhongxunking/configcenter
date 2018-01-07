@@ -57,7 +57,7 @@ public class ManagerAppManageServiceProvider implements ManagerAppManageService 
 
     @Override
     public QueryManagerAppResult queryManagerApp(QueryManagerAppOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(ManagerAppDao.class));
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ManagerAppDao.class));
         return result.convertTo(QueryManagerAppResult.class);
     }
 }

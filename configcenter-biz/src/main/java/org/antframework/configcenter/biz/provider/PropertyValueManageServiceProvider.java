@@ -49,7 +49,7 @@ public class PropertyValueManageServiceProvider implements PropertyValueManageSe
 
     @Override
     public QueryPropertyValueResult queryPropertyValue(QueryPropertyValueOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(PropertyValueDao.class));
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyValueDao.class));
         return result.convertTo(QueryPropertyValueResult.class);
     }
 }

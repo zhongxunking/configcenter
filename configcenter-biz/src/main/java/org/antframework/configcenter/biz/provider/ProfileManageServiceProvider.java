@@ -49,7 +49,7 @@ public class ProfileManageServiceProvider implements ProfileManageService {
 
     @Override
     public QueryProfileResult queryProfile(QueryProfileOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(ProfileDao.class));
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ProfileDao.class));
         return result.convertTo(QueryProfileResult.class);
     }
 }

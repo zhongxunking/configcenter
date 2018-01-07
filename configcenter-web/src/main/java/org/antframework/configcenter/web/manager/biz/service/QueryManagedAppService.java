@@ -51,7 +51,7 @@ public class QueryManagedAppService {
         QueryManagedAppOrder order = context.getOrder();
         QueryManagedAppResult result = context.getResult();
 
-        CommonQueryResult commonQueryResult = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(ManagerAppDao.class));
+        CommonQueryResult commonQueryResult = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ManagerAppDao.class));
         commonQueryResult.convertTo(result, null);
     }
 }

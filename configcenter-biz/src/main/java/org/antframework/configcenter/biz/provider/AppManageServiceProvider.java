@@ -42,7 +42,7 @@ public class AppManageServiceProvider implements AppManageService {
 
     @Override
     public QueryAppResult queryApp(QueryAppOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(AppDao.class));
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(AppDao.class));
         return result.convertTo(QueryAppResult.class);
     }
 }

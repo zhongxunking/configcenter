@@ -49,7 +49,7 @@ public class PropertyKeyManageServiceProvider implements PropertyKeyManageServic
 
     @Override
     public QueryPropertyKeyResult queryPropertyKey(QueryPropertyKeyOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildQueryAttachment(PropertyKeyDao.class));
+        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyKeyDao.class));
         return result.convertTo(QueryPropertyKeyResult.class);
     }
 }
