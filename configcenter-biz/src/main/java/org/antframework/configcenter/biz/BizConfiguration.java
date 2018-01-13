@@ -11,14 +11,10 @@ package org.antframework.configcenter.biz;
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.facade.constant.ZkConstant;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.util.StringUtils;
 
 import java.util.Set;
 
@@ -30,23 +26,10 @@ public class BizConfiguration {
     // 属性
     private ConfigcenterProperties properties = Contexts.buildProperties(ConfigcenterProperties.class);
 
-    // zookeeper客户端
-    @Bean
-    public CuratorFramework zkClient() throws InterruptedException {
-        CuratorFramework zkClient = CuratorFrameworkFactory.builder()
-                .connectString(StringUtils.collectionToCommaDelimitedString(properties.getZkUrls()))
-                .namespace(ZkConstant.ZK_CONFIG_NAMESPACE)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 10))
-                .build();
-        zkClient.start();
-
-        return zkClient;
-    }
-
     // zookeeper操作类
     @Bean
-    public ZkTemplate zkTemplate(CuratorFramework zkClient) {
-        return new ZkTemplate(zkClient);
+    public ZkTemplate zkTemplate() {
+        return ZkTemplate.create(properties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
     }
 
     /**

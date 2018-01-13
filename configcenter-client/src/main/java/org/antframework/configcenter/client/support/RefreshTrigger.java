@@ -10,13 +10,9 @@ package org.antframework.configcenter.client.support;
 
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.client.ConfigContext;
-import org.apache.curator.framework.CuratorFramework;
-import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.recipes.cache.NodeCache;
-import org.apache.curator.retry.ExponentialBackoffRetry;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -44,7 +40,7 @@ public class RefreshTrigger {
         if (initParams.getZkUrls() == null || initParams.getZkUrls().length == 0) {
             throw new IllegalArgumentException("未设置zookeeper地址");
         }
-        zkTemplate = buildZkTemplate(initParams.getZkUrls());
+        zkTemplate = ZkTemplate.create(initParams.getZkUrls(), ZK_CONFIG_NAMESPACE);
         nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
     }
 
@@ -59,19 +55,7 @@ public class RefreshTrigger {
                 logger.error("关闭节点监听器出错：", e);
             }
         }
-        zkTemplate.getZkClient().close();
-    }
-
-    // 构建zookeeper操作类
-    private ZkTemplate buildZkTemplate(String[] zkUrls) {
-        CuratorFramework zkClient = CuratorFrameworkFactory.builder()
-                .connectString(StringUtils.arrayToCommaDelimitedString(zkUrls))
-                .namespace(ZK_CONFIG_NAMESPACE)
-                .retryPolicy(new ExponentialBackoffRetry(1000, 10))
-                .build();
-        zkClient.start();
-
-        return new ZkTemplate(zkClient);
+        zkTemplate.close();
     }
 
     // 监听指定节点
