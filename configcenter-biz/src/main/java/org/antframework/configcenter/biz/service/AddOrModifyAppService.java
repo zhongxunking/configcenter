@@ -15,6 +15,7 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
+import org.apache.zookeeper.CreateMode;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -55,7 +56,7 @@ public class AddOrModifyAppService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()));
+            zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()), CreateMode.PERSISTENT);
         }
     }
 

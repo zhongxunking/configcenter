@@ -15,6 +15,7 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
+import org.apache.zookeeper.CreateMode;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -53,11 +54,11 @@ public class AddOrModifyProfileService {
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
-        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode()));
+        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode()), CreateMode.PERSISTENT);
 
         List<App> apps = appDao.findAll();
         for (App app : apps) {
-            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode(), app.getAppCode()));
+            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode(), app.getAppCode()), CreateMode.PERSISTENT);
         }
     }
 

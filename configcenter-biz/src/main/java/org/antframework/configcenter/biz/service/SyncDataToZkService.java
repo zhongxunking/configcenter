@@ -15,6 +15,7 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
+import org.apache.zookeeper.CreateMode;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -57,7 +58,7 @@ public class SyncDataToZkService {
     private void sync(String path, List<String> newChildren) {
         List<String> oldChildren = zkTemplate.getChildren(path);
         for (String child : newChildren) {
-            zkTemplate.createNode(ZkTemplate.buildPath(path, child));
+            zkTemplate.createNode(ZkTemplate.buildPath(path, child), CreateMode.PERSISTENT);
             oldChildren.remove(child);
         }
         for (String child : oldChildren) {
