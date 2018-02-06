@@ -29,6 +29,11 @@
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.antframework.manager</groupId>
+                <artifactId>manager-web</artifactId>
+                <version>1.0-SNAPSHOT</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 </project>

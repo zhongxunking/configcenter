@@ -25,5 +25,9 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.antframework.manager</groupId>
+            <artifactId>manager-web</artifactId>
+        </dependency>
     </dependencies>
 </project>
