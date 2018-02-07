@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-16 16:34 创建
  */
-package org.antframework.configcenter.web.controller.manage;
+package org.antframework.configcenter.web.controller;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
