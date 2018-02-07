@@ -5,122 +5,18 @@
     <title>应用管理</title>
     <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="../common/commonManager.js"></script>
+    <script type="text/javascript" src="../common/commonQuery.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
     <script type="text/javascript">
 
         $(document).ready(function () {
             query();
-            if (managerInfo.type == "ADMIN") {
+            if (manager.type == "ADMIN") {
                 $("#refreshZkAndClientDiv").show();
             } else {
                 $("#refreshZkAndClientDiv").hide();
             }
         });
-
-        var pageNo = 1;
-        var pageSize = 10;
-        var totalPage = 0;
-
-        function query() {
-            if (managerInfo.type == 'ADMIN') {
-                refreshByAdmin();
-            } else {
-                refreshByNormalManager();
-            }
-        }
-
-        function refreshByAdmin() {
-            var form = $("#queryForm");
-            $.ajax({
-                url: "/manage/app/queryApp",
-                data: form.serialize() + "&pageNo=" + pageNo + "&pageSize=" + pageSize,
-                success: function (ajaxResult) {
-                    if (!ajaxResult.success) {
-                        alert("查询失败，原因：" + ajaxResult.message);
-                        return;
-                    }
-                    createTable(ajaxResult.infos);
-                    refreshPageFoot(ajaxResult.totalCount);
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
-        }
-
-        function refreshByNormalManager() {
-            var form = $("#queryForm");
-            $.ajax({
-                url: "/manage/managerApp/queryManagedApp",
-                data: form.serialize() + "&managerCode=" + managerInfo.managerCode + "&pageNo=" + pageNo + "&pageSize=" + pageSize,
-                success: function (ajaxResult) {
-                    if (!ajaxResult.success) {
-                        alert("查询失败，原因：" + ajaxResult.message);
-                        return;
-                    }
-                    createTable(getAppInfos(ajaxResult.infos));
-                    refreshPageFoot(ajaxResult.totalCount);
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
-        }
-
-        function getAppInfos(managerApps) {
-            var appInfos = new Array();
-            for (var i = 0; i < managerApps.length; i++) {
-                $.ajax({
-                    url: "/config/findApp",
-                    data: {
-                        appCode: managerApps[i].appCode
-                    },
-                    async: false,
-                    success: function (ajaxResult) {
-                        if (!ajaxResult.success) {
-                            alert("查询失败，原因：" + ajaxResult.message);
-                            return;
-                        }
-                        appInfos[i] = ajaxResult.appInfo;
-                    },
-                    error: function () {
-                        alert("请求服务失败");
-                    }
-                });
-            }
-            return appInfos;
-        }
-
-        function createTable(infos) {
-            var table = "<table width='80%'>";
-            table += createTableHead();
-            for (var i = 0; i < infos.length; i++) {
-                table += creteTableRow(infos[i]);
-            }
-            table += "</table>";
-
-            $("#tableDiv").html(table);
-        }
-
-        function previousPage() {
-            if (pageNo > 1) {
-                pageNo--;
-                query();
-            }
-        }
-
-        function nextPage() {
-            if (pageNo < totalPage) {
-                pageNo++;
-                query();
-            }
-        }
-
-        function refreshPageFoot(totalCount) {
-            totalPage = parseInt((totalCount + pageSize - 1) / pageSize);
-            $("#currentPageNo").html(pageNo);
-            $("#totalPage").html(totalPage);
-        }
 
         function createTableHead() {
             refreshProfiles();
@@ -136,7 +32,7 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" +"<a href='appPropertyKey.html?appCode="+info.appCode+"'>"+info.appCode+"</a>" + "</td>";
+            tr += "<td><a href='appPropertyKey.html?appCode=" + info.appCode + "'>" + info.appCode + "</a></td>";
             tr += "<td>" + info.memo + "</td>";
             tr += "<td>" + getProfilesLink(info.appCode) + "</td>"
             tr += "</tr>"
@@ -154,6 +50,7 @@
         }
 
         var profiles;
+
         function refreshProfiles() {
             var newProfiles = new Array();
             $.ajax({
@@ -197,7 +94,7 @@
     <table width="100%">
         <tr>
             <td width="40%">
-                <form id="queryForm">
+                <form id="queryForm" action="../manage/app/queryManagedApp">
                     应用编码：<input type="text" name="appCode">
                     <input type="button" onclick="pageNo = 1;query();" value="查询">
                 </form>
