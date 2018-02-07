@@ -12,8 +12,7 @@ import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.api.manage.AppManageService;
+import org.antframework.configcenter.facade.api.manage.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
@@ -39,9 +38,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manage/app")
 public class AppManageController {
     @Autowired
-    private AppManageService appManageService;
-    @Autowired
-    private ConfigService configService;
+    private AppService appService;
 
     /**
      * 添加或修改应用
@@ -56,7 +53,7 @@ public class AppManageController {
         order.setAppCode(appCode);
         order.setMemo(memo);
 
-        return appManageService.addOrModifyApp(order);
+        return appService.addOrModifyApp(order);
     }
 
     /**
@@ -73,7 +70,7 @@ public class AppManageController {
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode(appCode);
 
-        return appManageService.deleteApp(order);
+        return appService.deleteApp(order);
     }
 
     /**
@@ -86,7 +83,7 @@ public class AppManageController {
         FindAppOrder order = new FindAppOrder();
         order.setAppCode(appCode);
 
-        return appManageService.findApp(order);
+        return appService.findApp(order);
     }
 
     /**
@@ -112,7 +109,7 @@ public class AppManageController {
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppCode(appCode);
-        QueryAppResult queryAppResult = appManageService.queryApp(order);
+        QueryAppResult queryAppResult = appService.queryApp(order);
         // 构建返回结果
         QueryManagedAppResult result = new QueryManagedAppResult();
         BeanUtils.copyProperties(queryAppResult, result, "infos");

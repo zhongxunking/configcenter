@@ -10,7 +10,7 @@ package org.antframework.configcenter.test.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.manage.AppManageService;
+import org.antframework.configcenter.facade.api.manage.AppService;
 import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
@@ -27,16 +27,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @Ignore
-public class AppManageServiceTest extends AbstractTest {
+public class AppServiceTest extends AbstractTest {
     @Autowired
-    private AppManageService appManageService;
+    private AppService appService;
 
     @Test
     public void testAddOrModifyApp() {
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppCode("scbfund");
         order.setMemo("升财宝");
-        EmptyResult result = appManageService.addOrModifyApp(order);
+        EmptyResult result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -44,7 +44,7 @@ public class AppManageServiceTest extends AbstractTest {
     public void testDeleteApp() {
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode("scbfund");
-        EmptyResult result = appManageService.deleteApp(order);
+        EmptyResult result = appService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -52,7 +52,7 @@ public class AppManageServiceTest extends AbstractTest {
     public void testFindApp() {
         FindAppOrder order = new FindAppOrder();
         order.setAppCode("scbfund");
-        FindAppResult result = appManageService.findApp(order);
+        FindAppResult result = appService.findApp(order);
         checkResult(result, Status.SUCCESS);
         Assert.assertEquals("scbfund", result.getAppInfo().getAppCode());
     }
@@ -62,7 +62,7 @@ public class AppManageServiceTest extends AbstractTest {
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        QueryAppResult result = appManageService.queryApp(order);
+        QueryAppResult result = appService.queryApp(order);
         checkResult(result, Status.SUCCESS);
     }
 }
