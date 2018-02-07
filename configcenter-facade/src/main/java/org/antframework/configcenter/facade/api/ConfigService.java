@@ -8,9 +8,7 @@
  */
 package org.antframework.configcenter.facade.api;
 
-import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 
 /**
@@ -21,11 +19,6 @@ public interface ConfigService {
      * 公共配置应用编码
      */
     String COMMON_APP_CODE = "common";
-
-    /**
-     * 查找应用
-     */
-    FindAppResult findApp(FindAppOrder order);
 
     /**
      * 查找应用在特定环境中的配置

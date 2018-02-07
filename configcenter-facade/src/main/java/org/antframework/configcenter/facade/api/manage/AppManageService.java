@@ -10,9 +10,11 @@ package org.antframework.configcenter.facade.api.manage;
 
 
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
+import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 
 /**
@@ -28,6 +30,11 @@ public interface AppManageService {
      * 删除应用
      */
     EmptyResult deleteApp(DeleteAppOrder order);
+
+    /**
+     * 查找应用
+     */
+    FindAppResult findApp(FindAppOrder order);
 
     /**
      * 查询应用

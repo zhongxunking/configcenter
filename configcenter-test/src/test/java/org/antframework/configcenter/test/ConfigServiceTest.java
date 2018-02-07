@@ -10,11 +10,8 @@ package org.antframework.configcenter.test;
 
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,15 +23,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ConfigServiceTest extends AbstractTest {
     @Autowired
     private ConfigService configService;
-
-    @Test
-    public void testFindApp() {
-        FindAppOrder order = new FindAppOrder();
-        order.setAppCode("scbfund");
-        FindAppResult result = configService.findApp(order);
-        checkResult(result, Status.SUCCESS);
-        Assert.assertEquals("scbfund", result.getAppInfo().getAppCode());
-    }
 
     @Test
     public void testFindProperties() {

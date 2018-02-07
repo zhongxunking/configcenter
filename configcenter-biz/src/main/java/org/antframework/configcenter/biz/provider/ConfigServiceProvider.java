@@ -9,9 +9,7 @@
 package org.antframework.configcenter.biz.provider;
 
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,13 +24,7 @@ public class ConfigServiceProvider implements ConfigService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public FindAppResult findApp(FindAppOrder order) {
-        return serviceEngine.execute("findAppService", order);
-    }
-
-    @Override
     public FindPropertiesResult findProperties(FindPropertiesOrder order) {
         return serviceEngine.execute("findPropertiesService", order);
     }
-
 }

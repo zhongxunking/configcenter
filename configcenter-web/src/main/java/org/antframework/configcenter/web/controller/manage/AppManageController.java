@@ -77,6 +77,19 @@ public class AppManageController {
     }
 
     /**
+     * 查找应用
+     *
+     * @param appCode 应用编码
+     */
+    @RequestMapping("/findApp")
+    public FindAppResult findApp(String appCode) {
+        FindAppOrder order = new FindAppOrder();
+        order.setAppCode(appCode);
+
+        return appManageService.findApp(order);
+    }
+
+    /**
      * 查询被管理的应用
      *
      * @param pageNo   页码（必须）
@@ -113,7 +126,7 @@ public class AppManageController {
         BeanUtils.copyProperties(relationResult, result, "infos");
         // 根据关系查找应用
         for (RelationInfo relationInfo : relationResult.getInfos()) {
-            AppInfo appInfo = findApp(relationInfo.getTargetId());
+            AppInfo appInfo = findAppInfo(relationInfo.getTargetId());
             if (appInfo != null) {
                 result.addInfo(appInfo);
             }
@@ -122,11 +135,8 @@ public class AppManageController {
     }
 
     // 查找应用
-    private AppInfo findApp(String appCode) {
-        FindAppOrder order = new FindAppOrder();
-        order.setAppCode(appCode);
-
-        FindAppResult result = configService.findApp(order);
+    private AppInfo findAppInfo(String appCode) {
+        FindAppResult result = findApp(appCode);
         if (!result.isSuccess()) {
             throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }

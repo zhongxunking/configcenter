@@ -11,11 +11,14 @@ package org.antframework.configcenter.test.manage;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
+import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
+import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
 import org.antframework.configcenter.test.AbstractTest;
+import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,6 +46,15 @@ public class AppManageServiceTest extends AbstractTest {
         order.setAppCode("scbfund");
         EmptyResult result = appManageService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindApp() {
+        FindAppOrder order = new FindAppOrder();
+        order.setAppCode("scbfund");
+        FindAppResult result = appManageService.findApp(order);
+        checkResult(result, Status.SUCCESS);
+        Assert.assertEquals("scbfund", result.getAppInfo().getAppCode());
     }
 
     @Test

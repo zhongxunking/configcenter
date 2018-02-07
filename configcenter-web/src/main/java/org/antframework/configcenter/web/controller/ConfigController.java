@@ -9,9 +9,7 @@
 package org.antframework.configcenter.web.controller;
 
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +24,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConfigController {
     @Autowired
     private ConfigService configService;
-
-    /**
-     * 查找应用
-     *
-     * @param appCode 应用编码
-     */
-    @RequestMapping("/findApp")
-    public FindAppResult findApp(String appCode) {
-        FindAppOrder order = new FindAppOrder();
-        order.setAppCode(appCode);
-
-        return configService.findApp(order);
-    }
 
     /**
      * 查找应用在特定环境中的配置
