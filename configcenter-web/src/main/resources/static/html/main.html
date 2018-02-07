@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <title>管理</title>
-    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
     <script type="text/javascript" src="../common/commonManager.js"></script>
     <script type="text/javascript">
         $(document).ready(function () {
-            if (managerInfo.type == "ADMIN") {
+            if (manager.type == "ADMIN") {
                 $("#adminOptions").show();
-                $("#managerNameDiv").html("超级管理员：" + managerInfo.name);
+                $("#managerNameDiv").html("超级管理员：" + manager.name);
             } else {
                 $("#adminOptions").hide();
-                $("#managerNameDiv").html("普通管理员：" + managerInfo.name);
+                $("#managerNameDiv").html("普通管理员：" + manager.name);
             }
-            changeDetailWindowUrl("managedApp.html")
+            changeDetailWindowUrl("ider.html")
         });
 
         function changeDetailWindowUrl(newUrl) {
@@ -24,13 +24,13 @@
 
         function logout() {
             $.ajax({
-                url: "/manage/managerLogin/logout",
+                url: "../manager/main/logout",
                 data: {},
                 async: false,
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
-                        managerInfo = null;
-                        window.location.href = "login.html";
+                        manager = null;
+                        window.top.location.href = "login.html";
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
                     }
@@ -50,7 +50,7 @@
 <div>
     <table width="100%" height="1000px">
         <tr>
-            <td width="30%" valign="top">
+            <td width="20%" valign="top">
                 <table align="right">
                     <tr>
                         <td>
@@ -63,22 +63,12 @@
                                 <table>
                                     <tr>
                                         <td>
-                                            <button onclick='changeDetailWindowUrl("app.html")'>应用</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <button onclick='changeDetailWindowUrl("profile.html")'>环境</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
                                             <button onclick='changeDetailWindowUrl("manager.html")'>管理员</button>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td>
-                                            <button onclick='changeDetailWindowUrl("managerApp.html")'>管理员与应用关联
+                                            <button onclick='changeDetailWindowUrl("relation.html")'>管理员与应用关联
                                             </button>
                                         </td>
                                     </tr>
@@ -88,15 +78,15 @@
                     </tr>
                     <tr>
                         <td>
-                            <button onclick='changeDetailWindowUrl("managerInfo.html")'>
+                            <button onclick='changeDetailWindowUrl("myself.html")'>
                                 修改个人信息
                             </button>
                         </td>
                     </tr>
                 </table>
             </td>
-            <td width="70%">
-                <iframe id="detailWindow" src="#" width="100%" height="100%"></iframe>
+            <td width="80%">
+                <iframe id="detailWindow" src="" width="100%" height="100%"></iframe>
             </td>
         </tr>
     </table>

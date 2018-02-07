@@ -2,38 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>登陆</title>
-    <script type="text/javascript" src="../common/lib/jquery-3.2.1.js"></script>
+    <title>登录</title>
+    <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
     <script type="text/javascript">
 
-        function getLoginedManager() {
-            var managerInfo = null;
-            $.ajax({
-                url: "/manage/managerLogin/getLoginedManager",
-                data: {},
-                async: false,
-                success: function (ajaxResult) {
-                    if (ajaxResult.success) {
-                        managerInfo = ajaxResult.managerInfo;
-                    } else {
-                        alert("失败，原因：" + ajaxResult.message);
-                    }
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
-            return managerInfo;
-        }
-
         $(document).ready(function () {
-            var managerInfo = getLoginedManager();
-            if (managerInfo != null) {
-                window.location.href = "main.html";
+            var manager = getCurrentManager();
+            if (manager != null) {
+                window.top.location.href = "main.html";
                 return;
             }
             $.ajax({
-                url: "/manage/managerLogin/shouldInitAdmin",
+                url: "../manager/init/canInitAdmin",
                 data: {},
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -50,6 +30,26 @@
             });
         });
 
+        function getCurrentManager() {
+            var manager = null;
+            $.ajax({
+                url: "../manager/main/current",
+                data: {},
+                async: false,
+                success: function (ajaxResult) {
+                    if (ajaxResult.success) {
+                        manager = ajaxResult.manager;
+                    } else {
+                        alert("失败，原因：" + ajaxResult.message);
+                    }
+                },
+                error: function () {
+                    alert("请求服务失败");
+                }
+            });
+            return manager;
+        }
+
         function initAdmin() {
             var form = $("#initAdminForm");
             $.ajax({
@@ -58,7 +58,7 @@
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
                         alert("设置成功，进行登陆")
-                        window.location.reload();
+                        window.top.location.reload();
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
                     }
@@ -76,7 +76,7 @@
                 data: form.serialize(),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
-                        window.location.href = "main.html";
+                        window.top.location.href = "main.html";
                     } else {
                         alert("失败，原因：" + ajaxResult.message);
                     }
@@ -92,7 +92,7 @@
 <body>
 <br><br><br><br><br><br><br><br>
 <div id="initAdminFormDiv" style="display:none;">
-    <form id="initAdminForm" action="/manage/managerLogin/initAdmin">
+    <form id="initAdminForm" action="../manager/init/initAdmin">
         <table width="100%">
             <tr>
                 <td align="right" width="50%">
@@ -102,10 +102,10 @@
             </tr>
             <tr>
                 <td align="right" width="50%">
-                    管理员编码：
+                    管理员id：
                 </td>
                 <td>
-                    <input type="text" name="managerCode">
+                    <input type="text" name="managerId">
                 </td>
             </tr>
             <tr>
@@ -134,7 +134,7 @@
     </form>
 </div>
 <div id="loginFormDiv" style="display:none;">
-    <form id="loginForm" action="/manage/managerLogin/login">
+    <form id="loginForm" action="../manager/main/login">
         <table width="100%">
             <tr>
                 <td align="right" width="50%">
@@ -144,10 +144,10 @@
             </tr>
             <tr>
                 <td align="right" width="50%">
-                    管理员编码：
+                    管理员id：
                 </td>
                 <td width="50%">
-                    <input type="text" name="managerCode">
+                    <input type="text" name="managerId">
                 </td>
             </tr>
             <tr>
