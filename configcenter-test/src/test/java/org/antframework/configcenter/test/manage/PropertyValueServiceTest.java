@@ -10,7 +10,7 @@ package org.antframework.configcenter.test.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
+import org.antframework.configcenter.facade.api.manage.PropertyValueService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @Ignore
-public class PropertyValueManageServiceTest extends AbstractTest {
+public class PropertyValueServiceTest extends AbstractTest {
     @Autowired
-    private PropertyValueManageService propertyValueManageService;
+    private PropertyValueService propertyValueService;
 
     @Test
     public void testSetPropertyValue() {
@@ -43,7 +43,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         keyValue2.setKey("cashier.url");
         keyValue2.setValue("http://localhost:8080/cashier");
         order.addKeyValue(keyValue2);
-        EmptyResult result = propertyValueManageService.setPropertyValues(order);
+        EmptyResult result = propertyValueService.setPropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -53,7 +53,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
         order.setProfileCode("dev");
-        EmptyResult result = propertyValueManageService.deletePropertyValue(order);
+        EmptyResult result = propertyValueService.deletePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -62,7 +62,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
         order.setAppCode("scbfund");
         order.setProfileCode("dev");
-        FindAppProfilePropertyValueResult result = propertyValueManageService.findAppProfilePropertyValue(order);
+        FindAppProfilePropertyValueResult result = propertyValueService.findAppProfilePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -71,7 +71,7 @@ public class PropertyValueManageServiceTest extends AbstractTest {
         QueryPropertyValueOrder order = new QueryPropertyValueOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        QueryPropertyValueResult result = propertyValueManageService.queryPropertyValue(order);
+        QueryPropertyValueResult result = propertyValueService.queryPropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 }

@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.manage.PropertyValueManageService;
+import org.antframework.configcenter.facade.api.manage.PropertyValueService;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
@@ -30,7 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manage/propertyValue")
 public class PropertyValueManageController extends AbstractController {
     @Autowired
-    private PropertyValueManageService propertyValueManageService;
+    private PropertyValueService propertyValueService;
 
     /**
      * 设置多个属性value
@@ -56,7 +56,7 @@ public class PropertyValueManageController extends AbstractController {
             order.addKeyValue(keyValue);
         }
 
-        return propertyValueManageService.setPropertyValues(order);
+        return propertyValueService.setPropertyValues(order);
     }
 
     /**
@@ -74,7 +74,7 @@ public class PropertyValueManageController extends AbstractController {
         order.setKey(key);
         order.setProfileCode(profileCode);
 
-        return propertyValueManageService.deletePropertyValue(order);
+        return propertyValueService.deletePropertyValue(order);
     }
 
     /**
@@ -90,7 +90,7 @@ public class PropertyValueManageController extends AbstractController {
         order.setAppCode(appCode);
         order.setProfileCode(profileCode);
 
-        return propertyValueManageService.findAppProfilePropertyValue(order);
+        return propertyValueService.findAppProfilePropertyValue(order);
     }
 
     /**
@@ -112,6 +112,6 @@ public class PropertyValueManageController extends AbstractController {
         order.setKey(key);
         order.setProfileCode(profileCode);
 
-        return propertyValueManageService.queryPropertyValue(order);
+        return propertyValueService.queryPropertyValue(order);
     }
 }
