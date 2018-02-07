@@ -8,14 +8,26 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.common.util.facade.AbstractQueryResult;
+import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.manage.AppManageService;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.order.FindAppOrder;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
+import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.manage.QueryAppResult;
-import org.antframework.configcenter.web.manager.facade.api.ManagerAppManageService;
-import org.antframework.configcenter.web.manager.facade.order.DeleteManagerAppByAppOrder;
+import org.antframework.manager.facade.enums.ManagerType;
+import org.antframework.manager.facade.info.ManagerInfo;
+import org.antframework.manager.facade.info.RelationInfo;
+import org.antframework.manager.facade.result.QueryManagerRelationResult;
+import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.manager.web.common.Managers;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,11 +37,11 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/app")
-public class AppManageController extends AbstractController {
+public class AppManageController {
     @Autowired
     private AppManageService appManageService;
     @Autowired
-    private ManagerAppManageService managerAppManageService;
+    private ConfigService configService;
 
     /**
      * 添加或修改应用
@@ -39,7 +51,7 @@ public class AppManageController extends AbstractController {
      */
     @RequestMapping("/addOrModifyApp")
     public EmptyResult addOrModifyApp(String appCode, String memo) {
-        assertAdmin();
+        ManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppCode(appCode);
         order.setMemo(memo);
@@ -54,36 +66,76 @@ public class AppManageController extends AbstractController {
      */
     @RequestMapping("/deleteApp")
     public EmptyResult deleteApp(String appCode) {
-        assertAdmin();
-        // 先删除管理员和应用关联
-        DeleteManagerAppByAppOrder byAppOrder = new DeleteManagerAppByAppOrder();
-        byAppOrder.setAppCode(appCode);
-        EmptyResult result = managerAppManageService.deleteManagerAppByApp(byAppOrder);
-        if (!result.isSuccess()) {
-            return result;
-        }
+        ManagerAssert.admin();
+        // 删除管理员和应用的关联
+        Managers.deleteAllRelationsByTarget(appCode);
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppCode(appCode);
-        result = appManageService.deleteApp(order);
 
-        return result;
+        return appManageService.deleteApp(order);
     }
 
     /**
-     * 分页查询应用
+     * 查询被管理的应用
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param appCode  应用编码（可选，有值会进行模糊查询）
+     * @param appCode  应用编码（可选）
      */
-    @RequestMapping("/queryApp")
-    public QueryAppResult queryApp(int pageNo, int pageSize, String appCode) {
-        assertAdmin();
+    @RequestMapping("/queryManagedApp")
+    public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String appCode) {
+        ManagerInfo manager = ManagerAssert.currentManager();
+        if (manager.getType() == ManagerType.ADMIN) {
+            return forAdmin(pageNo, pageSize, appCode);
+        } else {
+            return forNormal(Managers.queryManagerRelation(pageNo, pageSize, appCode));
+        }
+    }
+
+    // 为超级管理员查询所有的应用
+    private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appCode) {
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppCode(appCode);
-        return appManageService.queryApp(order);
+        QueryAppResult queryAppResult = appManageService.queryApp(order);
+        // 构建返回结果
+        QueryManagedAppResult result = new QueryManagedAppResult();
+        BeanUtils.copyProperties(queryAppResult, result, "infos");
+        result.getInfos().addAll(queryAppResult.getInfos());
+        return result;
+    }
+
+    // 查询被普通管理管理的应用
+    private QueryManagedAppResult forNormal(QueryManagerRelationResult relationResult) {
+        QueryManagedAppResult result = new QueryManagedAppResult();
+        BeanUtils.copyProperties(relationResult, result, "infos");
+        // 根据关系查找应用
+        for (RelationInfo relationInfo : relationResult.getInfos()) {
+            AppInfo appInfo = findApp(relationInfo.getTargetId());
+            if (appInfo != null) {
+                result.addInfo(appInfo);
+            }
+        }
+        return result;
+    }
+
+    // 查找应用
+    private AppInfo findApp(String appCode) {
+        FindAppOrder order = new FindAppOrder();
+        order.setAppCode(appCode);
+
+        FindAppResult result = configService.findApp(order);
+        if (!result.isSuccess()) {
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
+        }
+        return result.getAppInfo();
+    }
+
+    /**
+     * 查询被管理的应用result
+     */
+    public static class QueryManagedAppResult extends AbstractQueryResult<AppInfo> {
     }
 }
