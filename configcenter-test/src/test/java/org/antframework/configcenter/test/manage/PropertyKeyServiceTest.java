@@ -10,7 +10,7 @@ package org.antframework.configcenter.test.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
+import org.antframework.configcenter.facade.api.manage.PropertyKeyService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
@@ -26,9 +26,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @Ignore
-public class PropertyKeyManageServiceTest extends AbstractTest {
+public class PropertyKeyServiceTest extends AbstractTest {
     @Autowired
-    private PropertyKeyManageService propertyKeyManageService;
+    private PropertyKeyService propertyKeyService;
 
     @Test
     public void testAddOrModifyPropertyKey() {
@@ -37,14 +37,14 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         order.setKey("collection.accNo");
         order.setOutward(false);
         order.setMemo("归集户帐号");
-        EmptyResult result = propertyKeyManageService.addOrModifyPropertyKey(order);
+        EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
         order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("cashier.url");
         order.setOutward(true);
         order.setMemo("收银台地址");
-        result = propertyKeyManageService.addOrModifyPropertyKey(order);
+        result = propertyKeyService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -53,7 +53,7 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode("scbfund");
         order.setKey("collection.accNo");
-        EmptyResult result = propertyKeyManageService.deletePropertyKey(order);
+        EmptyResult result = propertyKeyService.deletePropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -61,7 +61,7 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
     public void testFindAppPropertyKey() {
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
         order.setAppCode("scbfund");
-        FindAppPropertyKeyResult result = propertyKeyManageService.findAppPropertyKey(order);
+        FindAppPropertyKeyResult result = propertyKeyService.findAppPropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -70,7 +70,7 @@ public class PropertyKeyManageServiceTest extends AbstractTest {
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        QueryPropertyKeyResult result = propertyKeyManageService.queryPropertyKey(order);
+        QueryPropertyKeyResult result = propertyKeyService.queryPropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }
 }

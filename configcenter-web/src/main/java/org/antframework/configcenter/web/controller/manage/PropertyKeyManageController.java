@@ -9,7 +9,7 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.api.manage.PropertyKeyManageService;
+import org.antframework.configcenter.facade.api.manage.PropertyKeyService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manage/propertyKey")
 public class PropertyKeyManageController extends AbstractController {
     @Autowired
-    private PropertyKeyManageService propertyKeyManageService;
+    private PropertyKeyService propertyKeyService;
 
     /**
      * 新增或修改属性key
@@ -46,7 +46,7 @@ public class PropertyKeyManageController extends AbstractController {
         order.setOutward(outward);
         order.setMemo(memo);
 
-        return propertyKeyManageService.addOrModifyPropertyKey(order);
+        return propertyKeyService.addOrModifyPropertyKey(order);
     }
 
     /**
@@ -62,7 +62,7 @@ public class PropertyKeyManageController extends AbstractController {
         order.setAppCode(appCode);
         order.setKey(key);
 
-        return propertyKeyManageService.deletePropertyKey(order);
+        return propertyKeyService.deletePropertyKey(order);
     }
 
     /**
@@ -76,7 +76,7 @@ public class PropertyKeyManageController extends AbstractController {
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
         order.setAppCode(appCode);
 
-        return propertyKeyManageService.findAppPropertyKey(order);
+        return propertyKeyService.findAppPropertyKey(order);
     }
 
     /**
@@ -98,6 +98,6 @@ public class PropertyKeyManageController extends AbstractController {
         order.setKey(key);
         order.setOutward(outward);
 
-        return propertyKeyManageService.queryPropertyKey(order);
+        return propertyKeyService.queryPropertyKey(order);
     }
 }
