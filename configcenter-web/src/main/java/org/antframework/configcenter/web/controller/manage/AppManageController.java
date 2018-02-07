@@ -87,6 +87,24 @@ public class AppManageController {
     }
 
     /**
+     * 分页查询应用
+     *
+     * @param pageNo   页码（必须）
+     * @param pageSize 每页大小（必须）
+     * @param appCode  应用编码（可选）
+     */
+    @RequestMapping("/queryApp")
+    public QueryAppResult queryApp(int pageNo, int pageSize, String appCode) {
+        ManagerAssert.admin();
+        QueryAppOrder order = new QueryAppOrder();
+        order.setPageNo(pageNo);
+        order.setPageSize(pageSize);
+        order.setAppCode(appCode);
+
+        return appService.queryApp(order);
+    }
+
+    /**
      * 查询被管理的应用
      *
      * @param pageNo   页码（必须）
@@ -105,11 +123,7 @@ public class AppManageController {
 
     // 为超级管理员查询所有的应用
     private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appCode) {
-        QueryAppOrder order = new QueryAppOrder();
-        order.setPageNo(pageNo);
-        order.setPageSize(pageSize);
-        order.setAppCode(appCode);
-        QueryAppResult queryAppResult = appService.queryApp(order);
+        QueryAppResult queryAppResult = queryApp(pageNo, pageSize, appCode);
         // 构建返回结果
         QueryManagedAppResult result = new QueryManagedAppResult();
         BeanUtils.copyProperties(queryAppResult, result, "infos");
