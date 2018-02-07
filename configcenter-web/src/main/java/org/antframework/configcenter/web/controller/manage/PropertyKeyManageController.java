@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
@@ -16,6 +17,8 @@ import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
 import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
+import org.antframework.manager.web.common.ManagerAssert;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +28,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
-public class PropertyKeyManageController extends AbstractController {
+public class PropertyKeyManageController {
     @Autowired
     private PropertyKeyService propertyKeyService;
 
@@ -39,7 +42,7 @@ public class PropertyKeyManageController extends AbstractController {
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appCode, String key, boolean outward, String memo) {
-        canModifyApp(appCode);
+        ManagerAssert.adminOrHaveRelation(appCode);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppCode(appCode);
         order.setKey(key);
@@ -57,7 +60,7 @@ public class PropertyKeyManageController extends AbstractController {
      */
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appCode, String key) {
-        canModifyApp(appCode);
+        ManagerAssert.adminOrHaveRelation(appCode);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppCode(appCode);
         order.setKey(key);
@@ -72,7 +75,9 @@ public class PropertyKeyManageController extends AbstractController {
      */
     @RequestMapping("/findAppPropertyKey")
     public FindAppPropertyKeyResult findAppPropertyKey(String appCode) {
-        canReadApp(appCode);
+        if (!StringUtils.equals(appCode, ConfigService.COMMON_APP_CODE)) {
+            ManagerAssert.adminOrHaveRelation(appCode);
+        }
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
         order.setAppCode(appCode);
 
@@ -90,7 +95,7 @@ public class PropertyKeyManageController extends AbstractController {
      */
     @RequestMapping("/queryPropertyKey")
     public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean outward) {
-        assertAdmin();
+        ManagerAssert.admin();
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

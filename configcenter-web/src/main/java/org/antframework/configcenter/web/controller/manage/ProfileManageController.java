@@ -16,6 +16,7 @@ import org.antframework.configcenter.facade.order.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.QueryProfileResult;
+import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -25,7 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/profile")
-public class ProfileManageController extends AbstractController {
+public class ProfileManageController {
     @Autowired
     private ProfileService profileService;
 
@@ -37,7 +38,7 @@ public class ProfileManageController extends AbstractController {
      */
     @RequestMapping("/addOrModifyProfile")
     public EmptyResult addOrModifyProfile(String profileCode, String memo) {
-        assertAdmin();
+        ManagerAssert.admin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileCode(profileCode);
         order.setMemo(memo);
@@ -52,7 +53,7 @@ public class ProfileManageController extends AbstractController {
      */
     @RequestMapping("/deleteProfile")
     public EmptyResult deleteProfile(String profileCode) {
-        assertAdmin();
+        ManagerAssert.admin();
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode(profileCode);
 
@@ -64,7 +65,7 @@ public class ProfileManageController extends AbstractController {
      */
     @RequestMapping("/findAllProfile")
     public FindAllProfileResult findAllProfile() {
-        assertLogined();
+        ManagerAssert.currentManager();
         return profileService.findAllProfile(new FindAllProfileOrder());
     }
 
@@ -77,7 +78,7 @@ public class ProfileManageController extends AbstractController {
      */
     @RequestMapping("/queryProfile")
     public QueryProfileResult queryProfile(int pageNo, int pageSize, String profileCode) {
-        assertLogined();
+        ManagerAssert.currentManager();
         QueryProfileOrder order = new QueryProfileOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
