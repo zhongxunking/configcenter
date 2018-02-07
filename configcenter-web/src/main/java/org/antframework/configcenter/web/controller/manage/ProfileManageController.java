@@ -9,7 +9,7 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.api.manage.ProfileManageService;
+import org.antframework.configcenter.facade.api.manage.ProfileService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
@@ -27,7 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/manage/profile")
 public class ProfileManageController extends AbstractController {
     @Autowired
-    private ProfileManageService profileManageService;
+    private ProfileService profileService;
 
     /**
      * 新增或修改环境
@@ -42,7 +42,7 @@ public class ProfileManageController extends AbstractController {
         order.setProfileCode(profileCode);
         order.setMemo(memo);
 
-        return profileManageService.addOrModifyProfile(order);
+        return profileService.addOrModifyProfile(order);
     }
 
     /**
@@ -56,7 +56,7 @@ public class ProfileManageController extends AbstractController {
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode(profileCode);
 
-        return profileManageService.deleteProfile(order);
+        return profileService.deleteProfile(order);
     }
 
     /**
@@ -65,7 +65,7 @@ public class ProfileManageController extends AbstractController {
     @RequestMapping("/findAllProfile")
     public FindAllProfileResult findAllProfile() {
         assertLogined();
-        return profileManageService.findAllProfile(new FindAllProfileOrder());
+        return profileService.findAllProfile(new FindAllProfileOrder());
     }
 
     /**
@@ -83,6 +83,6 @@ public class ProfileManageController extends AbstractController {
         order.setPageSize(pageSize);
         order.setProfileCode(profileCode);
 
-        return profileManageService.queryProfile(order);
+        return profileService.queryProfile(order);
     }
 }

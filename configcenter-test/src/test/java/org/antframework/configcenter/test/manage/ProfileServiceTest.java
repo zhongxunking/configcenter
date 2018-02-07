@@ -10,7 +10,7 @@ package org.antframework.configcenter.test.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.manage.ProfileManageService;
+import org.antframework.configcenter.facade.api.manage.ProfileService;
 import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
@@ -26,16 +26,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  */
 @Ignore
-public class ProfileManageServiceTest extends AbstractTest {
+public class ProfileServiceTest extends AbstractTest {
     @Autowired
-    private ProfileManageService profileManageService;
+    private ProfileService profileService;
 
     @Test
     public void testAddOrModifyProfile() {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileCode("dev");
         order.setMemo("开发环境");
-        EmptyResult result = profileManageService.addOrModifyProfile(order);
+        EmptyResult result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -43,13 +43,13 @@ public class ProfileManageServiceTest extends AbstractTest {
     public void testDeleteProfile() {
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileCode("dev");
-        EmptyResult result = profileManageService.deleteProfile(order);
+        EmptyResult result = profileService.deleteProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 
     @Test
     public void testFindAllProfile() {
-        FindAllProfileResult result = profileManageService.findAllProfile(new FindAllProfileOrder());
+        FindAllProfileResult result = profileService.findAllProfile(new FindAllProfileOrder());
         checkResult(result, Status.SUCCESS);
     }
 
@@ -59,7 +59,7 @@ public class ProfileManageServiceTest extends AbstractTest {
         order.setPageNo(1);
         order.setPageSize(10);
         order.setProfileCode("dev");
-        QueryProfileResult result = profileManageService.queryProfile(order);
+        QueryProfileResult result = profileService.queryProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 }
