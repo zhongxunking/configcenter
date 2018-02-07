@@ -18,7 +18,7 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
+import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;

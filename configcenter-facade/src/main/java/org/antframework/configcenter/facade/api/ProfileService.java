@@ -6,15 +6,15 @@
  * 修订记录:
  * @author 钟勋 2017-08-20 02:08 创建
  */
-package org.antframework.configcenter.facade.api.manage;
+package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.manage.AddOrModifyProfileOrder;
-import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.manage.FindAllProfileOrder;
-import org.antframework.configcenter.facade.order.manage.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.manage.FindAllProfileResult;
-import org.antframework.configcenter.facade.result.manage.QueryProfileResult;
+import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
+import org.antframework.configcenter.facade.order.DeleteProfileOrder;
+import org.antframework.configcenter.facade.order.FindAllProfileOrder;
+import org.antframework.configcenter.facade.order.QueryProfileOrder;
+import org.antframework.configcenter.facade.result.FindAllProfileResult;
+import org.antframework.configcenter.facade.result.QueryProfileResult;
 
 /**
  * 环境服务

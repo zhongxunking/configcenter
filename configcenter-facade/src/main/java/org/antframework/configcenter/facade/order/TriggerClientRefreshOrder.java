@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-16 15:59 创建
  */
-package org.antframework.configcenter.facade.order.manage;
+package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
 

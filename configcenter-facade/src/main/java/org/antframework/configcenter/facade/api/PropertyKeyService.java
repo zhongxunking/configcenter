@@ -6,15 +6,15 @@
  * 修订记录:
  * @author 钟勋 2017-08-20 13:52 创建
  */
-package org.antframework.configcenter.facade.api.manage;
+package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
-import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
 
 /**
  * 属性key服务

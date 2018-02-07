@@ -4,31 +4,22 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-09-15 18:19 创建
+ * @author 钟勋 2017-08-20 02:20 创建
  */
-package org.antframework.configcenter.facade.order.manage;
+package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 查找应用在指定环境的所有属性value-order
+ * 添加或修改环境order
  */
-public class FindAppProfilePropertyValueOrder extends AbstractOrder {
-    // 应用编码
-    @NotBlank
-    private String appCode;
+public class AddOrModifyProfileOrder extends AbstractOrder {
     // 环境编码
     @NotBlank
     private String profileCode;
-
-    public String getAppCode() {
-        return appCode;
-    }
-
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
-    }
+    // 备注
+    private String memo;
 
     public String getProfileCode() {
         return profileCode;
@@ -36,5 +27,13 @@ public class FindAppProfilePropertyValueOrder extends AbstractOrder {
 
     public void setProfileCode(String profileCode) {
         this.profileCode = profileCode;
+    }
+
+    public String getMemo() {
+        return memo;
+    }
+
+    public void setMemo(String memo) {
+        this.memo = memo;
     }
 }

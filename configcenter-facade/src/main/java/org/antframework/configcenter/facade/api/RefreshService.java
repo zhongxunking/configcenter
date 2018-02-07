@@ -6,11 +6,11 @@
  * 修订记录:
  * @author 钟勋 2017-09-16 13:44 创建
  */
-package org.antframework.configcenter.facade.api.manage;
+package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
 
 /**
  * 刷新服务

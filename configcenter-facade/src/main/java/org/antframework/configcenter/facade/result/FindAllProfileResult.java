@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-16 20:18 创建
  */
-package org.antframework.configcenter.facade.result.manage;
+package org.antframework.configcenter.facade.result;
 
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.ProfileInfo;

@@ -16,7 +16,7 @@ import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.order.manage.DeleteProfileOrder;
+import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;

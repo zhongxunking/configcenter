@@ -13,7 +13,7 @@ import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.common.ZkUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyValue;
-import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;

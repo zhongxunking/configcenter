@@ -20,7 +20,7 @@ import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;

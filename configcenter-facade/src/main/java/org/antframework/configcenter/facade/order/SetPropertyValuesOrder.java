@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-08-20 02:25 创建
  */
-package org.antframework.configcenter.facade.order.manage;
+package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;

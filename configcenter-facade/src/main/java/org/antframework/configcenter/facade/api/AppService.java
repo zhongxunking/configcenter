@@ -6,16 +6,16 @@
  * 修订记录:
  * @author 钟勋 2017-08-20 02:07 创建
  */
-package org.antframework.configcenter.facade.api.manage;
+package org.antframework.configcenter.facade.api;
 
 
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
+import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.manage.AddOrModifyAppOrder;
-import org.antframework.configcenter.facade.order.manage.DeleteAppOrder;
-import org.antframework.configcenter.facade.order.manage.QueryAppOrder;
+import org.antframework.configcenter.facade.order.QueryAppOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.manage.QueryAppResult;
+import org.antframework.configcenter.facade.result.QueryAppResult;
 
 /**
  * 应用服务

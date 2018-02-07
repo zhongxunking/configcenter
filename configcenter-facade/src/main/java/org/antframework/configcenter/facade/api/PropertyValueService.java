@@ -6,15 +6,15 @@
  * 修订记录:
  * @author 钟勋 2017-08-20 02:08 创建
  */
-package org.antframework.configcenter.facade.api.manage;
+package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.manage.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.FindAppProfilePropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.QueryPropertyValueOrder;
-import org.antframework.configcenter.facade.order.manage.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.manage.FindAppProfilePropertyValueResult;
-import org.antframework.configcenter.facade.result.manage.QueryPropertyValueResult;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
+import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
+import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
 
 /**
  * 属性value服务

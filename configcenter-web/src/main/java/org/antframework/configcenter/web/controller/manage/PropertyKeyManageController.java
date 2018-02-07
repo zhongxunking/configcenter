@@ -9,13 +9,13 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.api.manage.PropertyKeyService;
-import org.antframework.configcenter.facade.order.manage.AddOrModifyPropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.FindAppPropertyKeyOrder;
-import org.antframework.configcenter.facade.order.manage.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.manage.FindAppPropertyKeyResult;
-import org.antframework.configcenter.facade.result.manage.QueryPropertyKeyResult;
+import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;

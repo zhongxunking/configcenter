@@ -4,17 +4,17 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-09-15 18:03 创建
+ * @author 钟勋 2017-08-20 02:17 创建
  */
-package org.antframework.configcenter.facade.order.manage;
+package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 查找应用的所有属性key-order
+ * 删除应用order
  */
-public class FindAppPropertyKeyOrder extends AbstractOrder {
+public class DeleteAppOrder extends AbstractOrder {
     // 应用编码
     @NotBlank
     private String appCode;

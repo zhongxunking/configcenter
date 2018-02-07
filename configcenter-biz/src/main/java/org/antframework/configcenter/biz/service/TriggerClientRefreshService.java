@@ -19,7 +19,7 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.manage.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
