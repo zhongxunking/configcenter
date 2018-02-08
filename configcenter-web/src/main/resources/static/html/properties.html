@@ -13,12 +13,6 @@
             var profileCode = getUrlParam("profileCode");
             $("#appCodeDiv").html(appCode);
             $("#profileCodeDiv").html(profileCode);
-
-            if (appCode != "common") {
-                refreshOutwardDiv(false)
-            } else {
-                refreshOutwardDiv(true)
-            }
         });
 
         function refresh() {
@@ -41,15 +35,15 @@
         }
 
         function getPropertyKeyInfos(appCode) {
-            var keyInfos;
+            var keyInfos = null;
             $.ajax({
-                url: "/manage/propertyKey/findAppPropertyKey",
+                url: "../manage/propertyKey/findAppPropertyKey",
                 data: {
                     appCode: appCode
                 },
                 async: false,
                 success: function (ajaxResult) {
-                    if (!ajaxResult.success || ajaxResult.infos == null) {
+                    if (!ajaxResult.success) {
                         alert("查询失败，原因：" + ajaxResult.message);
                     } else {
                         keyInfos = ajaxResult.infos;
@@ -63,16 +57,16 @@
         }
 
         function getPropertyValueInfo(appCode, profileCode) {
-            var valueInfos;
+            var valueInfos = null;
             $.ajax({
-                url: "/manage/propertyValue/findAppProfilePropertyValue",
+                url: "../manage/propertyValue/findAppProfilePropertyValue",
                 data: {
                     appCode: appCode,
                     profileCode: profileCode
                 },
                 async: false,
                 success: function (ajaxResult) {
-                    if (!ajaxResult.success || ajaxResult.infos == null) {
+                    if (!ajaxResult.success) {
                         alert("查询失败，原因：" + ajaxResult.message);
                     } else {
                         valueInfos = ajaxResult.infos;
@@ -156,7 +150,7 @@
 
         function deleteEntity(key) {
             $.ajax({
-                url: "/manage/propertyValue/deletePropertyValue",
+                url: "../manage/propertyValue/deletePropertyValue",
                 data: {
                     appCode: getUrlParam("appCode"),
                     key: key,
@@ -175,32 +169,14 @@
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
             var r = window.location.search.substr(1).match(reg);
-            if (r != null)return unescape(r[2]);
+            if (r != null) return unescape(r[2]);
             return null;
-        }
-
-        function addOrModifyPropertyKey() {
-            var form = $("#addOrModifyPropertyKeyForm");
-            $.ajax({
-                url: "/manage/propertyKey/addOrModifyPropertyKey",
-                data: form.serialize() + "&appCode=" + getUrlParam("appCode"),
-                success: function (ajaxResult) {
-                    if (ajaxResult.success) {
-                        refresh();
-                    } else {
-                        alert("失败，原因：" + ajaxResult.message);
-                    }
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
         }
 
         function setPropertyValue() {
             var form = $("#setPropertyValueForm");
             $.ajax({
-                url: "/manage/propertyValue/setPropertyValue",
+                url: "../manage/propertyValue/setPropertyValue",
                 data: form.serialize() + "&appCode=" + getUrlParam("appCode") + "&profileCode=" + getUrlParam("profileCode"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -216,16 +192,19 @@
         }
 
         var setValueNumber = 1;
+
         function addSetValuesForm() {
             setValueNumber++;
             drawSetValuesForm();
         }
+
         function subSetValuesForm() {
             if (setValueNumber > 1) {
                 setValueNumber--;
             }
             drawSetValuesForm();
         }
+
         function drawSetValuesForm() {
             var table = "<table>";
             for (var i = 0; i < setValueNumber; i++) {
@@ -248,23 +227,9 @@
             $("#setValuesDiv").html(table);
         }
 
-
-        function refreshOutwardDiv(isCommonApp) {
-            var divHtml = "<select name=\"outward\">";
-            if (isCommonApp) {
-                divHtml += "<option value=\"true\" selected=\"true\">是</option>";
-            } else {
-                divHtml += "<option value=\"false\" selected=\"true\">否</option>";
-                divHtml += "<option value=\"true\">是</option>";
-            }
-            divHtml += "</select>";
-
-            $("#outwardDiv").html(divHtml);
-        }
-
         function refreshZkAndClient(appCode, profileCode) {
             $.ajax({
-                url: "/refresh/refreshZkAndClient",
+                url: "../refresh/refreshZkAndClient",
                 data: {
                     appCode: appCode,
                     profileCode: profileCode
@@ -300,7 +265,7 @@
                     </tr>
                     <tr>
                         <td>
-                            <form id="setPropertyValueForm" action="/manage/propertyValue/setPropertyValue">
+                            <form id="setPropertyValueForm" action="../manage/propertyValue/setPropertyValue">
                                 <div id="setValuesDiv">
                                     <table>
                                         <tr>
