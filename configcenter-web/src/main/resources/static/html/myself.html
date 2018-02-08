@@ -11,7 +11,7 @@
             var form = $("#" + formName);
             $.ajax({
                 url: form.attr("action"),
-                data: form.serialize() + "&managerCode=" + managerInfo.managerCode,
+                data: form.serialize() + "&managerId=" + manager.managerId,
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
                         alert("成功");
@@ -28,35 +28,17 @@
     </script>
 </head>
 <body>
-<br>
-<div>
-    修改密码：
-    <form id="modifyManagerPasswordForm" action="/manage/manager/modifyManagerPassword">
-        <table>
-            <tr>
-                <td align="right">新密码：</td>
-                <td><input type="password" name="newPassword"></td>
-            </tr>
-            <tr>
-                <td align="right"><input type="button" onclick="requestServer('modifyManagerPasswordForm')" value="提交">
-                </td>
-                <td></td>
-            </tr>
-        </table>
-    </form>
-</div>
 <br><br>
-<br>
 <div>
     修改名称：
-    <form id="modifyManagerNameForm" action="/manage/manager/modifyManagerName">
+    <form id="modifyNameForm" action="../manager/manage/modifyName">
         <table>
             <tr>
                 <td align="right">新名称：</td>
                 <td><input type="text" name="newName"></td>
             </tr>
             <tr>
-                <td align="right"><input type="button" onclick="requestServer('modifyManagerNameForm')" value="提交">
+                <td align="right"><input type="button" onclick="requestServer('modifyNameForm')" value="提交">
                 </td>
                 <td></td>
             </tr>
@@ -64,5 +46,21 @@
     </form>
 </div>
 <br><br>
+<div>
+    修改密码：
+    <form id="modifyPasswordForm" action="../manager/manage/modifyPassword">
+        <table>
+            <tr>
+                <td align="right">新密码：</td>
+                <td><input type="password" name="newPassword"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer('modifyPasswordForm')" value="提交">
+                </td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
+</div>
 </body>
 </html>

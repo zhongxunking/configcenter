@@ -2,15 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>管理管理员与应用关联</title>
+    <title>管理员与应用关联</title>
     <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
     <script type="text/javascript" src="../common/commonQuery.js"></script>
+    <script type="text/javascript" src="../common/commonManager.js"></script>
     <link rel="stylesheet" href="../common/common.css" type="text/css">
     <script type="text/javascript">
 
         function createTableHead() {
             var tr = "<tr>";
-            tr += "<th align='left'>管理员编码</th>"
+            tr += "<th align='left'>管理员id</th>"
             tr += "<th align='left'>应用编码</th>"
             tr += "<th align='left'>操作</th>"
             tr += "</tr>"
@@ -20,20 +21,20 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" + info.managerCode + "</td>";
-            tr += "<td>" + info.appCode + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info.managerCode + "\",\"" + info.appCode + "\")'>删除</button></td>"
+            tr += "<td>" + info.managerId + "</td>";
+            tr += "<td>" + info.targetId + "</td>";
+            tr += "<td><button onclick='deleteEntity(\"" + info.managerId + "\",\"" + info.targetId + "\")'>删除</button></td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function deleteEntity(managerCode, appCode) {
+        function deleteEntity(managerId, targetId) {
             $.ajax({
-                url: "/manage/managerApp/deleteManagerApp",
+                url: "../manager/relation/delete",
                 data: {
-                    managerCode: managerCode,
-                    appCode: appCode
+                    managerId: managerId,
+                    targetId: targetId
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -50,20 +51,9 @@
 <body>
 <br>
 <div>
-    新增关联：
-    <form id="addManagerAppForm" action="/manage/managerApp/addManagerApp">
-        <table>
-            <tr><td align="right">管理员编码：</td><td><input type="text" name="managerCode"></td></tr>
-            <tr><td align="right">应用编码：</td><td><input type="text" name="appCode"></td></tr>
-            <tr><td align="right"><input type="button" onclick="requestServer('addManagerAppForm')" value="提交"></td><td></td></tr>
-        </table>
-    </form>
-</div>
-<br><br>
-<div>
-    <form id="queryForm" action="/manage/managerApp/queryManagerApp">
-        管理员编码：<input type="text" name="managerCode">
-        应用编码：<input type="text" name="appCode">
+    <form id="queryForm" action="../manager/relation/query">
+        管理员Id：<input type="text" name="managerId">
+        应用编码：<input type="text" name="targetId">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
 </div>
@@ -73,6 +63,26 @@
     <span id="currentPageNo">1</span>
     <button onclick="nextPage()">下一页</button>
     总页数：<span id="totalPage"></span>
+</div>
+<br><br>
+<div>
+    新增关联：
+    <form id="addForm" action="../manager/relation/add">
+        <table>
+            <tr>
+                <td align="right">管理员id：</td>
+                <td><input type="text" name="managerId"></td>
+            </tr>
+            <tr>
+                <td align="right">应用编码：</td>
+                <td><input type="text" name="targetId"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="requestServer('addForm')" value="提交"></td>
+                <td></td>
+            </tr>
+        </table>
+    </form>
 </div>
 </body>
 </html>
