@@ -28,7 +28,7 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
 
     @Override
     public String getProperty(String key) {
-        return toRawValue(properties.get(key));
+        return toOriginal(properties.get(key));
     }
 
     @Override
@@ -49,24 +49,14 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
         return modifiedProperties;
     }
 
-    /**
-     * 转换为可存储的value
-     *
-     * @param rawValue 原始value
-     * @return 可存储的value
-     */
-    public static String toSavableValue(String rawValue) {
-        return rawValue == null ? NULL_VALUE : rawValue;
+    // 转换为原始value
+    private static String toOriginal(String savable) {
+        return StringUtils.equals(savable, NULL_VALUE) ? null : savable;
     }
 
-    /**
-     * 转换为原始value
-     *
-     * @param savableValue 可存储的value
-     * @return 原始value
-     */
-    public static String toRawValue(String savableValue) {
-        return StringUtils.equals(savableValue, NULL_VALUE) ? null : savableValue;
+    // 转换为可保存value
+    private static String toSavable(String original) {
+        return original == null ? NULL_VALUE : original;
     }
 
     // 分析被修改的属性
@@ -75,9 +65,9 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
         // 分析删除和修改的属性
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.REMOVE, key, toRawValue(oldProperties.get(key)), null));
-            } else if (!StringUtils.equals(newProperties.get(key), toRawValue(oldProperties.get(key)))) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, toRawValue(oldProperties.get(key)), newProperties.get(key)));
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.REMOVE, key, toOriginal(oldProperties.get(key)), null));
+            } else if (!StringUtils.equals(newProperties.get(key), toOriginal(oldProperties.get(key)))) {
+                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, toOriginal(oldProperties.get(key)), newProperties.get(key)));
             }
         }
         // 分析新增的属性
@@ -96,7 +86,7 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
             switch (modifiedProperty.getType()) {
                 case ADD:
                 case UPDATE:
-                    properties.put(modifiedProperty.getKey(), toSavableValue(modifiedProperty.getNewValue()));
+                    properties.put(modifiedProperty.getKey(), toSavable(modifiedProperty.getNewValue()));
                     break;
                 case REMOVE:
                     properties.remove(modifiedProperty.getKey());

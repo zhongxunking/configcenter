@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.antframework.common.util.file.MapFile;
 import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.ModifiedProperty;
@@ -42,15 +43,15 @@ public class ConfigRefresher {
     private ListenerRegistrar listenerRegistrar;
     // 服务端请求器
     private ServerRequester serverRequester;
-    // 缓存文件处理器
-    private CacheFileHandler cacheFileHandler;
+    // 缓存文件
+    private MapFile cacheFile;
 
     public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
         serverRequester = new ServerRequester(initParams);
         if (initParams.getCacheFilePath() != null) {
-            cacheFileHandler = new CacheFileHandler(initParams.getCacheFilePath());
+            cacheFile = new MapFile(initParams.getCacheFilePath());
         }
     }
 
@@ -80,16 +81,19 @@ public class ConfigRefresher {
                 newProperties = serverRequester.queryConfig();
             } catch (Throwable e) {
                 logger.error("从配置中心读取配置失败：{}", e.getMessage());
-                if (cacheFileHandler != null) {
+                if (cacheFile != null) {
                     logger.warn("尝试从缓存文件读取配置");
-                    newProperties = cacheFileHandler.readConfig();
+                    if (!cacheFile.exists()) {
+                        throw new IllegalStateException("不存在缓存文件");
+                    }
+                    newProperties = cacheFile.readAll();
                     fromServer = false;
                 } else {
                     throw e;
                 }
             }
-            if (fromServer && cacheFileHandler != null) {
-                cacheFileHandler.storeConfig(newProperties);
+            if (fromServer && cacheFile != null) {
+                cacheFile.replace(newProperties);
             }
             properties.replaceProperties(newProperties);
         } catch (Throwable e) {
@@ -104,8 +108,8 @@ public class ConfigRefresher {
         public void run() {
             try {
                 Map<String, String> newProperties = serverRequester.queryConfig();
-                if (cacheFileHandler != null) {
-                    cacheFileHandler.storeConfig(newProperties);
+                if (cacheFile != null) {
+                    cacheFile.replace(newProperties);
                 }
                 List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
                 listenerRegistrar.configModified(modifiedProperties);
