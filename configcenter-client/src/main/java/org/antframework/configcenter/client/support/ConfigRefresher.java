@@ -84,7 +84,7 @@ public class ConfigRefresher {
                 if (cacheFile != null) {
                     logger.warn("尝试从缓存文件读取配置");
                     if (!cacheFile.exists()) {
-                        throw new IllegalStateException("不存在缓存文件");
+                        throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
                     }
                     newProperties = cacheFile.readAll();
                     fromServer = false;
