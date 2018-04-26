@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.util;
 
-import org.antframework.boot.bekit.CommonQueryConstant;
+import org.antframework.boot.bekit.CommonQueries;
 import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
@@ -31,8 +31,8 @@ public class QueryUtils {
      */
     public static Map<Object, Object> buildCommonQueryAttachment(Class daoClass) {
         Map<Object, Object> attachment = new HashMap<>();
-        attachment.put(CommonQueryConstant.DAO_CLASS_KEY, daoClass);
-        attachment.put(CommonQueryConstant.SORT_KEY, QUERY_SORT);
+        attachment.put(CommonQueries.DAO_CLASS_KEY, daoClass);
+        attachment.put(CommonQueries.SORT_KEY, QUERY_SORT);
 
         return attachment;
     }

@@ -13,7 +13,7 @@ import org.antframework.configcenter.client.core.ModifiedProperty;
 import org.antframework.configcenter.client.spring.listener.ConfigListenerType;
 import org.antframework.configcenter.client.spring.listener.ConfigModifiedEvent;
 import org.bekit.event.EventPublisher;
-import org.bekit.event.bus.EventBusHolder;
+import org.bekit.event.bus.EventBusesHolder;
 import org.bekit.event.publisher.DefaultEventPublisher;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -49,11 +49,11 @@ public class DefaultConfigListener implements ConfigListener {
     /**
      * 初始化（如果是作为spring的bean，spring会自动调用本方法，不需要手动调用）
      *
-     * @param eventBusHolder 事件总线持有器
+     * @param eventBusesHolder 事件总线持有器
      */
     @Autowired
-    public void init(EventBusHolder eventBusHolder) {
-        eventPublisher = new DefaultEventPublisher(eventBusHolder.getEventBus(ConfigListenerType.class));
+    public void init(EventBusesHolder eventBusesHolder) {
+        eventPublisher = new DefaultEventPublisher(eventBusesHolder.getEventBus(ConfigListenerType.class));
     }
 
     @Override

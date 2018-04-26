@@ -20,7 +20,7 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceCheck;
+import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,8 +41,8 @@ public class FindAppPropertyKeyService {
     @Autowired
     private PropertyKeyDao propertyKeyDao;
 
-    @ServiceCheck
-    public void check(ServiceContext<FindAppPropertyKeyOrder, FindAppPropertyKeyResult> context) {
+    @ServiceBefore
+    public void before(ServiceContext<FindAppPropertyKeyOrder, FindAppPropertyKeyResult> context) {
         FindAppPropertyKeyOrder order = context.getOrder();
 
         App app = appDao.findByAppCode(order.getAppCode());

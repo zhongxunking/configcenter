@@ -22,7 +22,7 @@ import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceCheck;
+import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,8 +45,8 @@ public class FindAppProfilePropertyValueService {
     @Autowired
     private PropertyValueDao propertyValueDao;
 
-    @ServiceCheck
-    public void check(ServiceContext<FindAppProfilePropertyValueOrder, FindAppProfilePropertyValueResult> context) {
+    @ServiceBefore
+    public void before(ServiceContext<FindAppProfilePropertyValueOrder, FindAppProfilePropertyValueResult> context) {
         FindAppProfilePropertyValueOrder order = context.getOrder();
 
         App app = appDao.findByAppCode(order.getAppCode());
