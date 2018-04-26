@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
-import org.antframework.boot.bekit.CommonQueryConstant;
-import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
@@ -49,7 +48,7 @@ public class ProfileServiceProvider implements ProfileService {
 
     @Override
     public QueryProfileResult queryProfile(QueryProfileOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ProfileDao.class));
+        CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ProfileDao.class));
         return result.convertTo(QueryProfileResult.class);
     }
 }

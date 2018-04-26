@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
-import org.antframework.boot.bekit.CommonQueryConstant;
-import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
@@ -49,7 +48,7 @@ public class PropertyKeyServiceProvider implements PropertyKeyService {
 
     @Override
     public QueryPropertyKeyResult queryPropertyKey(QueryPropertyKeyOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyKeyDao.class));
+        CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyKeyDao.class));
         return result.convertTo(QueryPropertyKeyResult.class);
     }
 }

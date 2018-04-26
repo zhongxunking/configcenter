@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
-import org.antframework.boot.bekit.CommonQueryConstant;
-import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
@@ -49,7 +48,7 @@ public class AppServiceProvider implements AppService {
 
     @Override
     public QueryAppResult queryApp(QueryAppOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(AppDao.class));
+        CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(AppDao.class));
         return result.convertTo(QueryAppResult.class);
     }
 }

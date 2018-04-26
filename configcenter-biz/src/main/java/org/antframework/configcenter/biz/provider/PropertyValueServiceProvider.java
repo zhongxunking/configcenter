@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
-import org.antframework.boot.bekit.CommonQueryConstant;
-import org.antframework.boot.bekit.CommonQueryResult;
+import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
@@ -49,7 +48,7 @@ public class PropertyValueServiceProvider implements PropertyValueService {
 
     @Override
     public QueryPropertyValueResult queryPropertyValue(QueryPropertyValueOrder order) {
-        CommonQueryResult result = serviceEngine.execute(CommonQueryConstant.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyValueDao.class));
+        CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyValueDao.class));
         return result.convertTo(QueryPropertyValueResult.class);
     }
 }
