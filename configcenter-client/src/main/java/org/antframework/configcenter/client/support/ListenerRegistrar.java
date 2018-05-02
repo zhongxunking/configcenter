@@ -29,18 +29,14 @@ public class ListenerRegistrar {
     }
 
     /**
-     * 删除监听器
+     * 注销监听器
      */
-    public void remove(ConfigListener listener) {
+    public void unregister(ConfigListener listener) {
         listeners.remove(listener);
     }
 
-    /**
-     * 配置被修改触发监听器
-     *
-     * @param changedProperties 被修改的属性
-     */
-    public void onChange(List<ChangedProperty> changedProperties) {
+    // 配置被修改触发监听器
+    void onChange(List<ChangedProperty> changedProperties) {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
