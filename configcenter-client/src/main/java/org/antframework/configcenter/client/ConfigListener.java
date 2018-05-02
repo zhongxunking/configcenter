@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.client;
 
-import org.antframework.configcenter.client.core.ModifiedProperty;
+import org.antframework.configcenter.client.core.ChangedProperty;
 
 import java.util.List;
 
@@ -20,8 +20,7 @@ public interface ConfigListener {
     /**
      * 当配置被修改时调用本方法
      *
-     * @param modifiedProperties 被修改的属性
+     * @param changedProperties 被修改的属性
      */
-    void configModified(List<ModifiedProperty> modifiedProperties);
-
+    void onChange(List<ChangedProperty> changedProperties);
 }

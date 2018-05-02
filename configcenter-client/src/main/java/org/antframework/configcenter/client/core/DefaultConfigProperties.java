@@ -43,10 +43,10 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
     }
 
     @Override
-    public synchronized List<ModifiedProperty> replaceProperties(Map<String, String> newProperties) {
-        List<ModifiedProperty> modifiedProperties = analyseModify(properties, newProperties);
-        applyModify(properties, modifiedProperties);
-        return modifiedProperties;
+    public synchronized List<ChangedProperty> replaceProperties(Map<String, String> newProperties) {
+        List<ChangedProperty> changedProperties = analyseChanges(properties, newProperties);
+        applyChanges(properties, changedProperties);
+        return changedProperties;
     }
 
     // 转换为原始value
@@ -60,36 +60,36 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
     }
 
     // 分析被修改的属性
-    private static List<ModifiedProperty> analyseModify(Map<String, String> oldProperties, Map<String, String> newProperties) {
-        List<ModifiedProperty> modifiedProperties = new ArrayList<>();
+    private static List<ChangedProperty> analyseChanges(Map<String, String> oldProperties, Map<String, String> newProperties) {
+        List<ChangedProperty> changedProperties = new ArrayList<>();
         // 分析删除和修改的属性
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.REMOVE, key, toOriginal(oldProperties.get(key)), null));
+                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.REMOVE, key, toOriginal(oldProperties.get(key)), null));
             } else if (!StringUtils.equals(newProperties.get(key), toOriginal(oldProperties.get(key)))) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.UPDATE, key, toOriginal(oldProperties.get(key)), newProperties.get(key)));
+                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.UPDATE, key, toOriginal(oldProperties.get(key)), newProperties.get(key)));
             }
         }
         // 分析新增的属性
         for (String key : newProperties.keySet()) {
             if (!oldProperties.containsKey(key)) {
-                modifiedProperties.add(new ModifiedProperty(ModifiedProperty.ModifyType.ADD, key, null, newProperties.get(key)));
+                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.ADD, key, null, newProperties.get(key)));
             }
         }
 
-        return modifiedProperties;
+        return changedProperties;
     }
 
     // 应用被修改的属性
-    private static void applyModify(Map<String, String> properties, List<ModifiedProperty> modifiedProperties) {
-        for (ModifiedProperty modifiedProperty : modifiedProperties) {
-            switch (modifiedProperty.getType()) {
+    private static void applyChanges(Map<String, String> properties, List<ChangedProperty> changedProperties) {
+        for (ChangedProperty changedProperty : changedProperties) {
+            switch (changedProperty.getType()) {
                 case ADD:
                 case UPDATE:
-                    properties.put(modifiedProperty.getKey(), toSavable(modifiedProperty.getNewValue()));
+                    properties.put(changedProperty.getKey(), toSavable(changedProperty.getNewValue()));
                     break;
                 case REMOVE:
-                    properties.remove(modifiedProperty.getKey());
+                    properties.remove(changedProperty.getKey());
                     break;
                 default:
                     throw new IllegalArgumentException("无法识别的修改类型");

@@ -13,9 +13,9 @@ import org.antframework.common.util.tostring.ToString;
 /**
  * 被修改的属性
  */
-public class ModifiedProperty {
+public class ChangedProperty {
     // 修改类型
-    private ModifyType type;
+    private ChangeType type;
     // 属性key
     private String key;
     // 旧属性值
@@ -23,14 +23,14 @@ public class ModifiedProperty {
     // 新属性值
     private String newValue;
 
-    public ModifiedProperty(ModifyType type, String key, String oldValue, String newValue) {
+    public ChangedProperty(ChangeType type, String key, String oldValue, String newValue) {
         this.type = type;
         this.key = key;
         this.oldValue = oldValue;
         this.newValue = newValue;
     }
 
-    public ModifyType getType() {
+    public ChangeType getType() {
         return type;
     }
 
@@ -54,7 +54,7 @@ public class ModifiedProperty {
     /**
      * 修改类型
      */
-    public enum ModifyType {
+    public enum ChangeType {
         // 新增
         ADD,
         // 更新

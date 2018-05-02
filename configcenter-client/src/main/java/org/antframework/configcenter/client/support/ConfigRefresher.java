@@ -10,8 +10,8 @@ package org.antframework.configcenter.client.support;
 
 import org.antframework.common.util.file.MapFile;
 import org.antframework.configcenter.client.ConfigContext;
+import org.antframework.configcenter.client.core.ChangedProperty;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
-import org.antframework.configcenter.client.core.ModifiedProperty;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,8 +111,8 @@ public class ConfigRefresher {
                 if (cacheFile != null) {
                     cacheFile.replace(newProperties);
                 }
-                List<ModifiedProperty> modifiedProperties = properties.replaceProperties(newProperties);
-                listenerRegistrar.configModified(modifiedProperties);
+                List<ChangedProperty> changedProperties = properties.replaceProperties(newProperties);
+                listenerRegistrar.onChange(changedProperties);
             } catch (Throwable e) {
                 logger.error("刷新配置出错：{}", e.getMessage());
             }

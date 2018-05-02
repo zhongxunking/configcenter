@@ -24,6 +24,5 @@ public interface ConfigurableConfigProperties extends ConfigProperties {
      * @param newProperties 新属性
      * @return 被修改的属性
      */
-    List<ModifiedProperty> replaceProperties(Map<String, String> newProperties);
-
+    List<ChangedProperty> replaceProperties(Map<String, String> newProperties);
 }

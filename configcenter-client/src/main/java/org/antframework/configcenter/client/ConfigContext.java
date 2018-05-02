@@ -52,7 +52,7 @@ public class ConfigContext {
     /**
      * 开始监听配置是否被修改
      */
-    public synchronized void listenConfigModified() {
+    public synchronized void listenConfigChanged() {
         if (refreshTrigger == null) {
             refreshTrigger = new RefreshTrigger(configRefresher, initParams);
         }
@@ -89,7 +89,7 @@ public class ConfigContext {
         private String serverUrl;
         // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
         private String cacheFilePath;
-        // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigModified()触发监听配置是否被修改，可以不用填）
+        // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigChanged()触发监听配置是否被修改，可以不用填）
         private String[] zkUrls;
 
         public String getAppCode() {
