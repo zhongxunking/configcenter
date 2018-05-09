@@ -28,9 +28,9 @@ public interface AppDao {
     void save(App app);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    App findLockByAppCode(String appCode);
+    App findLockByAppId(String appId);
 
-    App findByAppCode(String appCode);
+    App findByAppId(String appId);
 
     void delete(App app);
 

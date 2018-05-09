@@ -28,13 +28,13 @@ public interface PropertyKeyDao {
     void save(PropertyKey propertyKey);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    PropertyKey findLockByAppCodeAndKey(String appCode, String key);
+    PropertyKey findLockByAppIdAndKey(String appId, String key);
 
     void delete(PropertyKey propertyKey);
 
-    boolean existsByAppCode(String appCode);
+    boolean existsByAppId(String appId);
 
-    List<PropertyKey> findByAppCode(String appCode);
+    List<PropertyKey> findByAppId(String appId);
 
     Page<PropertyKey> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

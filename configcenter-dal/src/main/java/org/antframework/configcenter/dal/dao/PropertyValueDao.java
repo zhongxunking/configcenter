@@ -28,15 +28,15 @@ public interface PropertyValueDao {
     void save(PropertyValue propertyValue);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    PropertyValue findLockByAppCodeAndKeyAndProfileCode(String appCode, String key, String profileCode);
+    PropertyValue findLockByAppIdAndKeyAndProfileId(String appId, String key, String profileId);
 
-    List<PropertyValue> findByAppCodeAndProfileCode(String appCode, String profileCode);
+    List<PropertyValue> findByAppIdAndProfileId(String appId, String profileId);
 
     void delete(PropertyValue propertyValue);
 
-    boolean existsByProfileCode(String profileCode);
+    boolean existsByProfileId(String profileId);
 
-    boolean existsByAppCodeAndKey(String appCode, String key);
+    boolean existsByAppIdAndKey(String appId, String key);
 
     Page<PropertyValue> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

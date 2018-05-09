@@ -18,20 +18,20 @@ import javax.persistence.Entity;
  */
 @Entity
 public class Profile extends AbstractEntity {
-    // 环境编码
+    // 环境id
     @Column(unique = true, length = 64)
-    private String profileCode;
+    private String profileId;
 
     // 备注
     @Column
     private String memo;
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public String getMemo() {

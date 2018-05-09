@@ -28,9 +28,9 @@ public interface ProfileDao {
     void save(Profile profile);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    Profile findLockByProfileCode(String profileCode);
+    Profile findLockByProfileId(String profileId);
 
-    Profile findByProfileCode(String profileCode);
+    Profile findByProfileId(String profileId);
 
     void delete(Profile profile);
 

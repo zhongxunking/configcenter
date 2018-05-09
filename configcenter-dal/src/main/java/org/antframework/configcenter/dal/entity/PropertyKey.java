@@ -19,11 +19,11 @@ import javax.persistence.UniqueConstraint;
  * 属性key
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appCode", "key"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appId", "key"}))
 public class PropertyKey extends AbstractEntity {
-    // 应用编码
+    // 应用id
     @Column(length = 64)
-    private String appCode;
+    private String appId;
 
     // 属性key
     @Column(name = "`key`", length = 128)
@@ -37,12 +37,12 @@ public class PropertyKey extends AbstractEntity {
     @Column
     private String memo;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getKey() {
