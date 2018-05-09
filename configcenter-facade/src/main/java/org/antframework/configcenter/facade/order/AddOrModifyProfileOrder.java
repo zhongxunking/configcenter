@@ -15,18 +15,18 @@ import org.hibernate.validator.constraints.NotBlank;
  * 添加或修改环境order
  */
 public class AddOrModifyProfileOrder extends AbstractOrder {
-    // 环境编码
+    // 环境id
     @NotBlank
-    private String profileCode;
+    private String profileId;
     // 备注
     private String memo;
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public String getMemo() {

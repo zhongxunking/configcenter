@@ -15,18 +15,18 @@ import org.hibernate.validator.constraints.NotBlank;
  * 添加或删除应用order
  */
 public class AddOrModifyAppOrder extends AbstractOrder {
-    // 应用编码
+    // 应用id
     @NotBlank
-    private String appCode;
+    private String appId;
     // 备注
     private String memo;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getMemo() {

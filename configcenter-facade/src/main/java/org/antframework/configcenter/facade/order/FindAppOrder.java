@@ -15,15 +15,15 @@ import org.hibernate.validator.constraints.NotBlank;
  * 查找应用order
  */
 public class FindAppOrder extends AbstractOrder {
-    // 应用编码
+    // 应用id
     @NotBlank
-    private String appCode;
+    private String appId;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

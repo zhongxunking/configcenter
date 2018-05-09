@@ -14,17 +14,17 @@ import org.antframework.common.util.facade.AbstractInfo;
  * 应用info
  */
 public class AppInfo extends AbstractInfo {
-    // 应用编码
-    private String appCode;
+    // 应用id
+    private String appId;
     // 备注
     private String memo;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getMemo() {

@@ -15,15 +15,15 @@ import org.hibernate.validator.constraints.NotBlank;
  * 删除环境order
  */
 public class DeleteProfileOrder extends AbstractOrder {
-    // 环境编码
+    // 环境id
     @NotBlank
-    private String profileCode;
+    private String profileId;
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 }

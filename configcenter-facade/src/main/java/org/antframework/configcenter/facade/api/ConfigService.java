@@ -16,9 +16,9 @@ import org.antframework.configcenter.facade.result.FindPropertiesResult;
  */
 public interface ConfigService {
     /**
-     * 公共配置应用编码
+     * 公共配置应用id
      */
-    String COMMON_APP_CODE = "common";
+    String COMMON_APP_ID = "common";
 
     /**
      * 查找应用在特定环境中的配置

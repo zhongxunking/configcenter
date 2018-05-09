@@ -15,15 +15,15 @@ import org.antframework.common.util.query.annotation.operator.QueryLike;
  * 查询环境order
  */
 public class QueryProfileOrder extends AbstractQueryOrder {
-    // 环境编码
+    // 环境id
     @QueryLike
-    private String profileCode;
+    private String profileId;
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 }

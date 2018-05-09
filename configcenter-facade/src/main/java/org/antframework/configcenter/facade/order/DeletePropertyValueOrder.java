@@ -15,22 +15,22 @@ import org.hibernate.validator.constraints.NotBlank;
  * 删除属性value-order
  */
 public class DeletePropertyValueOrder extends AbstractOrder {
-    // 应用编码
+    // 应用id
     @NotBlank
-    private String appCode;
+    private String appId;
     // key
     @NotBlank
     private String key;
-    // 环境编码
+    // 环境id
     @NotBlank
-    private String profileCode;
+    private String profileId;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getKey() {
@@ -41,11 +41,11 @@ public class DeletePropertyValueOrder extends AbstractOrder {
         this.key = key;
     }
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 }

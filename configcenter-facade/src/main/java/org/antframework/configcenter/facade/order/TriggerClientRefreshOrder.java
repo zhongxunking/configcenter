@@ -14,24 +14,24 @@ import org.antframework.common.util.facade.AbstractOrder;
  * 触发客户端刷新配置order
  */
 public class TriggerClientRefreshOrder extends AbstractOrder {
-    // 应用编码（null表示刷新所有应用）
-    private String appCode;
-    // 环境编码（null表示刷新所有环境）
-    private String profileCode;
+    // 应用id（null表示刷新所有应用）
+    private String appId;
+    // 环境id（null表示刷新所有环境）
+    private String profileId;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 }

@@ -15,15 +15,15 @@ import org.antframework.common.util.query.annotation.operator.QueryLike;
  * 查询应用order
  */
 public class QueryAppOrder extends AbstractQueryOrder {
-    // 应用编码
+    // 应用id
     @QueryLike
-    private String appCode;
+    private String appId;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 }

@@ -14,8 +14,8 @@ import org.antframework.common.util.facade.AbstractInfo;
  * 属性key-info
  */
 public class PropertyKeyInfo extends AbstractInfo {
-    // 应用编码
-    private String appCode;
+    // 应用id
+    private String appId;
     // 属性key
     private String key;
     // 是否公开
@@ -23,12 +23,12 @@ public class PropertyKeyInfo extends AbstractInfo {
     // 备注
     private String memo;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getKey() {

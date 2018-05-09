@@ -20,31 +20,31 @@ import java.util.List;
  * 设置多个属性value-order
  */
 public class SetPropertyValuesOrder extends AbstractOrder {
-    // 应用编码
+    // 应用id
     @NotBlank
-    private String appCode;
-    // 环境编码
+    private String appId;
+    // 环境id
     @NotBlank
-    private String profileCode;
+    private String profileId;
     // 需设置的多个value
     @Size(min = 1)
     @Valid
     private List<KeyValue> keyValues = new ArrayList<>();
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public List<KeyValue> getKeyValues() {

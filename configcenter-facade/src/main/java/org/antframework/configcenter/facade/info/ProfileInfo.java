@@ -14,17 +14,17 @@ import org.antframework.common.util.facade.AbstractInfo;
  * 环境info
  */
 public class ProfileInfo extends AbstractInfo {
-    // 环境编码
-    private String profileCode;
+    // 环境id
+    private String profileId;
     // 备注
     private String memo;
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public String getMemo() {

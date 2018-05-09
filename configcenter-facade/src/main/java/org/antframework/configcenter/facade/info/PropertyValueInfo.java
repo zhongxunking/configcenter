@@ -14,21 +14,21 @@ import org.antframework.common.util.facade.AbstractInfo;
  * 属性value-info
  */
 public class PropertyValueInfo extends AbstractInfo {
-    // 应用编码
-    private String appCode;
+    // 应用id
+    private String appId;
     // 属性key
     private String key;
-    // 环境编码
-    private String profileCode;
+    // 环境id
+    private String profileId;
     // 属性value
     private String value;
 
-    public String getAppCode() {
-        return appCode;
+    public String getAppId() {
+        return appId;
     }
 
-    public void setAppCode(String appCode) {
-        this.appCode = appCode;
+    public void setAppId(String appId) {
+        this.appId = appId;
     }
 
     public String getKey() {
@@ -39,12 +39,12 @@ public class PropertyValueInfo extends AbstractInfo {
         this.key = key;
     }
 
-    public String getProfileCode() {
-        return profileCode;
+    public String getProfileId() {
+        return profileId;
     }
 
-    public void setProfileCode(String profileCode) {
-        this.profileCode = profileCode;
+    public void setProfileId(String profileId) {
+        this.profileId = profileId;
     }
 
     public String getValue() {
