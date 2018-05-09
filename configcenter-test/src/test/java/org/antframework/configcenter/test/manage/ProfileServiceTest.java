@@ -33,7 +33,7 @@ public class ProfileServiceTest extends AbstractTest {
     @Test
     public void testAddOrModifyProfile() {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
-        order.setProfileCode("dev");
+        order.setProfileId("dev");
         order.setMemo("开发环境");
         EmptyResult result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
@@ -42,7 +42,7 @@ public class ProfileServiceTest extends AbstractTest {
     @Test
     public void testDeleteProfile() {
         DeleteProfileOrder order = new DeleteProfileOrder();
-        order.setProfileCode("dev");
+        order.setProfileId("dev");
         EmptyResult result = profileService.deleteProfile(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -58,7 +58,7 @@ public class ProfileServiceTest extends AbstractTest {
         QueryProfileOrder order = new QueryProfileOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        order.setProfileCode("dev");
+        order.setProfileId("dev");
         QueryProfileResult result = profileService.queryProfile(order);
         checkResult(result, Status.SUCCESS);
     }

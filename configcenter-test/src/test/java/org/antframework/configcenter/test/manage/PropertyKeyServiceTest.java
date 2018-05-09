@@ -33,14 +33,14 @@ public class PropertyKeyServiceTest extends AbstractTest {
     @Test
     public void testAddOrModifyPropertyKey() {
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         order.setKey("collection.accNo");
         order.setOutward(false);
         order.setMemo("归集户帐号");
         EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
         checkResult(result, Status.SUCCESS);
         order = new AddOrModifyPropertyKeyOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         order.setKey("cashier.url");
         order.setOutward(true);
         order.setMemo("收银台地址");
@@ -51,7 +51,7 @@ public class PropertyKeyServiceTest extends AbstractTest {
     @Test
     public void testDeletePropertyKey() {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         order.setKey("collection.accNo");
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         checkResult(result, Status.SUCCESS);
@@ -60,7 +60,7 @@ public class PropertyKeyServiceTest extends AbstractTest {
     @Test
     public void testFindAppPropertyKey() {
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         FindAppPropertyKeyResult result = propertyKeyService.findAppPropertyKey(order);
         checkResult(result, Status.SUCCESS);
     }

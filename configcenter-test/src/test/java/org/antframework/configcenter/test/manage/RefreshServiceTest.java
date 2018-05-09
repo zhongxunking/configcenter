@@ -35,26 +35,26 @@ public class RefreshServiceTest extends AbstractTest {
     @Test
     public void testTriggerClientRefresh() {
         TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
-        order.setAppCode("scbfund");
-        order.setProfileCode("dev");
+        order.setAppId("scbfund");
+        order.setProfileId("dev");
         EmptyResult result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
 
         order = new TriggerClientRefreshOrder();
-        order.setAppCode("scbfund");
-        order.setProfileCode(null);
+        order.setAppId("scbfund");
+        order.setProfileId(null);
         result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
 
         order = new TriggerClientRefreshOrder();
-        order.setAppCode(null);
-        order.setProfileCode("dev");
+        order.setAppId(null);
+        order.setProfileId("dev");
         result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
 
         order = new TriggerClientRefreshOrder();
-        order.setAppCode(null);
-        order.setProfileCode(null);
+        order.setAppId(null);
+        order.setProfileId(null);
         result = refreshService.triggerClientRefresh(order);
         checkResult(result, Status.SUCCESS);
     }

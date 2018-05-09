@@ -33,8 +33,8 @@ public class PropertyValueServiceTest extends AbstractTest {
     @Test
     public void testSetPropertyValue() {
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
-        order.setAppCode("scbfund");
-        order.setProfileCode("dev");
+        order.setAppId("scbfund");
+        order.setProfileId("dev");
         SetPropertyValuesOrder.KeyValue keyValue1 = new SetPropertyValuesOrder.KeyValue();
         keyValue1.setKey("collection.accNo");
         keyValue1.setValue("20170903200000000001");
@@ -50,9 +50,9 @@ public class PropertyValueServiceTest extends AbstractTest {
     @Test
     public void tesDeletePropertyValue() {
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         order.setKey("collection.accNo");
-        order.setProfileCode("dev");
+        order.setProfileId("dev");
         EmptyResult result = propertyValueService.deletePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -60,8 +60,8 @@ public class PropertyValueServiceTest extends AbstractTest {
     @Test
     public void testFindAppProfilePropertyValue() {
         FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
-        order.setAppCode("scbfund");
-        order.setProfileCode("dev");
+        order.setAppId("scbfund");
+        order.setProfileId("dev");
         FindAppProfilePropertyValueResult result = propertyValueService.findAppProfilePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }

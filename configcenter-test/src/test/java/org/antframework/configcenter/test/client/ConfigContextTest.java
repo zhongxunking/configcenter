@@ -28,9 +28,9 @@ public class ConfigContextTest {
     @Test
     public void testConfigContext() throws InterruptedException {
         ConfigContext.InitParams initParams = new ConfigContext.InitParams();
-        initParams.setProfileCode("dev");
-        initParams.setAppCode("scbfund");
-        initParams.setQueriedAppCode("scbfund");
+        initParams.setProfileId("dev");
+        initParams.setAppId("scbfund");
+        initParams.setQueriedAppId("scbfund");
         initParams.setServerUrl("http://localhost:6220");
         initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
         initParams.setZkUrls("localhost:2181");
@@ -53,9 +53,9 @@ public class ConfigContextTest {
     @Test
     public void testConfigContext_noCacheFile() throws InterruptedException {
         ConfigContext.InitParams initParams = new ConfigContext.InitParams();
-        initParams.setProfileCode("dev");
-        initParams.setAppCode("scbfund");
-        initParams.setQueriedAppCode("scbfund");
+        initParams.setProfileId("dev");
+        initParams.setAppId("scbfund");
+        initParams.setQueriedAppId("scbfund");
         initParams.setServerUrl("http://localhost:8080");
         initParams.setZkUrls("localhost:2181");
 

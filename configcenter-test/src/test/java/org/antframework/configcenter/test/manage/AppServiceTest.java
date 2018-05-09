@@ -34,7 +34,7 @@ public class AppServiceTest extends AbstractTest {
     @Test
     public void testAddOrModifyApp() {
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         order.setMemo("升财宝");
         EmptyResult result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
@@ -43,7 +43,7 @@ public class AppServiceTest extends AbstractTest {
     @Test
     public void testDeleteApp() {
         DeleteAppOrder order = new DeleteAppOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         EmptyResult result = appService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -51,10 +51,10 @@ public class AppServiceTest extends AbstractTest {
     @Test
     public void testFindApp() {
         FindAppOrder order = new FindAppOrder();
-        order.setAppCode("scbfund");
+        order.setAppId("scbfund");
         FindAppResult result = appService.findApp(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals("scbfund", result.getAppInfo().getAppCode());
+        Assert.assertEquals("scbfund", result.getAppInfo().getAppId());
     }
 
     @Test
