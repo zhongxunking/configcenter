@@ -79,12 +79,12 @@ public class ConfigContext {
      * 客户端初始化参数
      */
     public static class InitParams {
-        // 必填：主体应用编码
-        private String appCode;
-        // 必填：被查询配置的应用编码
-        private String queriedAppCode;
-        // 必填：环境编码
-        private String profileCode;
+        // 必填：主体应用id
+        private String appId;
+        // 必填：被查询配置的应用id
+        private String queriedAppId;
+        // 必填：环境id
+        private String profileId;
         // 必填：服务端地址
         private String serverUrl;
         // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
@@ -92,28 +92,28 @@ public class ConfigContext {
         // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigChanged()触发监听配置是否被修改，可以不用填）
         private String[] zkUrls;
 
-        public String getAppCode() {
-            return appCode;
+        public String getAppId() {
+            return appId;
         }
 
-        public void setAppCode(String appCode) {
-            this.appCode = appCode;
+        public void setAppId(String appId) {
+            this.appId = appId;
         }
 
-        public String getQueriedAppCode() {
-            return queriedAppCode;
+        public String getQueriedAppId() {
+            return queriedAppId;
         }
 
-        public void setQueriedAppCode(String queriedAppCode) {
-            this.queriedAppCode = queriedAppCode;
+        public void setQueriedAppId(String queriedAppId) {
+            this.queriedAppId = queriedAppId;
         }
 
-        public String getProfileCode() {
-            return profileCode;
+        public String getProfileId() {
+            return profileId;
         }
 
-        public void setProfileCode(String profileCode) {
-            this.profileCode = profileCode;
+        public void setProfileId(String profileId) {
+            this.profileId = profileId;
         }
 
         public String getServerUrl() {

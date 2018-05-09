@@ -41,7 +41,7 @@ public class RefreshTrigger {
             throw new IllegalArgumentException("未设置zookeeper地址");
         }
         zkTemplate = ZkTemplate.create(initParams.getZkUrls(), ZK_CONFIG_NAMESPACE);
-        nodeCaches = listenNodes(initParams.getProfileCode(), new String[]{COMMON_NODE, initParams.getQueriedAppCode()});
+        nodeCaches = listenNodes(initParams.getProfileId(), new String[]{COMMON_NODE, initParams.getQueriedAppId()});
     }
 
     /**
@@ -59,7 +59,7 @@ public class RefreshTrigger {
     }
 
     // 监听指定节点
-    private List<NodeCache> listenNodes(String profileCode, String[] appCodes) {
+    private List<NodeCache> listenNodes(String profileId, String[] appIds) {
         ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
             @Override
             public void nodeChanged() throws Exception {
@@ -71,8 +71,8 @@ public class RefreshTrigger {
             }
         };
         List<NodeCache> nodeCaches = new ArrayList<>();
-        for (String appCode : appCodes) {
-            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileCode, appCode), false, listener);
+        for (String appId : appIds) {
+            NodeCache nodeCache = zkTemplate.listenNode(ZkTemplate.buildPath(profileId, appId), false, listener);
             nodeCaches.add(nodeCache);
         }
         return nodeCaches;

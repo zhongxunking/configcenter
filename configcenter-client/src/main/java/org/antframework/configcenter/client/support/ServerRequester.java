@@ -65,9 +65,9 @@ public class ServerRequester {
     // 构建请求
     private HttpUriRequest buildRequest(ConfigContext.InitParams initParams) {
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("appCode", initParams.getAppCode()));
-        params.add(new BasicNameValuePair("queriedAppCode", initParams.getQueriedAppCode()));
-        params.add(new BasicNameValuePair("profileCode", initParams.getProfileCode()));
+        params.add(new BasicNameValuePair("appId", initParams.getAppId()));
+        params.add(new BasicNameValuePair("queriedAppId", initParams.getQueriedAppId()));
+        params.add(new BasicNameValuePair("profileId", initParams.getProfileId()));
 
         HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_CONFIG_SUFFIX_URL);
         httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
