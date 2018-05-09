@@ -35,16 +35,16 @@ public class PropertyKeyManageController {
     /**
      * 新增或修改属性key
      *
-     * @param appCode 应用编码（必须）
+     * @param appId   应用id（必须）
      * @param key     key（必须）
      * @param outward 是否公用（必须）
      * @param memo    备注（可选）
      */
     @RequestMapping("/addOrModifyPropertyKey")
-    public EmptyResult addOrModifyPropertyKey(String appCode, String key, boolean outward, String memo) {
-        ManagerAssert.adminOrHaveRelation(appCode);
+    public EmptyResult addOrModifyPropertyKey(String appId, String key, boolean outward, String memo) {
+        ManagerAssert.adminOrHaveRelation(appId);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
         order.setKey(key);
         order.setOutward(outward);
         order.setMemo(memo);
@@ -55,14 +55,14 @@ public class PropertyKeyManageController {
     /**
      * 删除属性key
      *
-     * @param appCode 应用编码（必须）
-     * @param key     key（必须）
+     * @param appId 应用id（必须）
+     * @param key   key（必须）
      */
     @RequestMapping("/deletePropertyKey")
-    public EmptyResult deletePropertyKey(String appCode, String key) {
-        ManagerAssert.adminOrHaveRelation(appCode);
+    public EmptyResult deletePropertyKey(String appId, String key) {
+        ManagerAssert.adminOrHaveRelation(appId);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
         order.setKey(key);
 
         return propertyKeyService.deletePropertyKey(order);
@@ -71,15 +71,15 @@ public class PropertyKeyManageController {
     /**
      * 查找应用所有的属性key
      *
-     * @param appCode 应用编码（必须）
+     * @param appId 应用id（必须）
      */
     @RequestMapping("/findAppPropertyKey")
-    public FindAppPropertyKeyResult findAppPropertyKey(String appCode) {
-        if (!StringUtils.equals(appCode, ConfigService.COMMON_APP_CODE)) {
-            ManagerAssert.adminOrHaveRelation(appCode);
+    public FindAppPropertyKeyResult findAppPropertyKey(String appId) {
+        if (!StringUtils.equals(appId, ConfigService.COMMON_APP_ID)) {
+            ManagerAssert.adminOrHaveRelation(appId);
         }
         FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
 
         return propertyKeyService.findAppPropertyKey(order);
     }
@@ -89,17 +89,17 @@ public class PropertyKeyManageController {
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param appCode  应用编码（可选，有值会进行模糊查询）
+     * @param appId    应用id（可选，有值会进行模糊查询）
      * @param key      key（可选，有值会进行模糊查询）
      * @param outward  是否公用（可选）
      */
     @RequestMapping("/queryPropertyKey")
-    public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appCode, String key, Boolean outward) {
+    public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appId, String key, Boolean outward) {
         ManagerAssert.admin();
         QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
-        order.setAppCode(appCode);
+        order.setAppId(appId);
         order.setKey(key);
         order.setOutward(outward);
 

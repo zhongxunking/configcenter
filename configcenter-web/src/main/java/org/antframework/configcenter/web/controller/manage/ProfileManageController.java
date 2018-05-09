@@ -33,14 +33,14 @@ public class ProfileManageController {
     /**
      * 新增或修改环境
      *
-     * @param profileCode 环境编码（必须）
-     * @param memo        备注（可选）
+     * @param profileId 环境id（必须）
+     * @param memo      备注（可选）
      */
     @RequestMapping("/addOrModifyProfile")
-    public EmptyResult addOrModifyProfile(String profileCode, String memo) {
+    public EmptyResult addOrModifyProfile(String profileId, String memo) {
         ManagerAssert.admin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
-        order.setProfileCode(profileCode);
+        order.setProfileId(profileId);
         order.setMemo(memo);
 
         return profileService.addOrModifyProfile(order);
@@ -49,13 +49,13 @@ public class ProfileManageController {
     /**
      * 删除环境
      *
-     * @param profileCode 环境编码（必须）
+     * @param profileId 环境id（必须）
      */
     @RequestMapping("/deleteProfile")
-    public EmptyResult deleteProfile(String profileCode) {
+    public EmptyResult deleteProfile(String profileId) {
         ManagerAssert.admin();
         DeleteProfileOrder order = new DeleteProfileOrder();
-        order.setProfileCode(profileCode);
+        order.setProfileId(profileId);
 
         return profileService.deleteProfile(order);
     }
@@ -72,17 +72,17 @@ public class ProfileManageController {
     /**
      * 分页查询环境
      *
-     * @param pageNo      页码（必须）
-     * @param pageSize    每页大小（必须）
-     * @param profileCode 环境编码（可选，有值会进行模糊查询）
+     * @param pageNo    页码（必须）
+     * @param pageSize  每页大小（必须）
+     * @param profileId 环境id（可选，有值会进行模糊查询）
      */
     @RequestMapping("/queryProfile")
-    public QueryProfileResult queryProfile(int pageNo, int pageSize, String profileCode) {
+    public QueryProfileResult queryProfile(int pageNo, int pageSize, String profileId) {
         ManagerAssert.currentManager();
         QueryProfileOrder order = new QueryProfileOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
-        order.setProfileCode(profileCode);
+        order.setProfileId(profileId);
 
         return profileService.queryProfile(order);
     }

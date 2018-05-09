@@ -43,14 +43,14 @@ public class AppManageController {
     /**
      * 添加或修改应用
      *
-     * @param appCode 应用编码（必须）
-     * @param memo    备注（可选）
+     * @param appId 应用id（必须）
+     * @param memo  备注（可选）
      */
     @RequestMapping("/addOrModifyApp")
-    public EmptyResult addOrModifyApp(String appCode, String memo) {
+    public EmptyResult addOrModifyApp(String appId, String memo) {
         ManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
         order.setMemo(memo);
 
         return appService.addOrModifyApp(order);
@@ -59,16 +59,16 @@ public class AppManageController {
     /**
      * 删除应用
      *
-     * @param appCode 应用编码（必须）
+     * @param appId 应用id（必须）
      */
     @RequestMapping("/deleteApp")
-    public EmptyResult deleteApp(String appCode) {
+    public EmptyResult deleteApp(String appId) {
         ManagerAssert.admin();
         // 删除管理员和应用的关联
-        Managers.deleteAllRelationsByTarget(appCode);
+        Managers.deleteAllRelationsByTarget(appId);
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
 
         return appService.deleteApp(order);
     }
@@ -76,12 +76,12 @@ public class AppManageController {
     /**
      * 查找应用
      *
-     * @param appCode 应用编码
+     * @param appId 应用id
      */
     @RequestMapping("/findApp")
-    public FindAppResult findApp(String appCode) {
+    public FindAppResult findApp(String appId) {
         FindAppOrder order = new FindAppOrder();
-        order.setAppCode(appCode);
+        order.setAppId(appId);
 
         return appService.findApp(order);
     }
@@ -91,15 +91,15 @@ public class AppManageController {
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param appCode  应用编码（可选）
+     * @param appId    应用id（可选）
      */
     @RequestMapping("/queryApp")
-    public QueryAppResult queryApp(int pageNo, int pageSize, String appCode) {
+    public QueryAppResult queryApp(int pageNo, int pageSize, String appId) {
         ManagerAssert.admin();
         QueryAppOrder order = new QueryAppOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
-        order.setAppCode(appCode);
+        order.setAppId(appId);
 
         return appService.queryApp(order);
     }
@@ -109,21 +109,21 @@ public class AppManageController {
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param appCode  应用编码（可选）
+     * @param appId    应用id（可选）
      */
     @RequestMapping("/queryManagedApp")
-    public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String appCode) {
+    public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String appId) {
         ManagerInfo manager = ManagerAssert.currentManager();
         if (manager.getType() == ManagerType.ADMIN) {
-            return forAdmin(pageNo, pageSize, appCode);
+            return forAdmin(pageNo, pageSize, appId);
         } else {
-            return forNormal(Managers.queryManagerRelation(pageNo, pageSize, appCode));
+            return forNormal(Managers.queryManagerRelation(pageNo, pageSize, appId));
         }
     }
 
     // 为超级管理员查询所有的应用
-    private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appCode) {
-        QueryAppResult queryAppResult = queryApp(pageNo, pageSize, appCode);
+    private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appId) {
+        QueryAppResult queryAppResult = queryApp(pageNo, pageSize, appId);
         // 构建返回结果
         QueryManagedAppResult result = new QueryManagedAppResult();
         BeanUtils.copyProperties(queryAppResult, result, "infos");
@@ -146,8 +146,8 @@ public class AppManageController {
     }
 
     // 查找应用
-    private AppInfo findAppInfo(String appCode) {
-        FindAppResult result = findApp(appCode);
+    private AppInfo findAppInfo(String appId) {
+        FindAppResult result = findApp(appId);
         if (!result.isSuccess()) {
             throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }

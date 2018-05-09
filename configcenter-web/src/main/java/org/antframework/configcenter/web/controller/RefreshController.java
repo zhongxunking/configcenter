@@ -28,11 +28,11 @@ public class RefreshController {
     /**
      * 先同步所有应用和环境到zookeeper，然后触发对应客户端刷新配置
      *
-     * @param appCode     应用编码（不传表示刷新所有应用）
-     * @param profileCode 环境编码（不传表示刷新所有环境）
+     * @param appId     应用id（不传表示刷新所有应用）
+     * @param profileId 环境id（不传表示刷新所有环境）
      */
     @RequestMapping("/refreshZkAndClient")
-    public EmptyResult refreshZkAndClient(String appCode, String profileCode) {
+    public EmptyResult refreshZkAndClient(String appId, String profileId) {
         // 同步数据到zookeeper
         EmptyResult result = refreshService.syncDataToZk(new EmptyOrder());
         if (!result.isSuccess()) {
@@ -40,8 +40,8 @@ public class RefreshController {
         }
         // 触发客户端刷新配置
         TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
-        order.setAppCode(appCode);
-        order.setProfileCode(profileCode);
+        order.setAppId(appId);
+        order.setProfileId(profileId);
         result = refreshService.triggerClientRefresh(order);
 
         return result;

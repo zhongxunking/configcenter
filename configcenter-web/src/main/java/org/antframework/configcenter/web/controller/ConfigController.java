@@ -28,16 +28,16 @@ public class ConfigController {
     /**
      * 查找应用在特定环境中的配置
      *
-     * @param appCode        应用编码
-     * @param queriedAppCode 被查询配置的应用编码
-     * @param profileCode    环境编码
+     * @param appId        应用id
+     * @param queriedAppId 被查询配置的应用id
+     * @param profileId    环境id
      */
     @RequestMapping("/findProperties")
-    public FindPropertiesResult findProperties(String appCode, String queriedAppCode, String profileCode) {
+    public FindPropertiesResult findProperties(String appId, String queriedAppId, String profileId) {
         FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setAppCode(queriedAppCode);
-        order.setProfileCode(profileCode);
-        order.setOnlyOutward(!StringUtils.equals(queriedAppCode, appCode));
+        order.setAppId(queriedAppId);
+        order.setProfileId(profileId);
+        order.setOnlyOutward(!StringUtils.equals(appId, queriedAppId));
 
         return configService.findProperties(order);
     }
