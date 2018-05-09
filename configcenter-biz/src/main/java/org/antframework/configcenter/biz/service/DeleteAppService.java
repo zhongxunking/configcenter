@@ -45,12 +45,12 @@ public class DeleteAppService {
     public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {
         DeleteAppOrder order = context.getOrder();
 
-        App app = appDao.findLockByAppCode(order.getAppCode());
+        App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
             return;
         }
-        if (propertyKeyDao.existsByAppCode(order.getAppCode())) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppCode()));
+        if (propertyKeyDao.existsByAppId(order.getAppId())) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]还存在key，不能删除", order.getAppId()));
         }
 
         appDao.delete(app);
@@ -62,7 +62,7 @@ public class DeleteAppService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkTemplate.deleteNode(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()));
+            zkTemplate.deleteNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()));
         }
     }
 }

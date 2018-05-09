@@ -41,7 +41,7 @@ public class AddOrModifyProfileService {
     public void execute(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
-        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
+        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
             profile = buildProfile(order);
         } else {
@@ -54,11 +54,11 @@ public class AddOrModifyProfileService {
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
 
-        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode()), CreateMode.PERSISTENT);
+        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId()), CreateMode.PERSISTENT);
 
         List<App> apps = appDao.findAll();
         for (App app : apps) {
-            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileCode(), app.getAppCode()), CreateMode.PERSISTENT);
+            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId(), app.getAppId()), CreateMode.PERSISTENT);
         }
     }
 

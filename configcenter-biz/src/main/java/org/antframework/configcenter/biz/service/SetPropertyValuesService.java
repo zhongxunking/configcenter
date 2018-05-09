@@ -46,9 +46,9 @@ public class SetPropertyValuesService {
     public void execute(ServiceContext<SetPropertyValuesOrder, EmptyResult> context) {
         SetPropertyValuesOrder order = context.getOrder();
 
-        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
+        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
         }
 
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
@@ -60,17 +60,17 @@ public class SetPropertyValuesService {
     public void after(ServiceContext<SetPropertyValuesOrder, EmptyResult> context) {
         SetPropertyValuesOrder order = context.getOrder();
 
-        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
+        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
     }
 
     // 设置单个属性value
     private void setSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
-        PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), keyValue.getKey());
+        PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), keyValue.getKey());
         if (propertyKey == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppCode(), keyValue.getKey()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppId(), keyValue.getKey()));
         }
 
-        PropertyValue propertyValue = propertyValueDao.findLockByAppCodeAndKeyAndProfileCode(order.getAppCode(), keyValue.getKey(), order.getProfileCode());
+        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), keyValue.getKey(), order.getProfileId());
         if (propertyValue == null) {
             propertyValue = buildPropertyValue(order, keyValue);
         } else {

@@ -50,13 +50,13 @@ public class FindPropertiesService {
     public void before(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
 
-        App app = appDao.findByAppCode(order.getAppCode());
+        App app = appDao.findByAppId(order.getAppId());
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
         }
-        Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+        Profile profile = profileDao.findByProfileId(order.getProfileId());
         if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
         }
     }
 
@@ -65,25 +65,25 @@ public class FindPropertiesService {
         FindPropertiesOrder order = context.getOrder();
         FindPropertiesResult result = context.getResult();
         // 获取公共配置
-        Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_CODE, order.getProfileCode(), false);
+        Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_ID, order.getProfileId(), false);
         // 获取应用配置（覆盖公共配置）
-        properties.putAll(getAppProperties(order.getAppCode(), order.getProfileCode(), order.isOnlyOutward()));
+        properties.putAll(getAppProperties(order.getAppId(), order.getProfileId(), order.isOnlyOutward()));
 
         result.setProperties(properties);
     }
 
     // 获取应用配置
-    private Map<String, String> getAppProperties(String appCode, String profileCode, boolean onlyOutward) {
+    private Map<String, String> getAppProperties(String appId, String profileId, boolean onlyOutward) {
         Map<String, String> properties = new HashMap<>();
 
-        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCode(appCode);
+        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(appId);
         for (PropertyKey propertyKey : propertyKeys) {
             if (onlyOutward && !propertyKey.getOutward()) {
                 continue;
             }
             properties.put(propertyKey.getKey(), null);
         }
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(appCode, profileCode);
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(appId, profileId);
         for (PropertyValue propertyValue : propertyValues) {
             if (properties.containsKey(propertyValue.getKey())) {
                 properties.put(propertyValue.getKey(), propertyValue.getValue());

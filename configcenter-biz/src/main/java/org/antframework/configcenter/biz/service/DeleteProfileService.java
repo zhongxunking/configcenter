@@ -39,12 +39,12 @@ public class DeleteProfileService {
     public void execute(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
         DeleteProfileOrder order = context.getOrder();
 
-        Profile profile = profileDao.findLockByProfileCode(order.getProfileCode());
+        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
             return;
         }
-        if (propertyValueDao.existsByProfileCode(order.getProfileCode())) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]还存在属性值，不能删除", order.getProfileCode()));
+        if (propertyValueDao.existsByProfileId(order.getProfileId())) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]还存在属性值，不能删除", order.getProfileId()));
         }
 
         profileDao.delete(profile);
@@ -54,6 +54,6 @@ public class DeleteProfileService {
     public void after(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
         DeleteProfileOrder order = context.getOrder();
 
-        zkTemplate.deleteNode(ZkTemplate.buildPath(order.getProfileCode()));
+        zkTemplate.deleteNode(ZkTemplate.buildPath(order.getProfileId()));
     }
 }

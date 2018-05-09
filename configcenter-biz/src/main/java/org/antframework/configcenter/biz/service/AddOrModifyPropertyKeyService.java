@@ -48,11 +48,11 @@ public class AddOrModifyPropertyKeyService {
     public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, EmptyResult> context) {
         AddOrModifyPropertyKeyOrder order = context.getOrder();
 
-        App app = appDao.findLockByAppCode(order.getAppCode());
+        App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
-        PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), order.getKey());
+        PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), order.getKey());
         if (propertyKey == null) {
             propertyKey = buildPropertyKey(order);
         } else {
@@ -68,7 +68,7 @@ public class AddOrModifyPropertyKeyService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
+            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
         }
     }
 

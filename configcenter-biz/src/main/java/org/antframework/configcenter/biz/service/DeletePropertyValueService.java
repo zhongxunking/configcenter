@@ -34,7 +34,7 @@ public class DeletePropertyValueService {
     public void execute(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
-        PropertyValue propertyValue = propertyValueDao.findLockByAppCodeAndKeyAndProfileCode(order.getAppCode(), order.getKey(), order.getProfileCode());
+        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), order.getKey(), order.getProfileId());
         if (propertyValue != null) {
             propertyValueDao.delete(propertyValue);
         }
@@ -44,6 +44,6 @@ public class DeletePropertyValueService {
     public void after(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
-        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
+        zkTemplate.setData(ZkTemplate.buildPath(order.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
     }
 }

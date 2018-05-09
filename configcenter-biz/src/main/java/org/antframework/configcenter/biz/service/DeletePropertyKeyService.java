@@ -46,12 +46,12 @@ public class DeletePropertyKeyService {
     public void execute(ServiceContext<DeletePropertyKeyOrder, EmptyResult> context) {
         DeletePropertyKeyOrder order = context.getOrder();
 
-        PropertyKey propertyKey = propertyKeyDao.findLockByAppCodeAndKey(order.getAppCode(), order.getKey());
+        PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), order.getKey());
         if (propertyKey == null) {
             return;
         }
-        if (propertyValueDao.existsByAppCodeAndKey(order.getAppCode(), order.getKey())) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]的属性key[%s]还存在属性值，不能删除", order.getAppCode(), order.getKey()));
+        if (propertyValueDao.existsByAppIdAndKey(order.getAppId(), order.getKey())) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]的属性key[%s]还存在属性值，不能删除", order.getAppId(), order.getKey()));
         }
 
         propertyKeyDao.delete(propertyKey);
@@ -63,7 +63,7 @@ public class DeletePropertyKeyService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()), ZkUtils.getCurrentDate());
+            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
         }
     }
 }

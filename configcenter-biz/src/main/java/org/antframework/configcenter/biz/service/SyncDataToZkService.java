@@ -39,18 +39,18 @@ public class SyncDataToZkService {
     @ServiceExecute
     public void execute(ServiceContext<EmptyOrder, EmptyResult> context) {
         // 同步环境
-        List<String> profileCodes = new ArrayList<>();
+        List<String> profileIds = new ArrayList<>();
         for (Profile profile : profileDao.findAll()) {
-            profileCodes.add(profile.getProfileCode());
+            profileIds.add(profile.getProfileId());
         }
-        sync(ZkTemplate.buildPath(), profileCodes);
+        sync(ZkTemplate.buildPath(), profileIds);
         // 同步每个环境的应用
-        List<String> appCodes = new ArrayList<>();
+        List<String> appIds = new ArrayList<>();
         for (App app : appDao.findAll()) {
-            appCodes.add(app.getAppCode());
+            appIds.add(app.getAppId());
         }
-        for (String profileCode : profileCodes) {
-            sync(ZkTemplate.buildPath(profileCode), appCodes);
+        for (String profileId : profileIds) {
+            sync(ZkTemplate.buildPath(profileId), appIds);
         }
     }
 

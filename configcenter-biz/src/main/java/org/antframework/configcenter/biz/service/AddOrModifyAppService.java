@@ -41,7 +41,7 @@ public class AddOrModifyAppService {
     public void execute(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
 
-        App app = appDao.findLockByAppCode(order.getAppCode());
+        App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
             app = buildApp(order);
         } else {
@@ -56,7 +56,7 @@ public class AddOrModifyAppService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileCode(), order.getAppCode()), CreateMode.PERSISTENT);
+            zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), CreateMode.PERSISTENT);
         }
     }
 

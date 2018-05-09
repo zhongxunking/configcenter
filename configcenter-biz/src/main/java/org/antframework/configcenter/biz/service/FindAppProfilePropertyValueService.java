@@ -49,13 +49,13 @@ public class FindAppProfilePropertyValueService {
     public void before(ServiceContext<FindAppProfilePropertyValueOrder, FindAppProfilePropertyValueResult> context) {
         FindAppProfilePropertyValueOrder order = context.getOrder();
 
-        App app = appDao.findByAppCode(order.getAppCode());
+        App app = appDao.findByAppId(order.getAppId());
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
-        Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+        Profile profile = profileDao.findByProfileId(order.getProfileId());
         if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
         }
     }
 
@@ -64,7 +64,7 @@ public class FindAppProfilePropertyValueService {
         FindAppProfilePropertyValueOrder order = context.getOrder();
         FindAppProfilePropertyValueResult result = context.getResult();
 
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppCodeAndProfileCode(order.getAppCode(), order.getProfileCode());
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(order.getAppId(), order.getProfileId());
         for (PropertyValue propertyValue : propertyValues) {
             result.addInfo(INFO_CONVERTER.convert(propertyValue));
         }

@@ -45,9 +45,9 @@ public class FindAppPropertyKeyService {
     public void before(ServiceContext<FindAppPropertyKeyOrder, FindAppPropertyKeyResult> context) {
         FindAppPropertyKeyOrder order = context.getOrder();
 
-        App app = appDao.findByAppCode(order.getAppCode());
+        App app = appDao.findByAppId(order.getAppId());
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppCode()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
     }
 
@@ -56,7 +56,7 @@ public class FindAppPropertyKeyService {
         FindAppPropertyKeyOrder order = context.getOrder();
         FindAppPropertyKeyResult result = context.getResult();
 
-        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppCode(order.getAppCode());
+        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
         for (PropertyKey propertyKey : propertyKeys) {
             result.addInfo(INFO_CONVERTER.convert(propertyKey));
         }

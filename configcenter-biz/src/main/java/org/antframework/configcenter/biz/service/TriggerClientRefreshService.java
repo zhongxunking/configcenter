@@ -47,19 +47,19 @@ public class TriggerClientRefreshService {
         App app = getApp(order);
         List<Profile> profiles = getProfiles(order);
         for (Profile profile : profiles) {
-            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileCode(), app.getAppCode()), ZkUtils.getCurrentDate());
+            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), ZkUtils.getCurrentDate());
         }
     }
 
     // 获取需要刷新的应用
     private App getApp(TriggerClientRefreshOrder order) {
-        String appCode = order.getAppCode();
-        if (appCode == null) {
-            appCode = ConfigService.COMMON_APP_CODE;
+        String appId = order.getAppId();
+        if (appId == null) {
+            appId = ConfigService.COMMON_APP_ID;
         }
-        App app = appDao.findByAppCode(appCode);
+        App app = appDao.findByAppId(appId);
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appCode));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appId));
         }
         return app;
     }
@@ -67,12 +67,12 @@ public class TriggerClientRefreshService {
     // 获取需要刷新的环境
     private List<Profile> getProfiles(TriggerClientRefreshOrder order) {
         List<Profile> profiles = new ArrayList<>();
-        if (order.getProfileCode() == null) {
+        if (order.getProfileId() == null) {
             profiles.addAll(profileDao.findAll());
         } else {
-            Profile profile = profileDao.findByProfileCode(order.getProfileCode());
+            Profile profile = profileDao.findByProfileId(order.getProfileId());
             if (profile == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileCode()));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
             }
             profiles.add(profile);
         }

@@ -36,7 +36,7 @@ public class FindAppService {
         FindAppOrder order = context.getOrder();
         FindAppResult result = context.getResult();
 
-        App app = appDao.findByAppCode(order.getAppCode());
+        App app = appDao.findByAppId(order.getAppId());
         if (app != null) {
             result.setAppInfo(INFO_CONVERTER.convert(app));
         }
