@@ -10,37 +10,37 @@
 
         $(document).ready(function () {
             refresh();
-            var appCode = getUrlParam("appCode");
-            var profileCode = getUrlParam("profileCode");
-            $("#appCodeDiv").html(appCode);
-            $("#profileCodeDiv").html(profileCode);
+            var appId = getUrlParam("appId");
+            var profileId = getUrlParam("profileId");
+            $("#appIdDiv").html(appId);
+            $("#profileIdDiv").html(profileId);
         });
 
         function refresh() {
-            var appCode = getUrlParam("appCode");
-            var profileCode = getUrlParam("profileCode");
-            refreshProperties(appCode, profileCode, "appTableDiv", true, true)
-            if (appCode != "common") {
+            var appId = getUrlParam("appId");
+            var profileId = getUrlParam("profileId");
+            refreshProperties(appId, profileId, "appTableDiv", true, true)
+            if (appId != "common") {
                 $("#commonPropertiesDiv").show();
-                refreshProperties("common", profileCode, "commonTableDiv", false, false)
+                refreshProperties("common", profileId, "commonTableDiv", false, false)
             } else {
                 $("#commonPropertiesDiv").hide();
             }
         }
 
-        function refreshProperties(appCode, profileCode, tableDiv, showOutward, showOptions) {
-            var keyInfos = getPropertyKeyInfos(appCode);
-            var valueInfos = getPropertyValueInfo(appCode, profileCode);
+        function refreshProperties(appId, profileId, tableDiv, showOutward, showOptions) {
+            var keyInfos = getPropertyKeyInfos(appId);
+            var valueInfos = getPropertyValueInfo(appId, profileId);
             var propertyMap = getPropertyMap(keyInfos, valueInfos);
             createTable(propertyMap, tableDiv, showOutward, showOptions)
         }
 
-        function getPropertyKeyInfos(appCode) {
+        function getPropertyKeyInfos(appId) {
             var keyInfos = null;
             $.ajax({
                 url: "../manage/propertyKey/findAppPropertyKey",
                 data: {
-                    appCode: appCode
+                    appId: appId
                 },
                 async: false,
                 success: function (ajaxResult) {
@@ -57,13 +57,13 @@
             return keyInfos;
         }
 
-        function getPropertyValueInfo(appCode, profileCode) {
+        function getPropertyValueInfo(appId, profileId) {
             var valueInfos = null;
             $.ajax({
                 url: "../manage/propertyValue/findAppProfilePropertyValue",
                 data: {
-                    appCode: appCode,
-                    profileCode: profileCode
+                    appId: appId,
+                    profileId: profileId
                 },
                 async: false,
                 success: function (ajaxResult) {
@@ -153,9 +153,9 @@
             $.ajax({
                 url: "../manage/propertyValue/deletePropertyValue",
                 data: {
-                    appCode: getUrlParam("appCode"),
+                    appId: getUrlParam("appId"),
                     key: key,
-                    profileCode: getUrlParam("profileCode")
+                    profileId: getUrlParam("profileId")
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -178,7 +178,7 @@
             var form = $("#setPropertyValueForm");
             $.ajax({
                 url: "../manage/propertyValue/setPropertyValue",
-                data: form.serialize() + "&appCode=" + getUrlParam("appCode") + "&profileCode=" + getUrlParam("profileCode"),
+                data: form.serialize() + "&appId=" + getUrlParam("appId") + "&profileId=" + getUrlParam("profileId"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
                         refresh();
@@ -228,12 +228,12 @@
             $("#setValuesDiv").html(table);
         }
 
-        function refreshZkAndClient(appCode, profileCode) {
+        function refreshZkAndClient(appId, profileId) {
             $.ajax({
                 url: "../refresh/refreshZkAndClient",
                 data: {
-                    appCode: appCode,
-                    profileCode: profileCode
+                    appId: appId,
+                    profileId: profileId
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -250,11 +250,11 @@
     </script>
 </head>
 <body>
-应用：<span id="appCodeDiv"></span>
+应用：<span id="appIdDiv"></span>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-环境：<span id="profileCodeDiv"></span>
+环境：<span id="profileIdDiv"></span>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-<button onclick="refreshZkAndClient(getUrlParam('appCode'),getUrlParam('profileCode'))">触发客户端刷新</button>
+<button onclick="refreshZkAndClient(getUrlParam('appId'),getUrlParam('profileId'))">触发客户端刷新</button>
 <br><br>
 <table>
     <tr>

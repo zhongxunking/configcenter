@@ -11,7 +11,7 @@
 
         function createTableHead() {
             var tr = "<tr>";
-            tr += "<th align='left'>环境编码</th>"
+            tr += "<th align='left'>环境id</th>"
             tr += "<th align='left'>备注</th>"
             tr += "<th align='left'>操作</th>"
             tr += "</tr>"
@@ -21,19 +21,19 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" + info.profileCode + "</td>";
+            tr += "<td>" + info.profileId + "</td>";
             tr += "<td>" + info.memo + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info.profileCode + "\")'>删除</button></td>"
+            tr += "<td><button onclick='deleteEntity(\"" + info.profileId + "\")'>删除</button></td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function deleteEntity(profileCode) {
+        function deleteEntity(profileId) {
             $.ajax({
                 url: "../manage/profile/deleteProfile",
                 data: {
-                    profileCode: profileCode
+                    profileId: profileId
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -50,7 +50,7 @@
 <br/>
 <div>
     <form id="queryForm" action="../manage/profile/queryProfile">
-        环境编码：<input type="text" name="profileCode">
+        环境id：<input type="text" name="profileId">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
 </div>
@@ -67,8 +67,8 @@
     <form id="addOrModifyProfileForm" action="../manage/profile/addOrModifyProfile">
         <table>
             <tr>
-                <td align="right">环境编码：</td>
-                <td><input type="text" name="profileCode"></td>
+                <td align="right">环境id：</td>
+                <td><input type="text" name="profileId"></td>
             </tr>
             <tr>
                 <td align="right">备注：</td>

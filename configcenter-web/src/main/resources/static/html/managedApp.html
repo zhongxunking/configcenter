@@ -22,7 +22,7 @@
             refreshProfiles();
 
             var tr = "<tr>";
-            tr += "<th align='left'>应用编码</th>"
+            tr += "<th align='left'>应用id</th>"
             tr += "<th align='left'>备注</th>"
             tr += "<th align='left'>环境</th>"
             tr += "</tr>"
@@ -32,18 +32,18 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td><a href='appPropertyKey.html?appCode=" + info.appCode + "'>" + info.appCode + "</a></td>";
+            tr += "<td><a href='appPropertyKey.html?appId=" + info.appId + "'>" + info.appId + "</a></td>";
             tr += "<td>" + info.memo + "</td>";
-            tr += "<td>" + getProfilesLink(info.appCode) + "</td>"
+            tr += "<td>" + getProfilesLink(info.appId) + "</td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function getProfilesLink(appCode) {
+        function getProfilesLink(appId) {
             var links = "";
             for (var i = 0; i < profiles.length; i++) {
-                links += "<a href='properties.html?appCode=" + appCode + "&profileCode=" + profiles[i] + "'>" + profiles[i] + "</a>";
+                links += "<a href='properties.html?appId=" + appId + "&profileId=" + profiles[i] + "'>" + profiles[i] + "</a>";
                 links += "&nbsp&nbsp";
             }
             return links;
@@ -61,7 +61,7 @@
                     if (ajaxResult.success) {
                         var infos = ajaxResult.infos;
                         for (var i = 0; i < infos.length; i++) {
-                            newProfiles[i] = infos[i].profileCode;
+                            newProfiles[i] = infos[i].profileId;
                         }
                     } else {
                         alert("删除失败，原因：" + ajaxResult.message);
@@ -95,7 +95,7 @@
         <tr>
             <td width="40%">
                 <form id="queryForm" action="../manage/app/queryManagedApp">
-                    应用编码：<input type="text" name="appCode">
+                    应用id：<input type="text" name="appId">
                     <input type="button" onclick="pageNo = 1;query();" value="查询">
                 </form>
             </td>

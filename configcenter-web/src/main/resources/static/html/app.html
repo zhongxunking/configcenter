@@ -11,7 +11,7 @@
 
         function createTableHead() {
             var tr = "<tr>";
-            tr += "<th align='left'>应用编码</th>"
+            tr += "<th align='left'>应用id</th>"
             tr += "<th align='left'>备注</th>"
             tr += "<th align='left'>操作</th>"
             tr += "</tr>"
@@ -21,19 +21,19 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td>" + info.appCode + "</td>";
+            tr += "<td>" + info.appId + "</td>";
             tr += "<td>" + info.memo + "</td>";
-            tr += "<td><button onclick='deleteEntity(\"" + info.appCode + "\")'>删除</button></td>"
+            tr += "<td><button onclick='deleteEntity(\"" + info.appId + "\")'>删除</button></td>"
             tr += "</tr>"
 
             return tr;
         }
 
-        function deleteEntity(appCode) {
+        function deleteEntity(appId) {
             $.ajax({
                 url: "../manage/app/deleteApp",
                 data: {
-                    appCode: appCode
+                    appId: appId
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -51,7 +51,7 @@
 <br/>
 <div>
     <form id="queryForm" action="../manage/app/queryApp">
-        应用编码：<input type="text" name="appCode">
+        应用id：<input type="text" name="appId">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
 </div>
@@ -68,8 +68,8 @@
     <form id="addOrModifyAppForm" action="../manage/app/addOrModifyApp">
         <table>
             <tr>
-                <td align="right">应用编码：</td>
-                <td><input type="text" name="appCode"></td>
+                <td align="right">应用id：</td>
+                <td><input type="text" name="appId"></td>
             </tr>
             <tr>
                 <td align="right">备注：</td>

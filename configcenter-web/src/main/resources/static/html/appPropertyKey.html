@@ -9,9 +9,9 @@
     <script type="text/javascript">
 
         $(document).ready(function () {
-            var appCode = getUrlParam("appCode");
-            $("#appCodeDiv").html(appCode);
-            if (appCode != "common") {
+            var appId = getUrlParam("appId");
+            $("#appIdDiv").html(appId);
+            if (appId != "common") {
                 refreshOutwardDiv(false)
             } else {
                 refreshOutwardDiv(true)
@@ -23,7 +23,7 @@
             $.ajax({
                 url: "../manage/propertyKey/findAppPropertyKey",
                 data: {
-                    appCode:getUrlParam("appCode")
+                    appId:getUrlParam("appId")
                 },
                 success: function (ajaxResult) {
                     if (!ajaxResult.success) {
@@ -75,7 +75,7 @@
             $.ajax({
                 url: "../manage/propertyKey/deletePropertyKey",
                 data: {
-                    appCode: getUrlParam("appCode"),
+                    appId: getUrlParam("appId"),
                     key:key
                 },
                 success: function (ajaxResult) {
@@ -92,7 +92,7 @@
             var form = $("#addOrModifyPropertyKeyForm");
             $.ajax({
                 url: "../manage/propertyKey/addOrModifyPropertyKey",
-                data: form.serialize()+"&appCode="+getUrlParam("appCode"),
+                data: form.serialize()+"&appId="+getUrlParam("appId"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
                         refreshTable();
@@ -134,7 +134,7 @@
     </script>
 </head>
 <body>
-应用：<span id="appCodeDiv"></span>
+应用：<span id="appIdDiv"></span>
 <br><br><br>
 <div>
     新增或修改属性key：

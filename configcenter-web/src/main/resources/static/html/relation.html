@@ -12,7 +12,7 @@
         function createTableHead() {
             var tr = "<tr>";
             tr += "<th align='left'>管理员id</th>"
-            tr += "<th align='left'>应用编码</th>"
+            tr += "<th align='left'>应用id</th>"
             tr += "<th align='left'>操作</th>"
             tr += "</tr>"
 
@@ -53,7 +53,7 @@
 <div>
     <form id="queryForm" action="../manager/relation/query">
         管理员Id：<input type="text" name="managerId">
-        应用编码：<input type="text" name="targetId">
+        应用id：<input type="text" name="targetId">
         <input type="button" onclick="pageNo = 1;query();" value="查询">
     </form>
 </div>
@@ -74,7 +74,7 @@
                 <td><input type="text" name="managerId"></td>
             </tr>
             <tr>
-                <td align="right">应用编码：</td>
+                <td align="right">应用id：</td>
                 <td><input type="text" name="targetId"></td>
             </tr>
             <tr>
