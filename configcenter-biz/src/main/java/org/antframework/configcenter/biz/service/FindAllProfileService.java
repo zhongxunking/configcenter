@@ -8,11 +8,11 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
-import org.antframework.configcenter.facade.order.FindAllProfileOrder;
 import org.antframework.configcenter.facade.result.FindAllProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -34,7 +34,7 @@ public class FindAllProfileService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<FindAllProfileOrder, FindAllProfileResult> context) {
+    public void execute(ServiceContext<EmptyOrder, FindAllProfileResult> context) {
         FindAllProfileResult result = context.getResult();
 
         List<Profile> profiles = profileDao.findAll();

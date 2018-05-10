@@ -9,13 +9,13 @@
 package org.antframework.configcenter.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueries;
+import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.FindAllProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfileOrder;
 import org.antframework.configcenter.facade.result.FindAllProfileResult;
 import org.antframework.configcenter.facade.result.QueryProfileResult;
@@ -42,7 +42,7 @@ public class ProfileServiceProvider implements ProfileService {
     }
 
     @Override
-    public FindAllProfileResult findAllProfile(FindAllProfileOrder order) {
+    public FindAllProfileResult findAllProfile(EmptyOrder order) {
         return serviceEngine.execute("findAllProfileService", order);
     }
 
