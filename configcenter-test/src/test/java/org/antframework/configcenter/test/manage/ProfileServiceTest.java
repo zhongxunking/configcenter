@@ -48,7 +48,7 @@ public class ProfileServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAllProfile() {
+    public void testFindAllProfiles() {
         FindAllProfilesResult result = profileService.findAllProfiles(new EmptyOrder());
         checkResult(result, Status.SUCCESS);
     }

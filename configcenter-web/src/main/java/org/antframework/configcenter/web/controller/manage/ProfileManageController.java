@@ -63,8 +63,8 @@ public class ProfileManageController {
     /**
      * 查找所有环境
      */
-    @RequestMapping("/findAllProfile")
-    public FindAllProfilesResult findAllProfile() {
+    @RequestMapping("/findAllProfiles")
+    public FindAllProfilesResult findAllProfiles() {
         ManagerAssert.currentManager();
         return profileService.findAllProfiles(new EmptyOrder());
     }
