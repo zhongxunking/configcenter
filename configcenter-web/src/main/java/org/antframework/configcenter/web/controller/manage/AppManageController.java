@@ -17,9 +17,9 @@ import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppOrder;
+import org.antframework.configcenter.facade.order.QueryAppsOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryAppResult;
+import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
@@ -93,15 +93,15 @@ public class AppManageController {
      * @param pageSize 每页大小（必须）
      * @param appId    应用id（可选）
      */
-    @RequestMapping("/queryApp")
-    public QueryAppResult queryApp(int pageNo, int pageSize, String appId) {
+    @RequestMapping("/queryApps")
+    public QueryAppsResult queryApps(int pageNo, int pageSize, String appId) {
         ManagerAssert.admin();
-        QueryAppOrder order = new QueryAppOrder();
+        QueryAppsOrder order = new QueryAppsOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppId(appId);
 
-        return appService.queryApp(order);
+        return appService.queryApps(order);
     }
 
     /**
@@ -123,11 +123,11 @@ public class AppManageController {
 
     // 为超级管理员查询所有的应用
     private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appId) {
-        QueryAppResult queryAppResult = queryApp(pageNo, pageSize, appId);
+        QueryAppsResult queryAppsResult = queryApps(pageNo, pageSize, appId);
         // 构建返回结果
         QueryManagedAppResult result = new QueryManagedAppResult();
-        BeanUtils.copyProperties(queryAppResult, result, "infos");
-        result.getInfos().addAll(queryAppResult.getInfos());
+        BeanUtils.copyProperties(queryAppsResult, result, "infos");
+        result.getInfos().addAll(queryAppsResult.getInfos());
         return result;
     }
 

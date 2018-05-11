@@ -14,9 +14,9 @@ import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppOrder;
+import org.antframework.configcenter.facade.order.QueryAppsOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryAppResult;
+import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -58,11 +58,11 @@ public class AppServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testQueryApp() {
-        QueryAppOrder order = new QueryAppOrder();
+    public void testQueryApps() {
+        QueryAppsOrder order = new QueryAppsOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        QueryAppResult result = appService.queryApp(order);
+        QueryAppsResult result = appService.queryApps(order);
         checkResult(result, Status.SUCCESS);
     }
 }

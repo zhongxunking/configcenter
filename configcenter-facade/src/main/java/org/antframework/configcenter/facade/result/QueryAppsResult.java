@@ -14,5 +14,5 @@ import org.antframework.configcenter.facade.info.AppInfo;
 /**
  * 查询应用result
  */
-public class QueryAppResult extends AbstractQueryResult<AppInfo> {
+public class QueryAppsResult extends AbstractQueryResult<AppInfo> {
 }

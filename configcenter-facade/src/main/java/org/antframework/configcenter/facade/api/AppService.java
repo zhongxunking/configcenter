@@ -13,9 +13,9 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppOrder;
+import org.antframework.configcenter.facade.order.QueryAppsOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.QueryAppResult;
+import org.antframework.configcenter.facade.result.QueryAppsResult;
 
 /**
  * 应用服务
@@ -39,5 +39,5 @@ public interface AppService {
     /**
      * 查询应用
      */
-    QueryAppResult queryApp(QueryAppOrder order);
+    QueryAppsResult queryApps(QueryAppsOrder order);
 }
