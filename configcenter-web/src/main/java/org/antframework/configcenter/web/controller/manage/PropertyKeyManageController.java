@@ -13,9 +13,9 @@ import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.apache.commons.lang3.StringUtils;
@@ -73,15 +73,15 @@ public class PropertyKeyManageController {
      *
      * @param appId 应用id（必须）
      */
-    @RequestMapping("/findAppPropertyKey")
-    public FindAppPropertyKeyResult findAppPropertyKey(String appId) {
+    @RequestMapping("/findAppPropertyKeys")
+    public FindAppPropertyKeysResult findAppPropertyKeys(String appId) {
         if (!StringUtils.equals(appId, ConfigService.COMMON_APP_ID)) {
             ManagerAssert.adminOrHaveRelation(appId);
         }
-        FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
+        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
         order.setAppId(appId);
 
-        return propertyKeyService.findAppPropertyKey(order);
+        return propertyKeyService.findAppPropertyKeys(order);
     }
 
     /**

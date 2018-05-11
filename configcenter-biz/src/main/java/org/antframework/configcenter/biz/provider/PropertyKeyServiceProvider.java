@@ -15,9 +15,9 @@ import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +42,8 @@ public class PropertyKeyServiceProvider implements PropertyKeyService {
     }
 
     @Override
-    public FindAppPropertyKeyResult findAppPropertyKey(FindAppPropertyKeyOrder order) {
-        return serviceEngine.execute("findAppPropertyKeyService", order);
+    public FindAppPropertyKeysResult findAppPropertyKeys(FindAppPropertyKeysOrder order) {
+        return serviceEngine.execute("findAppPropertyKeysService", order);
     }
 
     @Override

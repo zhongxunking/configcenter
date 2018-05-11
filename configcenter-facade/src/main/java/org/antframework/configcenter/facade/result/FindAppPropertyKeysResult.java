@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * 查找应用的所有属性key-result
  */
-public class FindAppPropertyKeyResult extends AbstractResult {
+public class FindAppPropertyKeysResult extends AbstractResult {
     // 属性key数据
     private List<PropertyKeyInfo> infos = new ArrayList<>();
 

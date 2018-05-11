@@ -17,8 +17,8 @@ import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -32,7 +32,7 @@ import java.util.List;
  * 查找应用所有的属性key服务
  */
 @Service
-public class FindAppPropertyKeyService {
+public class FindAppPropertyKeysService {
     // info转换器
     private static final Converter<PropertyKey, PropertyKeyInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
 
@@ -42,8 +42,8 @@ public class FindAppPropertyKeyService {
     private PropertyKeyDao propertyKeyDao;
 
     @ServiceBefore
-    public void before(ServiceContext<FindAppPropertyKeyOrder, FindAppPropertyKeyResult> context) {
-        FindAppPropertyKeyOrder order = context.getOrder();
+    public void before(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
+        FindAppPropertyKeysOrder order = context.getOrder();
 
         App app = appDao.findByAppId(order.getAppId());
         if (app == null) {
@@ -52,9 +52,9 @@ public class FindAppPropertyKeyService {
     }
 
     @ServiceExecute
-    public void execute(ServiceContext<FindAppPropertyKeyOrder, FindAppPropertyKeyResult> context) {
-        FindAppPropertyKeyOrder order = context.getOrder();
-        FindAppPropertyKeyResult result = context.getResult();
+    public void execute(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
+        FindAppPropertyKeysOrder order = context.getOrder();
+        FindAppPropertyKeysResult result = context.getResult();
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
         for (PropertyKey propertyKey : propertyKeys) {

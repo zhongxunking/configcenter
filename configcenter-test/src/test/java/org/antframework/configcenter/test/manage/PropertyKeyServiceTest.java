@@ -13,9 +13,9 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeyResult;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -58,10 +58,10 @@ public class PropertyKeyServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppPropertyKey() {
-        FindAppPropertyKeyOrder order = new FindAppPropertyKeyOrder();
+    public void testFindAppPropertyKeys() {
+        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
         order.setAppId("scbfund");
-        FindAppPropertyKeyResult result = propertyKeyService.findAppPropertyKey(order);
+        FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
         checkResult(result, Status.SUCCESS);
     }
 
