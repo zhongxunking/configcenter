@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.FindAllProfileResult;
+import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.antframework.configcenter.facade.result.QueryProfileResult;
 
 /**
@@ -33,7 +33,7 @@ public interface ProfileService {
     /**
      * 查找所有环境
      */
-    FindAllProfileResult findAllProfile(EmptyOrder order);
+    FindAllProfilesResult findAllProfiles(EmptyOrder order);
 
     /**
      * 查询环境

@@ -17,7 +17,7 @@ import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.FindAllProfileResult;
+import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.antframework.configcenter.facade.result.QueryProfileResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +42,8 @@ public class ProfileServiceProvider implements ProfileService {
     }
 
     @Override
-    public FindAllProfileResult findAllProfile(EmptyOrder order) {
-        return serviceEngine.execute("findAllProfileService", order);
+    public FindAllProfilesResult findAllProfiles(EmptyOrder order) {
+        return serviceEngine.execute("findAllProfilesService", order);
     }
 
     @Override

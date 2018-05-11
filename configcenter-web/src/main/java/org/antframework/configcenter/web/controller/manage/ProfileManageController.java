@@ -14,7 +14,7 @@ import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfileOrder;
-import org.antframework.configcenter.facade.result.FindAllProfileResult;
+import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.antframework.configcenter.facade.result.QueryProfileResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,9 +64,9 @@ public class ProfileManageController {
      * 查找所有环境
      */
     @RequestMapping("/findAllProfile")
-    public FindAllProfileResult findAllProfile() {
+    public FindAllProfilesResult findAllProfile() {
         ManagerAssert.currentManager();
-        return profileService.findAllProfile(new EmptyOrder());
+        return profileService.findAllProfiles(new EmptyOrder());
     }
 
     /**

@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
-import org.antframework.configcenter.facade.result.FindAllProfileResult;
+import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -26,7 +26,7 @@ import java.util.List;
  * 查找所有环境服务
  */
 @Service
-public class FindAllProfileService {
+public class FindAllProfilesService {
     // info转换器
     private static final Converter<Profile, ProfileInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ProfileInfo.class);
 
@@ -34,8 +34,8 @@ public class FindAllProfileService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<EmptyOrder, FindAllProfileResult> context) {
-        FindAllProfileResult result = context.getResult();
+    public void execute(ServiceContext<EmptyOrder, FindAllProfilesResult> context) {
+        FindAllProfilesResult result = context.getResult();
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
