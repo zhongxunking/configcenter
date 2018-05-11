@@ -11,10 +11,10 @@ package org.antframework.configcenter.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
-import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
+import org.antframework.configcenter.facade.result.QueryPropertyValuesResult;
 
 /**
  * 属性value服务
@@ -38,5 +38,5 @@ public interface PropertyValueService {
     /**
      * 查询属性value
      */
-    QueryPropertyValueResult queryPropertyValue(QueryPropertyValueOrder order);
+    QueryPropertyValuesResult queryPropertyValues(QueryPropertyValuesOrder order);
 }

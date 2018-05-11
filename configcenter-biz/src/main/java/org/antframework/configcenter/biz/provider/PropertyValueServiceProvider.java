@@ -15,10 +15,10 @@ import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
-import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
+import org.antframework.configcenter.facade.result.QueryPropertyValuesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +47,8 @@ public class PropertyValueServiceProvider implements PropertyValueService {
     }
 
     @Override
-    public QueryPropertyValueResult queryPropertyValue(QueryPropertyValueOrder order) {
+    public QueryPropertyValuesResult queryPropertyValues(QueryPropertyValuesOrder order) {
         CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(PropertyValueDao.class));
-        return result.convertTo(QueryPropertyValueResult.class);
+        return result.convertTo(QueryPropertyValuesResult.class);
     }
 }
