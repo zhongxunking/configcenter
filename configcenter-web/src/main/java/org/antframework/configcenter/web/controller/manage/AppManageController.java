@@ -23,7 +23,7 @@ import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
-import org.antframework.manager.facade.result.QueryManagerRelationResult;
+import org.antframework.manager.facade.result.QueryManagerRelationsResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.antframework.manager.web.common.Managers;
 import org.springframework.beans.BeanUtils;
@@ -117,7 +117,7 @@ public class AppManageController {
         if (manager.getType() == ManagerType.ADMIN) {
             return forAdmin(pageNo, pageSize, appId);
         } else {
-            return forNormal(Managers.queryManagerRelation(pageNo, pageSize, appId));
+            return forNormal(Managers.queryManagerRelations(pageNo, pageSize, appId));
         }
     }
 
@@ -132,11 +132,11 @@ public class AppManageController {
     }
 
     // 查询被普通管理管理的应用
-    private QueryManagedAppsResult forNormal(QueryManagerRelationResult relationResult) {
+    private QueryManagedAppsResult forNormal(QueryManagerRelationsResult relationsResult) {
         QueryManagedAppsResult result = new QueryManagedAppsResult();
-        BeanUtils.copyProperties(relationResult, result, "infos");
+        BeanUtils.copyProperties(relationsResult, result, "infos");
         // 根据关系查找应用
-        for (RelationInfo relationInfo : relationResult.getInfos()) {
+        for (RelationInfo relationInfo : relationsResult.getInfos()) {
             AppInfo appInfo = findAppInfo(relationInfo.getTargetId());
             if (appInfo != null) {
                 result.addInfo(appInfo);
