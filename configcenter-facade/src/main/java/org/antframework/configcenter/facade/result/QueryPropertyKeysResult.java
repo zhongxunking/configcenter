@@ -14,5 +14,5 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 /**
  * 查询属性key-result
  */
-public class QueryPropertyKeyResult extends AbstractQueryResult<PropertyKeyInfo> {
+public class QueryPropertyKeysResult extends AbstractQueryResult<PropertyKeyInfo> {
 }

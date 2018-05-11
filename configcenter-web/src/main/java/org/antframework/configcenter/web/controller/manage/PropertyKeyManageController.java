@@ -14,9 +14,9 @@ import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyKeyOrder;
+import org.antframework.configcenter.facade.order.QueryPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
-import org.antframework.configcenter.facade.result.QueryPropertyKeyResult;
+import org.antframework.configcenter.facade.result.QueryPropertyKeysResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -93,16 +93,16 @@ public class PropertyKeyManageController {
      * @param key      key（可选，有值会进行模糊查询）
      * @param outward  是否公用（可选）
      */
-    @RequestMapping("/queryPropertyKey")
-    public QueryPropertyKeyResult queryPropertyKey(int pageNo, int pageSize, String appId, String key, Boolean outward) {
+    @RequestMapping("/queryPropertyKeys")
+    public QueryPropertyKeysResult queryPropertyKeys(int pageNo, int pageSize, String appId, String key, Boolean outward) {
         ManagerAssert.admin();
-        QueryPropertyKeyOrder order = new QueryPropertyKeyOrder();
+        QueryPropertyKeysOrder order = new QueryPropertyKeysOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppId(appId);
         order.setKey(key);
         order.setOutward(outward);
 
-        return propertyKeyService.queryPropertyKey(order);
+        return propertyKeyService.queryPropertyKeys(order);
     }
 }

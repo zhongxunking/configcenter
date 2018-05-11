@@ -15,7 +15,7 @@ import org.antframework.common.util.query.annotation.operator.QueryLike;
 /**
  * 查询属性key-order
  */
-public class QueryPropertyKeyOrder extends AbstractQueryOrder {
+public class QueryPropertyKeysOrder extends AbstractQueryOrder {
     // 应用id
     @QueryLike
     private String appId;
