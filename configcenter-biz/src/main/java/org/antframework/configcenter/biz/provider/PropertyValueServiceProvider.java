@@ -14,10 +14,10 @@ import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +42,8 @@ public class PropertyValueServiceProvider implements PropertyValueService {
     }
 
     @Override
-    public FindAppProfilePropertyValueResult findAppProfilePropertyValue(FindAppProfilePropertyValueOrder order) {
-        return serviceEngine.execute("findAppProfilePropertyValueService", order);
+    public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(FindAppProfilePropertyValuesOrder order) {
+        return serviceEngine.execute("findAppProfilePropertyValuesService", order);
     }
 
     @Override

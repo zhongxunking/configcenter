@@ -19,8 +19,8 @@ import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -34,7 +34,7 @@ import java.util.List;
  * 查找应用在指定环境的所有属性value服务
  */
 @Service
-public class FindAppProfilePropertyValueService {
+public class FindAppProfilePropertyValuesService {
     // info转换器
     private static final Converter<PropertyValue, PropertyValueInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyValueInfo.class);
 
@@ -46,8 +46,8 @@ public class FindAppProfilePropertyValueService {
     private PropertyValueDao propertyValueDao;
 
     @ServiceBefore
-    public void before(ServiceContext<FindAppProfilePropertyValueOrder, FindAppProfilePropertyValueResult> context) {
-        FindAppProfilePropertyValueOrder order = context.getOrder();
+    public void before(ServiceContext<FindAppProfilePropertyValuesOrder, FindAppProfilePropertyValuesResult> context) {
+        FindAppProfilePropertyValuesOrder order = context.getOrder();
 
         App app = appDao.findByAppId(order.getAppId());
         if (app == null) {
@@ -60,9 +60,9 @@ public class FindAppProfilePropertyValueService {
     }
 
     @ServiceExecute
-    public void execute(ServiceContext<FindAppProfilePropertyValueOrder, FindAppProfilePropertyValueResult> context) {
-        FindAppProfilePropertyValueOrder order = context.getOrder();
-        FindAppProfilePropertyValueResult result = context.getResult();
+    public void execute(ServiceContext<FindAppProfilePropertyValuesOrder, FindAppProfilePropertyValuesResult> context) {
+        FindAppProfilePropertyValuesOrder order = context.getOrder();
+        FindAppProfilePropertyValuesResult result = context.getResult();
 
         List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(order.getAppId(), order.getProfileId());
         for (PropertyValue propertyValue : propertyValues) {

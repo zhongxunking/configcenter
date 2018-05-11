@@ -17,7 +17,7 @@ import java.util.List;
 /**
  * 查找应用在指定环境的所有属性value-result
  */
-public class FindAppProfilePropertyValueResult extends AbstractResult {
+public class FindAppProfilePropertyValuesResult extends AbstractResult {
     // 属性value数据
     private List<PropertyValueInfo> infos = new ArrayList<>();
 

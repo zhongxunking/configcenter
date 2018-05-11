@@ -12,10 +12,10 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -58,11 +58,11 @@ public class PropertyValueServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppProfilePropertyValue() {
-        FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
+    public void testFindAppProfilePropertyValues() {
+        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId("scbfund");
         order.setProfileId("dev");
-        FindAppProfilePropertyValueResult result = propertyValueService.findAppProfilePropertyValue(order);
+        FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 

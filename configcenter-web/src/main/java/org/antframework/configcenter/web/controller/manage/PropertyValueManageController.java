@@ -15,10 +15,10 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValueOrder;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValueOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValueResult;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.result.QueryPropertyValueResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.apache.commons.lang3.StringUtils;
@@ -86,16 +86,16 @@ public class PropertyValueManageController {
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
      */
-    @RequestMapping("/findAppProfilePropertyValue")
-    public FindAppProfilePropertyValueResult findAppProfilePropertyValue(String appId, String profileId) {
+    @RequestMapping("/findAppProfilePropertyValues")
+    public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId) {
         if (!StringUtils.equals(appId, ConfigService.COMMON_APP_ID)) {
             ManagerAssert.adminOrHaveRelation(appId);
         }
-        FindAppProfilePropertyValueOrder order = new FindAppProfilePropertyValueOrder();
+        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
 
-        return propertyValueService.findAppProfilePropertyValue(order);
+        return propertyValueService.findAppProfilePropertyValues(order);
     }
 
     /**

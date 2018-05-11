@@ -14,7 +14,7 @@ import org.hibernate.validator.constraints.NotBlank;
 /**
  * 查找应用在指定环境的所有属性value-order
  */
-public class FindAppProfilePropertyValueOrder extends AbstractOrder {
+public class FindAppProfilePropertyValuesOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
