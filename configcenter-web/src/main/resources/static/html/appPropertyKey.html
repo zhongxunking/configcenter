@@ -21,9 +21,9 @@
 
         function refreshTable() {
             $.ajax({
-                url: "../manage/propertyKey/findAppPropertyKey",
+                url: "../manage/propertyKey/findAppPropertyKeys",
                 data: {
-                    appId:getUrlParam("appId")
+                    appId: getUrlParam("appId")
                 },
                 success: function (ajaxResult) {
                     if (!ajaxResult.success) {
@@ -76,7 +76,7 @@
                 url: "../manage/propertyKey/deletePropertyKey",
                 data: {
                     appId: getUrlParam("appId"),
-                    key:key
+                    key: key
                 },
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -92,7 +92,7 @@
             var form = $("#addOrModifyPropertyKeyForm");
             $.ajax({
                 url: "../manage/propertyKey/addOrModifyPropertyKey",
-                data: form.serialize()+"&appId="+getUrlParam("appId"),
+                data: form.serialize() + "&appId=" + getUrlParam("appId"),
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
                         refreshTable();
@@ -127,7 +127,7 @@
         function getUrlParam(name) {
             var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
             var r = window.location.search.substr(1).match(reg);
-            if (r != null)return unescape(r[2]);
+            if (r != null) return unescape(r[2]);
             return null;
         }
 
@@ -140,10 +140,24 @@
     新增或修改属性key：
     <form id="addOrModifyPropertyKeyForm" action="">
         <table>
-            <tr><td align="right">属性key：</td><td><input type="text" name="key"></td></tr>
-            <tr><td align="right">是否公开：</td><td><div id="outwardDiv"></div></td></tr>
-            <tr><td align="right">备注：</td><td><input type="text" name="memo"></td></tr>
-            <tr><td align="right"><input type="button" onclick="addOrModifyPropertyKey()" value="提交"></td><td></td></tr>
+            <tr>
+                <td align="right">属性key：</td>
+                <td><input type="text" name="key"></td>
+            </tr>
+            <tr>
+                <td align="right">是否公开：</td>
+                <td>
+                    <div id="outwardDiv"></div>
+                </td>
+            </tr>
+            <tr>
+                <td align="right">备注：</td>
+                <td><input type="text" name="memo"></td>
+            </tr>
+            <tr>
+                <td align="right"><input type="button" onclick="addOrModifyPropertyKey()" value="提交"></td>
+                <td></td>
+            </tr>
         </table>
     </form>
 </div>
