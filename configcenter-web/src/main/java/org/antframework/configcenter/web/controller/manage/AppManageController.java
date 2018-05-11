@@ -111,8 +111,8 @@ public class AppManageController {
      * @param pageSize 每页大小（必须）
      * @param appId    应用id（可选）
      */
-    @RequestMapping("/queryManagedApp")
-    public QueryManagedAppResult queryManagedApp(int pageNo, int pageSize, String appId) {
+    @RequestMapping("/queryManagedApps")
+    public QueryManagedAppsResult queryManagedApps(int pageNo, int pageSize, String appId) {
         ManagerInfo manager = ManagerAssert.currentManager();
         if (manager.getType() == ManagerType.ADMIN) {
             return forAdmin(pageNo, pageSize, appId);
@@ -122,18 +122,18 @@ public class AppManageController {
     }
 
     // 为超级管理员查询所有的应用
-    private QueryManagedAppResult forAdmin(int pageNo, int pageSize, String appId) {
+    private QueryManagedAppsResult forAdmin(int pageNo, int pageSize, String appId) {
         QueryAppsResult queryAppsResult = queryApps(pageNo, pageSize, appId);
         // 构建返回结果
-        QueryManagedAppResult result = new QueryManagedAppResult();
+        QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(queryAppsResult, result, "infos");
         result.getInfos().addAll(queryAppsResult.getInfos());
         return result;
     }
 
     // 查询被普通管理管理的应用
-    private QueryManagedAppResult forNormal(QueryManagerRelationResult relationResult) {
-        QueryManagedAppResult result = new QueryManagedAppResult();
+    private QueryManagedAppsResult forNormal(QueryManagerRelationResult relationResult) {
+        QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(relationResult, result, "infos");
         // 根据关系查找应用
         for (RelationInfo relationInfo : relationResult.getInfos()) {
@@ -157,6 +157,6 @@ public class AppManageController {
     /**
      * 查询被管理的应用result
      */
-    public static class QueryManagedAppResult extends AbstractQueryResult<AppInfo> {
+    public static class QueryManagedAppsResult extends AbstractQueryResult<AppInfo> {
     }
 }
