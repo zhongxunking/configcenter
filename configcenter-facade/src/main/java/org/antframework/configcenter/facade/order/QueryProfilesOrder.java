@@ -14,7 +14,7 @@ import org.antframework.common.util.query.annotation.operator.QueryLike;
 /**
  * 查询环境order
  */
-public class QueryProfileOrder extends AbstractQueryOrder {
+public class QueryProfilesOrder extends AbstractQueryOrder {
     // 环境id
     @QueryLike
     private String profileId;

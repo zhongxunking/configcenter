@@ -14,5 +14,5 @@ import org.antframework.configcenter.facade.info.ProfileInfo;
 /**
  * 查询环境result
  */
-public class QueryProfileResult extends AbstractQueryResult<ProfileInfo> {
+public class QueryProfilesResult extends AbstractQueryResult<ProfileInfo> {
 }

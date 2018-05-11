@@ -16,9 +16,9 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfileOrder;
+import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.QueryProfileResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,8 +47,8 @@ public class ProfileServiceProvider implements ProfileService {
     }
 
     @Override
-    public QueryProfileResult queryProfile(QueryProfileOrder order) {
+    public QueryProfilesResult queryProfiles(QueryProfilesOrder order) {
         CommonQueries.CommonQueryResult result = serviceEngine.execute(CommonQueries.SERVICE_NAME, order, QueryUtils.buildCommonQueryAttachment(ProfileDao.class));
-        return result.convertTo(QueryProfileResult.class);
+        return result.convertTo(QueryProfilesResult.class);
     }
 }

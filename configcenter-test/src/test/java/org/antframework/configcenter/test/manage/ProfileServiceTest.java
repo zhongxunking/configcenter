@@ -14,9 +14,9 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfileOrder;
+import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.QueryProfileResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -54,12 +54,12 @@ public class ProfileServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testQueryProfile() {
-        QueryProfileOrder order = new QueryProfileOrder();
+    public void testQueryProfiles() {
+        QueryProfilesOrder order = new QueryProfilesOrder();
         order.setPageNo(1);
         order.setPageSize(10);
         order.setProfileId("dev");
-        QueryProfileResult result = profileService.queryProfile(order);
+        QueryProfilesResult result = profileService.queryProfiles(order);
         checkResult(result, Status.SUCCESS);
     }
 }

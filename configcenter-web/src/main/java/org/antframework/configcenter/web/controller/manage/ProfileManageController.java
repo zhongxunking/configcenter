@@ -13,9 +13,9 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfileOrder;
+import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.QueryProfileResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -76,14 +76,14 @@ public class ProfileManageController {
      * @param pageSize  每页大小（必须）
      * @param profileId 环境id（可选，有值会进行模糊查询）
      */
-    @RequestMapping("/queryProfile")
-    public QueryProfileResult queryProfile(int pageNo, int pageSize, String profileId) {
+    @RequestMapping("/queryProfiles")
+    public QueryProfilesResult queryProfiles(int pageNo, int pageSize, String profileId) {
         ManagerAssert.currentManager();
-        QueryProfileOrder order = new QueryProfileOrder();
+        QueryProfilesOrder order = new QueryProfilesOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setProfileId(profileId);
 
-        return profileService.queryProfile(order);
+        return profileService.queryProfiles(order);
     }
 }
