@@ -26,6 +26,10 @@ public class App extends AbstractEntity {
     @Column
     private String memo;
 
+    // 父应用id（null表示无父应用）
+    @Column(length = 64)
+    private String parent;
+
     public String getAppId() {
         return appId;
     }
@@ -40,5 +44,13 @@ public class App extends AbstractEntity {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }
