@@ -43,29 +43,22 @@ public class AddOrModifyProfileService {
 
         Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
-            profile = buildProfile(order);
-        } else {
-            profile.setMemo(order.getMemo());
+            profile = new Profile();
         }
+        BeanUtils.copyProperties(order, profile);
+
         profileDao.save(profile);
     }
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
-
+        // 创建环境节点
         zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId()), CreateMode.PERSISTENT);
-
+        // 创建该环境节点下所有应用节点
         List<App> apps = appDao.findAll();
         for (App app : apps) {
             zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId(), app.getAppId()), CreateMode.PERSISTENT);
         }
-    }
-
-    // 构建环境
-    private Profile buildProfile(AddOrModifyProfileOrder addOrModifyProfileOrder) {
-        Profile profile = new Profile();
-        BeanUtils.copyProperties(addOrModifyProfileOrder, profile);
-        return profile;
     }
 }

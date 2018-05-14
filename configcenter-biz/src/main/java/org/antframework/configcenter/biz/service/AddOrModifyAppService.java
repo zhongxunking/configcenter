@@ -63,7 +63,7 @@ public class AddOrModifyAppService {
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
-        // 修改zookeeper
+        // 同步zookeeper
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
             zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), CreateMode.PERSISTENT);
