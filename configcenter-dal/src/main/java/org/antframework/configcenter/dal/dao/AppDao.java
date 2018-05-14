@@ -32,6 +32,8 @@ public interface AppDao {
 
     App findByAppId(String appId);
 
+    boolean existsByParent(String parent);
+
     void delete(App app);
 
     Page<App> query(Collection<QueryParam> queryParams, Pageable pageable);
