@@ -18,6 +18,8 @@ public class AppInfo extends AbstractInfo {
     private String appId;
     // 备注
     private String memo;
+    // 父应用id（null表示无父应用）
+    private String parent;
 
     public String getAppId() {
         return appId;
@@ -33,5 +35,13 @@ public class AppInfo extends AbstractInfo {
 
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

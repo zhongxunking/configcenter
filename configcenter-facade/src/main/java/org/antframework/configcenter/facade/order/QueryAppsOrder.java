@@ -18,6 +18,9 @@ public class QueryAppsOrder extends AbstractQueryOrder {
     // 应用id
     @QueryLike
     private String appId;
+    // 父应用id
+    @QueryLike
+    private String parent;
 
     public String getAppId() {
         return appId;
@@ -25,5 +28,13 @@ public class QueryAppsOrder extends AbstractQueryOrder {
 
     public void setAppId(String appId) {
         this.appId = appId;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }
