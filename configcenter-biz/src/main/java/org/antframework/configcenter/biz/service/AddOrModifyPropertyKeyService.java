@@ -54,28 +54,20 @@ public class AddOrModifyPropertyKeyService {
         }
         PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), order.getKey());
         if (propertyKey == null) {
-            propertyKey = buildPropertyKey(order);
-        } else {
-            propertyKey.setOutward(order.isOutward());
-            propertyKey.setMemo(order.getMemo());
+            propertyKey = new PropertyKey();
         }
+        BeanUtils.copyProperties(order, propertyKey);
+
         propertyKeyDao.save(propertyKey);
     }
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyPropertyKeyOrder, EmptyResult> context) {
         AddOrModifyPropertyKeyOrder order = context.getOrder();
-
+        // 同步zookeeper
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
             zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
         }
-    }
-
-    // 构建属性key
-    private PropertyKey buildPropertyKey(AddOrModifyPropertyKeyOrder addOrModifyPropertyKeyOrder) {
-        PropertyKey propertyKey = new PropertyKey();
-        BeanUtils.copyProperties(addOrModifyPropertyKeyOrder, propertyKey);
-        return propertyKey;
     }
 }
