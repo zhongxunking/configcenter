@@ -50,7 +50,7 @@ public class SetPropertyValuesService {
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
         }
-
+        // 设置属性value
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
             setSingleValue(order, keyValue);
         }
@@ -59,7 +59,7 @@ public class SetPropertyValuesService {
     @ServiceAfter
     public void after(ServiceContext<SetPropertyValuesOrder, EmptyResult> context) {
         SetPropertyValuesOrder order = context.getOrder();
-
+        // 同步zookeeper
         zkTemplate.setData(ZkTemplate.buildPath(order.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
     }
 

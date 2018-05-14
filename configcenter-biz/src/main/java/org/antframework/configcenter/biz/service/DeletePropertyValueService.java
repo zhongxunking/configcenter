@@ -43,7 +43,7 @@ public class DeletePropertyValueService {
     @ServiceAfter
     public void after(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
-
+        // 同步zookeeper
         zkTemplate.setData(ZkTemplate.buildPath(order.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
     }
 }
