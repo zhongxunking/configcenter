@@ -60,7 +60,7 @@ public class DeletePropertyKeyService {
     @ServiceAfter
     public void after(ServiceContext<DeletePropertyKeyOrder, EmptyResult> context) {
         DeletePropertyKeyOrder order = context.getOrder();
-
+        // 同步zookeeper
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
             zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());

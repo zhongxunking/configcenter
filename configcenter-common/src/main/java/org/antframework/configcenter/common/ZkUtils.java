@@ -17,7 +17,7 @@ import java.util.Date;
  * zookeeper工具
  */
 public class ZkUtils {
-    public static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
+    private static final String DATE_PATTERN = "yyyy-MM-dd HH:mm:ss.SSS";
 
     /**
      * 获取当前时间
