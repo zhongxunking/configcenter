@@ -77,7 +77,7 @@ public class AddOrModifyAppService {
             }
             App ancestor = appDao.findLockByAppId(ancestorId);
             if (ancestor == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在祖先[%s]", ancestorId));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", ancestorId));
             }
             ancestorId = ancestor.getParent();
         }
