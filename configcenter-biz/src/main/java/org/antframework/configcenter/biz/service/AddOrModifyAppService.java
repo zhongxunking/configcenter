@@ -19,6 +19,7 @@ import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.zookeeper.CreateMode;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
@@ -44,13 +45,8 @@ public class AddOrModifyAppService {
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
-        // 校验父应用
-        if (order.getParent() != null) {
-            App parent = appDao.findLockByAppId(order.getParent());
-            if (parent == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在父应用[%s]", order.getParent()));
-            }
-        }
+        // 校验是否出现循环继承和祖先是否存在
+        checkCycleAndAncestors(order.getAppId(), order.getParent());
         // 新增或修改应用
         App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
@@ -68,6 +64,22 @@ public class AddOrModifyAppService {
         for (Profile profile : profiles) {
             zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), CreateMode.PERSISTENT);
             zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), ZkUtils.getCurrentDate());
+        }
+    }
+
+    // 校验是否出现循环继承和祖先是否存在
+    private void checkCycleAndAncestors(String appId, String ancestorId) {
+        StringBuilder builder = new StringBuilder(appId);
+        while (ancestorId != null) {
+            builder.append("-->").append(ancestorId);
+            if (StringUtils.equals(ancestorId, appId)) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("出现循环继承[%s]", builder.toString()));
+            }
+            App ancestor = appDao.findLockByAppId(ancestorId);
+            if (ancestor == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在祖先[%s]", ancestorId));
+            }
+            ancestorId = ancestor.getParent();
         }
     }
 }
