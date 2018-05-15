@@ -15,14 +15,15 @@ import org.hibernate.validator.constraints.NotBlank;
  * 查找应用在特定环境中的配置order
  */
 public class FindPropertiesOrder extends AbstractOrder {
-    // 应用id
+    // 主体应用id
     @NotBlank
     private String appId;
+    // 被查询配置的应用id
+    @NotBlank
+    private String queriedAppId;
     // 环境id
     @NotBlank
     private String profileId;
-    // 是否只查询公开的属性
-    private boolean onlyOutward;
 
     public String getAppId() {
         return appId;
@@ -32,19 +33,19 @@ public class FindPropertiesOrder extends AbstractOrder {
         this.appId = appId;
     }
 
+    public String getQueriedAppId() {
+        return queriedAppId;
+    }
+
+    public void setQueriedAppId(String queriedAppId) {
+        this.queriedAppId = queriedAppId;
+    }
+
     public String getProfileId() {
         return profileId;
     }
 
     public void setProfileId(String profileId) {
         this.profileId = profileId;
-    }
-
-    public boolean isOnlyOutward() {
-        return onlyOutward;
-    }
-
-    public void setOnlyOutward(boolean onlyOutward) {
-        this.onlyOutward = onlyOutward;
     }
 }

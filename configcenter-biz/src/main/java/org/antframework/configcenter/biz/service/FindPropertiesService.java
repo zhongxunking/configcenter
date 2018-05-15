@@ -19,7 +19,6 @@ import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
-import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.bekit.service.annotation.service.Service;
@@ -28,9 +27,7 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 查找应用在特定环境中的配置服务
@@ -49,11 +46,14 @@ public class FindPropertiesService {
     @ServiceBefore
     public void before(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
-
-        App app = appDao.findByAppId(order.getAppId());
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
+        // 校验应用
+        for (String appId : new HashSet<>(Arrays.asList(order.getAppId(), order.getQueriedAppId()))) {
+            App app = appDao.findByAppId(appId);
+            if (app == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appId));
+            }
         }
+        // 校验环境
         Profile profile = profileDao.findByProfileId(order.getProfileId());
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
@@ -64,16 +64,39 @@ public class FindPropertiesService {
     public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
         FindPropertiesResult result = context.getResult();
-        // 获取公共配置
-        Map<String, String> properties = getAppProperties(ConfigService.COMMON_APP_ID, order.getProfileId(), false);
-        // 获取应用配置（覆盖公共配置）
-        properties.putAll(getAppProperties(order.getAppId(), order.getProfileId(), order.isOnlyOutward()));
+        // 获取继承的应用id
+        Set<String> inheritAppIds = getInheritAppIds(order.getAppId());
+        // 获取应用配置
+        Map<String, String> properties = getAppProperties(order.getQueriedAppId(), order.getProfileId(), inheritAppIds);
 
         result.setProperties(properties);
     }
 
+    // 获取继承的应用id
+    private Set<String> getInheritAppIds(String appId) {
+        Set<String> appIds = new HashSet<>();
+        while (appId != null) {
+            appIds.add(appId);
+            appId = appDao.findByAppId(appId).getParent();
+        }
+        return appIds;
+    }
+
     // 获取应用配置
-    private Map<String, String> getAppProperties(String appId, String profileId, boolean onlyOutward) {
+    private Map<String, String> getAppProperties(String appId, String profileId, Set<String> allPropertiesAppIds) {
+        Map<String, String> properties = new HashMap<>();
+        while (appId != null) {
+            Map<String, String> temp = getAppSelfProperties(appId, profileId, !allPropertiesAppIds.contains(appId));
+            temp.putAll(properties);
+            properties = temp;
+
+            appId = appDao.findByAppId(appId).getParent();
+        }
+        return properties;
+    }
+
+    // 获取应用自己的配置
+    private Map<String, String> getAppSelfProperties(String appId, String profileId, boolean onlyOutward) {
         Map<String, String> properties = new HashMap<>();
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(appId);
