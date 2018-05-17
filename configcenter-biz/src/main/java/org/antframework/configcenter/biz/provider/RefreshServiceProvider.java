@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.provider;
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
-import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +30,7 @@ public class RefreshServiceProvider implements RefreshService {
     }
 
     @Override
-    public EmptyResult triggerClientRefresh(TriggerClientRefreshOrder order) {
-        return serviceEngine.execute("triggerClientRefreshService", order);
+    public EmptyResult triggerClientsRefresh(TriggerClientsRefreshOrder order) {
+        return serviceEngine.execute("triggerClientsRefreshService", order);
     }
 }

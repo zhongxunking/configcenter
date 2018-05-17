@@ -18,7 +18,7 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -31,7 +31,7 @@ import java.util.List;
  * 触发客户端刷新配置服务
  */
 @Service
-public class TriggerClientRefreshService {
+public class TriggerClientsRefreshService {
     @Autowired
     private AppDao appDao;
     @Autowired
@@ -40,8 +40,8 @@ public class TriggerClientRefreshService {
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<TriggerClientRefreshOrder, EmptyResult> context) {
-        TriggerClientRefreshOrder order = context.getOrder();
+    public void execute(ServiceContext<TriggerClientsRefreshOrder, EmptyResult> context) {
+        TriggerClientsRefreshOrder order = context.getOrder();
         // 获取需要刷新的应用
         List<App> apps = getApps(order);
         // 刷新zookeeper
@@ -53,7 +53,7 @@ public class TriggerClientRefreshService {
     }
 
     // 获取需要刷新的应用
-    private List<App> getApps(TriggerClientRefreshOrder order) {
+    private List<App> getApps(TriggerClientsRefreshOrder order) {
         List<App> apps = new ArrayList<>();
         if (order.getAppId() != null) {
             App app = appDao.findByAppId(order.getAppId());
@@ -79,7 +79,7 @@ public class TriggerClientRefreshService {
     }
 
     // 获取需要刷新的环境
-    private List<Profile> getProfiles(TriggerClientRefreshOrder order) {
+    private List<Profile> getProfiles(TriggerClientsRefreshOrder order) {
         List<Profile> profiles = new ArrayList<>();
         if (order.getProfileId() == null) {
             profiles.addAll(profileDao.findAll());

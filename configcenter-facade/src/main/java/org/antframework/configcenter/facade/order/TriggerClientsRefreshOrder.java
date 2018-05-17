@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.AbstractOrder;
 /**
  * 触发客户端刷新配置order
  */
-public class TriggerClientRefreshOrder extends AbstractOrder {
+public class TriggerClientsRefreshOrder extends AbstractOrder {
     // 应用id（null表示刷新所有应用）
     private String appId;
     // 环境id（null表示刷新所有环境）

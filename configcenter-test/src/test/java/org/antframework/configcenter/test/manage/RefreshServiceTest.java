@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.RefreshService;
-import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,29 +33,29 @@ public class RefreshServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testTriggerClientRefresh() {
-        TriggerClientRefreshOrder order = new TriggerClientRefreshOrder();
+    public void testTriggerClientsRefresh() {
+        TriggerClientsRefreshOrder order = new TriggerClientsRefreshOrder();
         order.setAppId("scbfund");
         order.setProfileId("dev");
-        EmptyResult result = refreshService.triggerClientRefresh(order);
+        EmptyResult result = refreshService.triggerClientsRefresh(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientRefreshOrder();
+        order = new TriggerClientsRefreshOrder();
         order.setAppId("scbfund");
         order.setProfileId(null);
-        result = refreshService.triggerClientRefresh(order);
+        result = refreshService.triggerClientsRefresh(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientRefreshOrder();
+        order = new TriggerClientsRefreshOrder();
         order.setAppId(null);
         order.setProfileId("dev");
-        result = refreshService.triggerClientRefresh(order);
+        result = refreshService.triggerClientsRefresh(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientRefreshOrder();
+        order = new TriggerClientsRefreshOrder();
         order.setAppId(null);
         order.setProfileId(null);
-        result = refreshService.triggerClientRefresh(order);
+        result = refreshService.triggerClientsRefresh(order);
         checkResult(result, Status.SUCCESS);
     }
 }

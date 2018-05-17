@@ -10,7 +10,7 @@ package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
+import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 
 /**
  * 刷新服务
@@ -25,5 +25,5 @@ public interface RefreshService {
     /**
      * 触发客户端刷新配置
      */
-    EmptyResult triggerClientRefresh(TriggerClientRefreshOrder order);
+    EmptyResult triggerClientsRefresh(TriggerClientsRefreshOrder order);
 }
