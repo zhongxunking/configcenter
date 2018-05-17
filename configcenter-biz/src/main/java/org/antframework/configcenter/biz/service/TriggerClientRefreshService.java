@@ -18,7 +18,6 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.TriggerClientRefreshOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -44,24 +43,28 @@ public class TriggerClientRefreshService {
     public void execute(ServiceContext<TriggerClientRefreshOrder, EmptyResult> context) {
         TriggerClientRefreshOrder order = context.getOrder();
 
-        App app = getApp(order);
-        List<Profile> profiles = getProfiles(order);
-        for (Profile profile : profiles) {
-            zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), ZkUtils.getCurrentDate());
+        List<App> apps = getApps(order);
+        for (Profile profile : getProfiles(order)) {
+            for (App app : apps) {
+                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), ZkUtils.getCurrentDate());
+            }
         }
     }
 
     // 获取需要刷新的应用
-    private App getApp(TriggerClientRefreshOrder order) {
-        String appId = order.getAppId();
-        if (appId == null) {
-            appId = ConfigService.COMMON_APP_ID;
+    private List<App> getApps(TriggerClientRefreshOrder order) {
+        List<App> apps = new ArrayList<>();
+        if (order.getAppId() == null) {
+            apps.addAll(appDao.findAll());
+        } else {
+            App app = appDao.findByAppId(order.getAppId());
+            if (app == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
+            }
+            apps.add(app);
         }
-        App app = appDao.findByAppId(appId);
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appId));
-        }
-        return app;
+
+        return apps;
     }
 
     // 获取需要刷新的环境
