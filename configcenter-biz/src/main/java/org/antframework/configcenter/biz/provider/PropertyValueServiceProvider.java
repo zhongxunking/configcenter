@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
@@ -34,11 +33,6 @@ public class PropertyValueServiceProvider implements PropertyValueService {
     @Override
     public EmptyResult setPropertyValues(SetPropertyValuesOrder order) {
         return serviceEngine.execute("setPropertyValuesService", order);
-    }
-
-    @Override
-    public EmptyResult deletePropertyValue(DeletePropertyValueOrder order) {
-        return serviceEngine.execute("deletePropertyValueService", order);
     }
 
     @Override

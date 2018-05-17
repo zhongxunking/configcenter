@@ -11,7 +11,6 @@ package org.antframework.configcenter.test.manage;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
@@ -44,16 +43,6 @@ public class PropertyValueServiceTest extends AbstractTest {
         keyValue2.setValue("http://localhost:8080/cashier");
         order.addKeyValue(keyValue2);
         EmptyResult result = propertyValueService.setPropertyValues(order);
-        checkResult(result, Status.SUCCESS);
-    }
-
-    @Test
-    public void tesDeletePropertyValue() {
-        DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-        order.setAppId("scbfund");
-        order.setKey("collection.accNo");
-        order.setProfileId("dev");
-        EmptyResult result = propertyValueService.deletePropertyValue(order);
         checkResult(result, Status.SUCCESS);
     }
 

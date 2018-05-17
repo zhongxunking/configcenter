@@ -14,7 +14,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
@@ -60,24 +59,6 @@ public class PropertyValueManageController {
         }
 
         return propertyValueService.setPropertyValues(order);
-    }
-
-    /**
-     * 删除属性value
-     *
-     * @param appId     应用id（必须）
-     * @param key       key（必须）
-     * @param profileId 环境id（必须）
-     */
-    @RequestMapping("/deletePropertyValue")
-    public EmptyResult deletePropertyValue(String appId, String key, String profileId) {
-        ManagerAssert.adminOrHaveRelation(appId);
-        DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-        order.setAppId(appId);
-        order.setKey(key);
-        order.setProfileId(profileId);
-
-        return propertyValueService.deletePropertyValue(order);
     }
 
     /**
