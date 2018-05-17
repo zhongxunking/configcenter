@@ -21,6 +21,7 @@ import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
+import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -64,10 +65,13 @@ public class FindPropertiesService {
     public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
         FindPropertiesResult result = context.getResult();
-        // 获取继承的应用id
-        Set<String> inheritAppIds = getInheritAppIds(order.getAppId());
+        // 主体应用继承的应用id（null表示和被查询应用继承的应用id相同）
+        Set<String> mainInheritAppIds = null;
+        if (!StringUtils.equals(order.getAppId(), order.getQueriedAppId())) {
+            mainInheritAppIds = getInheritAppIds(order.getAppId());
+        }
         // 获取应用配置
-        Map<String, String> properties = getAppProperties(order.getQueriedAppId(), order.getProfileId(), inheritAppIds);
+        Map<String, String> properties = getAppProperties(order.getQueriedAppId(), order.getProfileId(), mainInheritAppIds);
 
         result.setProperties(properties);
     }
@@ -83,10 +87,10 @@ public class FindPropertiesService {
     }
 
     // 获取应用配置
-    private Map<String, String> getAppProperties(String appId, String profileId, Set<String> allPropertiesAppIds) {
+    private Map<String, String> getAppProperties(String appId, String profileId, Set<String> mainInheritAppIds) {
         Map<String, String> properties = new HashMap<>();
         while (appId != null) {
-            Map<String, String> temp = getAppSelfProperties(appId, profileId, !allPropertiesAppIds.contains(appId));
+            Map<String, String> temp = getAppSelfProperties(appId, profileId, mainInheritAppIds != null && !mainInheritAppIds.contains(appId));
             temp.putAll(properties);
             properties = temp;
 

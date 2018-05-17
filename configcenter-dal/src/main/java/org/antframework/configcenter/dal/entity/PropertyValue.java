@@ -10,16 +10,13 @@ package org.antframework.configcenter.dal.entity;
 
 import org.antframework.boot.jpa.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  * 属性value
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appId", "key", "profileId"}))
+@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appId", "key", "profileId"}), indexes = @Index(columnList = "appId,profileId"))
 public class PropertyValue extends AbstractEntity {
     // 应用id
     @Column(length = 64)
