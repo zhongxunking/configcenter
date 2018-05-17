@@ -53,7 +53,7 @@ public class DeleteProfileService {
     @ServiceAfter
     public void after(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
         DeleteProfileOrder order = context.getOrder();
-        // 同步zookeeper
+        // 删除环境节点
         zkTemplate.deleteNode(ZkTemplate.buildPath(order.getProfileId()));
     }
 }
