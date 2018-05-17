@@ -49,7 +49,11 @@ public class SetPropertyValuesService {
         }
         // 设置属性value
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
-            setSingleValue(order, keyValue);
+            if (keyValue.getValue() != null) {
+                setSingleValue(order, keyValue);
+            } else {
+                deleteSingleValue(order, keyValue);
+            }
         }
     }
 
@@ -82,5 +86,13 @@ public class SetPropertyValuesService {
         BeanUtils.copyProperties(setPropertyValueOrder, propertyValue);
         BeanUtils.copyProperties(keyValue, propertyValue);
         return propertyValue;
+    }
+
+    // 删除单个属性value
+    private void deleteSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
+        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), keyValue.getKey(), order.getProfileId());
+        if (propertyValue != null) {
+            propertyValueDao.delete(propertyValue);
+        }
     }
 }

@@ -63,7 +63,6 @@ public class SetPropertyValuesOrder extends AbstractOrder {
         @NotBlank
         private String key;
         // value
-        @NotBlank
         private String value;
 
         public String getKey() {
