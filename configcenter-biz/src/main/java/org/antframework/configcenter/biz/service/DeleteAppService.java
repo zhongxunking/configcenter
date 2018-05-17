@@ -62,7 +62,7 @@ public class DeleteAppService {
     @ServiceAfter
     public void after(ServiceContext<DeleteAppOrder, EmptyResult> context) {
         DeleteAppOrder order = context.getOrder();
-        // 同步zookeeper
+        // 删除所有环境中的应用节点
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
             zkTemplate.deleteNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()));
