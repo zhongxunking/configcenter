@@ -32,6 +32,8 @@ public interface AppDao {
 
     App findByAppId(String appId);
 
+    List<App> findByParent(String parent);
+
     boolean existsByParent(String parent);
 
     void delete(App app);

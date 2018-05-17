@@ -42,8 +42,9 @@ public class TriggerClientRefreshService {
     @ServiceExecute
     public void execute(ServiceContext<TriggerClientRefreshOrder, EmptyResult> context) {
         TriggerClientRefreshOrder order = context.getOrder();
-
+        // 获取需要刷新的应用
         List<App> apps = getApps(order);
+        // 刷新zookeeper
         for (Profile profile : getProfiles(order)) {
             for (App app : apps) {
                 zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), ZkUtils.getCurrentDate());
@@ -54,17 +55,27 @@ public class TriggerClientRefreshService {
     // 获取需要刷新的应用
     private List<App> getApps(TriggerClientRefreshOrder order) {
         List<App> apps = new ArrayList<>();
-        if (order.getAppId() == null) {
-            apps.addAll(appDao.findAll());
-        } else {
+        if (order.getAppId() != null) {
             App app = appDao.findByAppId(order.getAppId());
             if (app == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
             }
             apps.add(app);
         }
+        apps.addAll(getAllChildren(order.getAppId()));
 
         return apps;
+    }
+
+    // 获取所有子应用
+    private List<App> getAllChildren(String appId) {
+        List<App> children = appDao.findByParent(appId);
+        List<App> allChildren = new ArrayList<>(children);
+        for (App child : children) {
+            allChildren.addAll(getAllChildren(child.getAppId()));
+        }
+
+        return allChildren;
     }
 
     // 获取需要刷新的环境
