@@ -9,11 +9,9 @@
 package org.antframework.configcenter.dal.entity;
 
 import org.antframework.boot.jpa.AbstractEntity;
+import org.antframework.configcenter.facade.enums.Scope;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  * 属性key
@@ -29,9 +27,10 @@ public class PropertyKey extends AbstractEntity {
     @Column(name = "`key`", length = 128)
     private String key;
 
-    // 是否公开
+    // 作用域
     @Column
-    private Boolean outward;
+    @Enumerated(EnumType.STRING)
+    private Scope scope;
 
     // 备注
     @Column
@@ -53,12 +52,12 @@ public class PropertyKey extends AbstractEntity {
         this.key = key;
     }
 
-    public Boolean getOutward() {
-        return outward;
+    public Scope getScope() {
+        return scope;
     }
 
-    public void setOutward(Boolean outward) {
-        this.outward = outward;
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     public String getMemo() {

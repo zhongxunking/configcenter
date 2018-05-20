@@ -9,6 +9,7 @@
 package org.antframework.configcenter.facade.info;
 
 import org.antframework.common.util.facade.AbstractInfo;
+import org.antframework.configcenter.facade.enums.Scope;
 
 /**
  * 属性key-info
@@ -18,8 +19,8 @@ public class PropertyKeyInfo extends AbstractInfo {
     private String appId;
     // 属性key
     private String key;
-    // 是否公开
-    private boolean outward;
+    // 作用域
+    private Scope scope;
     // 备注
     private String memo;
 
@@ -39,12 +40,12 @@ public class PropertyKeyInfo extends AbstractInfo {
         this.key = key;
     }
 
-    public boolean isOutward() {
-        return outward;
+    public Scope getScope() {
+        return scope;
     }
 
-    public void setOutward(boolean outward) {
-        this.outward = outward;
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     public String getMemo() {

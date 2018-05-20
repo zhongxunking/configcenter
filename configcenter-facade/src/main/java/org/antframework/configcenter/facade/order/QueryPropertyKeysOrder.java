@@ -11,6 +11,7 @@ package org.antframework.configcenter.facade.order;
 import org.antframework.common.util.facade.AbstractQueryOrder;
 import org.antframework.common.util.query.annotation.operator.QueryEQ;
 import org.antframework.common.util.query.annotation.operator.QueryLike;
+import org.antframework.configcenter.facade.enums.Scope;
 
 /**
  * 查询属性key-order
@@ -22,9 +23,9 @@ public class QueryPropertyKeysOrder extends AbstractQueryOrder {
     // 属性key
     @QueryLike
     private String key;
-    // 是否是公开的
+    // 作用域
     @QueryEQ
-    private Boolean outward;
+    private Scope scope;
 
     public String getAppId() {
         return appId;
@@ -42,11 +43,11 @@ public class QueryPropertyKeysOrder extends AbstractQueryOrder {
         this.key = key;
     }
 
-    public Boolean getOutward() {
-        return outward;
+    public Scope getScope() {
+        return scope;
     }
 
-    public void setOutward(Boolean outward) {
-        this.outward = outward;
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 }

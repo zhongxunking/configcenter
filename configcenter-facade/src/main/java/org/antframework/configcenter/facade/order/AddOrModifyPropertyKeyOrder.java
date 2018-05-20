@@ -9,7 +9,10 @@
 package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.configcenter.facade.enums.Scope;
 import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * 添加或删除属性key-order
@@ -21,8 +24,9 @@ public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
     // key
     @NotBlank
     private String key;
-    // 是否公开
-    private boolean outward;
+    // 作用域
+    @NotNull
+    private Scope scope;
     // 备注
     private String memo;
 
@@ -42,12 +46,12 @@ public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
         this.key = key;
     }
 
-    public boolean isOutward() {
-        return outward;
+    public Scope getScope() {
+        return scope;
     }
 
-    public void setOutward(boolean outward) {
-        this.outward = outward;
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     public String getMemo() {
