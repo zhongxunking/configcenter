@@ -28,8 +28,8 @@ public class ConfigServiceTest extends AbstractTest {
     public void testFindProperties() {
         FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppId("scbfund");
+        order.setQueriedAppId("scbfund");
         order.setProfileId("dev");
-        order.setOnlyOutward(false);
         FindPropertiesResult result = configService.findProperties(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -38,8 +38,8 @@ public class ConfigServiceTest extends AbstractTest {
     public void testFindProperties_onlyOutward() {
         FindPropertiesOrder order = new FindPropertiesOrder();
         order.setAppId("scbfund");
+        order.setQueriedAppId("investment");
         order.setProfileId("dev");
-        order.setOnlyOutward(true);
         FindPropertiesResult result = configService.findProperties(order);
         checkResult(result, Status.SUCCESS);
     }
