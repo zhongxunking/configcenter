@@ -12,7 +12,6 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
@@ -20,7 +19,6 @@ import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.result.QueryPropertyValuesResult;
 import org.antframework.manager.web.common.ManagerAssert;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -69,9 +67,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/findAppProfilePropertyValues")
     public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId) {
-        if (!StringUtils.equals(appId, ConfigService.COMMON_APP_ID)) {
-            ManagerAssert.adminOrHaveRelation(appId);
-        }
+        ManagerAssert.adminOrHaveRelation(appId);
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -84,9 +80,9 @@ public class PropertyValueManageController {
      *
      * @param pageNo    页码（必须）
      * @param pageSize  每页大小（必须）
-     * @param appId     应用id（可选，有值会进行模糊查询）
-     * @param key       key（可选，有值会进行模糊查询）
-     * @param profileId 环境id（可选，有值会进行模糊查询）
+     * @param appId     应用id（可选）
+     * @param key       key（可选）
+     * @param profileId 环境id（可选）
      */
     @RequestMapping("/queryPropertyValues")
     public QueryPropertyValuesResult queryPropertyValues(int pageNo, int pageSize, String appId, String key, String profileId) {

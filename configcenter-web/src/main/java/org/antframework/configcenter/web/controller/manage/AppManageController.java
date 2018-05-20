@@ -43,15 +43,17 @@ public class AppManageController {
     /**
      * 添加或修改应用
      *
-     * @param appId 应用id（必须）
-     * @param memo  备注（可选）
+     * @param appId  应用id（必须）
+     * @param memo   备注（可选）
+     * @param parent 父应用id（可选）
      */
     @RequestMapping("/addOrModifyApp")
-    public EmptyResult addOrModifyApp(String appId, String memo) {
+    public EmptyResult addOrModifyApp(String appId, String memo, String parent) {
         ManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppId(appId);
         order.setMemo(memo);
+        order.setParent(parent);
 
         return appService.addOrModifyApp(order);
     }
@@ -76,7 +78,7 @@ public class AppManageController {
     /**
      * 查找应用
      *
-     * @param appId 应用id
+     * @param appId 应用id（必须）
      */
     @RequestMapping("/findApp")
     public FindAppResult findApp(String appId) {
@@ -92,14 +94,16 @@ public class AppManageController {
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
      * @param appId    应用id（可选）
+     * @param parent   父应用id（可选）
      */
     @RequestMapping("/queryApps")
-    public QueryAppsResult queryApps(int pageNo, int pageSize, String appId) {
+    public QueryAppsResult queryApps(int pageNo, int pageSize, String appId, String parent) {
         ManagerAssert.admin();
         QueryAppsOrder order = new QueryAppsOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppId(appId);
+        order.setParent(parent);
 
         return appService.queryApps(order);
     }
@@ -123,7 +127,7 @@ public class AppManageController {
 
     // 为超级管理员查询所有的应用
     private QueryManagedAppsResult forAdmin(int pageNo, int pageSize, String appId) {
-        QueryAppsResult queryAppsResult = queryApps(pageNo, pageSize, appId);
+        QueryAppsResult queryAppsResult = queryApps(pageNo, pageSize, appId, null);
         // 构建返回结果
         QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(queryAppsResult, result, "infos");

@@ -11,7 +11,6 @@ package org.antframework.configcenter.web.controller;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,16 +27,16 @@ public class ConfigController {
     /**
      * 查找应用在特定环境中的配置
      *
-     * @param appId        应用id
-     * @param queriedAppId 被查询配置的应用id
-     * @param profileId    环境id
+     * @param appId        主体应用id（必须）
+     * @param queriedAppId 被查询配置的应用id（必须）
+     * @param profileId    环境id（必须）
      */
     @RequestMapping("/findProperties")
     public FindPropertiesResult findProperties(String appId, String queriedAppId, String profileId) {
         FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setAppId(queriedAppId);
+        order.setAppId(appId);
+        order.setQueriedAppId(queriedAppId);
         order.setProfileId(profileId);
-        order.setOnlyOutward(!StringUtils.equals(appId, queriedAppId));
 
         return configService.findProperties(order);
     }

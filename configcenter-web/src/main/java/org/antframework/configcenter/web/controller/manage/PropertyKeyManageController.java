@@ -9,7 +9,6 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
@@ -18,7 +17,6 @@ import org.antframework.configcenter.facade.order.QueryPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.QueryPropertyKeysResult;
 import org.antframework.manager.web.common.ManagerAssert;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -75,9 +73,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/findAppPropertyKeys")
     public FindAppPropertyKeysResult findAppPropertyKeys(String appId) {
-        if (!StringUtils.equals(appId, ConfigService.COMMON_APP_ID)) {
-            ManagerAssert.adminOrHaveRelation(appId);
-        }
+        ManagerAssert.adminOrHaveRelation(appId);
         FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
         order.setAppId(appId);
 
@@ -89,8 +85,8 @@ public class PropertyKeyManageController {
      *
      * @param pageNo   页码（必须）
      * @param pageSize 每页大小（必须）
-     * @param appId    应用id（可选，有值会进行模糊查询）
-     * @param key      key（可选，有值会进行模糊查询）
+     * @param appId    应用id（可选）
+     * @param key      key（可选）
      * @param outward  是否公用（可选）
      */
     @RequestMapping("/queryPropertyKeys")
