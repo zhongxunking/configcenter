@@ -19,13 +19,13 @@ import java.util.List;
  */
 public class FindInheritedAppsResult extends AbstractResult {
     // 由近及远继承的所用应用（该应用本身在第一位）
-    private List<AppInfo> inheritedAppInfos = new ArrayList<>();
+    private List<AppInfo> inheritedApps = new ArrayList<>();
 
-    public List<AppInfo> getInheritedAppInfos() {
-        return inheritedAppInfos;
+    public List<AppInfo> getInheritedApps() {
+        return inheritedApps;
     }
 
-    public void addInheritedAppInfo(AppInfo inheritedAppInfo) {
-        inheritedAppInfos.add(inheritedAppInfo);
+    public void addInheritedApp(AppInfo inheritedApp) {
+        inheritedApps.add(inheritedApp);
     }
 }

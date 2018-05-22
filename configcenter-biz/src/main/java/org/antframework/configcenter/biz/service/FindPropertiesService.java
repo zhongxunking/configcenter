@@ -11,15 +11,18 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
-import org.antframework.configcenter.dal.dao.PropertyKeyDao;
-import org.antframework.configcenter.dal.dao.PropertyValueDao;
-import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.antframework.configcenter.facade.api.AppService;
+import org.antframework.configcenter.facade.api.ConfigService;
+import org.antframework.configcenter.facade.enums.Scope;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.Property;
+import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
+import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
@@ -36,24 +39,15 @@ import java.util.*;
 @Service
 public class FindPropertiesService {
     @Autowired
-    private AppDao appDao;
-    @Autowired
     private ProfileDao profileDao;
     @Autowired
-    private PropertyKeyDao propertyKeyDao;
+    private AppService appService;
     @Autowired
-    private PropertyValueDao propertyValueDao;
+    private ConfigService configService;
 
     @ServiceBefore
     public void before(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
-        // 校验应用
-        for (String appId : new HashSet<>(Arrays.asList(order.getAppId(), order.getQueriedAppId()))) {
-            App app = appDao.findByAppId(appId);
-            if (app == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appId));
-            }
-        }
         // 校验环境
         Profile profile = profileDao.findByProfileId(order.getProfileId());
         if (profile == null) {
@@ -65,58 +59,69 @@ public class FindPropertiesService {
     public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
         FindPropertiesOrder order = context.getOrder();
         FindPropertiesResult result = context.getResult();
-        // 主体应用继承的应用id（null表示和被查询应用继承的应用id相同）
-        Set<String> mainInheritAppIds = null;
-        if (!StringUtils.equals(order.getAppId(), order.getQueriedAppId())) {
-            mainInheritAppIds = getInheritAppIds(order.getAppId());
+        // 获取被查询配置的应用和主体应用继承的所有应用
+        List<String> queriedAppIds = getInheritedApps(order.getQueriedAppId());
+        Set<String> mainAppIds;
+        if (StringUtils.equals(order.getMainAppId(), order.getQueriedAppId())) {
+            mainAppIds = new HashSet<>(queriedAppIds);
+        } else {
+            mainAppIds = new HashSet<>(getInheritedApps(order.getMainAppId()));
         }
-        // 获取应用配置
-        Map<String, String> properties = getAppProperties(order.getQueriedAppId(), order.getProfileId(), mainInheritAppIds);
+        // 获取应用的配置
+        Map<String, String> properties = new HashMap<>();
+        for (String queriedAppId : queriedAppIds) {
+            Map<String, String> temp = getAppSelfProperties(queriedAppId, order.getProfileId(), calcMinScope(queriedAppId, order.getMainAppId(), mainAppIds));
+            temp.putAll(properties);
+            properties = temp;
+        }
 
         result.setProperties(properties);
     }
 
-    // 获取继承的应用id
-    private Set<String> getInheritAppIds(String appId) {
-        Set<String> appIds = new HashSet<>();
-        while (appId != null) {
-            appIds.add(appId);
-            appId = appDao.findByAppId(appId).getParent();
-        }
-        return appIds;
-    }
+    // 获取继承的所有应用
+    private List<String> getInheritedApps(String appId) {
+        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
+        order.setAppId(appId);
 
-    // 获取应用配置
-    private Map<String, String> getAppProperties(String appId, String profileId, Set<String> mainInheritAppIds) {
-        Map<String, String> properties = new HashMap<>();
-        while (appId != null) {
-            Map<String, String> temp = getAppSelfProperties(appId, profileId, mainInheritAppIds != null && !mainInheritAppIds.contains(appId));
-            temp.putAll(properties);
-            properties = temp;
-
-            appId = appDao.findByAppId(appId).getParent();
+        FindInheritedAppsResult result = appService.findInheritedApps(order);
+        if (!result.isSuccess()) {
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }
-        return properties;
+
+        List<String> inheritedApps = new ArrayList<>();
+        for (AppInfo appInfo : result.getInheritedApps()) {
+            inheritedApps.add(appInfo.getAppId());
+        }
+        return inheritedApps;
     }
 
     // 获取应用自己的配置
-    private Map<String, String> getAppSelfProperties(String appId, String profileId, boolean onlyOutward) {
+    private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope) {
+        FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setMinScope(minScope);
+
+        FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
+        if (!result.isSuccess()) {
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
+        }
+
         Map<String, String> properties = new HashMap<>();
-
-        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(appId);
-        for (PropertyKey propertyKey : propertyKeys) {
-            if (onlyOutward && !propertyKey.getOutward()) {
-                continue;
-            }
-            properties.put(propertyKey.getKey(), null);
+        for (Property property : result.getProperties()) {
+            properties.put(property.getKey(), property.getValue());
         }
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(appId, profileId);
-        for (PropertyValue propertyValue : propertyValues) {
-            if (properties.containsKey(propertyValue.getKey())) {
-                properties.put(propertyValue.getKey(), propertyValue.getValue());
-            }
-        }
-
         return properties;
+    }
+
+    // 计算最小作用域
+    private Scope calcMinScope(String queriedAppId, String mainAppId, Set<String> mainAppIds) {
+        if (StringUtils.equals(queriedAppId, mainAppId)) {
+            return Scope.PRIVATE;
+        } else if (mainAppIds.contains(queriedAppId)) {
+            return Scope.PROTECTED;
+        } else {
+            return Scope.PUBLIC;
+        }
     }
 }

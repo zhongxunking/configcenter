@@ -17,7 +17,7 @@ import org.hibernate.validator.constraints.NotBlank;
 public class FindPropertiesOrder extends AbstractOrder {
     // 主体应用id
     @NotBlank
-    private String appId;
+    private String mainAppId;
     // 被查询配置的应用id
     @NotBlank
     private String queriedAppId;
@@ -25,12 +25,12 @@ public class FindPropertiesOrder extends AbstractOrder {
     @NotBlank
     private String profileId;
 
-    public String getAppId() {
-        return appId;
+    public String getMainAppId() {
+        return mainAppId;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setMainAppId(String mainAppId) {
+        this.mainAppId = mainAppId;
     }
 
     public String getQueriedAppId() {

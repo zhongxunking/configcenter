@@ -48,24 +48,24 @@ public class TriggerClientsRefreshService {
     public void execute(ServiceContext<TriggerClientsRefreshOrder, EmptyResult> context) {
         TriggerClientsRefreshOrder order = context.getOrder();
         // 获取需要刷新的应用
-        List<AppInfo> appInfos = new ArrayList<>();
-        extractAppInfos(getAppTree(order.getAppId()), appInfos);
+        List<AppInfo> apps = new ArrayList<>();
+        extractApps(getAppTree(order.getAppId()), apps);
         // 刷新zookeeper
         byte[] data = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS").getBytes(Charset.forName("utf-8"));
         for (Profile profile : getProfiles(order)) {
-            for (AppInfo appInfo : appInfos) {
-                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), appInfo.getAppId()), data);
+            for (AppInfo app : apps) {
+                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), data);
             }
         }
     }
 
-    // 提取出应用信息
-    private void extractAppInfos(AppTree appTree, List<AppInfo> target) {
-        if (appTree.getAppInfo() != null) {
-            target.add(appTree.getAppInfo());
+    // 提取出应用
+    private void extractApps(AppTree appTree, List<AppInfo> target) {
+        if (appTree.getApp() != null) {
+            target.add(appTree.getApp());
         }
         for (AppTree child : appTree.getChildren()) {
-            extractAppInfos(child, target);
+            extractApps(child, target);
         }
     }
 

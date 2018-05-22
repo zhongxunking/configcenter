@@ -16,16 +16,16 @@ import java.util.List;
  */
 public class AppTree {
     // 根节点
-    private AppInfo appInfo;
+    private AppInfo app;
     // 子节点
     private List<AppTree> children = new ArrayList<>();
 
-    public AppTree(AppInfo appInfo) {
-        this.appInfo = appInfo;
+    public AppTree(AppInfo app) {
+        this.app = app;
     }
 
-    public AppInfo getAppInfo() {
-        return appInfo;
+    public AppInfo getApp() {
+        return app;
     }
 
     public List<AppTree> getChildren() {

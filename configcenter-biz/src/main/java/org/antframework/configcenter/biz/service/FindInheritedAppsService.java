@@ -45,7 +45,9 @@ public class FindInheritedAppsService {
             if (app == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", appId));
             }
-            result.addInheritedAppInfo(INFO_CONVERTER.convert(app));
+            result.addInheritedApp(INFO_CONVERTER.convert(app));
+
+            appId = app.getParent();
         }
     }
 }
