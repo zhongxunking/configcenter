@@ -13,6 +13,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 
 /**
@@ -33,6 +34,11 @@ public interface AppService {
      * 查找应用
      */
     FindAppResult findApp(FindAppOrder order);
+
+    /**
+     * 查找应用继承的所有应用
+     */
+    FindInheritedAppsResult findInheritedApps(FindInheritedAppsOrder order);
 
     /**
      * 查找应用树

@@ -16,6 +16,7 @@ import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,6 +43,11 @@ public class AppServiceProvider implements AppService {
     @Override
     public FindAppResult findApp(FindAppOrder order) {
         return serviceEngine.execute("findAppService", order);
+    }
+
+    @Override
+    public FindInheritedAppsResult findInheritedApps(FindInheritedAppsOrder order) {
+        return serviceEngine.execute("findInheritedAppsService", order);
     }
 
     @Override
