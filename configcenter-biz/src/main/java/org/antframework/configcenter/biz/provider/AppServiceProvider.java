@@ -13,11 +13,9 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.facade.api.AppService;
-import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
-import org.antframework.configcenter.facade.order.DeleteAppOrder;
-import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppsOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAppResult;
+import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,6 +42,11 @@ public class AppServiceProvider implements AppService {
     @Override
     public FindAppResult findApp(FindAppOrder order) {
         return serviceEngine.execute("findAppService", order);
+    }
+
+    @Override
+    public FindAppTreeResult findAppTree(FindAppTreeOrder order) {
+        return serviceEngine.execute("findAppTreeService", order);
     }
 
     @Override
