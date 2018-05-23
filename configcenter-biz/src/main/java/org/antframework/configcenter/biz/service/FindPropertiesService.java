@@ -89,8 +89,8 @@ public class FindPropertiesService {
         }
 
         List<String> inheritedApps = new ArrayList<>();
-        for (AppInfo appInfo : result.getInheritedApps()) {
-            inheritedApps.add(appInfo.getAppId());
+        for (AppInfo app : result.getInheritedApps()) {
+            inheritedApps.add(app.getAppId());
         }
         return inheritedApps;
     }
