@@ -14,11 +14,10 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
-import org.antframework.configcenter.facade.order.DeleteAppOrder;
-import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppsOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAppResult;
+import org.antframework.configcenter.facade.result.FindAppTreeResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
@@ -89,6 +88,33 @@ public class AppManageController {
     }
 
     /**
+     * 查找应用继承的所有应用
+     *
+     * @param appId 应用id（必须）
+     */
+    @RequestMapping("/findInheritedApps")
+    public FindInheritedAppsResult findInheritedApps(String appId) {
+        ManagerAssert.adminOrHaveRelation(appId);
+        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
+        order.setAppId(appId);
+
+        return appService.findInheritedApps(order);
+    }
+
+    /**
+     * 查找应用树
+     *
+     * @param appId 应用id（必须）
+     */
+    @RequestMapping("/findAppTree")
+    private FindAppTreeResult findAppTree(String appId) {
+        FindAppTreeOrder order = new FindAppTreeOrder();
+        order.setAppId(appId);
+
+        return appService.findAppTree(order);
+    }
+
+    /**
      * 分页查询应用
      *
      * @param pageNo   页码（必须）
@@ -135,27 +161,27 @@ public class AppManageController {
         return result;
     }
 
-    // 查询被普通管理管理的应用
+    // 为普通管理员查询他管理的应用
     private QueryManagedAppsResult forNormal(QueryManagerRelationsResult relationsResult) {
         QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(relationsResult, result, "infos");
         // 根据关系查找应用
-        for (RelationInfo relationInfo : relationsResult.getInfos()) {
-            AppInfo appInfo = findAppInfo(relationInfo.getTargetId());
-            if (appInfo != null) {
-                result.addInfo(appInfo);
+        for (RelationInfo relation : relationsResult.getInfos()) {
+            AppInfo app = getApp(relation.getTargetId());
+            if (app != null) {
+                result.addInfo(app);
             }
         }
         return result;
     }
 
-    // 查找应用
-    private AppInfo findAppInfo(String appId) {
+    // 获取应用
+    private AppInfo getApp(String appId) {
         FindAppResult result = findApp(appId);
         if (!result.isSuccess()) {
             throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
         }
-        return result.getAppInfo();
+        return result.getApp();
     }
 
     /**
