@@ -17,7 +17,7 @@ import java.util.List;
 public class AppTree {
     // 根节点
     private AppInfo app;
-    // 子节点
+    // 子树
     private List<AppTree> children = new ArrayList<>();
 
     public AppTree(AppInfo app) {

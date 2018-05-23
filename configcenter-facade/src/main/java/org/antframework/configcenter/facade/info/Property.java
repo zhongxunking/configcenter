@@ -13,7 +13,7 @@ import org.antframework.configcenter.facade.enums.Scope;
 /**
  * 属性
  */
-public class Property {
+public final class Property {
     // key
     private final String key;
     // value

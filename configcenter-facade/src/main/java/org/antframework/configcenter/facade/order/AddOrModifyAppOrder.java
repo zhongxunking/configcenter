@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 添加或删除应用order
+ * 添加或修改应用order
  */
 public class AddOrModifyAppOrder extends AbstractOrder {
     // 应用id

@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 添加或删除属性key-order
+ * 添加或修改属性key-order
  */
 public class AddOrModifyPropertyKeyOrder extends AbstractOrder {
     // 应用id
