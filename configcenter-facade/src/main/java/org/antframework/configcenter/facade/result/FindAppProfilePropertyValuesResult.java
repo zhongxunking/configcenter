@@ -18,14 +18,14 @@ import java.util.List;
  * 查找应用在指定环境的所有属性value-result
  */
 public class FindAppProfilePropertyValuesResult extends AbstractResult {
-    // 属性value数据
-    private List<PropertyValueInfo> infos = new ArrayList<>();
+    // 属性value
+    private List<PropertyValueInfo> propertyValues = new ArrayList<>();
 
-    public List<PropertyValueInfo> getInfos() {
-        return infos;
+    public List<PropertyValueInfo> getPropertyValues() {
+        return propertyValues;
     }
 
-    public void addInfo(PropertyValueInfo info) {
-        infos.add(info);
+    public void addPropertyValue(PropertyValueInfo propertyValue) {
+        propertyValues.add(propertyValue);
     }
 }

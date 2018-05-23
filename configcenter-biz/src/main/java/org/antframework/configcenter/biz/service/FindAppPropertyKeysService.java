@@ -58,7 +58,7 @@ public class FindAppPropertyKeysService {
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
         for (PropertyKey propertyKey : propertyKeys) {
-            result.addInfo(INFO_CONVERTER.convert(propertyKey));
+            result.addPropertyKey(INFO_CONVERTER.convert(propertyKey));
         }
     }
 }

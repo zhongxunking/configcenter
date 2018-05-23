@@ -15,14 +15,14 @@ import org.antframework.configcenter.facade.info.AppInfo;
  * 查找应用result
  */
 public class FindAppResult extends AbstractResult {
-    // 应用info（null表示不存在该应用）
-    private AppInfo appInfo;
+    // 应用（null表示不存在该应用）
+    private AppInfo app;
 
-    public AppInfo getAppInfo() {
-        return appInfo;
+    public AppInfo getApp() {
+        return app;
     }
 
-    public void setAppInfo(AppInfo appInfo) {
-        this.appInfo = appInfo;
+    public void setApp(AppInfo app) {
+        this.app = app;
     }
 }

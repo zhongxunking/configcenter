@@ -18,14 +18,14 @@ import java.util.List;
  * 查找应用的所有属性key-result
  */
 public class FindAppPropertyKeysResult extends AbstractResult {
-    // 属性key数据
-    private List<PropertyKeyInfo> infos = new ArrayList<>();
+    // 应用所有的属性key
+    private List<PropertyKeyInfo> propertyKeys = new ArrayList<>();
 
-    public List<PropertyKeyInfo> getInfos() {
-        return infos;
+    public List<PropertyKeyInfo> getPropertyKeys() {
+        return propertyKeys;
     }
 
-    public void addInfo(PropertyKeyInfo info) {
-        infos.add(info);
+    public void addPropertyKey(PropertyKeyInfo propertyKey) {
+        propertyKeys.add(propertyKey);
     }
 }

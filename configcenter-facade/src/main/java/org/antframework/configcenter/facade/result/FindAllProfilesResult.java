@@ -18,14 +18,14 @@ import java.util.List;
  * 查找所有环境result
  */
 public class FindAllProfilesResult extends AbstractResult {
-    // 环境info
-    private List<ProfileInfo> infos = new ArrayList<>();
+    // 所有环境
+    private List<ProfileInfo> profiles = new ArrayList<>();
 
-    public List<ProfileInfo> getInfos() {
-        return infos;
+    public List<ProfileInfo> getProfiles() {
+        return profiles;
     }
 
-    public void addInfo(ProfileInfo info) {
-        infos.add(info);
+    public void addProfile(ProfileInfo profile) {
+        profiles.add(profile);
     }
 }

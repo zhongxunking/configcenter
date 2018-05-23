@@ -39,7 +39,7 @@ public class FindAllProfilesService {
 
         List<Profile> profiles = profileDao.findAll();
         for (Profile profile : profiles) {
-            result.addInfo(INFO_CONVERTER.convert(profile));
+            result.addProfile(INFO_CONVERTER.convert(profile));
         }
     }
 }

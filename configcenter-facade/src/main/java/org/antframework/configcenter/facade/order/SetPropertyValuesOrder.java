@@ -26,7 +26,7 @@ public class SetPropertyValuesOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-    // 需设置的多个value
+    // 属性key对应的value
     @Size(min = 1)
     @Valid
     private List<KeyValue> keyValues = new ArrayList<>();
