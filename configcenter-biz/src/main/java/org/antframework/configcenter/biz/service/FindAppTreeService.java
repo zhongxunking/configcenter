@@ -38,7 +38,7 @@ public class FindAppTreeService {
     private AppDao appDao;
 
     @ServiceExecute
-    private void execute(ServiceContext<FindAppTreeOrder, FindAppTreeResult> context) {
+    public void execute(ServiceContext<FindAppTreeOrder, FindAppTreeResult> context) {
         FindAppTreeOrder order = context.getOrder();
         FindAppTreeResult result = context.getResult();
 
