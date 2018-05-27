@@ -13,11 +13,7 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
-import org.antframework.configcenter.facade.result.QueryPropertyValuesResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -57,43 +53,5 @@ public class PropertyValueManageController {
         }
 
         return propertyValueService.setPropertyValues(order);
-    }
-
-    /**
-     * 查找应用在指定环境的所有属性value
-     *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     */
-    @RequestMapping("/findAppProfilePropertyValues")
-    public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId) {
-        ManagerAssert.adminOrHaveRelation(appId);
-        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-
-        return propertyValueService.findAppProfilePropertyValues(order);
-    }
-
-    /**
-     * 分页查询属性value
-     *
-     * @param pageNo    页码（必须）
-     * @param pageSize  每页大小（必须）
-     * @param appId     应用id（可选）
-     * @param key       key（可选）
-     * @param profileId 环境id（可选）
-     */
-    @RequestMapping("/queryPropertyValues")
-    public QueryPropertyValuesResult queryPropertyValues(int pageNo, int pageSize, String appId, String key, String profileId) {
-        ManagerAssert.admin();
-        QueryPropertyValuesOrder order = new QueryPropertyValuesOrder();
-        order.setPageNo(pageNo);
-        order.setPageSize(pageSize);
-        order.setAppId(appId);
-        order.setKey(key);
-        order.setProfileId(profileId);
-
-        return propertyValueService.queryPropertyValues(order);
     }
 }

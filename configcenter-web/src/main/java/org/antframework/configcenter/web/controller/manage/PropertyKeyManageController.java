@@ -14,9 +14,7 @@ import org.antframework.configcenter.facade.enums.Scope;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
-import org.antframework.configcenter.facade.result.QueryPropertyKeysResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -79,27 +77,5 @@ public class PropertyKeyManageController {
         order.setAppId(appId);
 
         return propertyKeyService.findAppPropertyKeys(order);
-    }
-
-    /**
-     * 分页查询属性key
-     *
-     * @param pageNo   页码（必须）
-     * @param pageSize 每页大小（必须）
-     * @param appId    应用id（可选）
-     * @param key      key（可选）
-     * @param scope    作用域（可选）
-     */
-    @RequestMapping("/queryPropertyKeys")
-    public QueryPropertyKeysResult queryPropertyKeys(int pageNo, int pageSize, String appId, String key, Scope scope) {
-        ManagerAssert.admin();
-        QueryPropertyKeysOrder order = new QueryPropertyKeysOrder();
-        order.setPageNo(pageNo);
-        order.setPageSize(pageSize);
-        order.setAppId(appId);
-        order.setKey(key);
-        order.setScope(scope);
-
-        return propertyKeyService.queryPropertyKeys(order);
     }
 }
