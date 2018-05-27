@@ -80,7 +80,7 @@ public class ConfigContext {
      */
     public static class InitParams {
         // 必填：主体应用id
-        private String appId;
+        private String mainAppId;
         // 必填：被查询配置的应用id
         private String queriedAppId;
         // 必填：环境id
@@ -92,12 +92,12 @@ public class ConfigContext {
         // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigChanged()触发监听配置是否被修改，可以不用填）
         private String[] zkUrls;
 
-        public String getAppId() {
-            return appId;
+        public String getMainAppId() {
+            return mainAppId;
         }
 
-        public void setAppId(String appId) {
-            this.appId = appId;
+        public void setMainAppId(String mainAppId) {
+            this.mainAppId = mainAppId;
         }
 
         public String getQueriedAppId() {

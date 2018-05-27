@@ -44,9 +44,9 @@ public class ServerRequester {
     }
 
     /**
-     * 查询配置
+     * 查找配置
      */
-    public Map<String, String> queryConfig() {
+    public Map<String, String> findConfig() {
         try {
             String resultStr = HTTP_CLIENT.execute(request, new BasicResponseHandler());
             FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
@@ -65,7 +65,7 @@ public class ServerRequester {
     // 构建请求
     private HttpUriRequest buildRequest(ConfigContext.InitParams initParams) {
         List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("appId", initParams.getAppId()));
+        params.add(new BasicNameValuePair("mainAppId", initParams.getMainAppId()));
         params.add(new BasicNameValuePair("queriedAppId", initParams.getQueriedAppId()));
         params.add(new BasicNameValuePair("profileId", initParams.getProfileId()));
 

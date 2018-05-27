@@ -78,7 +78,7 @@ public class ConfigRefresher {
             Map<String, String> newProperties;
             boolean fromServer = true;
             try {
-                newProperties = serverRequester.queryConfig();
+                newProperties = serverRequester.findConfig();
             } catch (Throwable e) {
                 logger.error("从配置中心读取配置失败：{}", e.getMessage());
                 if (cacheFile != null) {
@@ -107,7 +107,7 @@ public class ConfigRefresher {
         @Override
         public void run() {
             try {
-                Map<String, String> newProperties = serverRequester.queryConfig();
+                Map<String, String> newProperties = serverRequester.findConfig();
                 if (cacheFile != null) {
                     cacheFile.replace(newProperties);
                 }
