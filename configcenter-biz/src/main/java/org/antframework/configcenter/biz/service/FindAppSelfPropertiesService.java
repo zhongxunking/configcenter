@@ -9,21 +9,19 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.AppDao;
-import org.antframework.configcenter.dal.dao.ProfileDao;
-import org.antframework.configcenter.dal.dao.PropertyKeyDao;
-import org.antframework.configcenter.dal.dao.PropertyValueDao;
-import org.antframework.configcenter.dal.entity.App;
-import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.Property;
+import org.antframework.configcenter.facade.info.PropertyKeyInfo;
+import org.antframework.configcenter.facade.info.PropertyValueInfo;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,49 +36,57 @@ import java.util.Map;
 @Service
 public class FindAppSelfPropertiesService {
     @Autowired
-    private AppDao appDao;
+    private PropertyKeyService propertyKeyService;
     @Autowired
-    private ProfileDao profileDao;
-    @Autowired
-    private PropertyKeyDao propertyKeyDao;
-    @Autowired
-    private PropertyValueDao propertyValueDao;
-
-    @ServiceBefore
-    public void before(ServiceContext<FindAppSelfPropertiesOrder, FindAppSelfPropertiesResult> context) {
-        FindAppSelfPropertiesOrder order = context.getOrder();
-        // 校验应用
-        App app = appDao.findByAppId(order.getAppId());
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
-        }
-        // 校验环境
-        Profile profile = profileDao.findByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
-        }
-    }
+    private PropertyValueService propertyValueService;
 
     @ServiceExecute
     public void execute(ServiceContext<FindAppSelfPropertiesOrder, FindAppSelfPropertiesResult> context) {
         FindAppSelfPropertiesOrder order = context.getOrder();
         FindAppSelfPropertiesResult result = context.getResult();
-        // 获取应用自己的属性value
-        Map<String, String> valueMap = new HashMap<>();
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(order.getAppId(), order.getProfileId());
-        for (PropertyValue propertyValue : propertyValues) {
-            valueMap.put(propertyValue.getKey(), propertyValue.getValue());
-        }
         // 获取应用自己的属性key
-        List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
-        for (PropertyKey propertyKey : propertyKeys) {
+        List<PropertyKeyInfo> propertyKeys = getAppPropertyKeys(order.getAppId());
+        // 获取应用自己的属性value
+        Map<String, String> values = getAppProfilePropertyValues(order.getAppId(), order.getProfileId());
+        // 组装属性
+        for (PropertyKeyInfo propertyKey : propertyKeys) {
             if (propertyKey.getScope().compareTo(order.getMinScope()) < 0) {
                 // 如果作用域小于要求值，则忽略该属性
                 continue;
             }
             // 添加属性
-            String value = valueMap.get(propertyKey.getKey());
+            String value = values.get(propertyKey.getKey());
             result.addProperty(new Property(propertyKey.getKey(), value, propertyKey.getScope()));
         }
+    }
+
+    // 获取应用所有的属性key
+    private List<PropertyKeyInfo> getAppPropertyKeys(String appId) {
+        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
+        order.setAppId(appId);
+
+        FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
+        if (!result.isSuccess()) {
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
+        }
+        return result.getPropertyKeys();
+    }
+
+    // 获取应用在特定环境的所有属性value
+    private Map<String, String> getAppProfilePropertyValues(String appId, String profileId) {
+        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+
+        FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
+        if (!result.isSuccess()) {
+            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
+        }
+
+        Map<String, String> values = new HashMap<>();
+        for (PropertyValueInfo propertyValue : result.getPropertyValues()) {
+            values.put(propertyValue.getKey(), propertyValue.getValue());
+        }
+        return values;
     }
 }

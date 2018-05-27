@@ -9,10 +9,7 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.ProfileDao;
-import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.enums.Scope;
@@ -26,7 +23,6 @@ import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,21 +35,9 @@ import java.util.*;
 @Service
 public class FindPropertiesService {
     @Autowired
-    private ProfileDao profileDao;
-    @Autowired
     private AppService appService;
     @Autowired
     private ConfigService configService;
-
-    @ServiceBefore
-    public void before(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
-        FindPropertiesOrder order = context.getOrder();
-        // 校验环境
-        Profile profile = profileDao.findByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
-        }
-    }
 
     @ServiceExecute
     public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
