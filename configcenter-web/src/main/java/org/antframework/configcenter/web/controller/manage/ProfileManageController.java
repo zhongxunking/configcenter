@@ -74,7 +74,7 @@ public class ProfileManageController {
      *
      * @param pageNo    页码（必须）
      * @param pageSize  每页大小（必须）
-     * @param profileId 环境id（可选，有值会进行模糊查询）
+     * @param profileId 环境id（可选）
      */
     @RequestMapping("/queryProfiles")
     public QueryProfilesResult queryProfiles(int pageNo, int pageSize, String profileId) {

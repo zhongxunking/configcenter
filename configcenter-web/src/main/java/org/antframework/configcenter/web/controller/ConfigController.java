@@ -27,14 +27,14 @@ public class ConfigController {
     /**
      * 查找应用在特定环境中的配置
      *
-     * @param appId        主体应用id（必须）
+     * @param mainAppId    主体应用id（必须）
      * @param queriedAppId 被查询配置的应用id（必须）
      * @param profileId    环境id（必须）
      */
     @RequestMapping("/findProperties")
-    public FindPropertiesResult findProperties(String appId, String queriedAppId, String profileId) {
+    public FindPropertiesResult findProperties(String mainAppId, String queriedAppId, String profileId) {
         FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setAppId(appId);
+        order.setMainAppId(mainAppId);
         order.setQueriedAppId(queriedAppId);
         order.setProfileId(profileId);
 

@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.configcenter.facade.enums.Scope;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
@@ -33,18 +34,18 @@ public class PropertyKeyManageController {
     /**
      * 新增或修改属性key
      *
-     * @param appId   应用id（必须）
-     * @param key     key（必须）
-     * @param outward 是否公用（必须）
-     * @param memo    备注（可选）
+     * @param appId 应用id（必须）
+     * @param key   key（必须）
+     * @param scope 作用域（必须）
+     * @param memo  备注（可选）
      */
     @RequestMapping("/addOrModifyPropertyKey")
-    public EmptyResult addOrModifyPropertyKey(String appId, String key, boolean outward, String memo) {
+    public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
         ManagerAssert.adminOrHaveRelation(appId);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
-        order.setOutward(outward);
+        order.setScope(scope);
         order.setMemo(memo);
 
         return propertyKeyService.addOrModifyPropertyKey(order);
@@ -87,17 +88,17 @@ public class PropertyKeyManageController {
      * @param pageSize 每页大小（必须）
      * @param appId    应用id（可选）
      * @param key      key（可选）
-     * @param outward  是否公用（可选）
+     * @param scope    作用域（可选）
      */
     @RequestMapping("/queryPropertyKeys")
-    public QueryPropertyKeysResult queryPropertyKeys(int pageNo, int pageSize, String appId, String key, Boolean outward) {
+    public QueryPropertyKeysResult queryPropertyKeys(int pageNo, int pageSize, String appId, String key, Scope scope) {
         ManagerAssert.admin();
         QueryPropertyKeysOrder order = new QueryPropertyKeysOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setAppId(appId);
         order.setKey(key);
-        order.setOutward(outward);
+        order.setScope(scope);
 
         return propertyKeyService.queryPropertyKeys(order);
     }
