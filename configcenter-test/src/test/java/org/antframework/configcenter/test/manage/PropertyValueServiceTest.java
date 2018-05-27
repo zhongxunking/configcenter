@@ -12,10 +12,8 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.QueryPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
-import org.antframework.configcenter.facade.result.QueryPropertyValuesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -52,15 +50,6 @@ public class PropertyValueServiceTest extends AbstractTest {
         order.setAppId("scbfund");
         order.setProfileId("dev");
         FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
-        checkResult(result, Status.SUCCESS);
-    }
-
-    @Test
-    public void testQueryPropertyValues() {
-        QueryPropertyValuesOrder order = new QueryPropertyValuesOrder();
-        order.setPageNo(1);
-        order.setPageSize(10);
-        QueryPropertyValuesResult result = propertyValueService.queryPropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 }

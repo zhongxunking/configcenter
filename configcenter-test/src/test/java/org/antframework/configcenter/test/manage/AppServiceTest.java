@@ -18,13 +18,12 @@ import org.antframework.configcenter.facade.order.QueryAppsOrder;
 import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.configcenter.test.AbstractTest;
-import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 应用服务单元测试
  */
 @Ignore
 public class AppServiceTest extends AbstractTest {
@@ -34,16 +33,24 @@ public class AppServiceTest extends AbstractTest {
     @Test
     public void testAddOrModifyApp() {
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
+        order.setAppId("common");
+        order.setMemo("公共配置");
+        order.setParent(null);
+        EmptyResult result = appService.addOrModifyApp(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyAppOrder();
         order.setAppId("scbfund");
         order.setMemo("升财宝");
-        EmptyResult result = appService.addOrModifyApp(order);
+        order.setParent("common");
+        result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
     }
 
     @Test
     public void testDeleteApp() {
         DeleteAppOrder order = new DeleteAppOrder();
-        order.setAppId("scbfund");
+        order.setAppId("common");
         EmptyResult result = appService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -54,7 +61,6 @@ public class AppServiceTest extends AbstractTest {
         order.setAppId("scbfund");
         FindAppResult result = appService.findApp(order);
         checkResult(result, Status.SUCCESS);
-        Assert.assertEquals("scbfund", result.getAppInfo().getAppId());
     }
 
     @Test

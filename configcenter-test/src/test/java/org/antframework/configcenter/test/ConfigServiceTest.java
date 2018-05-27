@@ -27,7 +27,7 @@ public class ConfigServiceTest extends AbstractTest {
     @Test
     public void testFindProperties() {
         FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setAppId("scbfund");
+        order.setMainAppId("scbfund");
         order.setQueriedAppId("scbfund");
         order.setProfileId("dev");
         FindPropertiesResult result = configService.findProperties(order);
@@ -37,7 +37,7 @@ public class ConfigServiceTest extends AbstractTest {
     @Test
     public void testFindProperties_onlyOutward() {
         FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setAppId("scbfund");
+        order.setMainAppId("scbfund");
         order.setQueriedAppId("investment");
         order.setProfileId("dev");
         FindPropertiesResult result = configService.findProperties(order);

@@ -23,7 +23,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- *
+ * 环境服务单元测试
  */
 @Ignore
 public class ProfileServiceTest extends AbstractTest {
