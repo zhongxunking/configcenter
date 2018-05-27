@@ -8,15 +8,11 @@
  */
 package org.antframework.configcenter.dal.dao;
 
-import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
-import java.util.Collection;
 import java.util.List;
 
 /**
@@ -35,6 +31,4 @@ public interface PropertyKeyDao {
     boolean existsByAppId(String appId);
 
     List<PropertyKey> findByAppId(String appId);
-
-    Page<PropertyKey> query(Collection<QueryParam> queryParams, Pageable pageable);
 }
