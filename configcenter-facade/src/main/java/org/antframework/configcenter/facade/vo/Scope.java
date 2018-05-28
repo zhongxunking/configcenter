@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2018-05-20 16:03 创建
  */
-package org.antframework.configcenter.facade.enums;
+package org.antframework.configcenter.facade.vo;
 
 /**
  * 作用域（依次从小到大）

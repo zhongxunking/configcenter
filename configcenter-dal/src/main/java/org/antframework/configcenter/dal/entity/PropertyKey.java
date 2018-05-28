@@ -9,7 +9,7 @@
 package org.antframework.configcenter.dal.entity;
 
 import org.antframework.boot.jpa.AbstractEntity;
-import org.antframework.configcenter.facade.enums.Scope;
+import org.antframework.configcenter.facade.vo.Scope;
 
 import javax.persistence.*;
 

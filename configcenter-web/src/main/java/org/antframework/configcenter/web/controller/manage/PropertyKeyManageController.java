@@ -10,11 +10,11 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
-import org.antframework.configcenter.facade.enums.Scope;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;

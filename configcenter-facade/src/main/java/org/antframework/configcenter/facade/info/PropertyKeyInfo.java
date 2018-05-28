@@ -9,7 +9,7 @@
 package org.antframework.configcenter.facade.info;
 
 import org.antframework.common.util.facade.AbstractInfo;
-import org.antframework.configcenter.facade.enums.Scope;
+import org.antframework.configcenter.facade.vo.Scope;
 
 /**
  * 属性key-info

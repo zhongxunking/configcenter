@@ -9,7 +9,7 @@
 package org.antframework.configcenter.facade.result;
 
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.facade.info.Property;
+import org.antframework.configcenter.facade.vo.Property;
 
 import java.util.ArrayList;
 import java.util.List;

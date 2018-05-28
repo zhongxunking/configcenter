@@ -6,9 +6,7 @@
  * 修订记录:
  * @author 钟勋 2018-05-20 22:18 创建
  */
-package org.antframework.configcenter.facade.info;
-
-import org.antframework.configcenter.facade.enums.Scope;
+package org.antframework.configcenter.facade.vo;
 
 /**
  * 属性

@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz;
 
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.facade.constant.ZkConstant;
+import org.antframework.configcenter.facade.vo.ZkConstant;
 import org.hibernate.validator.constraints.NotEmpty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
