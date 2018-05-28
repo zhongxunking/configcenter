@@ -6,16 +6,15 @@
  * 修订记录:
  * @author 钟勋 2017-09-03 15:07 创建
  */
-package org.antframework.configcenter.test.manage;
+package org.antframework.configcenter.test.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.AppService;
-import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
-import org.antframework.configcenter.facade.order.DeleteAppOrder;
-import org.antframework.configcenter.facade.order.FindAppOrder;
-import org.antframework.configcenter.facade.order.QueryAppsOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAppResult;
+import org.antframework.configcenter.facade.result.FindAppTreeResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -45,12 +44,20 @@ public class AppServiceTest extends AbstractTest {
         order.setParent("common");
         result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyAppOrder();
+        order.setAppId("investment");
+        order.setMemo("理财平台");
+        order.setParent("common");
+        result = appService.addOrModifyApp(order);
+        checkResult(result, Status.SUCCESS);
     }
 
     @Test
     public void testDeleteApp() {
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppId("common");
+
         EmptyResult result = appService.deleteApp(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -59,7 +66,26 @@ public class AppServiceTest extends AbstractTest {
     public void testFindApp() {
         FindAppOrder order = new FindAppOrder();
         order.setAppId("scbfund");
+
         FindAppResult result = appService.findApp(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindInheritedApps() {
+        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
+        order.setAppId("scbfund");
+
+        FindInheritedAppsResult result = appService.findInheritedApps(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindAppTree() {
+        FindAppTreeOrder order = new FindAppTreeOrder();
+        order.setAppId(null);
+
+        FindAppTreeResult result = appService.findAppTree(order);
         checkResult(result, Status.SUCCESS);
     }
 

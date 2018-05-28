@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-03 16:40 创建
  */
-package org.antframework.configcenter.test.manage;
+package org.antframework.configcenter.test.facade.api;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
@@ -35,6 +35,7 @@ public class ProfileServiceTest extends AbstractTest {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId("dev");
         order.setMemo("开发环境");
+
         EmptyResult result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -43,6 +44,7 @@ public class ProfileServiceTest extends AbstractTest {
     public void testDeleteProfile() {
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileId("dev");
+
         EmptyResult result = profileService.deleteProfile(order);
         checkResult(result, Status.SUCCESS);
     }
@@ -58,7 +60,7 @@ public class ProfileServiceTest extends AbstractTest {
         QueryProfilesOrder order = new QueryProfilesOrder();
         order.setPageNo(1);
         order.setPageSize(10);
-        order.setProfileId("dev");
+
         QueryProfilesResult result = profileService.queryProfiles(order);
         checkResult(result, Status.SUCCESS);
     }
