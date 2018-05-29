@@ -108,6 +108,7 @@ public class AppManageController {
      */
     @RequestMapping("/findAppTree")
     private FindAppTreeResult findAppTree(String appId) {
+        ManagerAssert.adminOrHaveRelation(appId);
         FindAppTreeOrder order = new FindAppTreeOrder();
         order.setAppId(appId);
 
