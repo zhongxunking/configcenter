@@ -59,9 +59,9 @@
                 async: false,
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
-                        var infos = ajaxResult.infos;
-                        for (var i = 0; i < infos.length; i++) {
-                            newProfiles[i] = infos[i].profileId;
+                        var profiles = ajaxResult.profiles;
+                        for (var i = 0; i < profiles.length; i++) {
+                            newProfiles[i] = profiles[i].profileId;
                         }
                     } else {
                         alert("删除失败，原因：" + ajaxResult.message);
