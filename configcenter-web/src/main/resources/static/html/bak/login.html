@@ -13,7 +13,7 @@
                 return;
             }
             $.ajax({
-                url: "../manager/init/canInitAdmin",
+                url: "../../manager/init/canInitAdmin",
                 data: {},
                 success: function (ajaxResult) {
                     if (ajaxResult.success) {
@@ -33,7 +33,7 @@
         function getCurrentManager() {
             var manager = null;
             $.ajax({
-                url: "../manager/main/current",
+                url: "../../manager/main/current",
                 data: {},
                 async: false,
                 success: function (ajaxResult) {
