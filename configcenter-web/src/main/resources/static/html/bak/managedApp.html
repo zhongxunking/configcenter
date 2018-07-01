@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>应用管理</title>
-    <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
-    <script type="text/javascript" src="../common/commonManager.js"></script>
-    <script type="text/javascript" src="../common/commonQuery.js"></script>
-    <link rel="stylesheet" href="../common/common.css" type="text/css">
+    <script type="text/javascript" src="../../common/jquery-3.2.1.js"></script>
+    <script type="text/javascript" src="../../common/commonManager.js"></script>
+    <script type="text/javascript" src="../../common/commonQuery.js"></script>
+    <link rel="stylesheet" href="../../common/common.css" type="text/css">
     <script type="text/javascript">
 
         $(document).ready(function () {
@@ -32,7 +32,7 @@
 
         function creteTableRow(info) {
             var tr = "<tr>";
-            tr += "<td><a href='appPropertyKey.html?appId=" + info.appId + "'>" + info.appId + "</a></td>";
+            tr += "<td><a href=" + info.appId + "'appPropertyKey.html?appId='>" + info.appId + "</a></td>";
             tr += "<td>" + info.memo + "</td>";
             tr += "<td>" + getProfilesLink(info.appId) + "</td>"
             tr += "</tr>"
@@ -43,7 +43,7 @@
         function getProfilesLink(appId) {
             var links = "";
             for (var i = 0; i < profiles.length; i++) {
-                links += "<a href='properties.html?appId=" + appId + "&profileId=" + profiles[i] + "'>" + profiles[i] + "</a>";
+                links += "" + appId + "<a href='properties.html?appId=&profileId='>" + profiles[i] + "" + profiles[i] + "</a>";
                 links += "&nbsp&nbsp";
             }
             return links;
