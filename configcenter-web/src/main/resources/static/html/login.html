@@ -3,20 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>登录</title>
-    <script src="../lib/vue.js"></script>
-    <link rel="stylesheet" href="../lib/element-ui/element-ui.css">
-    <script src="../lib/element-ui/element-ui.js"></script>
-    <script src="../lib/axios.js"></script>
-    <script src="../lib/qs.js"></script>
-    <script>
-        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
-        axios.interceptors.request.use(function (config) {
-            if (config.method === 'post') {
-                config.data = Qs.stringify(config.data)
-            }
-            return config;
-        });
-    </script>
+    <script src="../common/import.js"></script>
 </head>
 <body>
 <div id="loginFormApp" style="transform: translateY(50%)">
@@ -61,21 +48,13 @@
                     if (!valid) {
                         return;
                     }
-//                    axios.get('../manager/main/login', {
-//                            params: loginFormApp.loginForm
-//                        }
-//                    ).then(function (response) {
-//                        console.log(response);
-//                    }).catch(function (error) {
-//                        console.log(error);
-//                    });
-
                     axios.post('../manager/main/login', loginFormApp.loginForm)
                         .then(function (response) {
                             console.log(response);
-                        }).catch(function (error) {
-                        console.log(error);
-                    });
+                        })
+                        .catch(function (error) {
+                            console.log(error);
+                        });
                 });
             },
             reset: function () {
