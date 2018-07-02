@@ -6,35 +6,76 @@
     <script src="../lib/vue.js"></script>
     <link rel="stylesheet" href="../lib/element-ui/element-ui.css">
     <script src="../lib/element-ui/element-ui.js"></script>
+    <script src="../lib/axios.js"></script>
+    <script src="../lib/qs.js"></script>
+    <script>
+        axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+        axios.interceptors.request.use(function (config) {
+            if (config.method === 'post') {
+                config.data = Qs.stringify(config.data)
+            }
+            return config;
+        });
+    </script>
 </head>
 <body>
-<div id="loginFormApp">
-    <el-form ref="loginForm" :model="loginForm" label-width="80px">
-        <el-form-item label="管理员id" prop="managerId" :rules="[{ required:true, message:'请输入管理员id', trigger:'blur'}]">
-            <el-input v-model="loginForm.managerId"></el-input>
-        </el-form-item>
-        <el-form-item label="密码" prop="password" :rules="[{required:true, message:'请输入密码', trigger:'blur'}]">
-            <el-input type="password" v-model="loginForm.password"></el-input>
-        </el-form-item>
-        <el-form-item>
-            <el-button type="primary" @click="login">登录</el-button>
-            <el-button @click="reset">重置</el-button>
-        </el-form-item>
-    </el-form>
+<div id="loginFormApp" style="transform: translateY(50%)">
+    <el-container>
+        <el-main>
+            <el-row type="flex" justify="center">
+                <el-col>
+                    <div style="text-align: center"><h3>登录</h3></div>
+                </el-col>
+            </el-row>
+            <el-row type="flex" justify="center">
+                <el-col :span="6">
+                    <el-form ref="loginForm" :model="loginForm" label-width="80px">
+                        <el-form-item label="管理员id" prop="managerId" :rules="[{ required:true, message:'请输入管理员id', trigger:'blur'}]">
+                            <el-input v-model="loginForm.managerId" placeholder="请输入管理员id"></el-input>
+                        </el-form-item>
+                        <el-form-item label="密码" prop="password" :rules="[{required:true, message:'请输入密码', trigger:'blur'}]">
+                            <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="login">登录</el-button>
+                            <el-button @click="reset">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
 </div>
 <script>
     var loginFormApp = new Vue({
         el: '#loginFormApp',
         data: {
             loginForm: {
-                managerId: '',
-                password: ''
+                managerId: null,
+                password: null
             }
         },
         methods: {
             login: function () {
                 this.$refs.loginForm.validate(function (valid) {
+                    if (!valid) {
+                        return;
+                    }
+//                    axios.get('../manager/main/login', {
+//                            params: loginFormApp.loginForm
+//                        }
+//                    ).then(function (response) {
+//                        console.log(response);
+//                    }).catch(function (error) {
+//                        console.log(error);
+//                    });
 
+                    axios.post('../manager/main/login', loginFormApp.loginForm)
+                        .then(function (response) {
+                            console.log(response);
+                        }).catch(function (error) {
+                        console.log(error);
+                    });
                 });
             },
             reset: function () {
