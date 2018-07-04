@@ -34,6 +34,18 @@
     </el-container>
 </div>
 <script>
+    axios.get('../manager/init/canInitAdmin')
+        .then(function (result) {
+            if (!result.success) {
+                return;
+            }
+            Vue.prototype.$alert('第一次使用，需初始化超级管理员。跳转到初始化页面', '提示', {
+                callback: function () {
+                    window.location.href = 'initAdmin.html';
+                }
+            });
+        });
+
     var loginFormApp = new Vue({
         el: '#loginFormApp',
         data: {
@@ -49,11 +61,12 @@
                         return;
                     }
                     axios.post('../manager/main/login', loginFormApp.loginForm)
-                        .then(function (response) {
-                            console.log(response);
-                        })
-                        .catch(function (error) {
-                            console.log(error);
+                        .then(function (result) {
+                            if (result.success) {
+                                window.location.href = 'main.html';
+                            } else {
+                                Vue.prototype.$message.error(result.message);
+                            }
                         });
                 });
             },

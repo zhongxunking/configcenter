@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>初始化超级管理员</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="initAdminFormApp" style="transform: translateY(50%)">
+    <el-container>
+        <el-main>
+            <el-row type="flex" justify="center">
+                <el-col>
+                    <div style="text-align: center"><h3>初始化超级管理员</h3></div>
+                </el-col>
+            </el-row>
+            <el-row type="flex" justify="center">
+                <el-col :span="6">
+                    <el-form ref="initAdminForm" :model="initAdminForm" label-width="80px">
+                        <el-form-item label="管理员id" prop="managerId" :rules="[{ required:true, message:'请输入管理员id', trigger:'blur'}]">
+                            <el-input v-model="initAdminForm.managerId" placeholder="请输入管理员id"></el-input>
+                        </el-form-item>
+                        <el-form-item label="名称" prop="name" :rules="[{ required:true, message:'请输入名称', trigger:'blur'}]">
+                            <el-input v-model="initAdminForm.name" placeholder="请输入名称"></el-input>
+                        </el-form-item>
+                        <el-form-item label="密码" prop="password" :rules="[{required:true, message:'请输入密码', trigger:'blur'}]">
+                            <el-input type="password" v-model="initAdminForm.password" placeholder="请输入密码"></el-input>
+                        </el-form-item>
+                        <el-form-item>
+                            <el-button type="primary" @click="initAdmin">创建</el-button>
+                            <el-button @click="reset">重置</el-button>
+                        </el-form-item>
+                    </el-form>
+                </el-col>
+            </el-row>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    axios.get('../manager/init/canInitAdmin')
+        .then(function (result) {
+            if (result.success) {
+                return;
+            }
+            Vue.prototype.$alert('超级管理员已初始化，不能重复初始化。跳转到登录页面', '警告', {
+                callback: function () {
+                    window.location.href = 'login.html';
+                }
+            });
+        });
+
+    var initAdminFormApp = new Vue({
+        el: '#initAdminFormApp',
+        data: {
+            initAdminForm: {
+                managerId: null,
+                name: null,
+                password: null
+            }
+        },
+        methods: {
+            initAdmin: function () {
+                this.$refs.initAdminForm.validate(function (valid) {
+                    if (!valid) {
+                        return;
+                    }
+                    axios.post('../manager/init/initAdmin', initAdminFormApp.initAdminForm)
+                        .then(function (result) {
+                            if (result.success) {
+                                Vue.prototype.$alert('超级管理员已初始化成功。跳转回登录页面', '提示', {
+                                    callback: function () {
+                                        window.location.href = 'login.html';
+                                    }
+                                });
+                            } else {
+                                Vue.prototype.$message.error(result.message);
+                            }
+                        });
+                });
+            },
+            reset: function () {
+                this.$refs.initAdminForm.resetFields();
+            }
+        }
+    });
+</script>
+</body>
+</html>
