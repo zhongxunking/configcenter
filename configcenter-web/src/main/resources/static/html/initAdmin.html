@@ -37,6 +37,7 @@
     </el-container>
 </div>
 <script>
+    // 判断是否需要初始化超级管理员
     axios.get('../manager/init/canInitAdmin')
         .then(function (result) {
             if (result.success) {
@@ -66,15 +67,15 @@
                     }
                     axios.post('../manager/init/initAdmin', initAdminFormApp.initAdminForm)
                         .then(function (result) {
-                            if (result.success) {
-                                Vue.prototype.$alert('超级管理员已初始化成功。跳转回登录页面', '提示', {
-                                    callback: function () {
-                                        window.location.href = 'login.html';
-                                    }
-                                });
-                            } else {
+                            if (!result.success) {
                                 Vue.prototype.$message.error(result.message);
+                                return;
                             }
+                            Vue.prototype.$alert('超级管理员已初始化成功。跳转回登录页面', '提示', {
+                                callback: function () {
+                                    window.location.href = 'login.html';
+                                }
+                            });
                         });
                 });
             },

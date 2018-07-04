@@ -34,6 +34,19 @@
     </el-container>
 </div>
 <script>
+    // 判断用户是否已登录
+    axios.get('../manager/main/current')
+        .then(function (result) {
+            if (!result.success) {
+                Vue.prototype.$message.error(result.message);
+                return;
+            }
+            if (result.manager != null) {
+                window.location.href = 'main.html';
+            }
+        });
+
+    // 判断是否需要初始化超级管理员
     axios.get('../manager/init/canInitAdmin')
         .then(function (result) {
             if (!result.success) {
