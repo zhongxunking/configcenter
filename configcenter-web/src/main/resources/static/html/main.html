@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>管理</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="mainApp">
+    <el-container>
+        <el-header>
+            <el-row type="flex" justify="end">
+                <el-col :span="4">
+                    <el-dropdown @command="handleCommand">
+                        <span>{{ manager.name }}<i class="el-icon-arrow-down el-icon--right"></i></span>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item command="showProfile">我的信息</el-dropdown-item>
+                            <el-dropdown-item command="logout">退出</el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </el-col>
+            </el-row>
+        </el-header>
+        <el-main>
+            <el-container>
+                <el-aside>
+                    <el-menu background-color="#545c64"
+                             text-color="#fff"
+                             active-text-color="#ffd04b">
+                        <el-menu-item index="home">首页</el-menu-item>
+                        <el-menu-item index="apps">应用</el-menu-item>
+                        <el-menu-item index="profiles">环境</el-menu-item>
+                        <el-menu-item index="managers">管理员</el-menu-item>
+                        <el-menu-item index="relations">关联</el-menu-item>
+                    </el-menu>
+                </el-aside>
+                <el-main></el-main>
+            </el-container>
+        </el-main>
+    </el-container>
+</div>
+<script>
+    // 判断用户是否已登录
+    axios.get('../manager/main/current')
+        .then(function (result) {
+            if (!result.success) {
+                Vue.prototype.$message.error(result.message);
+                return;
+            }
+            if (result.manager === null) {
+                // 未登录，则跳转到登录页面
+                Vue.prototype.$alert('未登录或登录已超时，请进行登录', '警告', {
+                    callback: function () {
+                        window.location.href = 'login.html';
+                    }
+                });
+                return;
+            }
+            mainApp.manager = Object.assign({}, mainApp.manager, result.manager);
+        });
+
+    var mainApp = new Vue({
+        el: '#mainApp',
+        data: {
+            manager: {}
+        },
+        methods: {
+            handleCommand: function (command) {
+                switch (command) {
+                    case 'showProfile':
+                        this.showProfile();
+                        break;
+                    case 'logout':
+                        this.logout();
+                        break;
+                }
+            },
+            showProfile: function () {
+
+            },
+            logout: function () {
+                axios.get('../manager/main/logout')
+                    .then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        window.location.href = 'login.html';
+                    });
+            }
+        }
+    });
+</script>
+</body>
+</html>
