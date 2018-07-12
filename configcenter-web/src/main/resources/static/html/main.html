@@ -35,7 +35,7 @@
             aside
         </el-aside>
         <el-container>
-            <el-header>
+            <el-header style="padding: 0px 10px;">
                 <div style="float: left;line-height: 58px;">
                     <svg @click="sideBarExpand = !sideBarExpand" p-id="1691" t="1492500959545" :style="{display: 'inline-block',cursor: 'pointer',width: '20px',height: '20px',transform: sideBarExpand ? 'rotate(0deg)' : 'rotate(90deg)',transition: '.38s','transform-origin': '50% 50%'}" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <path p-id="1692" d="M966.8023 568.849776 57.196677 568.849776c-31.397081 0-56.850799-25.452695-56.850799-56.850799l0 0c0-31.397081 25.452695-56.849776 56.850799-56.849776l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.849776l0 0C1023.653099 543.397081 998.200404 568.849776 966.8023 568.849776z"></path>
@@ -43,13 +43,13 @@
                         <path p-id="1694" d="M966.8023 256.17345 57.196677 256.17345c-31.397081 0-56.850799-25.452695-56.850799-56.849776l0 0c0-31.397081 25.452695-56.850799 56.850799-56.850799l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.850799l0 0C1023.653099 230.720755 998.200404 256.17345 966.8023 256.17345z"></path>
                     </svg>
                 </div>
-                <el-breadcrumb style="display: inline-block;margin-left: 10px;line-height: 50px;">
+                <el-breadcrumb style="display: inline-block;margin-left: 20px;line-height: 50px;">
                     <el-breadcrumb-item :to="{ path: '/' }">首页</el-breadcrumb-item>
                     <el-breadcrumb-item><a href="/">活动管理</a></el-breadcrumb-item>
                     <el-breadcrumb-item>活动列表</el-breadcrumb-item>
                     <el-breadcrumb-item>活动详情</el-breadcrumb-item>
                 </el-breadcrumb>
-                <el-dropdown trigger="click" style="cursor: pointer;position: absolute;right: 35px;line-height: 50px;">
+                <el-dropdown trigger="click" style="cursor: pointer;position: absolute;right: 30px;line-height: 50px;">
                     <span>
                     钟勋<i class="el-icon-caret-bottom el-icon--right"></i>
                     </span>
