@@ -13,7 +13,7 @@
         }
 
         .el-aside {
-            background-color: #D3DCE6;
+            /*background-color: #D3DCE6;*/
             /*color: #333;*/
             /*text-align: center;*/
             /*line-height: 200px;*/
@@ -25,19 +25,86 @@
             /*text-align: center;*/
             /*line-height: 160px;*/
         }
+
+        .main-sidebar {
+            height: 100%;
+        }
+
+        .main-sidebar:not(.el-menu--collapse) {
+            width: 99%;
+        }
     </style>
 
 </head>
 <body>
 <div id="mainApp">
-    <el-container>
+    <el-container style="position:absolute; left:0; top:0; width:100%;height:100%;">
         <el-aside>
-            aside
+            <el-menu :collapse="sidebarCollapsed"
+                     class="main-sidebar"
+                     default-active="configurations"
+                     background-color="#304156"
+                     text-color="#bfcbd9"
+                     active-text-color="#409EFF">
+                <el-menu-item index="configurations">
+                    <i class="el-icon-tickets"></i>
+                    <span slot="title">配置</span>
+                </el-menu-item>
+                <el-menu-item index="apps">
+                    <i class="el-icon-menu"></i>
+                    <span slot="title">应用</span>
+                </el-menu-item>
+                <el-menu-item index="profiles">
+                    <i class="el-icon-upload"></i>
+                    <span slot="title">环境</span>
+                </el-menu-item>
+                <el-menu-item index="managers">
+                    <i class="el-icon-view"></i>
+                    <span slot="title">管理员</span>
+                </el-menu-item>
+            </el-menu>
+
+            <!--<el-menu default-active="1-4-1" class="main-sidebar"-->
+            <!--background-color="#304156"-->
+            <!--text-color="#bfcbd9"-->
+            <!--active-text-color="#409EFF"-->
+            <!--:collapse="sidebarCollapsed">-->
+            <!--<el-submenu index="1">-->
+            <!--<template slot="title">-->
+            <!--<i class="el-icon-location"></i>-->
+            <!--<span slot="title">导航一</span>-->
+            <!--</template>-->
+            <!--<el-menu-item-group>-->
+            <!--<span slot="title">分组一</span>-->
+            <!--<el-menu-item index="1-1">选项1</el-menu-item>-->
+            <!--<el-menu-item index="1-2">选项2</el-menu-item>-->
+            <!--</el-menu-item-group>-->
+            <!--<el-menu-item-group title="分组2">-->
+            <!--<el-menu-item index="1-3">选项3</el-menu-item>-->
+            <!--</el-menu-item-group>-->
+            <!--<el-submenu index="1-4">-->
+            <!--<span slot="title">选项4</span>-->
+            <!--<el-menu-item index="1-4-1">选项1</el-menu-item>-->
+            <!--</el-submenu>-->
+            <!--</el-submenu>-->
+            <!--<el-menu-item index="2">-->
+            <!--<i class="el-icon-menu"></i>-->
+            <!--<span slot="title">导航二</span>-->
+            <!--</el-menu-item>-->
+            <!--<el-menu-item index="3" disabled>-->
+            <!--<i class="el-icon-document"></i>-->
+            <!--<span slot="title">导航三</span>-->
+            <!--</el-menu-item>-->
+            <!--<el-menu-item index="4">-->
+            <!--<i class="el-icon-setting"></i>-->
+            <!--<span slot="title">导航四</span>-->
+            <!--</el-menu-item>-->
+            <!--</el-menu>-->
         </el-aside>
         <el-container>
             <el-header style="padding: 0px 10px;">
                 <div style="float: left;line-height: 58px;">
-                    <svg @click="sideBarExpanded = !sideBarExpanded" p-id="1691" t="1492500959545" :style="{display: 'inline-block',cursor: 'pointer',width: '20px',height: '20px',transform: sideBarExpanded ? 'rotate(0deg)' : 'rotate(90deg)',transition: '.38s','transform-origin': '50% 50%'}" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" version="1.1">
+                    <svg @click="sidebarCollapsed = !sidebarCollapsed" p-id="1691" t="1492500959545" :style="{display: 'inline-block',cursor: 'pointer',width: '20px',height: '20px',transform: sidebarCollapsed ? 'rotate(90deg)' : 'rotate(0deg)',transition: '.38s','transform-origin': '50% 50%'}" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <path p-id="1692" d="M966.8023 568.849776 57.196677 568.849776c-31.397081 0-56.850799-25.452695-56.850799-56.850799l0 0c0-31.397081 25.452695-56.849776 56.850799-56.849776l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.849776l0 0C1023.653099 543.397081 998.200404 568.849776 966.8023 568.849776z"></path>
                         <path p-id="1693" d="M966.8023 881.527125 57.196677 881.527125c-31.397081 0-56.850799-25.452695-56.850799-56.849776l0 0c0-31.397081 25.452695-56.849776 56.850799-56.849776l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.849776l0 0C1023.653099 856.07443 998.200404 881.527125 966.8023 881.527125z"></path>
                         <path p-id="1694" d="M966.8023 256.17345 57.196677 256.17345c-31.397081 0-56.850799-25.452695-56.850799-56.849776l0 0c0-31.397081 25.452695-56.850799 56.850799-56.850799l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.850799l0 0C1023.653099 230.720755 998.200404 256.17345 966.8023 256.17345z"></path>
@@ -119,7 +186,7 @@
     var mainApp = new Vue({
         el: '#mainApp',
         data: {
-            sideBarExpanded: true
+            sidebarCollapsed: false
         }
     });
 
