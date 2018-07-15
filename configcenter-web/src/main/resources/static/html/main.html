@@ -13,7 +13,7 @@
         }
 
         .el-main {
-            background-color: #E9EEF3;
+            /*background-color: #E9EEF3;*/
             /*color: #333;*/
             /*text-align: center;*/
             /*line-height: 160px;*/
@@ -34,31 +34,39 @@
     <el-container style="position:absolute; left:0; top:0; width:100%;height:100%;">
         <el-aside :style="{'overflow-x': 'hidden', width: sidebarCollapsed ? '65px' : '200px', transition: sidebarCollapsed ? 'width 0.3s' : 'width 0.45s'}">
             <el-menu :collapse="sidebarCollapsed"
+                     :default-active="$route.path"
                      class="main-sidebar-menu"
-                     default-active="configurations"
                      background-color="#304156"
                      text-color="#bfcbd9"
                      active-text-color="#409EFF">
-                <el-menu-item index="configurations">
-                    <i class="el-icon-tickets"></i>
-                    <span slot="title">配置</span>
-                </el-menu-item>
-                <el-menu-item index="apps">
-                    <i class="el-icon-menu"></i>
-                    <span slot="title">应用</span>
-                </el-menu-item>
-                <el-menu-item index="profiles">
-                    <i class="el-icon-upload"></i>
-                    <span slot="title">环境</span>
-                </el-menu-item>
-                <el-menu-item index="managers">
-                    <i class="el-icon-view"></i>
-                    <span slot="title">管理员</span>
-                </el-menu-item>
+                <router-link to="/configurations" style="text-decoration: none;">
+                    <el-menu-item index="/configurations">
+                        <i class="el-icon-tickets"></i>
+                        <span slot="title">配置</span>
+                    </el-menu-item>
+                </router-link>
+                <router-link to="/apps" style="text-decoration: none;">
+                    <el-menu-item index="/apps">
+                        <i class="el-icon-menu"></i>
+                        <span slot="title">应用</span>
+                    </el-menu-item>
+                </router-link>
+                <router-link to="/profiles" style="text-decoration: none;">
+                    <el-menu-item index="/profiles">
+                        <i class="el-icon-upload"></i>
+                        <span slot="title">环境</span>
+                    </el-menu-item>
+                </router-link>
+                <router-link to="/managers" style="text-decoration: none;">
+                    <el-menu-item index="/managers">
+                        <i class="el-icon-view"></i>
+                        <span slot="title">管理员</span>
+                    </el-menu-item>
+                </router-link>
             </el-menu>
         </el-aside>
         <el-container>
-            <el-header style="padding: 0px 10px;">
+            <el-header height="50px" style="padding: 0px 10px; border-bottom: solid 1px rgb(230, 230, 230)">
                 <div style="float: left;line-height: 58px;">
                     <svg @click="sidebarCollapsed = !sidebarCollapsed" p-id="1691" t="1492500959545" :style="{display: 'inline-block',cursor: 'pointer',width: '20px',height: '20px',transform: sidebarCollapsed ? 'rotate(90deg)' : 'rotate(0deg)',transition: '.38s','transform-origin': '50% 50%'}" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg" version="1.1">
                         <path p-id="1692" d="M966.8023 568.849776 57.196677 568.849776c-31.397081 0-56.850799-25.452695-56.850799-56.850799l0 0c0-31.397081 25.452695-56.849776 56.850799-56.849776l909.605623 0c31.397081 0 56.849776 25.452695 56.849776 56.849776l0 0C1023.653099 543.397081 998.200404 568.849776 966.8023 568.849776z"></path>
@@ -83,7 +91,7 @@
                 </el-dropdown>
             </el-header>
             <el-main>
-                main
+                <router-view></router-view>
             </el-main>
         </el-container>
     </el-container>
@@ -108,8 +116,38 @@
             mainApp.manager = Object.assign({}, mainApp.manager, result.manager);
         });
 
+    const configurationsComponent = {
+        template: '<div>configurations</div>'
+    };
+    const appsComponent = {
+        template: '<div>apps</div>'
+    };
+    const profilesComponent = {
+        template: '<div>profiles</div>'
+    };
+    const managersComponent = {
+        template: '<div>managers</div>'
+    };
+
+    const router = new VueRouter({
+        routes: [{
+            path: '/configurations',
+            component: configurationsComponent
+        }, {
+            path: '/apps',
+            component: appsComponent
+        }, {
+            path: '/profiles',
+            component: profilesComponent
+        }, {
+            path: '/managers',
+            component: managersComponent
+        }]
+    });
+
     const mainApp = new Vue({
         el: '#mainApp',
+        router: router,
         data: {
             sidebarCollapsed: false,
             manager: {}
