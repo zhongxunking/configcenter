@@ -39,30 +39,7 @@
                      background-color="#304156"
                      text-color="#bfcbd9"
                      active-text-color="#409EFF">
-                <router-link to="/configurations" style="text-decoration: none;">
-                    <el-menu-item index="/configurations">
-                        <i class="el-icon-tickets"></i>
-                        <span slot="title">配置</span>
-                    </el-menu-item>
-                </router-link>
-                <router-link to="/apps" style="text-decoration: none;">
-                    <el-menu-item index="/apps">
-                        <i class="el-icon-menu"></i>
-                        <span slot="title">应用</span>
-                    </el-menu-item>
-                </router-link>
-                <router-link to="/profiles" style="text-decoration: none;">
-                    <el-menu-item index="/profiles">
-                        <i class="el-icon-upload"></i>
-                        <span slot="title">环境</span>
-                    </el-menu-item>
-                </router-link>
-                <router-link to="/managers" style="text-decoration: none;">
-                    <el-menu-item index="/managers">
-                        <i class="el-icon-view"></i>
-                        <span slot="title">管理员</span>
-                    </el-menu-item>
-                </router-link>
+                <router-menu-item v-for="child in $router.options.routes" parent-path="" :route="child" :key="child.path"></router-menu-item>
             </el-menu>
         </el-aside>
         <el-container>
@@ -97,6 +74,37 @@
     </el-container>
 </div>
 <script>
+    const routerMenuItem = {
+        name: 'router-menu-item',
+        props: ['parentPath', 'route'],
+        computed: {
+            path: function () {
+                let path = this.parentPath;
+                if (!this.route.path.startsWith('/')) {
+                    path += '/';
+                }
+                path += this.route.path;
+
+                return path;
+            }
+        },
+        template: `
+            <router-link v-if="!(route.children) || route.children.length <= 0" :to="path" style="text-decoration: none;">
+                <el-menu-item :index="path">
+                    <i :class="route.meta.icon"></i>
+                    <span slot="title">{{ route.meta.title }}</span>
+                </el-menu-item>
+            </router-link>
+            <el-submenu v-else :index="path">
+                <template slot="title">
+                    <i :class="route.meta.icon"></i>
+                    <span slot="title">{{ route.meta.title }}</span>
+                </template>
+                <router-menu-item v-for="child in route.children" :parent-path="path" :route="child" :key="path + '/' + child.path"></router-menu-item>
+            </el-submenu>`
+    };
+
+
     // 判断用户是否已登录
     axios.get('../manager/main/current')
         .then(function (result) {
@@ -132,21 +140,40 @@
     const router = new VueRouter({
         routes: [{
             path: '/configurations',
-            component: configurationsComponent
+            component: configurationsComponent,
+            meta: {
+                title: '配置',
+                icon: 'el-icon-tickets'
+            }
         }, {
             path: '/apps',
-            component: appsComponent
+            component: appsComponent,
+            meta: {
+                title: '应用',
+                icon: 'el-icon-menu'
+            }
         }, {
             path: '/profiles',
-            component: profilesComponent
+            component: profilesComponent,
+            meta: {
+                title: '环境',
+                icon: 'el-icon-upload'
+            }
         }, {
             path: '/managers',
-            component: managersComponent
+            component: managersComponent,
+            meta: {
+                title: '管理员',
+                icon: 'el-icon-view'
+            }
         }]
     });
 
     const mainApp = new Vue({
         el: '#mainApp',
+        components: {
+            'router-menu-item': routerMenuItem
+        },
         router: router,
         data: {
             sidebarCollapsed: false,
