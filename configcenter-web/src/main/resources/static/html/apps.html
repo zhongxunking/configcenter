@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置中心-应用</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="appsApp">
+    <el-table :data="apps" border style="width: 50%">
+        <el-table-column prop="appId" label="应用id"></el-table-column>
+        <el-table-column prop="memo" label="备注"></el-table-column>
+        <el-table-column prop="parent" label="父应用id"></el-table-column>
+    </el-table>
+</div>
+<script>
+    const appsApp = new Vue({
+        el: '#appsApp',
+        data: {
+            apps: []
+        },
+        created: function () {
+            this.refreshApps();
+        },
+        methods: {
+            refreshApps: function () {
+                const theThis = this;
+                axios.get('../manage/app/queryApps', {
+                    params: {
+                        pageNo: 1,
+                        pageSize: 10,
+                        appId: ''
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.apps = result.infos;
+                });
+            }
+        }
+    });
+
+</script>
+</body>
+</html>
