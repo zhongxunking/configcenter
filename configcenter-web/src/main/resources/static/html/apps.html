@@ -6,42 +6,68 @@
     <script src="../common/import.js"></script>
 </head>
 <body>
-<div id="appsApp">
-    <el-table :data="apps" border style="width: 50%">
+<div id="appsApp" style="width: 70%">
+    <el-row>
+        <el-col>
+            <el-form :v-model="queryParams" :inline="true" size="mini">
+                <el-form-item>
+                    <el-input v-model="queryParams.appId" placeholder="应用id"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-input v-model="queryParams.parent" placeholder="父应用id"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="queryApps">查询</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <el-table :data="apps" border>
         <el-table-column prop="appId" label="应用id"></el-table-column>
         <el-table-column prop="memo" label="备注"></el-table-column>
         <el-table-column prop="parent" label="父应用id"></el-table-column>
     </el-table>
+    <el-row style="margin-top: 10px">
+        <el-col style="text-align: end">
+            <el-pagination :total="totalApps" :current-page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize" @current-change="queryApps" layout="total,prev,pager,next" small background></el-pagination>
+        </el-col>
+    </el-row>
 </div>
 <script>
     const appsApp = new Vue({
         el: '#appsApp',
         data: {
+            queryParams: {
+                pageNo: 1,
+                pageSize: 20,
+                appId: null,
+                parent: null
+            },
+            totalApps: 0,
             apps: []
         },
         created: function () {
-            this.refreshApps();
+            this.queryApps();
         },
         methods: {
-            refreshApps: function () {
+            queryApps: function () {
                 const theThis = this;
-                axios.get('../manage/app/queryApps', {
-                    params: {
-                        pageNo: 1,
-                        pageSize: 10,
-                        appId: ''
-                    }
-                }).then(function (result) {
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    theThis.apps = result.infos;
-                });
+                if (this.queryParams.parent !== null
+                    && this.queryParams.parent.length <= 0) {
+                    this.queryParams.parent = null;
+                }
+                axios.get('../manage/app/queryApps', {params: this.queryParams})
+                    .then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.totalApps = result.totalCount;
+                        theThis.apps = result.infos;
+                    });
             }
         }
     });
-
 </script>
 </body>
 </html>
