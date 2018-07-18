@@ -5,20 +5,6 @@
     <title>管理</title>
     <script src="../common/import.js"></script>
     <style>
-        .el-header {
-            /*background-color: #B3C0D1;*/
-            /*color: #333;*/
-            /*text-align: center;*/
-            /*line-height: 60px;*/
-        }
-
-        .el-main {
-            /*background-color: #E9EEF3;*/
-            /*color: #333;*/
-            /*text-align: center;*/
-            /*line-height: 160px;*/
-        }
-
         .main-sidebar-menu {
             height: 100%;
         }
@@ -39,7 +25,12 @@
                      background-color="#304156"
                      text-color="#bfcbd9"
                      active-text-color="#409EFF">
-                <router-menu-item v-for="child in $router.options.routes" v-if="!child.meta.type || child.meta.type==='menu-item'" parent-path="" :route="child" :key="child.path"></router-menu-item>
+                <router-link v-for="route in $router.options.routes" v-if="!route.meta.hidden" :to="route.path" :key="route.path" style="text-decoration: none;">
+                    <el-menu-item :index="route.path">
+                        <i :class="route.meta.icon"></i>
+                        <span slot="title">{{ route.meta.title }}</span>
+                    </el-menu-item>
+                </router-link>
             </el-menu>
         </el-aside>
         <el-container>
@@ -52,7 +43,7 @@
                     </svg>
                 </div>
                 <el-breadcrumb style="display: inline-block;margin-left: 20px;line-height: 50px;">
-                    <el-breadcrumb-item v-for="meta in breadcrumbMetas" :to="{ path: meta.path }" :key="meta.path">{{ meta.title }}</el-breadcrumb-item>
+                    <el-breadcrumb-item v-for="matchedRoute in $route.matched" v-if="!matchedRoute.path.endsWith('/')" :to="{ path: matchedRoute.path }" :key="matchedRoute.path">{{ matchedRoute.meta.title }}</el-breadcrumb-item>
                 </el-breadcrumb>
                 <el-dropdown @command="handleProfileCommand" trigger="click" style="cursor: pointer;position: absolute;right: 30px;line-height: 50px;">
                     <span>
@@ -71,37 +62,6 @@
     </el-container>
 </div>
 <script>
-    const routerMenuItem = {
-        name: 'router-menu-item',
-        props: ['parentPath', 'route'],
-        computed: {
-            path: function () {
-                let path = this.parentPath;
-                if (!this.route.path.startsWith('/')) {
-                    path += '/';
-                }
-                path += this.route.path;
-
-                return path;
-            }
-        },
-        template: `
-            <router-link v-if="!(route.children) || route.children.length <= 0" :to="path" style="text-decoration: none;">
-                <el-menu-item :index="path">
-                    <i :class="route.meta.icon"></i>
-                    <span slot="title">{{ route.meta.title }}</span>
-                </el-menu-item>
-            </router-link>
-            <el-submenu v-else :index="path">
-                <template slot="title">
-                    <i :class="route.meta.icon"></i>
-                    <span slot="title">{{ route.meta.title }}</span>
-                </template>
-                <router-menu-item v-for="child in route.children" v-if="!child.meta.type || child.meta.type==='menu-item'" :parent-path="path" :route="child" :key="path + '/' + child.path"></router-menu-item>
-            </el-submenu>`
-    };
-
-
     // 判断用户是否已登录
     axios.get('../manager/main/current')
         .then(function (result) {
@@ -137,11 +97,17 @@
     const router = new VueRouter({
         routes: [{
             path: '/configurations',
-            component: configurationsComponent,
+            component: {
+                template: '<router-view></router-view>'
+            },
             meta: {
                 title: '配置',
                 icon: 'el-icon-tickets'
-            }
+            },
+            children: [{
+                path: '',
+                component: configurationsComponent
+            }]
         }, {
             path: '/apps',
             component: appsComponent,
@@ -154,7 +120,8 @@
             component: profilesComponent,
             meta: {
                 title: '环境',
-                icon: 'el-icon-upload'
+                icon: 'el-icon-upload',
+                hidden: true
             }
         }, {
             path: '/managers',
@@ -166,36 +133,14 @@
         }]
     });
 
-
     const mainApp = new Vue({
         el: '#mainApp',
-        components: {
-            'router-menu-item': routerMenuItem
-        },
         router: router,
         data: {
             sidebarCollapsed: false,
-            breadcrumbMetas: [],
             manager: {}
         },
-        created: function () {
-            this.$router.beforeEach(function (to, from, next) {
-                mainApp.appendBreadcrumb(to);
-                next();
-            });
-        },
         methods: {
-            appendBreadcrumb: function (route) {
-                let target = route.matched[route.matched.length - 1];
-                if (target.meta.type !== 'inner') {
-                    this.breadcrumbMetas.splice(0, this.breadcrumbMetas.length);
-                }
-                this.breadcrumbMetas.push({
-                    title: target.meta.title,
-                    icon: target.meta.icon,
-                    path: route.path
-                });
-            },
             handleProfileCommand: function (command) {
                 switch (command) {
                     case 'showManagerProfile':
