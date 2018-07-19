@@ -1,7 +1,29 @@
 // 设置axios发送post请求时，参数按照url方式提交
 axios.defaults.headers.post['Content-Type'] = 'application/x-www-form-urlencoded';
+// 拦截axios请求，进行规范化操作
 axios.interceptors.request.use(function (config) {
-    if (config.method === 'post') {
+    // 空字符串参数设为null
+    if (config.params) {
+        for (let key in config.params) {
+            if (!config.params.hasOwnProperty(key)) {
+                continue;
+            }
+            if (config.params[key] === '') {
+                config.params[key] = null;
+            }
+        }
+    }
+    if (config.method === 'post' && config.data) {
+        // 空字符串参数设为null
+        for (let key in config.data) {
+            if (!config.data.hasOwnProperty(key)) {
+                continue;
+            }
+            if (config.data[key] === '') {
+                config.data[key] = null;
+            }
+        }
+        // 将json转换为key=value形式
         config.data = Qs.stringify(config.data)
     }
     return config;
