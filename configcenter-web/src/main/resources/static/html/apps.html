@@ -9,7 +9,7 @@
 <div id="appsApp" style="width: 70%">
     <el-row>
         <el-col>
-            <el-form :v-model="queryAppsForm" :inline="true" size="mini">
+            <el-form :v-model="queryAppsForm" :inline="true" size="small">
                 <el-form-item>
                     <el-input v-model="queryAppsForm.appId" placeholder="应用id"></el-input>
                 </el-form-item>
@@ -25,7 +25,7 @@
             </el-form>
         </el-col>
     </el-row>
-    <el-table :data="apps" border size="small">
+    <el-table :data="apps" border stripe>
         <el-table-column prop="appId" label="应用id"></el-table-column>
         <el-table-column label="备注">
             <template slot-scope="{ row }">
@@ -43,11 +43,35 @@
         </el-table-column>
         <el-table-column label="操作">
             <template slot-scope="{ row }">
-                <el-button v-if="!row.editing" @click="startEditing(row)" icon="el-icon-edit" size="small" circle></el-button>
-                <template v-else>
-                    <el-button @click="row.editing = false" type="warning" icon="el-icon-close" size="mini" circle></el-button>
-                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
-                </template>
+                <el-row>
+                    <el-col :span="12" style="text-align: center">
+                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                        </el-tooltip>
+                        <template v-else>
+                            <el-button-group>
+                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
+                                </el-tooltip>
+                                <el-popover placement="top" v-model="row.savePopoverShowing">
+                                    <p>确定保存修改？</p>
+                                    <div style="text-align: right; margin: 0">
+                                        <el-button size="mini" type="text" @click="row.savePopoverShowing = false">取消</el-button>
+                                        <el-button type="primary" size="mini" @click="saveEditing(row)">确定</el-button>
+                                    </div>
+                                    <el-tooltip slot="reference" :disabled="row.savePopoverShowing" content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="row.savePopoverShowing = true" type="success" icon="el-icon-check" size="small" circle></el-button>
+                                    </el-tooltip>
+                                </el-popover>
+                            </el-button-group>
+                        </template>
+                    </el-col>
+                    <el-col :span="12">
+                        <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="deleteApp(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                        </el-tooltip>
+                    </el-col>
+                </el-row>
             </template>
         </el-table-column>
     </el-table>
@@ -140,6 +164,7 @@
                 app.editingParent = app.parent;
             },
             saveEditing: function (app) {
+                app.savePopoverShowing = false;
                 this.doAddOrModifyApp({
                     appId: app.appId,
                     memo: app.editingMemo,
@@ -147,8 +172,23 @@
                 }, function () {
                     app.editing = false;
                     app.memo = app.editingMemo;
-                    app.parent = app.editingParent
+                    app.parent = app.editingParent;
                 });
+            },
+            deleteApp: function (app) {
+                const theThis = this;
+                Vue.prototype.$confirm('确定删除应用？', '警告', {type: 'warning'})
+                    .then(function () {
+                        axios.post('../manage/app/deleteApp', {appId: app.appId})
+                            .then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                Vue.prototype.$message.success(result.message);
+                                theThis.queryApps();
+                            });
+                    });
             },
             addApp: function () {
                 const theThis = this;
