@@ -14,7 +14,7 @@
                     <el-input v-model="queryAppsForm.appId" placeholder="应用id"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="queryAppsForm.parent" placeholder="父应用id"></el-input>
+                    <el-input v-model="queryAppsForm.parent" placeholder="父应用"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" @click="queryApps">查询</el-button>
@@ -25,10 +25,31 @@
             </el-form>
         </el-col>
     </el-row>
-    <el-table :data="apps" border>
+    <el-table :data="apps" border size="small">
         <el-table-column prop="appId" label="应用id"></el-table-column>
-        <el-table-column prop="memo" label="备注"></el-table-column>
-        <el-table-column prop="parent" label="父应用id"></el-table-column>
+        <el-table-column label="备注">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ row.memo }}</span>
+                <el-input v-else v-model="row.editingMemo" size="small" placeholder="请输入备注"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="父应用">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ row.parent }}</span>
+                <el-select v-else v-model="row.editingParent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(row.editingParent)" size="small" placeholder="请选择父应用">
+                    <el-option v-for="app in matchedApps" :value="app.appId" :label="app.appId + (app.memo ? '（' + app.memo + '）' : '')" :key="app.appId"></el-option>
+                </el-select>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作">
+            <template slot-scope="{ row }">
+                <el-button v-if="!row.editing" @click="startEditing(row)" icon="el-icon-edit" size="small" circle></el-button>
+                <template v-else>
+                    <el-button @click="row.editing = false" type="warning" icon="el-icon-close" size="mini" circle></el-button>
+                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
+                </template>
+            </template>
+        </el-table-column>
     </el-table>
     <el-row style="margin-top: 10px">
         <el-col style="text-align: end">
@@ -43,9 +64,9 @@
             <el-form-item label="备注">
                 <el-input v-model="addAppForm.memo" placeholder="请输入备注" style="width: 90%"></el-input>
             </el-form-item>
-            <el-form-item label="父应用id" prop="parent">
-                <el-select v-model="addAppForm.parent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(null)" placeholder="请选择父应用" style="width: 90%">
-                    <el-option v-for="app in matchedApps" :value="app.appId" :label="app.appId + '(' + app.memo + ')'" :key="app.appId"></el-option>
+            <el-form-item label="父应用" prop="parent">
+                <el-select v-model="addAppForm.parent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(addAppForm.parent)" placeholder="请选择父应用" style="width: 90%">
+                    <el-option v-for="app in matchedApps" :value="app.appId" :label="app.appId + (app.memo ? '(' + app.memo + ')' : '')" :key="app.appId"></el-option>
                 </el-select>
             </el-form-item>
         </el-form>
@@ -85,6 +106,11 @@
                 this.doQueryApps(this.queryAppsForm, function (result) {
                     theThis.totalApps = result.totalCount;
                     theThis.apps = result.infos;
+                    theThis.apps.forEach(function (app) {
+                        Vue.set(app, 'editing', false);
+                        Vue.set(app, 'editingMemo', null);
+                        Vue.set(app, 'editingParent', null);
+                    })
                 });
             },
             queryMatchedApps: function (appId) {
@@ -92,7 +118,7 @@
 
                 this.doQueryApps({
                     pageNo: 1,
-                    pageSize: 20,
+                    pageSize: 100,
                     appId: appId
                 }, function (result) {
                     theThis.matchedApps = result.infos;
@@ -108,22 +134,44 @@
                         processResult(result);
                     });
             },
+            startEditing: function (app) {
+                app.editing = true;
+                app.editingMemo = app.memo;
+                app.editingParent = app.parent;
+            },
+            saveEditing: function (app) {
+                this.doAddOrModifyApp({
+                    appId: app.appId,
+                    memo: app.editingMemo,
+                    parent: app.editingParent
+                }, function () {
+                    app.editing = false;
+                    app.memo = app.editingMemo;
+                    app.parent = app.editingParent
+                });
+            },
             addApp: function () {
                 const theThis = this;
                 this.$refs.addAppForm.validate(function (valid) {
                     if (!valid) {
                         return;
                     }
-                    axios.post('../manage/app/addOrModifyApp', theThis.addAppForm)
-                        .then(function (result) {
-                            if (result.success) {
-                                theThis.closeAddAppDialog();
-                                theThis.queryApps();
-                            } else {
-                                Vue.prototype.$message.error(result.message);
-                            }
-                        });
+                    theThis.doAddOrModifyApp(theThis.addAppForm, function () {
+                        theThis.closeAddAppDialog();
+                        theThis.queryApps();
+                    });
                 })
+            },
+            doAddOrModifyApp: function (params, successCallback) {
+                axios.post('../manage/app/addOrModifyApp', params)
+                    .then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        successCallback();
+                    });
             },
             closeAddAppDialog: function () {
                 this.addAppDialogVisible = false;
