@@ -9,12 +9,12 @@
 <div id="appsApp" style="width: 70%">
     <el-row>
         <el-col>
-            <el-form :v-model="queryParams" :inline="true" size="mini">
+            <el-form :v-model="queryAppsForm" :inline="true" size="mini">
                 <el-form-item>
-                    <el-input v-model="queryParams.appId" placeholder="应用id"></el-input>
+                    <el-input v-model="queryAppsForm.appId" placeholder="应用id"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-input v-model="queryParams.parent" placeholder="父应用id"></el-input>
+                    <el-input v-model="queryAppsForm.parent" placeholder="父应用id"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" icon="el-icon-search" @click="queryApps">查询</el-button>
@@ -32,7 +32,7 @@
     </el-table>
     <el-row style="margin-top: 10px">
         <el-col style="text-align: end">
-            <el-pagination :total="totalApps" :current-page.sync="queryParams.pageNo" :page-size.sync="queryParams.pageSize" @current-change="queryApps" layout="total,prev,pager,next" small background></el-pagination>
+            <el-pagination :total="totalApps" :current-page.sync="queryAppsForm.pageNo" :page-size.sync="queryAppsForm.pageSize" @current-change="queryApps" layout="total,prev,pager,next" small background></el-pagination>
         </el-col>
     </el-row>
     <el-dialog :visible.sync="addAppDialogVisible" :before-close="closeAddAppDialog" title="新增应用" width="40%">
@@ -43,8 +43,10 @@
             <el-form-item label="备注">
                 <el-input v-model="addAppForm.memo" placeholder="请输入备注" style="width: 90%"></el-input>
             </el-form-item>
-            <el-form-item label="父应用id">
-                <el-input v-model="addAppForm.parent" placeholder="请输入父应用id" style="width: 90%"></el-input>
+            <el-form-item label="父应用id" prop="parent">
+                <el-select v-model="addAppForm.parent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(null)" placeholder="请选择父应用" style="width: 90%">
+                    <el-option v-for="app in matchedApps" :value="app.appId" :label="app.appId + '(' + app.memo + ')'" :key="app.appId"></el-option>
+                </el-select>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -57,7 +59,7 @@
     const appsApp = new Vue({
         el: '#appsApp',
         data: {
-            queryParams: {
+            queryAppsForm: {
                 pageNo: 1,
                 pageSize: 20,
                 appId: null,
@@ -66,6 +68,7 @@
             totalApps: 0,
             apps: [],
             addAppDialogVisible: false,
+            matchedApps: null,
             addAppForm: {
                 appId: null,
                 memo: null,
@@ -78,21 +81,32 @@
         methods: {
             queryApps: function () {
                 const theThis = this;
-                axios.get('../manage/app/queryApps', {params: this.queryParams})
+
+                this.doQueryApps(this.queryAppsForm, function (result) {
+                    theThis.totalApps = result.totalCount;
+                    theThis.apps = result.infos;
+                });
+            },
+            queryMatchedApps: function (appId) {
+                const theThis = this;
+
+                this.doQueryApps({
+                    pageNo: 1,
+                    pageSize: 20,
+                    appId: appId
+                }, function (result) {
+                    theThis.matchedApps = result.infos;
+                });
+            },
+            doQueryApps: function (params, processResult) {
+                axios.get('../manage/app/queryApps', {params: params})
                     .then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.totalApps = result.totalCount;
-                        theThis.apps = result.infos;
+                        processResult(result);
                     });
-            },
-            closeAddAppDialog: function () {
-                this.addAppDialogVisible = false;
-                this.addAppForm.appId = null;
-                this.addAppForm.memo = null;
-                this.addAppForm.parent = null;
             },
             addApp: function () {
                 const theThis = this;
@@ -110,6 +124,12 @@
                             }
                         });
                 })
+            },
+            closeAddAppDialog: function () {
+                this.addAppDialogVisible = false;
+                this.addAppForm.appId = null;
+                this.addAppForm.memo = null;
+                this.addAppForm.parent = null;
             }
         }
     });
