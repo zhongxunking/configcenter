@@ -96,7 +96,6 @@ const appsComponentTemplate = `
 </div>
 `;
 
-
 const appsComponent = {
     template: appsComponentTemplate,
     data: function () {
