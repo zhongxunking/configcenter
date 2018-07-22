@@ -116,6 +116,7 @@
                     theThis.profiles.forEach(function (profile) {
                         Vue.set(profile, 'editing', false);
                         Vue.set(profile, 'editingMemo', null);
+                        Vue.set(profile, 'savePopoverShowing', false);
                     });
                     theThis.profilesLoading = false;
                 }, function () {
