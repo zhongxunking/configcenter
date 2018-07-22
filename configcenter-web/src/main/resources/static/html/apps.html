@@ -27,10 +27,10 @@
     </el-row>
     <el-table :data="apps" v-loading="appsLoading" border stripe>
         <el-table-column prop="appId" label="应用id"></el-table-column>
-        <el-table-column label="备注">
+        <el-table-column label="应用名">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.memo }}</span>
-                <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入备注"></el-input>
+                <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入应用名"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="父应用">
@@ -86,8 +86,8 @@
             <el-form-item label="应用id" prop="appId" :rules="[{required:true, message:'请输入应用id', trigger:'blur'}]">
                 <el-input v-model="addAppForm.appId" clearable placeholder="请输入应用id" style="width: 90%"></el-input>
             </el-form-item>
-            <el-form-item label="备注">
-                <el-input v-model="addAppForm.memo" clearable placeholder="请输入备注" style="width: 90%"></el-input>
+            <el-form-item label="应用名">
+                <el-input v-model="addAppForm.memo" clearable placeholder="请输入应用名" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="父应用" prop="parent">
                 <el-select v-model="addAppForm.parent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(addAppForm.parent)" clearable placeholder="请选择父应用" style="width: 90%">
