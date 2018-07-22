@@ -43,6 +43,7 @@ axios.interceptors.response.use(function (response) {
                 .then(function () {
                     window.location.href = 'login.html';
                 });
+            return Promise.reject(response);
         }
         return result;
     } else {
