@@ -1,6 +1,87 @@
 // 环境管理组件
+const profilesComponentTemplate = `
+<div>
+    <el-row>
+        <el-col>
+            <el-form :v-model="queryProfilesForm" :inline="true" size="small">
+                <el-form-item>
+                    <el-input v-model="queryProfilesForm.profileId" clearable placeholder="环境id"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" @click="queryProfiles">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-plus" @click="addProfileDialogVisible = true">新增</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <el-table :data="profiles" v-loading="profilesLoading" border stripe>
+        <el-table-column prop="profileId" label="环境id"></el-table-column>
+        <el-table-column label="环境名">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ row.memo }}</span>
+                <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入环境名"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" header-align="center">
+            <template slot-scope="{ row }">
+                <el-row>
+                    <el-col :span="12" style="text-align: center">
+                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                        </el-tooltip>
+                        <template v-else>
+                            <el-button-group>
+                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
+                                </el-tooltip>
+                                <el-popover placement="top" v-model="row.savePopoverShowing">
+                                    <p>确定保存修改？</p>
+                                    <div style="text-align: right; margin: 0">
+                                        <el-button size="mini" type="text" @click="row.savePopoverShowing = false">取消</el-button>
+                                        <el-button type="primary" size="mini" @click="saveEditing(row)">确定</el-button>
+                                    </div>
+                                    <el-tooltip slot="reference" :disabled="row.savePopoverShowing" content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="row.savePopoverShowing = true" type="success" icon="el-icon-check" size="small" circle></el-button>
+                                    </el-tooltip>
+                                </el-popover>
+                            </el-button-group>
+                        </template>
+                    </el-col>
+                    <el-col :span="12" style="text-align: center">
+                        <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="deleteProfile(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                        </el-tooltip>
+                    </el-col>
+                </el-row>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row style="margin-top: 10px">
+        <el-col style="text-align: end">
+            <el-pagination :total="totalProfiles" :current-page.sync="queryProfilesForm.pageNo" :page-size.sync="queryProfilesForm.pageSize" @current-change="queryProfiles" layout="total,prev,pager,next" small background></el-pagination>
+        </el-col>
+    </el-row>
+    <el-dialog :visible.sync="addProfileDialogVisible" :before-close="closeAddProfileDialog" title="新增环境" width="40%">
+        <el-form ref="addProfileForm" :model="addProfileForm" label-width="20%">
+            <el-form-item label="环境id" prop="profileId" :rules="[{required:true, message:'请输入环境id', trigger:'blur'}]">
+                <el-input v-model="addProfileForm.profileId" clearable placeholder="请输入环境id" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="环境名">
+                <el-input v-model="addProfileForm.memo" clearable placeholder="请输入环境名" style="width: 90%"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddProfileDialog">取消</el-button>
+            <el-button type="primary" @click="addProfile">提交</el-button>
+        </div>
+    </el-dialog>
+</div>
+`;
+
 const profilesComponent = {
-    template: null,
+    template: profilesComponentTemplate,
     data: function () {
         return {
             queryProfilesForm: {
@@ -111,7 +192,3 @@ const profilesComponent = {
         }
     }
 };
-// 获取组件页面
-axios.get('./components/profiles.html').then(function (result) {
-    profilesComponent.template = result;
-});
