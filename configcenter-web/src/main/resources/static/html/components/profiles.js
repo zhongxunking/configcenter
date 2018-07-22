@@ -24,7 +24,7 @@ const profilesComponentTemplate = `
                 <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入环境名"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="操作" header-align="center">
+        <el-table-column label="操作" header-align="center" width="160px">
             <template slot-scope="{ row }">
                 <el-row>
                     <el-col :span="12" style="text-align: center">
