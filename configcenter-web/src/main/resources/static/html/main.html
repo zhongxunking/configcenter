@@ -5,6 +5,7 @@
     <title>管理</title>
     <script src="../common/import.js"></script>
     <script src="./components/apps.js"></script>
+    <script src="./components/profiles.js"></script>
     <style>
         .main-sidebar-menu {
             height: 100%;
@@ -66,9 +67,6 @@
     const configurationsComponent = {
         template: '<div>configurations</div>'
     };
-    const profilesComponent = {
-        template: '<div>profiles</div>'
-    };
     const managersComponent = {
         template: '<div>managers</div>'
     };
@@ -99,8 +97,7 @@
             component: profilesComponent,
             meta: {
                 title: '环境',
-                icon: 'el-icon-upload',
-                hidden: true
+                icon: 'el-icon-upload'
             }
         }, {
             path: '/managers',
