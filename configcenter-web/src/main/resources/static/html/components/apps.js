@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>配置中心-应用</title>
-    <script src="../common/import.js"></script>
-</head>
-<body>
-<div id="appsApp">
+const appsComponentTemplate = `
+<div>
     <el-row>
         <el-col>
             <el-form :v-model="queryAppsForm" :inline="true" size="small">
@@ -101,10 +94,13 @@
         </div>
     </el-dialog>
 </div>
-<script>
-    const appsApp = new Vue({
-        el: '#appsApp',
-        data: {
+`;
+
+
+const appsComponent = {
+    template: appsComponentTemplate,
+    data: function () {
+        return {
             queryAppsForm: {
                 pageNo: 1,
                 pageSize: 20,
@@ -121,152 +117,150 @@
                 memo: null,
                 parent: null
             }
-        },
-        created: function () {
-            this.queryApps();
-        },
-        methods: {
-            queryApps: function () {
-                this.appsLoading = true;
+        };
+    },
+    created: function () {
+        this.queryApps();
+    },
+    methods: {
+        queryApps: function () {
+            this.appsLoading = true;
 
-                const theThis = this;
-                this.doQueryApps(this.queryAppsForm, function (result) {
-                    theThis.totalApps = result.totalCount;
-                    theThis.apps = result.infos;
-                    theThis.apps.forEach(function (app) {
-                        Vue.set(app, 'editing', false);
-                        Vue.set(app, 'editingMemo', null);
-                        Vue.set(app, 'editingParent', null);
-                        Vue.set(app, 'parentApp', null);
-                        if (app.parent) {
-                            theThis.doFindApp(app.parent, function (parentApp) {
-                                app.parentApp = parentApp;
-                            });
-                        }
-                    });
-                    theThis.appsLoading = false;
-                }, function () {
-                    theThis.appsLoading = false;
-                });
-            },
-            queryMatchedApps: function (appId) {
-                const theThis = this;
-                this.doQueryApps({
-                    pageNo: 1,
-                    pageSize: 100,
-                    appId: appId
-                }, function (result) {
-                    theThis.matchedApps = result.infos;
-                });
-            },
-            startEditing: function (app) {
-                app.editing = true;
-                app.editingMemo = app.memo;
-                app.editingParent = app.parent;
-                this.matchedApps = null;
-            },
-            saveEditing: function (app) {
-                app.savePopoverShowing = false;
-
-                const theThis = this;
-                this.doAddOrModifyApp({
-                    appId: app.appId,
-                    memo: app.editingMemo,
-                    parent: app.editingParent
-                }, function () {
-                    app.editing = false;
-                    app.memo = app.editingMemo;
-                    app.parent = app.editingParent;
-                    app.parentApp = null;
+            const theThis = this;
+            this.doQueryApps(this.queryAppsForm, function (result) {
+                theThis.totalApps = result.totalCount;
+                theThis.apps = result.infos;
+                theThis.apps.forEach(function (app) {
+                    Vue.set(app, 'editing', false);
+                    Vue.set(app, 'editingMemo', null);
+                    Vue.set(app, 'editingParent', null);
+                    Vue.set(app, 'parentApp', null);
                     if (app.parent) {
                         theThis.doFindApp(app.parent, function (parentApp) {
                             app.parentApp = parentApp;
                         });
                     }
                 });
-            },
-            deleteApp: function (app) {
-                const theThis = this;
-                Vue.prototype.$confirm('确定删除应用？', '警告', {type: 'warning'})
-                    .then(function () {
-                        axios.post('../manage/app/deleteApp', {appId: app.appId})
-                            .then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                Vue.prototype.$message.success(result.message);
-                                theThis.queryApps();
-                            });
+                theThis.appsLoading = false;
+            }, function () {
+                theThis.appsLoading = false;
+            });
+        },
+        queryMatchedApps: function (appId) {
+            const theThis = this;
+            this.doQueryApps({
+                pageNo: 1,
+                pageSize: 100,
+                appId: appId
+            }, function (result) {
+                theThis.matchedApps = result.infos;
+            });
+        },
+        startEditing: function (app) {
+            app.editing = true;
+            app.editingMemo = app.memo;
+            app.editingParent = app.parent;
+            this.matchedApps = null;
+        },
+        saveEditing: function (app) {
+            app.savePopoverShowing = false;
+
+            const theThis = this;
+            this.doAddOrModifyApp({
+                appId: app.appId,
+                memo: app.editingMemo,
+                parent: app.editingParent
+            }, function () {
+                app.editing = false;
+                app.memo = app.editingMemo;
+                app.parent = app.editingParent;
+                app.parentApp = null;
+                if (app.parent) {
+                    theThis.doFindApp(app.parent, function (parentApp) {
+                        app.parentApp = parentApp;
                     });
-            },
-            addApp: function () {
-                const theThis = this;
-                this.$refs.addAppForm.validate(function (valid) {
-                    if (!valid) {
-                        return;
-                    }
-                    theThis.doAddOrModifyApp(theThis.addAppForm, function () {
-                        theThis.closeAddAppDialog();
-                        theThis.queryApps();
-                    });
-                })
-            },
-            closeAddAppDialog: function () {
-                this.addAppDialogVisible = false;
-                this.addAppForm.appId = null;
-                this.addAppForm.memo = null;
-                this.addAppForm.parent = null;
-            },
-            toShowingApp: function (app) {
-                if (!app) {
-                    return '';
                 }
-                let text = app.appId;
-                if (app.memo) {
-                    text += '（' + app.memo + '）';
-                }
-                return text;
-            },
-            doQueryApps: function (params, processResult, failCallback) {
-                axios.get('../manage/app/queryApps', {params: params})
-                    .then(function (result) {
-                        if (result.success) {
-                            processResult(result);
-                        } else {
-                            Vue.prototype.$message.error(result.message);
-                            if (failCallback) {
-                                failCallback(result);
+            });
+        },
+        deleteApp: function (app) {
+            const theThis = this;
+            Vue.prototype.$confirm('确定删除应用？', '警告', {type: 'warning'})
+                .then(function () {
+                    axios.post('../manage/app/deleteApp', {appId: app.appId})
+                        .then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
                             }
+                            Vue.prototype.$message.success(result.message);
+                            theThis.queryApps();
+                        });
+                });
+        },
+        addApp: function () {
+            const theThis = this;
+            this.$refs.addAppForm.validate(function (valid) {
+                if (!valid) {
+                    return;
+                }
+                theThis.doAddOrModifyApp(theThis.addAppForm, function () {
+                    theThis.closeAddAppDialog();
+                    theThis.queryApps();
+                });
+            })
+        },
+        closeAddAppDialog: function () {
+            this.addAppDialogVisible = false;
+            this.addAppForm.appId = null;
+            this.addAppForm.memo = null;
+            this.addAppForm.parent = null;
+        },
+        toShowingApp: function (app) {
+            if (!app) {
+                return '';
+            }
+            let text = app.appId;
+            if (app.memo) {
+                text += '（' + app.memo + '）';
+            }
+            return text;
+        },
+        doQueryApps: function (params, processResult, failCallback) {
+            axios.get('../manage/app/queryApps', {params: params})
+                .then(function (result) {
+                    if (result.success) {
+                        processResult(result);
+                    } else {
+                        Vue.prototype.$message.error(result.message);
+                        if (failCallback) {
+                            failCallback(result);
                         }
-                    });
-            },
-            doFindApp: function (appId, processApp) {
-                axios.get('../manage/app/findApp', {
-                    params: {
-                        appId: appId
                     }
-                }).then(function (result) {
+                });
+        },
+        doFindApp: function (appId, processApp) {
+            axios.get('../manage/app/findApp', {
+                params: {
+                    appId: appId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                processApp(result.app);
+            });
+        },
+        doAddOrModifyApp: function (params, successCallback) {
+            axios.post('../manage/app/addOrModifyApp', params)
+                .then(function (result) {
                     if (!result.success) {
                         Vue.prototype.$message.error(result.message);
                         return;
                     }
-                    processApp(result.app);
+                    Vue.prototype.$message.success(result.message);
+                    successCallback();
                 });
-            },
-            doAddOrModifyApp: function (params, successCallback) {
-                axios.post('../manage/app/addOrModifyApp', params)
-                    .then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        Vue.prototype.$message.success(result.message);
-                        successCallback();
-                    });
-            }
         }
-    });
-</script>
-</body>
-</html>
+    }
+};
