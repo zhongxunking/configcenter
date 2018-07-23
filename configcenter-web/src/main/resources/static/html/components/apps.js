@@ -133,7 +133,7 @@ const appsComponent = {
                     Vue.set(app, 'editing', false);
                     Vue.set(app, 'editingMemo', null);
                     Vue.set(app, 'editingParent', null);
-                    Vue.set(app, 'savePopoverShowing', null);
+                    Vue.set(app, 'savePopoverShowing', false);
                     Vue.set(app, 'parentApp', null);
                     if (app.parent) {
                         theThis.doFindApp(app.parent, function (parentApp) {
