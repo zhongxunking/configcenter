@@ -15,7 +15,7 @@ const configsComponentTemplate = `
     <el-table :data="apps" v-loading="appsLoading && allProfilesLoading" border stripe>
         <el-table-column label="应用">
             <template slot-scope="{ row }">
-                <router-link :to="row.appId">
+                <router-link :to="'/configs/' + row.appId">
                     <el-button type="text">
                         {{ toShowingApp(row) }}
                     </el-button>

@@ -82,6 +82,18 @@
             children: [{
                 path: '',
                 component: configsComponent
+            }, {
+                path: ':appId',
+                component: {
+                    template: '<router-view></router-view>'
+                },
+                meta: {
+                    title: '应用'
+                },
+                children: [{
+                    path: '',
+                    template: '<div>aaa</div>'
+                }]
             }]
         }, {
             path: '/apps',
