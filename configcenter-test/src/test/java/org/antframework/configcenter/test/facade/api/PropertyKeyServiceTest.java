@@ -70,6 +70,7 @@ public class PropertyKeyServiceTest extends AbstractTest {
     public void testFindAppPropertyKeys() {
         FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
         order.setAppId("scbfund");
+        order.setMinScope(Scope.PROTECTED);
 
         FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
         checkResult(result, Status.SUCCESS);

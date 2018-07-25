@@ -21,6 +21,7 @@ import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesR
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -45,15 +46,11 @@ public class FindAppSelfPropertiesService {
         FindAppSelfPropertiesOrder order = context.getOrder();
         FindAppSelfPropertiesResult result = context.getResult();
         // 获取应用自己的属性key
-        List<PropertyKeyInfo> propertyKeys = getAppPropertyKeys(order.getAppId());
+        List<PropertyKeyInfo> propertyKeys = getAppPropertyKeys(order.getAppId(), order.getMinScope());
         // 获取应用自己的属性value
         Map<String, String> values = getAppProfilePropertyValues(order.getAppId(), order.getProfileId());
         // 组装属性
         for (PropertyKeyInfo propertyKey : propertyKeys) {
-            if (propertyKey.getScope().compareTo(order.getMinScope()) < 0) {
-                // 如果作用域小于要求值，则忽略该属性
-                continue;
-            }
             // 添加属性
             String value = values.get(propertyKey.getKey());
             result.addProperty(new Property(propertyKey.getKey(), value, propertyKey.getScope()));
@@ -61,9 +58,10 @@ public class FindAppSelfPropertiesService {
     }
 
     // 获取应用所有的属性key
-    private List<PropertyKeyInfo> getAppPropertyKeys(String appId) {
+    private List<PropertyKeyInfo> getAppPropertyKeys(String appId, Scope minScope) {
         FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
         order.setAppId(appId);
+        order.setMinScope(minScope);
 
         FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
         if (!result.isSuccess()) {
