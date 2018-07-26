@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置中心-属性key</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="propertyKeysApp">
+    <el-table v-for="appPropertyKeys in appPropertyKeyses" :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" border stripe>
+        <el-table-column prop="key" label="属性key"></el-table-column>
+        <el-table-column prop="memo" label="备注"></el-table-column>
+        <el-table-column prop="scope" label="作用域"></el-table-column>
+    </el-table>
+</div>
+<script>
+    const propertyKeysApp = new Vue({
+        el: '#propertyKeysApp',
+        data: {
+            appId: 'customer',
+            appPropertyKeysesLoading: false,
+            appPropertyKeyses: []
+        },
+        created: function () {
+            this.queryAppPropertyKeyses();
+        },
+        methods: {
+            queryAppPropertyKeyses: function () {
+                const theThis = this;
+                this.appPropertyKeysesLoading = true;
+                axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                    params: {
+                        appId: this.appId
+                    }
+                }).then(function (result) {
+                    theThis.appPropertyKeysesLoading = false;
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.appPropertyKeyses = result.appPropertyKeyses;
+                });
+            },
+            toShowingApp: function (app) {
+                if (!app) {
+                    return '';
+                }
+                let text = app.appId;
+                if (app.memo) {
+                    text += '（' + app.memo + '）';
+                }
+                return text;
+            }
+        }
+    });
+</script>
+</body>
+</html>
