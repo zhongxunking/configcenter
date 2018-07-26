@@ -8,10 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -89,9 +86,13 @@ public class PropertyKeyManageController {
         ManagerAssert.adminOrHaveRelation(appId);
 
         FindInheritedPropertyKeysResult result = new FindInheritedPropertyKeysResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
         for (AppInfo app : getInheritedApp(appId)) {
             result.addAppPropertyKeys(getAppPropertyKeys(app.getAppId(), appId));
         }
+
         return result;
     }
 
