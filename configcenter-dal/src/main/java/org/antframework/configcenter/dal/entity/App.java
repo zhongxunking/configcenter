@@ -22,9 +22,9 @@ public class App extends AbstractEntity {
     @Column(unique = true, length = 64)
     private String appId;
 
-    // 备注
+    // 应用名
     @Column
-    private String memo;
+    private String appName;
 
     // 父应用id（null表示无父应用）
     @Column(length = 64)
@@ -38,12 +38,12 @@ public class App extends AbstractEntity {
         this.appId = appId;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getParent() {

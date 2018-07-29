@@ -33,21 +33,21 @@ public class AppServiceTest extends AbstractTest {
     public void testAddOrModifyApp() {
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppId("common");
-        order.setMemo("公共配置");
+        order.setAppName("公共配置");
         order.setParent(null);
         EmptyResult result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
 
         order = new AddOrModifyAppOrder();
         order.setAppId("scbfund");
-        order.setMemo("升财宝");
+        order.setAppName("升财宝");
         order.setParent("common");
         result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);
 
         order = new AddOrModifyAppOrder();
         order.setAppId("investment");
-        order.setMemo("理财平台");
+        order.setAppName("理财平台");
         order.setParent("common");
         result = appService.addOrModifyApp(order);
         checkResult(result, Status.SUCCESS);

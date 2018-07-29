@@ -42,16 +42,16 @@ public class AppManageController {
     /**
      * 添加或修改应用
      *
-     * @param appId  应用id（必须）
-     * @param memo   备注（可选）
-     * @param parent 父应用id（可选）
+     * @param appId   应用id（必须）
+     * @param appName 应用名（可选）
+     * @param parent  父应用id（可选）
      */
     @RequestMapping("/addOrModifyApp")
-    public EmptyResult addOrModifyApp(String appId, String memo, String parent) {
+    public EmptyResult addOrModifyApp(String appId, String appName, String parent) {
         ManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppId(appId);
-        order.setMemo(memo);
+        order.setAppName(appName);
         order.setParent(parent);
 
         return appService.addOrModifyApp(order);
