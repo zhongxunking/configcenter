@@ -1,7 +1,7 @@
 const propertyKeysComponentTemplate = `
 <div>
     <el-row>
-        <el-col style="text-align: right;margin-bottom: 30px">
+        <el-col style="text-align: right;margin-bottom: 20px">
             <span>环境：</span>
             <router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
                 <el-button type="text">{{ profile.profileId }}</el-button>
@@ -10,29 +10,29 @@ const propertyKeysComponentTemplate = `
     </el-row>
     <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
         <el-row v-if="appPropertyKeys.appId === appId">
-            <el-col :span="7">
+            <el-col :span="4">
                 <div style="margin-bottom: 5px">
                     <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
                 </div>
             </el-col>
-            <el-col :span="10" style="text-align: center;margin-bottom: 10px">
+            <el-col :span="16" style="text-align: center;margin-bottom: 10px">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
         <el-row v-else>
-            <el-col :offset="7" :span="10" style="text-align: center;margin-bottom: 10px">
+            <el-col :offset="4" :span="16" style="text-align: center;margin-bottom: 10px">
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" border stripe>
-            <el-table-column prop="key" label="属性key"></el-table-column>
-            <el-table-column label="备注">
+        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe>
+            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+            <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
                     <span v-if="!row.editing">{{ row.memo }}</span>
                     <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入备注"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column label="作用域" width="160px">
+            <el-table-column prop="scope" label="作用域" sortable width="160px">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
