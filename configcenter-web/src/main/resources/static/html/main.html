@@ -141,18 +141,32 @@
         },
         computed: {
             breadcrumbItems: function () {
-                let theThis = this;
-                let items = [];
-                let tempPath = '';
-                let i = 0;
-                this.$route.path.split('/').forEach(function (partPath) {
-                    if (partPath) {
-                        tempPath += '/' + partPath;
-                        items.push({
-                            title: theThis.$route.matched[i++].meta.title,
-                            path: tempPath
-                        });
+                let parts = [];
+                this.$route.path.split('/').forEach(function (part) {
+                    if (part) {
+                        parts.push(part);
                     }
+                });
+
+                let items = [];
+                this.$route.matched.forEach(function (routeRecord) {
+                    if (routeRecord.path.endsWith('/')) {
+                        return;
+                    }
+                    let partSize = 0;
+                    routeRecord.path.split('/').forEach(function (part) {
+                        if (part) {
+                            partSize++;
+                        }
+                    });
+                    let path = '';
+                    for (let i = 0; i < partSize; i++) {
+                        path += '/' + parts[i];
+                    }
+                    items.push({
+                        title: routeRecord.meta.title,
+                        path: path
+                    });
                 });
                 return items;
             }
