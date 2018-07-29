@@ -34,7 +34,7 @@ public class ProfileServiceTest extends AbstractTest {
     public void testAddOrModifyProfile() {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId("dev");
-        order.setMemo("开发环境");
+        order.setProfileName("开发环境");
 
         EmptyResult result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
