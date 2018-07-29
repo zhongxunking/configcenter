@@ -7,6 +7,7 @@
     <script src="./components/configs.js"></script>
     <script src="./components/apps.js"></script>
     <script src="./components/profiles.js"></script>
+    <script src="./components/propertyKeys.js"></script>
     <style>
         .main-sidebar-menu {
             height: 100%;
@@ -46,7 +47,7 @@
                     </svg>
                 </div>
                 <el-breadcrumb style="display: inline-block;margin-left: 20px;line-height: 50px;">
-                    <el-breadcrumb-item v-for="matchedRoute in $route.matched" v-if="!matchedRoute.path.endsWith('/')" :to="{ path: matchedRoute.path }" :key="matchedRoute.path">{{ matchedRoute.meta.title }}</el-breadcrumb-item>
+                    <el-breadcrumb-item v-for="item in breadcrumbItems" :to="{ path: item.path }" :key="item.path">{{ item.title }}</el-breadcrumb-item>
                 </el-breadcrumb>
                 <el-dropdown @command="handleProfileCommand" trigger="click" style="cursor: pointer;position: absolute;right: 30px;line-height: 50px;">
                     <span>
@@ -84,15 +85,27 @@
                 component: configsComponent
             }, {
                 path: ':appId',
+                props: true,
                 component: {
-                    template: '<router-view></router-view>'
+                    props: ['appId'],
+                    template: '<router-view :appId="appId"></router-view>'
                 },
                 meta: {
                     title: '应用'
                 },
                 children: [{
                     path: '',
-                    template: '<div>aaa</div>'
+                    component: propertyKeysComponent
+                }, {
+                    path: ':profileId',
+                    props: true,
+                    component: {
+                        props: ['appId', 'profileId'],
+                        template: '<div>{{ appId }} {{ profileId }}</div>'
+                    },
+                    meta: {
+                        title: '环境'
+                    }
                 }]
             }]
         }, {
@@ -125,6 +138,24 @@
         data: {
             sidebarCollapsed: false,
             manager: {}
+        },
+        computed: {
+            breadcrumbItems: function () {
+                let theThis = this;
+                let items = [];
+                let tempPath = '';
+                let i = 0;
+                this.$route.path.split('/').forEach(function (partPath) {
+                    if (partPath) {
+                        tempPath += '/' + partPath;
+                        items.push({
+                            title: theThis.$route.matched[i++].meta.title,
+                            path: tempPath
+                        });
+                    }
+                });
+                return items;
+            }
         },
         created: function () {
             const theThis = this;
