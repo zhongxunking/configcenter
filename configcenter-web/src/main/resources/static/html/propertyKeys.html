@@ -11,9 +11,9 @@
         <el-col style="text-align: right;margin-bottom: 20px">
             <span>环境：</span>
             <el-button v-for="profile in allProfiles" type="text" style="margin-right: 5px">{{ profile.profileId }}</el-button>
-            <router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
-                <el-button type="text">{{ profile.profileId }}</el-button>
-            </router-link>
+            <!--<router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
+            <!--<el-button type="text">{{ profile.profileId }}</el-button>-->
+            <!--</router-link>-->
         </el-col>
     </el-row>
     <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
@@ -239,8 +239,8 @@
                     return '';
                 }
                 let text = app.appId;
-                if (app.memo) {
-                    text += '（' + app.memo + '）';
+                if (app.appName) {
+                    text += '（' + app.appName + '）';
                 }
                 return text;
             },

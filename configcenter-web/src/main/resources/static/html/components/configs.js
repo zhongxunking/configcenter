@@ -13,7 +13,7 @@ const configsComponentTemplate = `
         </el-col>
     </el-row>
     <el-table :data="apps" v-loading="appsLoading && allProfilesLoading" border stripe>
-        <el-table-column label="应用">
+        <el-table-column prop="appId" label="应用">
             <template slot-scope="{ row }">
                 <router-link :to="'/configs/' + row.appId">
                     <el-button type="text">
@@ -86,8 +86,8 @@ const configsComponent = {
                 return '';
             }
             let text = app.appId;
-            if (app.memo) {
-                text += '（' + app.memo + '）';
+            if (app.appName) {
+                text += '（' + app.appName + '）';
             }
             return text;
         },

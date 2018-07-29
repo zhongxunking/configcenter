@@ -18,10 +18,10 @@ const profilesComponentTemplate = `
     </el-row>
     <el-table :data="profiles" v-loading="profilesLoading" border stripe>
         <el-table-column prop="profileId" label="环境id"></el-table-column>
-        <el-table-column label="环境名">
+        <el-table-column prop="profileName" label="环境名">
             <template slot-scope="{ row }">
-                <span v-if="!row.editing">{{ row.memo }}</span>
-                <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入环境名"></el-input>
+                <span v-if="!row.editing">{{ row.profileName }}</span>
+                <el-input v-else v-model="row.editingProfileName" size="small" clearable placeholder="请输入环境名"></el-input>
             </template>
         </el-table-column>
         <el-table-column label="操作" header-align="center" width="160px">
@@ -69,7 +69,7 @@ const profilesComponentTemplate = `
                 <el-input v-model="addProfileForm.profileId" clearable placeholder="请输入环境id" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="环境名">
-                <el-input v-model="addProfileForm.memo" clearable placeholder="请输入环境名" style="width: 90%"></el-input>
+                <el-input v-model="addProfileForm.profileName" clearable placeholder="请输入环境名" style="width: 90%"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -95,7 +95,7 @@ const profilesComponent = {
             addProfileDialogVisible: false,
             addProfileForm: {
                 profileId: null,
-                memo: null
+                profileName: null
             }
         };
     },
@@ -112,7 +112,7 @@ const profilesComponent = {
                 theThis.profiles = result.infos;
                 theThis.profiles.forEach(function (profile) {
                     Vue.set(profile, 'editing', false);
-                    Vue.set(profile, 'editingMemo', null);
+                    Vue.set(profile, 'editingProfileName', null);
                     Vue.set(profile, 'savePopoverShowing', false);
                 });
                 theThis.profilesLoading = false;
@@ -122,16 +122,16 @@ const profilesComponent = {
         },
         startEditing: function (profile) {
             profile.editing = true;
-            profile.editingMemo = profile.memo;
+            profile.editingProfileName = profile.profileName;
         },
         saveEditing: function (profile) {
             profile.savePopoverShowing = false;
             this.doAddOrModifyProfile({
                 profileId: profile.profileId,
-                memo: profile.editingMemo
+                profileName: profile.editingProfileName
             }, function () {
                 profile.editing = false;
-                profile.memo = profile.editingMemo;
+                profile.profileName = profile.editingProfileName;
             });
         },
         deleteProfile: function (profile) {
@@ -164,7 +164,7 @@ const profilesComponent = {
         closeAddProfileDialog: function () {
             this.addProfileDialogVisible = false;
             this.addProfileForm.profileId = null;
-            this.addProfileForm.memo = null;
+            this.addProfileForm.profileName = null;
         },
         doQueryProfiles: function (params, processResult, failCallback) {
             axios.get('../manage/profile/queryProfiles', {params: params})

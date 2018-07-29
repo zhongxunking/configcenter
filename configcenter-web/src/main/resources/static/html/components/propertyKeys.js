@@ -121,7 +121,7 @@ const propertyKeysComponent = {
             }
         };
     },
-    mounted: function () {
+    created: function () {
         this.findAllProfiles();
         this.findAppPropertyKeyses();
     },
@@ -234,8 +234,8 @@ const propertyKeysComponent = {
                 return '';
             }
             let text = app.appId;
-            if (app.memo) {
-                text += '（' + app.memo + '）';
+            if (app.appName) {
+                text += '（' + app.appName + '）';
             }
             return text;
         },

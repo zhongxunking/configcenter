@@ -20,13 +20,13 @@ const appsComponentTemplate = `
     </el-row>
     <el-table :data="apps" v-loading="appsLoading" border stripe>
         <el-table-column prop="appId" label="应用id"></el-table-column>
-        <el-table-column label="应用名">
+        <el-table-column prop="appName" label="应用名">
             <template slot-scope="{ row }">
-                <span v-if="!row.editing">{{ row.memo }}</span>
-                <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入应用名"></el-input>
+                <span v-if="!row.editing">{{ row.appName }}</span>
+                <el-input v-else v-model="row.editingAppName" size="small" clearable placeholder="请输入应用名"></el-input>
             </template>
         </el-table-column>
-        <el-table-column label="父应用">
+        <el-table-column prop="parent" label="父应用">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ toShowingApp(row.parentApp) }}</span>
                 <el-select v-else v-model="row.editingParent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(row.editingParent)" clearable size="small" placeholder="请选择父应用">
@@ -80,7 +80,7 @@ const appsComponentTemplate = `
                 <el-input v-model="addAppForm.appId" clearable placeholder="请输入应用id" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="应用名">
-                <el-input v-model="addAppForm.memo" clearable placeholder="请输入应用名" style="width: 90%"></el-input>
+                <el-input v-model="addAppForm.appName" clearable placeholder="请输入应用名" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="父应用" prop="parent">
                 <el-select v-model="addAppForm.parent" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(addAppForm.parent)" clearable placeholder="请选择父应用" style="width: 90%">
@@ -113,7 +113,7 @@ const appsComponent = {
             addAppDialogVisible: false,
             addAppForm: {
                 appId: null,
-                memo: null,
+                appName: null,
                 parent: null
             }
         };
@@ -131,7 +131,7 @@ const appsComponent = {
                 theThis.apps = result.infos;
                 theThis.apps.forEach(function (app) {
                     Vue.set(app, 'editing', false);
-                    Vue.set(app, 'editingMemo', null);
+                    Vue.set(app, 'editingAppName', null);
                     Vue.set(app, 'editingParent', null);
                     Vue.set(app, 'savePopoverShowing', false);
                     Vue.set(app, 'parentApp', null);
@@ -158,7 +158,7 @@ const appsComponent = {
         },
         startEditing: function (app) {
             app.editing = true;
-            app.editingMemo = app.memo;
+            app.editingAppName = app.appName;
             app.editingParent = app.parent;
             this.matchedApps = null;
         },
@@ -168,11 +168,11 @@ const appsComponent = {
             const theThis = this;
             this.doAddOrModifyApp({
                 appId: app.appId,
-                memo: app.editingMemo,
+                appName: app.editingAppName,
                 parent: app.editingParent
             }, function () {
                 app.editing = false;
-                app.memo = app.editingMemo;
+                app.appName = app.editingAppName;
                 app.parent = app.editingParent;
                 app.parentApp = null;
                 if (app.parent) {
@@ -212,7 +212,7 @@ const appsComponent = {
         closeAddAppDialog: function () {
             this.addAppDialogVisible = false;
             this.addAppForm.appId = null;
-            this.addAppForm.memo = null;
+            this.addAppForm.appName = null;
             this.addAppForm.parent = null;
         },
         toShowingApp: function (app) {
@@ -220,8 +220,8 @@ const appsComponent = {
                 return '';
             }
             let text = app.appId;
-            if (app.memo) {
-                text += '（' + app.memo + '）';
+            if (app.appName) {
+                text += '（' + app.appName + '）';
             }
             return text;
         },
