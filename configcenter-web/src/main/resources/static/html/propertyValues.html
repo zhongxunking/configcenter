@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>配置中心-属性value</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="propertyValuesApp">
+    <el-row>
+        <el-col style="text-align: right;margin-bottom: 20px">
+            <span>环境：</span>
+            <el-button v-for="profile in allProfiles" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
+        </el-col>
+    </el-row>
+    <div v-for="appProperties in appPropertieses" style="margin-bottom: 50px">
+        <el-row v-if="appProperties.appId === appId">
+            <el-col :span="4">
+                <div style="margin-bottom: 5px">
+                    <el-button type="primary" icon="el-icon-plus" @click="saveEditing" size="small">保存修改</el-button>
+                </div>
+            </el-col>
+            <el-col :span="16" style="text-align: center;margin-bottom: 10px">
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties.app) }}</span>
+            </el-col>
+        </el-row>
+        <el-row v-else>
+            <el-col :offset="4" :span="16" style="text-align: center;margin-bottom: 10px">
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperties.app) }}</span>
+            </el-col>
+        </el-row>
+        <el-table :data="appProperties.properties" v-loading="appPropertiesesLoading" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe>
+            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+            <el-table-column prop="value" label="属性值">
+                <template slot-scope="{ row }">
+                    <span v-if="!row.editing">{{ row.value }}</span>
+                    <el-input v-else v-model="row.editingValue" size="small" clearable placeholder="请输入属性值"></el-input>
+                </template>
+            </el-table-column>
+            <el-table-column prop="scope" label="作用域" sortable width="160px">
+                <template slot-scope="{ row }">
+                    <div>
+                        <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
+                        <el-tag v-else-if="row.scope === 'PROTECTED'" type="success">可继承</el-tag>
+                        <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning">公开</el-tag>
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column v-if="appProperties.appId === appId" label="操作" header-align="center" width="160px">
+                <template slot-scope="{ row }">
+                    <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                        <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                    </el-tooltip>
+                    <el-tooltip v-else content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                        <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
+                    </el-tooltip>
+                </template>
+            </el-table-column>
+        </el-table>
+    </div>
+</div>
+<script>
+    const propertyValuesApp = new Vue({
+        el: '#propertyValuesApp',
+        data: {
+            appId: 'scbfund',
+            profileId: 'dev',
+            allProfiles: [],
+            appPropertiesesLoading: false,
+            appPropertieses: []
+        },
+        created: function () {
+            this.findAllProfiles();
+            this.findAppPropertieses();
+        },
+        methods: {
+            findAllProfiles: function () {
+                const theThis = this;
+                axios.get('../manage/profile/findAllProfiles')
+                    .then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.allProfiles = result.profiles;
+                    });
+            },
+            findAppPropertieses: function () {
+                const theThis = this;
+                this.appPropertiesesLoading = true;
+                axios.get('../manage/propertyValue/findInheritedProperties', {
+                    params: {
+                        appId: this.appId,
+                        profileId: this.profileId
+                    }
+                }).then(function (result) {
+                    theThis.appPropertiesesLoading = false;
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.appPropertieses = result.appPropertieses;
+                    theThis.appPropertieses.forEach(function (appProperties) {
+                        appProperties.properties.forEach(function (property) {
+                            Vue.set(property, 'editing', false);
+                            Vue.set(property, 'editingValue', null);
+                        });
+                        Vue.set(appProperties, 'app', null);
+                        axios.get('../manage/app/findApp', {
+                            params: {
+                                appId: appProperties.appId
+                            }
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            appProperties.app = result.app;
+                        });
+                    });
+                });
+            },
+            startEditing: function (property) {
+                property.editing = true;
+                property.editingValue = property.value;
+            },
+            saveEditing: function () {
+            },
+            toShowingApp: function (app) {
+                if (!app) {
+                    return '';
+                }
+                let text = app.appId;
+                if (app.appName) {
+                    text += '（' + app.appName + '）';
+                }
+                return text;
+            }
+        }
+    });
+</script>
+</body>
+</html>

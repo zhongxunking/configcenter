@@ -75,7 +75,7 @@ public class PropertyValueManageController {
      * @param appId     应用id
      * @param profileId 环境id
      */
-    @RequestMapping("findInheritedProperties")
+    @RequestMapping("/findInheritedProperties")
     public FindInheritedPropertiesResult findInheritedProperties(String appId, String profileId) {
         ManagerAssert.adminOrHaveRelation(appId);
 
