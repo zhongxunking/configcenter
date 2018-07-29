@@ -3,20 +3,25 @@ const propertyKeysComponentTemplate = `
     <el-row>
         <el-col style="text-align: right;margin-bottom: 30px">
             <span>环境：</span>
-            <router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId">
+            <router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
                 <el-button type="text">{{ profile.profileId }}</el-button>
             </router-link>
         </el-col>
     </el-row>
     <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
-        <el-row>
-            <el-col :offset="7" :span="10" style="text-align: center;margin-bottom: 10px">
-                <span style="font-size: large;">{{ toShowingApp(appPropertyKeys.app) }}</span>
-            </el-col>
-            <el-col v-if="appPropertyKeys.appId === appId" :span="7">
+        <el-row v-if="appPropertyKeys.appId === appId">
+            <el-col :span="7">
                 <div style="margin-bottom: 5px">
-                    <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="mini">新增配置项</el-button>
+                    <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
                 </div>
+            </el-col>
+            <el-col :span="10" style="text-align: center;margin-bottom: 10px">
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+            </el-col>
+        </el-row>
+        <el-row v-else>
+            <el-col :offset="7" :span="10" style="text-align: center;margin-bottom: 10px">
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
         <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" border stripe>
