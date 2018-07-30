@@ -9,18 +9,16 @@ const propertyKeysComponentTemplate = `
         </el-col>
     </el-row>
     <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
-        <el-row v-if="appPropertyKeys.appId === appId">
+        <el-row v-if="appPropertyKeys.appId === appId" style="margin-bottom: 10px">
             <el-col :span="4">
-                <div style="margin-bottom: 5px">
-                    <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
-                </div>
+                <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
             </el-col>
-            <el-col :span="16" style="text-align: center;margin-bottom: 10px">
+            <el-col :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
-        <el-row v-else>
-            <el-col :offset="4" :span="16" style="text-align: center;margin-bottom: 10px">
+        <el-row v-else style="margin-bottom: 10px">
+            <el-col :offset="4" :span="16" style="text-align: center">
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
