@@ -7,8 +7,8 @@
 </head>
 <body>
 <div id="propertyKeysApp">
-    <el-row>
-        <el-col style="text-align: right;margin-bottom: 20px">
+    <el-row style="margin-bottom: 10px">
+        <el-col style="text-align: right;">
             <span>环境：</span>
             <el-button v-for="profile in allProfiles" type="text" style="margin-right: 5px">{{ profile.profileId }}</el-button>
             <!--<router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->

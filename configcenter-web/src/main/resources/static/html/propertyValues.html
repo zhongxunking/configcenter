@@ -7,10 +7,12 @@
 </head>
 <body>
 <div id="propertyValuesApp">
-    <el-row>
-        <el-col style="text-align: right;margin-bottom: 20px">
-            <span>环境：</span>
-            <el-button v-for="profile in allProfiles" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
+    <el-row style="margin-bottom: 10px">
+        <el-col>
+            <span style="font-size: large;color: #409EFF;">环境：</span>
+            <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
+                <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId"></el-option>
+            </el-select>
         </el-col>
     </el-row>
     <div v-for="appProperties in appPropertieses" style="margin-bottom: 50px">
@@ -83,6 +85,7 @@
         data: {
             appId: 'scbfund',
             profileId: 'dev',
+            currentProfileId: 'dev',
             allProfiles: [],
             appPropertiesesLoading: false,
             appPropertieses: []
@@ -102,6 +105,12 @@
                 });
 
                 return edited;
+            }
+        },
+        watch: {
+            '$route': function () {
+                this.findAllProfiles();
+                this.findAppPropertieses();
             }
         },
         created: function () {
@@ -156,6 +165,9 @@
                     });
                 });
             },
+            switchProfile: function (profileId) {
+                this.$router.replace('/configs/' + this.appId + '/' + profileId);
+            },
             startEditing: function (property) {
                 property.editing = true;
                 property.editingValue = property.value;
@@ -187,8 +199,8 @@
                 axios.post('../manage/propertyValue/setPropertyValue', {
                     appId: this.appId,
                     profileId: this.profileId,
-                    keys: keys,
-                    values: values
+                    keys: JSON.stringify(keys),
+                    values: JSON.stringify(values)
                 }).then(function (result) {
                     if (!result.success) {
                         Vue.prototype.$message.error(result.message);
@@ -197,6 +209,16 @@
                     Vue.prototype.$message.success(result.message);
                     theThis.findAppPropertieses();
                 });
+            },
+            toShowingProfile: function (profile) {
+                if (!profile) {
+                    return '';
+                }
+                let text = profile.profileId;
+                if (profile.profileName) {
+                    text += '（' + profile.profileName + '）';
+                }
+                return text;
             },
             toShowingApp: function (app) {
                 if (!app) {

@@ -1,7 +1,7 @@
 const propertyKeysComponentTemplate = `
 <div>
-    <el-row>
-        <el-col style="text-align: right;margin-bottom: 20px">
+    <el-row style="margin-bottom: 10px">
+        <el-col style="text-align: right;">
             <span>环境：</span>
             <router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
                 <el-button type="text">{{ profile.profileId }}</el-button>

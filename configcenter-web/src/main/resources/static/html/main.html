@@ -8,6 +8,7 @@
     <script src="./components/apps.js"></script>
     <script src="./components/profiles.js"></script>
     <script src="./components/propertyKeys.js"></script>
+    <script src="./components/propertyValues.js"></script>
     <style>
         .main-sidebar-menu {
             height: 100%;
@@ -99,10 +100,7 @@
                 }, {
                     path: ':profileId',
                     props: true,
-                    component: {
-                        props: ['appId', 'profileId'],
-                        template: '<div>{{ appId }} {{ profileId }}</div>'
-                    },
+                    component: propertyValuesComponent,
                     meta: {
                         title: '环境'
                     }
