@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
@@ -47,22 +48,26 @@ public class PropertyValueManageController {
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
-     * @param keys      一个或多个key（必须）
-     * @param values    与keys数量对应的value（必须）
+     * @param keys      一个或多个key（必须，json格式）
+     * @param values    与keys一一对应的values（必须，json格式）
      */
     @RequestMapping("/setPropertyValue")
-    public EmptyResult setPropertyValues(String appId, String profileId, String[] keys, String[] values) {
-        if (keys.length != values.length) {
+    public EmptyResult setPropertyValues(String appId, String profileId, String keys, String values) {
+        ManagerAssert.adminOrHaveRelation(appId);
+
+        List<String> parsedKeys = JSON.parseArray(keys, String.class);
+        List<String> parsedValues = JSON.parseArray(values, String.class);
+        if (parsedKeys.size() != parsedValues.size()) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
         }
-        ManagerAssert.adminOrHaveRelation(appId);
+
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
-        for (int i = 0; i < keys.length; i++) {
+        for (int i = 0; i < parsedKeys.size(); i++) {
             SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
-            keyValue.setKey(keys[i]);
-            keyValue.setValue(values[i]);
+            keyValue.setKey(parsedKeys.get(i));
+            keyValue.setValue(parsedValues.get(i));
             order.addKeyValue(keyValue);
         }
 
