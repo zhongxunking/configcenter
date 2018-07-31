@@ -29,5 +29,9 @@
             <groupId>org.antframework.manager</groupId>
             <artifactId>manager-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>fastjson</artifactId>
+        </dependency>
     </dependencies>
 </project>
