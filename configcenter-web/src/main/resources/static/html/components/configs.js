@@ -13,7 +13,7 @@ const configsComponentTemplate = `
         </el-col>
     </el-row>
     <el-table :data="apps" v-loading="appsLoading && allProfilesLoading" border stripe>
-        <el-table-column prop="appId" label="应用">
+        <el-table-column prop="appId" label="应用" width="400px">
             <template slot-scope="{ row }">
                 <router-link :to="'/configs/' + row.appId">
                     <el-button type="text">
@@ -24,7 +24,12 @@ const configsComponentTemplate = `
         </el-table-column>
         <el-table-column label="环境">
             <template slot-scope="{ row }">
-                <el-button v-for="profile in allProfiles" type="text" :key="profile.profileId">{{ profile.profileId }}</el-button>
+                <router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + row.appId +'/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
+                    <el-button type="text">{{ profile.profileId }}</el-button>
+                </router-link>
+                <router-link v-if="allProfiles.length > 8" :to="'/configs/' + row.appId +'/' + allProfiles[0].profileId" style="margin-right: 10px">
+                    <el-button type="text" icon="el-icon-more"></el-button>
+                </router-link>
             </template>
         </el-table-column>
         <el-table-column label="操作" width="160px">
