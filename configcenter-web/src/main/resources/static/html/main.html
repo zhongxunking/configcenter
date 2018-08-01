@@ -25,17 +25,16 @@
     <el-container style="position:absolute; left:0; top:0; width:100%;height:100%;">
         <el-aside :style="{'overflow-x': 'hidden', width: sidebarCollapsed ? '65px' : '200px', transition: sidebarCollapsed ? 'width 0.3s' : 'width 0.45s'}">
             <el-menu :collapse="sidebarCollapsed"
-                     :default-active="$route.path"
+                     :default-active="activeMenuItem"
+                     router
                      class="main-sidebar-menu"
                      background-color="#304156"
                      text-color="#bfcbd9"
                      active-text-color="#409EFF">
-                <router-link v-for="route in $router.options.routes" v-if="!route.meta.hidden" :to="route.path" :key="route.path" style="text-decoration: none;">
-                    <el-menu-item :index="route.path">
-                        <i :class="route.meta.icon"></i>
-                        <span slot="title">{{ route.meta.title }}</span>
-                    </el-menu-item>
-                </router-link>
+                <el-menu-item v-for="route in $router.options.routes" v-if="!route.meta.hidden" :index="route.path" :key="route.path">
+                    <i :class="route.meta.icon"></i>
+                    <span slot="title">{{ route.meta.title }}</span>
+                </el-menu-item>
             </el-menu>
         </el-aside>
         <el-container>
@@ -138,6 +137,12 @@
             manager: {}
         },
         computed: {
+            activeMenuItem: function () {
+                if (this.$route.matched.length > 0) {
+                    return this.$route.matched[0].path;
+                }
+                return '';
+            },
             breadcrumbItems: function () {
                 let parts = [];
                 this.$route.path.split('/').forEach(function (part) {
@@ -189,6 +194,17 @@
                     }
                     theThis.manager = Object.assign({}, theThis.manager, result.manager);
                 });
+
+            if (this.$route.matched.length <= 0) {
+                // 跳转到默认页
+                for (let i = 0; i < this.$router.options.routes.length; i++) {
+                    let routeRecord = this.$router.options.routes[i];
+                    if (!routeRecord.meta.hidden) {
+                        this.$router.push(routeRecord.path);
+                        break;
+                    }
+                }
+            }
         },
         methods: {
             handleProfileCommand: function (command) {
