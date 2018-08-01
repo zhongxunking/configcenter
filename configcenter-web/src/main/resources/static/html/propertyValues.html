@@ -29,7 +29,7 @@
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperties.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appProperties.properties" v-loading="appPropertiesesLoading" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe>
+        <el-table :data="appProperties.properties" v-loading="appPropertiesesLoading" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appProperties.appId === appId ? '100%' : 'calc(100% - 90px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="value" label="属性值">
                 <template slot-scope="{ row }">
@@ -48,7 +48,7 @@
                     <el-input v-else v-model="row.editingValue" size="small" clearable placeholder="请输入属性值"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" sortable width="100px">
+            <el-table-column prop="scope" label="作用域" sortable width="140px">
                 <template slot-scope="{ row }">
                     <div>
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
