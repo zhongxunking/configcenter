@@ -10,11 +10,19 @@ const propertyValuesComponentTemplate = `
     </el-row>
     <div v-for="appProperties in appPropertieses" style="margin-bottom: 50px">
         <el-row v-if="appProperties.appId === appId" style="margin-bottom: 10px">
-            <el-col :offset="4" :span="16" style="text-align: center;">
+            <el-col :offset="6" :span="12" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties.app) }}</span>
             </el-col>
-            <el-col :span="4" style="text-align: end">
-                <el-button type="primary" icon="el-icon-upload" @click="uploadEdited" :disabled="!edited" size="small">保存修改</el-button>
+            <el-col :span="6" style="text-align: end">
+                <el-button icon="el-icon-close" @click="findAppPropertieses" :disabled="!edited" size="small">取消修改</el-button>
+                <el-popover placement="top" v-model="submitPopoverShowing">
+                    <p>提交后应用的配置将被修改，确定提交？</p>
+                    <div style="text-align: right; margin: 0">
+                        <el-button size="mini" type="text" @click="submitPopoverShowing = false">取消</el-button>
+                        <el-button type="primary" size="mini" @click="submitEdited">确定</el-button>
+                    </div>
+                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">提交修改</el-button>
+                </el-popover>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -38,7 +46,7 @@ const propertyValuesComponentTemplate = `
                             </el-badge>
                         </div>
                     </div>
-                    <el-input v-else v-model="row.editingValue" size="small" clearable placeholder="请输入属性值"></el-input>
+                    <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入属性值"></el-input>
                 </template>
             </el-table-column>
             <el-table-column prop="scope" label="作用域" sortable width="140px">
@@ -82,7 +90,8 @@ const propertyValuesComponent = {
             currentProfileId: this.profileId,
             allProfiles: [],
             appPropertiesesLoading: false,
-            appPropertieses: []
+            appPropertieses: [],
+            submitPopoverShowing: false
         };
     },
     computed: {
@@ -171,13 +180,17 @@ const propertyValuesComponent = {
             property.edited = true;
             property.editing = false;
             property.value = property.editingValue;
+            if (property.value !== null) {
+                property.value = property.value.trim();
+            }
             if (!property.value) {
                 property.value = null;
             }
         },
-        uploadEdited: function () {
-            const theThis = this;
+        submitEdited: function () {
+            this.submitPopoverShowing = false;
 
+            const theThis = this;
             let keys = [], values = [];
             this.appPropertieses.forEach(function (appProperties) {
                 if (appProperties.appId !== theThis.appId) {

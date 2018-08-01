@@ -8,21 +8,25 @@
 <body>
 <div id="propertyKeysApp">
     <el-row style="margin-bottom: 10px">
-        <el-col style="text-align: right;">
-            <span>环境：</span>
-            <el-button v-for="profile in allProfiles" type="text" style="margin-right: 5px">{{ profile.profileId }}</el-button>
-            <!--<router-link v-for="profile in allProfiles" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
+        <el-col>
+            <span style="font-size: large;">环境：</span>
+            <el-button v-for="(profile, index) in allProfiles" v-if="index < 6" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
+            <el-button v-if="allProfiles.length > 6" type="text" icon="el-icon-more" style="margin-right: 5px"></el-button>
+            <!--<router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
             <!--<el-button type="text">{{ profile.profileId }}</el-button>-->
+            <!--</router-link>-->
+            <!--<router-link v-if="allProfiles.length > 8" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
+            <!--<el-button type="text" icon="el-icon-more"></el-button>-->
             <!--</router-link>-->
         </el-col>
     </el-row>
     <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
         <el-row v-if="appPropertyKeys.appId === appId" style="margin-bottom: 10px">
-            <el-col :span="4">
-                <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
-            </el-col>
-            <el-col :span="16" style="text-align: center;">
+            <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+            </el-col>
+            <el-col :span="4" style="text-align: end;">
+                <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -30,7 +34,7 @@
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe>
+        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -93,7 +97,7 @@
                 <el-input v-model="addPropertyKeyForm.key" clearable placeholder="请输入配置key" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="作用域" prop="scope" :rules="[{required:true, message:'请选择作用域', trigger:'blur'}]">
-                <el-select v-model="addPropertyKeyForm.scope" clearable placeholder="请选择作用域" style="width: 90%">
+                <el-select v-model="addPropertyKeyForm.scope" placeholder="请选择作用域" style="width: 90%">
                     <el-option value="PRIVATE" label="私有"></el-option>
                     <el-option value="PROTECTED" label="可继承"></el-option>
                     <el-option value="PUBLIC" label="公开"></el-option>
@@ -184,7 +188,6 @@
             saveEditing: function (propertyKey) {
                 propertyKey.savePopoverShowing = false;
 
-                const theThis = this;
                 this.doAddOrModifyPropertyKey({
                     appId: propertyKey.appId,
                     key: propertyKey.key,
