@@ -9,10 +9,12 @@
 package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.common.util.tostring.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -58,7 +60,7 @@ public class SetPropertyValuesOrder extends AbstractOrder {
     /**
      * key-value对
      */
-    public static class KeyValue {
+    public static class KeyValue implements Serializable {
         // key
         @NotBlank
         private String key;
@@ -79,6 +81,11 @@ public class SetPropertyValuesOrder extends AbstractOrder {
 
         public void setValue(String value) {
             this.value = value;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.toString(this);
         }
     }
 }
