@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>管理</title>
+    <title>配置中心</title>
     <script src="../common/import.js"></script>
     <script src="./components/configs.js"></script>
     <script src="./components/apps.js"></script>
@@ -10,6 +10,7 @@
     <script src="./components/propertyKeys.js"></script>
     <script src="./components/propertyValues.js"></script>
     <script src="./components/managers.js"></script>
+    <script src="./components/relations.js"></script>
     <style>
         .main-sidebar-menu {
             height: 100%;
@@ -121,6 +122,13 @@
             component: managersComponent,
             meta: {
                 title: '管理员',
+                icon: 'el-icon-view'
+            }
+        }, {
+            path: '/relations',
+            component: relationsComponent,
+            meta: {
+                title: '权限',
                 icon: 'el-icon-view'
             }
         }]
