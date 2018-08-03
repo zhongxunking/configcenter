@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>配置中心-管理员</title>
-    <script src="../common/import.js"></script>
-</head>
-<body>
-<div id="managersApp">
+const managerComponentTemplate = `
+<div>
     <el-row>
         <el-col>
             <el-form :v-model="queryManagersForm" :inline="true" size="small">
@@ -34,9 +27,9 @@
     <el-table :data="managers" v-loading="managersLoading" border stripe>
         <el-table-column prop="managerId" label="管理员id">
             <template slot-scope="{ row }">
-                <!--<router-link :to="'/relations?managerId=' + row.managerId">-->
-                <el-button type="text">{{ row.managerId }}</el-button>
-                <!--</router-link>-->
+                <router-link :to="'/relations?managerId=' + row.managerId">
+                    <el-button type="text">{{ row.managerId }}</el-button>
+                </router-link>
             </template>
         </el-table-column>
         <el-table-column prop="name" label="名称">
@@ -120,10 +113,12 @@
         </div>
     </el-dialog>
 </div>
-<script>
-    const managersApp = new Vue({
-        el: '#managersApp',
-        data: {
+`;
+
+const managersComponent = {
+    template: managerComponentTemplate,
+    data: function () {
+        return {
             queryManagersForm: {
                 pageNo: 1,
                 pageSize: 20,
@@ -141,103 +136,101 @@
                 name: null,
                 password: null
             }
-        },
-        created: function () {
-            this.queryManagers();
-        },
-        methods: {
-            queryManagers: function () {
-                this.managersLoading = true;
-                const theThis = this;
-                axios.get('../manager/manage/query', {params: this.queryManagersForm})
-                    .then(function (result) {
-                        theThis.managersLoading = false;
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.totalManagers = result.totalCount;
-                        theThis.managers = result.infos;
-                        theThis.managers.forEach(function (manager) {
-                            Vue.set(manager, 'editing', false);
-                            Vue.set(manager, 'editingType', null);
-                            Vue.set(manager, 'editingName', null);
-                            Vue.set(manager, 'savePopoverShowing', false);
-                        });
-                    });
-            },
-            startEditing: function (manager) {
-                manager.editing = true;
-                manager.editingType = manager.type;
-                manager.editingName = manager.name;
-            },
-            saveEditing: function (manager) {
-                manager.savePopoverShowing = false;
-
-                const theThis = this;
-                axios.post('../manager/manage/modifyType', {
-                    managerId: manager.managerId,
-                    newType: manager.editingType
-                }).then(function (result) {
+        };
+    },
+    created: function () {
+        this.queryManagers();
+    },
+    methods: {
+        queryManagers: function () {
+            this.managersLoading = true;
+            const theThis = this;
+            axios.get('../manager/manage/query', {params: this.queryManagersForm})
+                .then(function (result) {
+                    theThis.managersLoading = false;
                     if (!result.success) {
                         Vue.prototype.$message.error(result.message);
                         return;
                     }
-                    axios.post('../manager/manage/modifyName', {
-                        managerId: manager.managerId,
-                        newName: manager.editingName
-                    }).then(function (result) {
-                        if (result.success) {
-                            Vue.prototype.$message.success(result.message);
-                        } else {
-                            Vue.prototype.$message.error(result.message);
-                        }
-                        theThis.queryManagers();
+                    theThis.totalManagers = result.totalCount;
+                    theThis.managers = result.infos;
+                    theThis.managers.forEach(function (manager) {
+                        Vue.set(manager, 'editing', false);
+                        Vue.set(manager, 'editingType', null);
+                        Vue.set(manager, 'editingName', null);
+                        Vue.set(manager, 'savePopoverShowing', false);
                     });
                 });
-            },
-            deleteManager: function (manager) {
-                const theThis = this;
-                Vue.prototype.$confirm('确定删除管理员？', '警告', {type: 'warning'})
-                    .then(function () {
-                        axios.post('../manager/manage/delete', {managerId: manager.managerId})
-                            .then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                Vue.prototype.$message.success(result.message);
-                                theThis.queryManagers();
-                            });
-                    });
-            },
-            addManager: function () {
-                const theThis = this;
-                this.$refs.addManagerForm.validate(function (valid) {
-                    if (!valid) {
-                        return;
+        },
+        startEditing: function (manager) {
+            manager.editing = true;
+            manager.editingType = manager.type;
+            manager.editingName = manager.name;
+        },
+        saveEditing: function (manager) {
+            manager.savePopoverShowing = false;
+
+            const theThis = this;
+            axios.post('../manager/manage/modifyType', {
+                managerId: manager.managerId,
+                newType: manager.editingType
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                axios.post('../manager/manage/modifyName', {
+                    managerId: manager.managerId,
+                    newName: manager.editingName
+                }).then(function (result) {
+                    if (result.success) {
+                        Vue.prototype.$message.success(result.message);
+                    } else {
+                        Vue.prototype.$message.error(result.message);
                     }
-                    axios.post('../manager/manage/add', theThis.addManagerForm)
+                    theThis.queryManagers();
+                });
+            });
+        },
+        deleteManager: function (manager) {
+            const theThis = this;
+            Vue.prototype.$confirm('确定删除管理员？', '警告', {type: 'warning'})
+                .then(function () {
+                    axios.post('../manager/manage/delete', {managerId: manager.managerId})
                         .then(function (result) {
                             if (!result.success) {
                                 Vue.prototype.$message.error(result.message);
                                 return;
                             }
                             Vue.prototype.$message.success(result.message);
-                            theThis.closeAddManagerDialog();
                             theThis.queryManagers();
                         });
-                })
-            },
-            closeAddManagerDialog: function () {
-                this.addManagerDialogVisible = false;
-                this.addManagerForm.managerId = null;
-                this.addManagerForm.type = null;
-                this.addManagerForm.name = null;
-                this.addManagerForm.password = null;
-            }
+                });
+        },
+        addManager: function () {
+            const theThis = this;
+            this.$refs.addManagerForm.validate(function (valid) {
+                if (!valid) {
+                    return;
+                }
+                axios.post('../manager/manage/add', theThis.addManagerForm)
+                    .then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        theThis.closeAddManagerDialog();
+                        theThis.queryManagers();
+                    });
+            })
+        },
+        closeAddManagerDialog: function () {
+            this.addManagerDialogVisible = false;
+            this.addManagerForm.managerId = null;
+            this.addManagerForm.type = null;
+            this.addManagerForm.name = null;
+            this.addManagerForm.password = null;
         }
-    });
-</script>
-</body>
-</html>
+    }
+};
