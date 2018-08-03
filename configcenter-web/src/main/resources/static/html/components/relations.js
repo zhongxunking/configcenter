@@ -73,7 +73,7 @@ const relationsComponent = {
         return {
             queryRelationsForm: {
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 10,
                 managerId: this.$route.query.managerId,
                 targetId: this.$route.query.targetId
             },

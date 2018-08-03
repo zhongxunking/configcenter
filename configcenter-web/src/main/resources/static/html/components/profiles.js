@@ -86,7 +86,7 @@ const profilesComponent = {
         return {
             queryProfilesForm: {
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 10,
                 profileId: null
             },
             profilesLoading: false,

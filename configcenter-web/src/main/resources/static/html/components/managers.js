@@ -121,7 +121,7 @@ const managersComponent = {
         return {
             queryManagersForm: {
                 pageNo: 1,
-                pageSize: 20,
+                pageSize: 10,
                 managerId: null,
                 type: null,
                 name: null
