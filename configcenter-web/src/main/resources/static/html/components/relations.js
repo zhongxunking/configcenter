@@ -19,7 +19,11 @@ const relationsComponentTemplate = `
         </el-col>
     </el-row>
     <el-table :data="relations" v-loading="relationsLoading" border stripe>
-        <el-table-column prop="managerId" label="管理员id"></el-table-column>
+        <el-table-column prop="managerId" label="管理员">
+            <template slot-scope="{ row }">
+                {{ toShowingManager(row.manager) }}
+            </template>
+        </el-table-column>
         <el-table-column prop="targetId" label="应用">
             <template slot-scope="{ row }">
                 {{ toShowingApp(row.app) }}
@@ -44,8 +48,10 @@ const relationsComponentTemplate = `
     </el-row>
     <el-dialog :visible.sync="addRelationDialogVisible" :before-close="closeAddRelationDialog" title="新增应用" width="40%">
         <el-form ref="addRelationForm" :model="addRelationForm" label-width="30%">
-            <el-form-item label="管理员id" prop="managerId" :rules="[{required:true, message:'请输入管理员id', trigger:'blur'}]">
-                <el-input v-model="addRelationForm.managerId" clearable placeholder="请输入管理员id" style="width: 90%"></el-input>
+            <el-form-item label="管理员" prop="managerId" :rules="[{required:true, message:'请选择管理员', trigger:'blur'}]">
+                <el-select v-model="addRelationForm.managerId" filterable remote :remote-method="queryMatchedManagers" @focus="queryMatchedManagers(addRelationForm.managerId)" clearable placeholder="请选择管理员" style="width: 90%">
+                    <el-option v-for="manager in matchedManagers" :value="manager.managerId" :label="toShowingManager(manager)" :key="manager.managerId"></el-option>
+                </el-select>
             </el-form-item>
             <el-form-item label="应用" prop="targetId" :rules="[{required:true, message:'请选择应用', trigger:'blur'}]">
                 <el-select v-model="addRelationForm.targetId" filterable remote :remote-method="queryMatchedApps" @focus="queryMatchedApps(addRelationForm.targetId)" clearable placeholder="请选择应用" style="width: 90%">
@@ -74,6 +80,7 @@ const relationsComponent = {
             relationsLoading: false,
             totalRelations: 0,
             relations: [],
+            matchedManagers: null,
             matchedApps: null,
             addRelationDialogVisible: false,
             addRelationForm: {
@@ -99,6 +106,20 @@ const relationsComponent = {
                     theThis.totalRelations = result.totalCount;
                     theThis.relations = result.infos;
                     theThis.relations.forEach(function (relation) {
+                        // 查找管理员
+                        Vue.set(relation, "manager", null);
+                        axios.get('../manager/manage/findManager', {
+                            params: {
+                                managerId: relation.managerId
+                            }
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            relation.manager = result.manager;
+                        });
+                        // 查找应用
                         Vue.set(relation, "app", null);
                         axios.get('../manage/app/findApp', {
                             params: {
@@ -114,6 +135,16 @@ const relationsComponent = {
                     })
                 });
         },
+        toShowingManager: function (manager) {
+            if (!manager) {
+                return '';
+            }
+            let text = manager.managerId;
+            if (manager.name) {
+                text += '（' + manager.name + '）';
+            }
+            return text;
+        },
         toShowingApp: function (app) {
             if (!app) {
                 return '';
@@ -123,6 +154,22 @@ const relationsComponent = {
                 text += '（' + app.appName + '）';
             }
             return text;
+        },
+        queryMatchedManagers: function (managerId) {
+            const theThis = this;
+            axios.get('../manager/manage/query', {
+                params: {
+                    pageNo: 1,
+                    pageSize: 100,
+                    managerId: managerId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                theThis.matchedManagers = result.infos;
+            });
         },
         queryMatchedApps: function (appId) {
             const theThis = this;
