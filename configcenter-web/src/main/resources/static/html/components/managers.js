@@ -89,7 +89,7 @@ const managerComponentTemplate = `
             <el-pagination :total="totalManagers" :current-page.sync="queryManagersForm.pageNo" :page-size.sync="queryManagersForm.pageSize" @current-change="queryManagers" layout="total,prev,pager,next" small background></el-pagination>
         </el-col>
     </el-row>
-    <el-dialog :visible.sync="addManagerDialogVisible" :before-close="closeAddManagerDialog" title="新增应用" width="40%">
+    <el-dialog :visible.sync="addManagerDialogVisible" :before-close="closeAddManagerDialog" title="新增管理员" width="40%">
         <el-form ref="addManagerForm" :model="addManagerForm" label-width="30%">
             <el-form-item label="管理员id" prop="managerId" :rules="[{required:true, message:'请输入管理员id', trigger:'blur'}]">
                 <el-input v-model="addManagerForm.managerId" clearable placeholder="请输入管理员id" style="width: 90%"></el-input>
