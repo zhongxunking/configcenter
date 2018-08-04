@@ -50,10 +50,10 @@ const managerComponentTemplate = `
                 </el-select>
             </template>
         </el-table-column>
-        <el-table-column label="操作" header-align="center" width="160px">
+        <el-table-column label="操作" header-align="center" width="200px">
             <template slot-scope="{ row }">
                 <el-row>
-                    <el-col :span="12" style="text-align: center">
+                    <el-col :span="9" style="text-align: center">
                         <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
                             <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
                         </el-tooltip>
@@ -75,7 +75,12 @@ const managerComponentTemplate = `
                             </el-button-group>
                         </template>
                     </el-col>
-                    <el-col :span="12" style="text-align: center">
+                    <el-col :span="9" style="text-align: center">
+                        <el-tooltip content="修改密码" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="startModifyManagerPassword(row)" type="primary" icon="el-icon-edit" size="small" round>P</el-button>
+                        </el-tooltip>
+                    </el-col>
+                    <el-col :span="6" style="text-align: center">
                         <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
                             <el-button @click="deleteManager(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
                         </el-tooltip>
@@ -112,6 +117,20 @@ const managerComponentTemplate = `
             <el-button type="primary" @click="addManager">提交</el-button>
         </div>
     </el-dialog>
+    <el-dialog :visible.sync="modifyManagerPasswordDialogVisible" :before-close="closeModifyManagerPasswordDialog" title="修改管理员密码" width="40%">
+        <el-form ref="modifyManagerPasswordForm" :model="modifyManagerPasswordForm" label-width="30%">
+            <el-form-item label="管理员：" prop="manager">
+                <span>{{ toShowingManager(modifyManagerPasswordForm.manager) }}</span>
+            </el-form-item>
+            <el-form-item label="新密码：" prop="newPassword" :rules="[{required:true, message:'请输入新密码', trigger:'blur'}]">
+                <el-input v-model="modifyManagerPasswordForm.newPassword" type="password" clearable placeholder="请输入新密码" style="width: 90%"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeModifyManagerPasswordDialog">取消</el-button>
+            <el-button type="primary" @click="modifyManagerPassword">提交</el-button>
+        </div>
+    </el-dialog>
 </div>
 `;
 
@@ -135,6 +154,11 @@ const managersComponent = {
                 type: null,
                 name: null,
                 password: null
+            },
+            modifyManagerPasswordDialogVisible: false,
+            modifyManagerPasswordForm: {
+                manager: null,
+                newPassword: null
             }
         };
     },
@@ -231,6 +255,39 @@ const managersComponent = {
             this.addManagerForm.type = null;
             this.addManagerForm.name = null;
             this.addManagerForm.password = null;
+        },
+        startModifyManagerPassword: function (manager) {
+            this.modifyManagerPasswordDialogVisible = true;
+            this.modifyManagerPasswordForm.manager = manager;
+        },
+        modifyManagerPassword: function () {
+            const theThis = this;
+            axios.post('../manager/manage/modifyPassword', {
+                managerId: this.modifyManagerPasswordForm.manager.managerId,
+                newPassword: this.modifyManagerPasswordForm.newPassword
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                Vue.prototype.$message.success(result.message);
+                theThis.closeModifyManagerPasswordDialog();
+            });
+        },
+        closeModifyManagerPasswordDialog: function () {
+            this.modifyManagerPasswordDialogVisible = false;
+            this.modifyManagerPasswordForm.manager = null;
+            this.modifyManagerPasswordForm.newPassword = null;
+        },
+        toShowingManager: function (manager) {
+            if (!manager) {
+                return '';
+            }
+            let text = manager.managerId;
+            if (manager.name) {
+                text += '（' + manager.name + '）';
+            }
+            return text;
         }
     }
 };
