@@ -34,7 +34,7 @@ const configsComponentTemplate = `
         </el-table-column>
         <el-table-column label="操作" width="160px">
             <template slot-scope="{ row }">
-                <el-button type="text">应用树</el-button>
+                <el-button type="text" @click="showAppTree">应用树</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -70,21 +70,27 @@ const configsComponent = {
             const theThis = this;
 
             this.appsLoading = true;
-            this.doQueryApps(this.queryAppsForm, function (result) {
-                theThis.totalApps = result.totalCount;
-                theThis.apps = result.infos;
-                theThis.appsLoading = false;
-            }, function () {
-                theThis.appsLoading = false;
-            });
+            axios.get('../manage/app/queryManagedApps', {params: this.queryAppsForm})
+                .then(function (result) {
+                    theThis.appsLoading = false;
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.totalApps = result.totalCount;
+                    theThis.apps = result.infos;
+                });
 
             this.allProfilesLoading = true;
-            this.doFindAllProfiles(function (result) {
-                theThis.allProfiles = result.profiles;
-                theThis.allProfilesLoading = false;
-            }, function () {
-                theThis.allProfilesLoading = false;
-            })
+            axios.get('../manage/profile/findAllProfiles')
+                .then(function (result) {
+                    theThis.allProfilesLoading = false;
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.allProfiles = result.profiles;
+                });
         },
         toShowingApp: function (app) {
             if (!app) {
@@ -96,31 +102,8 @@ const configsComponent = {
             }
             return text;
         },
-        doQueryApps: function (params, processResult, failCallback) {
-            axios.get('../manage/app/queryApps', {params: params})
-                .then(function (result) {
-                    if (result.success) {
-                        processResult(result);
-                    } else {
-                        Vue.prototype.$message.error(result.message);
-                        if (failCallback) {
-                            failCallback(result);
-                        }
-                    }
-                });
-        },
-        doFindAllProfiles: function (processResult, failCallback) {
-            axios.get('../manage/profile/findAllProfiles')
-                .then(function (result) {
-                    if (result.success) {
-                        processResult(result);
-                    } else {
-                        Vue.prototype.$message.error(result.message);
-                        if (failCallback) {
-                            failCallback(result);
-                        }
-                    }
-                });
+        showAppTree: function () {
+            Vue.prototype.$message.success('开发中，请关注后续版本^_^');
         }
     }
 };
