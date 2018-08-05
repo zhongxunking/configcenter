@@ -95,17 +95,22 @@ const managerProfileComponent = {
         },
         modifyName: function () {
             const theThis = this;
-            axios.post('../manager/manage/modifyName', {
-                managerId: this.manager.managerId,
-                newName: this.modifyNameForm.newName
-            }).then(function (result) {
-                if (!result.success) {
-                    Vue.prototype.$message.error(result.message);
+            this.$refs.modifyNameForm.validate(function (valid) {
+                if (!valid) {
                     return;
                 }
-                Vue.prototype.$message.success(result.message);
-                theThis.closeModifyNameDialog();
-                theThis.findCurrentManager();
+                axios.post('../manager/manage/modifyName', {
+                    managerId: theThis.manager.managerId,
+                    newName: theThis.modifyNameForm.newName
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    theThis.closeModifyNameDialog();
+                    theThis.findCurrentManager();
+                });
             });
         },
         closeModifyPasswordDialog: function () {
@@ -114,17 +119,22 @@ const managerProfileComponent = {
         },
         modifyPassword: function () {
             const theThis = this;
-            axios.post('../manager/manage/modifyPassword', {
-                managerId: this.manager.managerId,
-                newPassword: this.modifyPasswordForm.newPassword
-            }).then(function (result) {
-                if (!result.success) {
-                    Vue.prototype.$message.error(result.message);
+            this.$refs.modifyPasswordForm.validate(function (valid) {
+                if (!valid) {
                     return;
                 }
-                Vue.prototype.$message.success(result.message);
-                theThis.closeModifyPasswordDialog();
-                theThis.findCurrentManager();
+                axios.post('../manager/manage/modifyPassword', {
+                    managerId: theThis.manager.managerId,
+                    newPassword: theThis.modifyPasswordForm.newPassword
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    theThis.closeModifyPasswordDialog();
+                    theThis.findCurrentManager();
+                });
             });
         }
     }
