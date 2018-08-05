@@ -12,10 +12,10 @@
             <span style="font-size: large;">环境：</span>
             <el-button v-for="(profile, index) in allProfiles" v-if="index < 6" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
             <el-button v-if="allProfiles.length > 6" type="text" icon="el-icon-more" style="margin-right: 5px"></el-button>
-            <!--<router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
+            <!--<router-link v-for="(profile, index) in allProfiles" v-if="index < 6" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
             <!--<el-button type="text">{{ profile.profileId }}</el-button>-->
             <!--</router-link>-->
-            <!--<router-link v-if="allProfiles.length > 8" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
+            <!--<router-link v-if="allProfiles.length > 6" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
             <!--<el-button type="text" icon="el-icon-more"></el-button>-->
             <!--</router-link>-->
         </el-col>
@@ -34,7 +34,7 @@
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
+        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeys.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -119,7 +119,7 @@
         data: {
             appId: 'scbfund',
             allProfiles: [],
-            appPropertyKeysesLoading: false,
+            selfPropertyKeysLoading: false,
             appPropertyKeyses: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
@@ -146,13 +146,13 @@
             },
             findAppPropertyKeyses: function () {
                 const theThis = this;
-                this.appPropertyKeysesLoading = true;
+                this.selfPropertyKeysLoading = true;
                 axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
                     params: {
                         appId: this.appId
                     }
                 }).then(function (result) {
-                    theThis.appPropertyKeysesLoading = false;
+                    theThis.selfPropertyKeysLoading = false;
                     if (!result.success) {
                         Vue.prototype.$message.error(result.message);
                         return;
@@ -246,8 +246,11 @@
                 return text;
             },
             doAddOrModifyPropertyKey: function (params, successCallback) {
+                const theThis = this;
+                this.selfPropertyKeysLoading = true;
                 axios.post('../manage/propertyKey/addOrModifyPropertyKey', params)
                     .then(function (result) {
+                        theThis.selfPropertyKeysLoading = false;
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;

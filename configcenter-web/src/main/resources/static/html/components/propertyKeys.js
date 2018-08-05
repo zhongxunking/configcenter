@@ -25,7 +25,7 @@ const propertyKeysComponentTemplate = `
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeysesLoading" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
+        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeys.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -112,7 +112,7 @@ const propertyKeysComponent = {
     data: function () {
         return {
             allProfiles: [],
-            appPropertyKeysesLoading: false,
+            selfPropertyKeysLoading: false,
             appPropertyKeyses: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
@@ -140,13 +140,13 @@ const propertyKeysComponent = {
         },
         findAppPropertyKeyses: function () {
             const theThis = this;
-            this.appPropertyKeysesLoading = true;
+            this.selfPropertyKeysLoading = true;
             axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
                 params: {
                     appId: this.appId
                 }
             }).then(function (result) {
-                theThis.appPropertyKeysesLoading = false;
+                theThis.selfPropertyKeysLoading = false;
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
@@ -240,8 +240,11 @@ const propertyKeysComponent = {
             return text;
         },
         doAddOrModifyPropertyKey: function (params, successCallback) {
+            const theThis = this;
+            this.selfPropertyKeysLoading = true;
             axios.post('../manage/propertyKey/addOrModifyPropertyKey', params)
                 .then(function (result) {
+                    theThis.selfPropertyKeysLoading = false;
                     if (!result.success) {
                         Vue.prototype.$message.error(result.message);
                         return;
