@@ -6,32 +6,22 @@
     <script src="../common/import.js"></script>
 </head>
 <body>
-<div id="loginFormApp" style="transform: translateY(50%)">
-    <el-container>
-        <el-main>
-            <el-row type="flex" justify="center">
-                <el-col>
-                    <div style="text-align: center"><h3>登录</h3></div>
-                </el-col>
-            </el-row>
-            <el-row type="flex" justify="center">
-                <el-col :span="6">
-                    <el-form ref="loginForm" :model="loginForm" label-width="80px">
-                        <el-form-item label="管理员id" prop="managerId" :rules="[{ required:true, message:'请输入管理员id', trigger:'blur'}]">
-                            <el-input v-model="loginForm.managerId" placeholder="请输入管理员id"></el-input>
-                        </el-form-item>
-                        <el-form-item label="密码" prop="password" :rules="[{required:true, message:'请输入密码', trigger:'blur'}]">
-                            <el-input type="password" v-model="loginForm.password" placeholder="请输入密码"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                            <el-button type="primary" @click="login">登录</el-button>
-                            <el-button @click="reset">重置</el-button>
-                        </el-form-item>
-                    </el-form>
-                </el-col>
-            </el-row>
-        </el-main>
-    </el-container>
+<div id="loginApp" style="position:absolute; left:0; top:0; width:100%;height:100%;background-color: #304156">
+    <el-form ref="loginForm" :model="loginForm" style="width: 350px;padding: 35px;margin: 120px auto">
+        <div style="text-align: center;color: #eee;margin-bottom: 40px;">
+            <i class="configcenter-iconfont configcenter-icon-deploymentunit" style="font-size: xx-large;"></i>
+            <span style="font-size: xx-large;">配置中心</span>
+        </div>
+        <el-form-item prop="managerId" :rules="[{ required:true, message:'请输入管理员id', trigger:'blur'}]">
+            <el-input v-model="loginForm.managerId" prefix-icon="configcenter-iconfont configcenter-icon-user" clearable placeholder="请输入管理员id"></el-input>
+        </el-form-item>
+        <el-form-item prop="password" :rules="[{required:true, message:'请输入密码', trigger:'blur'}]">
+            <el-input type="password" v-model="loginForm.password" prefix-icon="configcenter-iconfont configcenter-icon-lock    " clearable placeholder="请输入密码"></el-input>
+        </el-form-item>
+        <el-form-item>
+            <el-button type="primary" @click="login" style="width: 100%">登录</el-button>
+        </el-form-item>
+    </el-form>
 </div>
 <script>
     // 判断用户是否已登录
@@ -41,7 +31,7 @@
                 Vue.prototype.$message.error(result.message);
                 return;
             }
-            if (result.manager != null) {
+            if (result.manager !== null) {
                 window.location.href = 'main.html';
             }
         });
@@ -52,15 +42,15 @@
             if (!result.success) {
                 return;
             }
-            Vue.prototype.$alert('第一次使用，需初始化超级管理员。跳转到初始化页面', '提示', {
+            Vue.prototype.$alert('第一次使用，需初始化超级管理员，跳转到初始化页面', '提示', {
                 callback: function () {
                     window.location.href = 'initAdmin.html';
                 }
             });
         });
 
-    var loginFormApp = new Vue({
-        el: '#loginFormApp',
+    const loginApp = new Vue({
+        el: '#loginApp',
         data: {
             loginForm: {
                 managerId: null,
@@ -73,7 +63,7 @@
                     if (!valid) {
                         return;
                     }
-                    axios.post('../manager/main/login', loginFormApp.loginForm)
+                    axios.post('../manager/main/login', loginApp.loginForm)
                         .then(function (result) {
                             if (result.success) {
                                 window.location.href = 'main.html';
@@ -82,9 +72,6 @@
                             }
                         });
                 });
-            },
-            reset: function () {
-                this.$refs.loginForm.resetFields();
             }
         }
     });
