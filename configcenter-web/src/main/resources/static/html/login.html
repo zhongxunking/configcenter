@@ -42,7 +42,7 @@
             if (!result.success) {
                 return;
             }
-            Vue.prototype.$alert('第一次使用，需初始化超级管理员，跳转到初始化页面', '提示', {
+            Vue.prototype.$alert('第一次使用，需初始化超级管理员，现跳转到初始化页面', '提示', {
                 callback: function () {
                     window.location.href = 'initAdmin.html';
                 }
@@ -59,11 +59,12 @@
         },
         methods: {
             login: function () {
+                const theThis = this;
                 this.$refs.loginForm.validate(function (valid) {
                     if (!valid) {
                         return;
                     }
-                    axios.post('../manager/main/login', loginApp.loginForm)
+                    axios.post('../manager/main/login', theThis.loginForm)
                         .then(function (result) {
                             if (result.success) {
                                 window.location.href = 'main.html';
