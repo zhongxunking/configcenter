@@ -30,7 +30,7 @@ const propertyValuesComponentTemplate = `
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperties.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appProperties.properties" v-loading="appPropertiesesLoading" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appProperties.appId === appId ? '100%' : 'calc(100% - 90px)'}">
+        <el-table :data="appProperties.properties" v-loading="appProperties.appId === appId ? selfPropertiesLoading : false" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appProperties.appId === appId ? '100%' : 'calc(100% - 90px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="value" label="属性值">
                 <template slot-scope="{ row }">
@@ -89,7 +89,7 @@ const propertyValuesComponent = {
         return {
             currentProfileId: this.profileId,
             allProfiles: [],
-            appPropertiesesLoading: false,
+            selfPropertiesLoading: false,
             appPropertieses: [],
             submitPopoverShowing: false
         };
@@ -135,14 +135,14 @@ const propertyValuesComponent = {
         },
         findAppPropertieses: function () {
             const theThis = this;
-            this.appPropertiesesLoading = true;
+            this.selfPropertiesLoading = true;
             axios.get('../manage/propertyValue/findInheritedProperties', {
                 params: {
                     appId: this.appId,
                     profileId: this.profileId
                 }
             }).then(function (result) {
-                theThis.appPropertiesesLoading = false;
+                theThis.selfPropertiesLoading = false;
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
@@ -204,12 +204,14 @@ const propertyValuesComponent = {
                 });
             });
 
+            this.selfPropertiesLoading = true;
             axios.post('../manage/propertyValue/setPropertyValue', {
                 appId: this.appId,
                 profileId: this.profileId,
                 keys: JSON.stringify(keys),
                 values: JSON.stringify(values)
             }).then(function (result) {
+                theThis.selfPropertiesLoading = false;
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
