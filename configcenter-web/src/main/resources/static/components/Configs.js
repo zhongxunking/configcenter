@@ -1,4 +1,5 @@
-const configsComponentTemplate = `
+// 配置查看组件
+const ConfigsTemplate = `
 <div>
     <el-row>
         <el-col>
@@ -16,9 +17,9 @@ const configsComponentTemplate = `
         <el-table-column prop="appId" label="应用" width="400px">
             <template slot-scope="{ row }">
                 <router-link :to="'/configs/' + row.appId">
-                    <el-button type="text">
-                        {{ toShowingApp(row) }}
-                    </el-button>
+                <el-button type="text">
+                    {{ toShowingApp(row) }}
+                </el-button>
                 </router-link>
             </template>
         </el-table-column>
@@ -46,8 +47,8 @@ const configsComponentTemplate = `
 </div>
 `;
 
-const configsComponent = {
-    template: configsComponentTemplate,
+const Configs = {
+    template: ConfigsTemplate,
     data: function () {
         return {
             queryAppsForm: {

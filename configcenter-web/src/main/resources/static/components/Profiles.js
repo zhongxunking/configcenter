@@ -1,5 +1,5 @@
 // 环境管理组件
-const profilesComponentTemplate = `
+const ProfilesTemplate = `
 <div>
     <el-row>
         <el-col>
@@ -80,8 +80,8 @@ const profilesComponentTemplate = `
 </div>
 `;
 
-const profilesComponent = {
-    template: profilesComponentTemplate,
+const Profiles = {
+    template: ProfilesTemplate,
     data: function () {
         return {
             queryProfilesForm: {

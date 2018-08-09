@@ -1,12 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>配置中心-属性value</title>
-    <script src="../common/import.js"></script>
-</head>
-<body>
-<div id="propertyValuesApp">
+// 属性值管理组件
+const PropertyValuesTemplate = `
+<div>
     <el-row style="margin-bottom: 10px">
         <el-col>
             <span style="font-size: large;color: #409EFF;">环境：</span>
@@ -87,166 +81,165 @@
         </el-table>
     </div>
 </div>
-<script>
-    const propertyValuesApp = new Vue({
-        el: '#propertyValuesApp',
-        data: {
-            appId: 'scbfund',
-            profileId: 'dev',
-            currentProfileId: 'dev',
+`;
+
+const PropertyValues = {
+    template: PropertyValuesTemplate,
+    props: ['appId', 'profileId'],
+    data: function () {
+        return {
+            currentProfileId: this.profileId,
             allProfiles: [],
             selfPropertiesLoading: false,
             appPropertieses: [],
             submitPopoverShowing: false
-        },
-        computed: {
-            edited: function () {
-                const theThis = this;
+        };
+    },
+    computed: {
+        edited: function () {
+            const theThis = this;
 
-                let edited = false;
-                this.appPropertieses.forEach(function (appProperties) {
-                    if (appProperties.appId !== theThis.appId) {
-                        return;
-                    }
-                    appProperties.properties.forEach(function (property) {
-                        edited = edited || property.edited;
-                    });
+            let edited = false;
+            this.appPropertieses.forEach(function (appProperties) {
+                if (appProperties.appId !== theThis.appId) {
+                    return;
+                }
+                appProperties.properties.forEach(function (property) {
+                    edited = edited || property.edited;
                 });
+            });
 
-                return edited;
-            }
-        },
-        watch: {
-            '$route': function () {
-                this.findAllProfiles();
-                this.findAppPropertieses();
-            }
-        },
-        created: function () {
+            return edited;
+        }
+    },
+    watch: {
+        '$route': function () {
             this.findAllProfiles();
             this.findAppPropertieses();
+        }
+    },
+    created: function () {
+        this.findAllProfiles();
+        this.findAppPropertieses();
+    },
+    methods: {
+        findAllProfiles: function () {
+            const theThis = this;
+            axios.get('../manage/profile/findAllProfiles')
+                .then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.allProfiles = result.profiles;
+                });
         },
-        methods: {
-            findAllProfiles: function () {
-                const theThis = this;
-                axios.get('../manage/profile/findAllProfiles')
-                    .then(function (result) {
+        findAppPropertieses: function () {
+            const theThis = this;
+            this.selfPropertiesLoading = true;
+            axios.get('../manage/propertyValue/findInheritedProperties', {
+                params: {
+                    appId: this.appId,
+                    profileId: this.profileId
+                }
+            }).then(function (result) {
+                theThis.selfPropertiesLoading = false;
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                theThis.appPropertieses = result.appPropertieses;
+                theThis.appPropertieses.forEach(function (appProperties) {
+                    appProperties.properties.forEach(function (property) {
+                        Vue.set(property, 'edited', false);
+                        Vue.set(property, 'editing', false);
+                        Vue.set(property, 'editingValue', null);
+                    });
+                    Vue.set(appProperties, 'app', null);
+                    axios.get('../manage/app/findApp', {
+                        params: {
+                            appId: appProperties.appId
+                        }
+                    }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.allProfiles = result.profiles;
-                    });
-            },
-            findAppPropertieses: function () {
-                const theThis = this;
-                this.selfPropertiesLoading = true;
-                axios.get('../manage/propertyValue/findInheritedProperties', {
-                    params: {
-                        appId: this.appId,
-                        profileId: this.profileId
-                    }
-                }).then(function (result) {
-                    theThis.selfPropertiesLoading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    theThis.appPropertieses = result.appPropertieses;
-                    theThis.appPropertieses.forEach(function (appProperties) {
-                        appProperties.properties.forEach(function (property) {
-                            Vue.set(property, 'edited', false);
-                            Vue.set(property, 'editing', false);
-                            Vue.set(property, 'editingValue', null);
-                        });
-                        Vue.set(appProperties, 'app', null);
-                        axios.get('../manage/app/findApp', {
-                            params: {
-                                appId: appProperties.appId
-                            }
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            appProperties.app = result.app;
-                        });
+                        appProperties.app = result.app;
                     });
                 });
-            },
-            switchProfile: function (profileId) {
-                this.$router.replace('/configs/' + this.appId + '/' + profileId);
-            },
-            startEditing: function (property) {
-                property.editing = true;
-                property.editingValue = property.value;
-            },
-            saveEditing: function (property) {
-                property.edited = true;
-                property.editing = false;
-                property.value = property.editingValue;
-                if (property.value !== null) {
-                    property.value = property.value.trim();
-                }
-                if (!property.value) {
-                    property.value = null;
-                }
-            },
-            submitEdited: function () {
-                this.submitPopoverShowing = false;
-
-                const theThis = this;
-                let keys = [], values = [];
-                this.appPropertieses.forEach(function (appProperties) {
-                    if (appProperties.appId !== theThis.appId) {
-                        return;
-                    }
-                    appProperties.properties.forEach(function (property) {
-                        if (property.edited) {
-                            keys.push(property.key);
-                            values.push(property.value);
-                        }
-                    });
-                });
-
-                this.selfPropertiesLoading = true;
-                axios.post('../manage/propertyValue/setPropertyValue', {
-                    appId: this.appId,
-                    profileId: this.profileId,
-                    keys: JSON.stringify(keys),
-                    values: JSON.stringify(values)
-                }).then(function (result) {
-                    theThis.selfPropertiesLoading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    Vue.prototype.$message.success(result.message);
-                    theThis.findAppPropertieses();
-                });
-            },
-            toShowingProfile: function (profile) {
-                if (!profile) {
-                    return '';
-                }
-                let text = profile.profileId;
-                if (profile.profileName) {
-                    text += '（' + profile.profileName + '）';
-                }
-                return text;
-            },
-            toShowingApp: function (app) {
-                if (!app) {
-                    return '';
-                }
-                let text = app.appId;
-                if (app.appName) {
-                    text += '（' + app.appName + '）';
-                }
-                return text;
+            });
+        },
+        switchProfile: function (profileId) {
+            this.$router.replace('/configs/' + this.appId + '/' + profileId);
+        },
+        startEditing: function (property) {
+            property.editing = true;
+            property.editingValue = property.value;
+        },
+        saveEditing: function (property) {
+            property.edited = true;
+            property.editing = false;
+            property.value = property.editingValue;
+            if (property.value !== null) {
+                property.value = property.value.trim();
             }
+            if (!property.value) {
+                property.value = null;
+            }
+        },
+        submitEdited: function () {
+            this.submitPopoverShowing = false;
+
+            const theThis = this;
+            let keys = [], values = [];
+            this.appPropertieses.forEach(function (appProperties) {
+                if (appProperties.appId !== theThis.appId) {
+                    return;
+                }
+                appProperties.properties.forEach(function (property) {
+                    if (property.edited) {
+                        keys.push(property.key);
+                        values.push(property.value);
+                    }
+                });
+            });
+
+            this.selfPropertiesLoading = true;
+            axios.post('../manage/propertyValue/setPropertyValue', {
+                appId: this.appId,
+                profileId: this.profileId,
+                keys: JSON.stringify(keys),
+                values: JSON.stringify(values)
+            }).then(function (result) {
+                theThis.selfPropertiesLoading = false;
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                Vue.prototype.$message.success(result.message);
+                theThis.findAppPropertieses();
+            });
+        },
+        toShowingProfile: function (profile) {
+            if (!profile) {
+                return '';
+            }
+            let text = profile.profileId;
+            if (profile.profileName) {
+                text += '（' + profile.profileName + '）';
+            }
+            return text;
+        },
+        toShowingApp: function (app) {
+            if (!app) {
+                return '';
+            }
+            let text = app.appId;
+            if (app.appName) {
+                text += '（' + app.appName + '）';
+            }
+            return text;
         }
-    });
-</script>
-</body>
-</html>
+    }
+};
