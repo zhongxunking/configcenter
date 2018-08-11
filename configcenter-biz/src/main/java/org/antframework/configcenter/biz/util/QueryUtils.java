@@ -17,7 +17,7 @@ import java.util.Map;
 /**
  * 查询工具类
  */
-public class QueryUtils {
+public final class QueryUtils {
     /**
      * 查询排序
      */
