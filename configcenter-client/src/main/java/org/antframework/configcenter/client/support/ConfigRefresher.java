@@ -9,7 +9,6 @@
 package org.antframework.configcenter.client.support;
 
 import org.antframework.common.util.file.MapFile;
-import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.slf4j.Logger;
@@ -46,12 +45,12 @@ public class ConfigRefresher {
     // 缓存文件
     private MapFile cacheFile;
 
-    public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ConfigContext.InitParams initParams) {
+    public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ServerRequester serverRequester, String cacheFilePath) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
-        serverRequester = new ServerRequester(initParams);
-        if (initParams.getCacheFilePath() != null) {
-            cacheFile = new MapFile(initParams.getCacheFilePath());
+        this.serverRequester = serverRequester;
+        if (cacheFilePath != null) {
+            this.cacheFile = new MapFile(cacheFilePath);
         }
     }
 

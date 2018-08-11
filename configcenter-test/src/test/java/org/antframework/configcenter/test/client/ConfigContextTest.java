@@ -33,7 +33,6 @@ public class ConfigContextTest {
         initParams.setQueriedAppId("scbfund");
         initParams.setServerUrl("http://localhost:6220");
         initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
-        initParams.setZkUrls("localhost:2181");
 
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.getListenerRegistrar().register(new ConfigListener() {
@@ -57,7 +56,6 @@ public class ConfigContextTest {
         initParams.setMainAppId("scbfund");
         initParams.setQueriedAppId("scbfund");
         initParams.setServerUrl("http://localhost:8080");
-        initParams.setZkUrls("localhost:2181");
 
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.getListenerRegistrar().register(new ConfigListener() {

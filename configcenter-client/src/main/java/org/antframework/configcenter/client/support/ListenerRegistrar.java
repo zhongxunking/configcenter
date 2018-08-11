@@ -10,6 +10,8 @@ package org.antframework.configcenter.client.support;
 
 import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ChangedProperty;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -18,6 +20,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
  * 监听器注册器
  */
 public class ListenerRegistrar {
+    private static final Logger logger = LoggerFactory.getLogger(ListenerRegistrar.class);
+
     // 监听器
     private List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -41,7 +45,11 @@ public class ListenerRegistrar {
             return;
         }
         for (ConfigListener listener : listeners) {
-            listener.onChange(changedProperties);
+            try {
+                listener.onChange(changedProperties);
+            } catch (Throwable e) {
+                logger.error("配置变更调用配置监听器出错：", e);
+            }
         }
     }
 }

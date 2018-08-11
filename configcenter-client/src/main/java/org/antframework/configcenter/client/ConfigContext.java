@@ -13,6 +13,7 @@ import org.antframework.configcenter.client.core.DefaultConfigProperties;
 import org.antframework.configcenter.client.support.ConfigRefresher;
 import org.antframework.configcenter.client.support.ListenerRegistrar;
 import org.antframework.configcenter.client.support.RefreshTrigger;
+import org.antframework.configcenter.client.support.ServerRequester;
 
 /**
  * 配置上下文
@@ -24,6 +25,8 @@ public class ConfigContext {
     private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
     // 初始化参数
     private InitParams initParams;
+    // 服务端请求器
+    private ServerRequester serverRequester;
     // 配置刷新器
     private ConfigRefresher configRefresher;
     // 刷新触发器
@@ -31,7 +34,8 @@ public class ConfigContext {
 
     public ConfigContext(InitParams initParams) {
         this.initParams = initParams;
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, initParams);
+        serverRequester = new ServerRequester(initParams);
+        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester, initParams.getCacheFilePath());
         configRefresher.initConfig();
     }
 
@@ -54,7 +58,7 @@ public class ConfigContext {
      */
     public synchronized void listenConfigChanged() {
         if (refreshTrigger == null) {
-            refreshTrigger = new RefreshTrigger(configRefresher, initParams);
+            refreshTrigger = new RefreshTrigger(configRefresher, serverRequester.getZkUrls(), initParams);
         }
     }
 
@@ -89,8 +93,6 @@ public class ConfigContext {
         private String serverUrl;
         // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
         private String cacheFilePath;
-        // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigChanged()触发监听配置是否被修改，可以不用填）
-        private String[] zkUrls;
 
         public String getMainAppId() {
             return mainAppId;
@@ -130,14 +132,6 @@ public class ConfigContext {
 
         public void setCacheFilePath(String cacheFilePath) {
             this.cacheFilePath = cacheFilePath;
-        }
-
-        public String[] getZkUrls() {
-            return zkUrls;
-        }
-
-        public void setZkUrls(String... zkUrls) {
-            this.zkUrls = zkUrls;
         }
     }
 }

@@ -31,25 +31,10 @@ public class RefreshTrigger {
     // 被监听的节点
     private NodeCache nodeCache;
 
-    public RefreshTrigger(ConfigRefresher refresher, ConfigContext.InitParams initParams) {
+    public RefreshTrigger(ConfigRefresher refresher, String[] zkUrls, ConfigContext.InitParams initParams) {
         this.refresher = refresher;
-        if (initParams.getZkUrls() == null || initParams.getZkUrls().length == 0) {
-            throw new IllegalArgumentException("未设置zookeeper地址");
-        }
-        zkTemplate = ZkTemplate.create(initParams.getZkUrls(), ZK_CONFIG_NAMESPACE);
+        zkTemplate = ZkTemplate.create(zkUrls, ZK_CONFIG_NAMESPACE);
         nodeCache = listenNode(initParams.getProfileId(), initParams.getQueriedAppId());
-    }
-
-    /**
-     * 关闭（释放相关资源）
-     */
-    public void close() {
-        try {
-            nodeCache.close();
-        } catch (IOException e) {
-            logger.error("关闭节点监听器出错：", e);
-        }
-        zkTemplate.close();
     }
 
     // 监听指定节点
@@ -65,5 +50,17 @@ public class RefreshTrigger {
             }
         };
         return zkTemplate.listenNode(ZkTemplate.buildPath(profileId, appId), false, listener);
+    }
+
+    /**
+     * 关闭（释放相关资源）
+     */
+    public void close() {
+        try {
+            nodeCache.close();
+        } catch (IOException e) {
+            logger.error("关闭节点监听器出错：", e);
+        }
+        zkTemplate.close();
     }
 }

@@ -33,6 +33,13 @@ public class BizConfiguration {
     }
 
     /**
+     * 获取配置中心的配置
+     */
+    public ConfigcenterProperties getProperties() {
+        return properties;
+    }
+
+    /**
      * 配置中心属性
      */
     @ConfigurationProperties(ConfigcenterProperties.PREFIX)
