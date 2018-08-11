@@ -64,7 +64,7 @@ public class SetPropertyValuesService {
     private void setSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
         PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), keyValue.getKey());
         if (propertyKey == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]属性key[%s]", order.getAppId(), keyValue.getKey()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在属性key[%s]", order.getAppId(), keyValue.getKey()));
         }
 
         PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), keyValue.getKey(), order.getProfileId());

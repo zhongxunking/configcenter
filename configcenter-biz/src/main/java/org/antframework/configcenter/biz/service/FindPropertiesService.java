@@ -10,7 +10,6 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.AppUtils;
-import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
@@ -32,8 +31,6 @@ import java.util.*;
  */
 @Service
 public class FindPropertiesService {
-    @Autowired
-    private AppService appService;
     @Autowired
     private ConfigService configService;
 
