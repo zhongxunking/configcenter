@@ -9,14 +9,13 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
-import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
@@ -43,12 +42,12 @@ public class FindPropertiesService {
         FindPropertiesOrder order = context.getOrder();
         FindPropertiesResult result = context.getResult();
         // 获取被查询配置的应用和主体应用继承的所有应用
-        List<String> queriedAppIds = getInheritedApps(order.getQueriedAppId());
+        List<String> queriedAppIds = getInheritedAppIds(order.getQueriedAppId());
         Set<String> mainAppIds;
         if (StringUtils.equals(order.getMainAppId(), order.getQueriedAppId())) {
             mainAppIds = new HashSet<>(queriedAppIds);
         } else {
-            mainAppIds = new HashSet<>(getInheritedApps(order.getMainAppId()));
+            mainAppIds = new HashSet<>(getInheritedAppIds(order.getMainAppId()));
         }
         // 获取应用的配置
         Map<String, String> properties = new HashMap<>();
@@ -62,18 +61,12 @@ public class FindPropertiesService {
     }
 
     // 获取继承的所有应用
-    private List<String> getInheritedApps(String appId) {
-        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
-        order.setAppId(appId);
-
-        FindInheritedAppsResult result = appService.findInheritedApps(order);
-        FacadeUtils.assertSuccess(result);
-
-        List<String> inheritedApps = new ArrayList<>();
-        for (AppInfo app : result.getInheritedApps()) {
-            inheritedApps.add(app.getAppId());
+    private List<String> getInheritedAppIds(String appId) {
+        List<String> appIds = new ArrayList<>();
+        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+            appIds.add(app.getAppId());
         }
-        return inheritedApps;
+        return appIds;
     }
 
     // 获取应用自己的配置
@@ -88,7 +81,10 @@ public class FindPropertiesService {
 
         Map<String, String> properties = new HashMap<>();
         for (Property property : result.getProperties()) {
-            properties.put(property.getKey(), property.getValue());
+            if (property.getValue() != null) {
+                // 只允许有效的属性
+                properties.put(property.getKey(), property.getValue());
+            }
         }
         return properties;
     }

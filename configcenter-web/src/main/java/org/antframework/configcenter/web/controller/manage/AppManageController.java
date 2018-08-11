@@ -11,7 +11,7 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.*;
@@ -56,7 +56,7 @@ public class AppManageController {
 
         EmptyResult result = appService.addOrModifyApp(order);
         // 刷新客户端
-        RefreshClientsUtils.refresh(appId, null);
+        RefreshUtils.triggerClientsRefresh(appId, null);
         return result;
     }
 
@@ -73,11 +73,7 @@ public class AppManageController {
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppId(appId);
-
-        EmptyResult result = appService.deleteApp(order);
-        // 刷新客户端
-        RefreshClientsUtils.refresh(appId, null);
-        return result;
+        return appService.deleteApp(order);
     }
 
     /**

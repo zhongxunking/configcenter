@@ -10,16 +10,14 @@ package org.antframework.configcenter.web.controller.manage;
 
 import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
-import org.antframework.configcenter.facade.api.AppService;
+import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
-import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
@@ -39,8 +37,6 @@ import java.util.List;
 public class PropertyValueManageController {
     @Autowired
     private PropertyValueService propertyValueService;
-    @Autowired
-    private AppService appService;
     @Autowired
     private ConfigService configService;
 
@@ -74,7 +70,7 @@ public class PropertyValueManageController {
 
         EmptyResult result = propertyValueService.setPropertyValues(order);
         // 刷新客户端
-        RefreshClientsUtils.refresh(appId, profileId);
+        RefreshUtils.triggerClientsRefresh(appId, profileId);
         return result;
     }
 
@@ -92,21 +88,11 @@ public class PropertyValueManageController {
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        for (AppInfo app : getInheritedApp(appId)) {
+        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             result.addAppProperties(getAppProperties(app.getAppId(), profileId, appId));
         }
 
         return result;
-    }
-
-    // 获取应用继承的所有应用
-    private List<AppInfo> getInheritedApp(String appId) {
-        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
-        order.setAppId(appId);
-
-        FindInheritedAppsResult result = appService.findInheritedApps(order);
-        FacadeUtils.assertSuccess(result);
-        return result.getInheritedApps();
     }
 
     // 获取应用的配置

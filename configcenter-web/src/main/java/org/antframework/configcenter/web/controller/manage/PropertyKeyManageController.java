@@ -8,18 +8,18 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
-import org.antframework.configcenter.facade.api.AppService;
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.apache.commons.lang3.StringUtils;
@@ -38,8 +38,6 @@ import java.util.List;
 public class PropertyKeyManageController {
     @Autowired
     private PropertyKeyService propertyKeyService;
-    @Autowired
-    private AppService appService;
 
     /**
      * 新增或修改属性key
@@ -60,7 +58,7 @@ public class PropertyKeyManageController {
 
         EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
         // 刷新客户端
-        RefreshClientsUtils.refresh(appId, null);
+        RefreshUtils.triggerClientsRefresh(appId, null);
         return result;
     }
 
@@ -79,7 +77,7 @@ public class PropertyKeyManageController {
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         // 刷新客户端
-        RefreshClientsUtils.refresh(appId, null);
+        RefreshUtils.triggerClientsRefresh(appId, null);
         return result;
     }
 
@@ -96,21 +94,11 @@ public class PropertyKeyManageController {
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        for (AppInfo app : getInheritedApp(appId)) {
+        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             result.addAppPropertyKeys(getAppPropertyKeys(app.getAppId(), appId));
         }
 
         return result;
-    }
-
-    // 获取应用继承的所有应用
-    private List<AppInfo> getInheritedApp(String appId) {
-        FindInheritedAppsOrder order = new FindInheritedAppsOrder();
-        order.setAppId(appId);
-
-        FindInheritedAppsResult result = appService.findInheritedApps(order);
-        FacadeUtils.assertSuccess(result);
-        return result.getInheritedApps();
     }
 
     // 获取应用的属性key
@@ -120,13 +108,7 @@ public class PropertyKeyManageController {
             minScope = Scope.PROTECTED;
         }
 
-        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
-        order.setAppId(appId);
-        order.setMinScope(minScope);
-
-        FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
-        FacadeUtils.assertSuccess(result);
-        return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, result.getPropertyKeys());
+        return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
     }
 
     /**

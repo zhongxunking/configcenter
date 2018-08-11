@@ -10,11 +10,11 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.dal.dao.ProfileDao;
-import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.AppTree;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.FindAppTreeOrder;
 import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -37,8 +38,6 @@ public class TriggerClientsRefreshService {
     @Autowired
     private AppService appService;
     @Autowired
-    private ProfileDao profileDao;
-    @Autowired
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
@@ -49,9 +48,9 @@ public class TriggerClientsRefreshService {
         extractApps(getAppTree(order.getAppId()), apps);
         // 刷新zookeeper
         byte[] data = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS").getBytes(Charset.forName("utf-8"));
-        for (Profile profile : getProfiles(order)) {
+        for (String profileId : getProfileIds(order)) {
             for (AppInfo app : apps) {
-                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), data);
+                zkTemplate.setData(ZkTemplate.buildPath(profileId, app.getAppId()), data);
             }
         }
     }
@@ -76,19 +75,18 @@ public class TriggerClientsRefreshService {
         return result.getAppTree();
     }
 
-    // 获取需要刷新的环境
-    private List<Profile> getProfiles(TriggerClientsRefreshOrder order) {
-        List<Profile> profiles = new ArrayList<>();
-        if (order.getProfileId() == null) {
-            profiles.addAll(profileDao.findAll());
-        } else {
-            Profile profile = profileDao.findByProfileId(order.getProfileId());
-            if (profile == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
-            }
-            profiles.add(profile);
+    // 获取需要刷新的环境id
+    private List<String> getProfileIds(TriggerClientsRefreshOrder order) {
+        List<String> allProfileIds = new ArrayList<>();
+        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
+            allProfileIds.add(profile.getProfileId());
         }
-
-        return profiles;
+        if (order.getProfileId() == null) {
+            return allProfileIds;
+        }
+        if (!allProfileIds.contains(order.getProfileId())) {
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
+        }
+        return Arrays.asList(order.getProfileId());
     }
 }

@@ -8,23 +8,19 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * 删除属性key服务
@@ -33,8 +29,6 @@ import java.util.List;
 public class DeletePropertyKeyService {
     @Autowired
     private PropertyKeyDao propertyKeyDao;
-    @Autowired
-    private ProfileService profileService;
     @Autowired
     private PropertyValueService propertyValueService;
 
@@ -47,18 +41,11 @@ public class DeletePropertyKeyService {
             return;
         }
         // 删除该key在所有环境的value
-        for (ProfileInfo profile : getAllProfiles()) {
+        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
             deletePropertyValue(order.getAppId(), order.getKey(), profile.getProfileId());
         }
         // 删除key
         propertyKeyDao.delete(propertyKey);
-    }
-
-    // 获取所有环境
-    private List<ProfileInfo> getAllProfiles() {
-        FindAllProfilesResult result = profileService.findAllProfiles(new EmptyOrder());
-        FacadeUtils.assertSuccess(result);
-        return result.getProfiles();
     }
 
     // 删除属性value
