@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.*;
+import org.antframework.configcenter.biz.util.RefreshClientsUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
@@ -71,7 +72,10 @@ public class PropertyValueManageController {
             order.addKeyValue(keyValue);
         }
 
-        return propertyValueService.setPropertyValues(order);
+        EmptyResult result = propertyValueService.setPropertyValues(order);
+        // 刷新客户端
+        RefreshClientsUtils.refresh(appId, profileId);
+        return result;
     }
 
     /**

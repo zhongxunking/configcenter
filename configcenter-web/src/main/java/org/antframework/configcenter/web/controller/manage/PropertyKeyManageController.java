@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.*;
+import org.antframework.configcenter.biz.util.RefreshClientsUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -57,7 +58,10 @@ public class PropertyKeyManageController {
         order.setScope(scope);
         order.setMemo(memo);
 
-        return propertyKeyService.addOrModifyPropertyKey(order);
+        EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
+        // 刷新客户端
+        RefreshClientsUtils.refresh(appId, null);
+        return result;
     }
 
     /**
@@ -73,7 +77,10 @@ public class PropertyKeyManageController {
         order.setAppId(appId);
         order.setKey(key);
 
-        return propertyKeyService.deletePropertyKey(order);
+        EmptyResult result = propertyKeyService.deletePropertyKey(order);
+        // 刷新客户端
+        RefreshClientsUtils.refresh(appId, null);
+        return result;
     }
 
     /**

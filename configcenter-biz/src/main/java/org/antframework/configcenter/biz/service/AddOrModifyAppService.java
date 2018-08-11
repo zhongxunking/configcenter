@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.App;
@@ -65,8 +64,6 @@ public class AddOrModifyAppService {
             // 创建应用节点
             zkTemplate.createNode(ZkTemplate.buildPath(profile.getProfileId(), order.getAppId()), CreateMode.PERSISTENT);
         }
-        // 刷新客户端
-        RefreshClientsUtils.refresh(order.getAppId(), null);
     }
 
     // 校验是否出现循环继承和祖先是否存在
