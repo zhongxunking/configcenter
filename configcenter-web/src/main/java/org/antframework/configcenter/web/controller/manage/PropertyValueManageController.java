@@ -101,9 +101,7 @@ public class PropertyValueManageController {
         order.setAppId(appId);
 
         FindInheritedAppsResult result = appService.findInheritedApps(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getInheritedApps();
     }
 
@@ -120,9 +118,7 @@ public class PropertyValueManageController {
         order.setMinScope(minScope);
 
         FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return new FindInheritedPropertiesResult.AppProperties(appId, result.getProperties());
     }
 

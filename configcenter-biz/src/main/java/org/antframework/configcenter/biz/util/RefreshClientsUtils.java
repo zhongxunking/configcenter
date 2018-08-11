@@ -9,8 +9,8 @@
 package org.antframework.configcenter.biz.util;
 
 import org.antframework.boot.core.Contexts;
-import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 
@@ -33,8 +33,6 @@ public class RefreshClientsUtils {
         order.setProfileId(profileId);
 
         EmptyResult result = REFRESH_SERVICE.triggerClientsRefresh(order);
-        if (!result.isSuccess()) {
-            throw new BizException(result.getStatus(), result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
     }
 }

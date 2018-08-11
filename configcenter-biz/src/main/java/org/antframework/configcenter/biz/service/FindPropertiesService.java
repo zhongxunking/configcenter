@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -68,9 +67,7 @@ public class FindPropertiesService {
         order.setAppId(appId);
 
         FindInheritedAppsResult result = appService.findInheritedApps(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
 
         List<String> inheritedApps = new ArrayList<>();
         for (AppInfo app : result.getInheritedApps()) {
@@ -87,9 +84,7 @@ public class FindPropertiesService {
         order.setMinScope(minScope);
 
         FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
 
         Map<String, String> properties = new HashMap<>();
         for (Property property : result.getProperties()) {

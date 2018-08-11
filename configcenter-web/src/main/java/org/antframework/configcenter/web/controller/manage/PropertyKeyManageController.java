@@ -102,9 +102,7 @@ public class PropertyKeyManageController {
         order.setAppId(appId);
 
         FindInheritedAppsResult result = appService.findInheritedApps(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getInheritedApps();
     }
 
@@ -120,9 +118,7 @@ public class PropertyKeyManageController {
         order.setMinScope(minScope);
 
         FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, result.getPropertyKeys());
     }
 

@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +36,7 @@ public class RefreshController {
     public EmptyResult refreshZkAndClients(String appId, String profileId) {
         // 同步数据到zookeeper
         EmptyResult result = refreshService.syncDataToZk(new EmptyOrder());
-        if (!result.isSuccess()) {
-            return result;
-        }
+        FacadeUtils.assertSuccess(result);
         // 触发客户端刷新配置
         TriggerClientsRefreshOrder order = new TriggerClientsRefreshOrder();
         order.setAppId(appId);

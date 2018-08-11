@@ -8,10 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.*;
 import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
@@ -75,9 +72,7 @@ public class TriggerClientsRefreshService {
         order.setAppId(appId);
 
         FindAppTreeResult result = appService.findAppTree(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getAppTree();
     }
 

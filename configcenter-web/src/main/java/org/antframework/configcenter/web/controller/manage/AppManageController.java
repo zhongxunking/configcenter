@@ -9,9 +9,8 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.AbstractQueryResult;
-import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.*;
@@ -179,9 +178,7 @@ public class AppManageController {
     // 获取应用
     private AppInfo getApp(String appId) {
         FindAppResult result = findApp(appId);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getApp();
     }
 

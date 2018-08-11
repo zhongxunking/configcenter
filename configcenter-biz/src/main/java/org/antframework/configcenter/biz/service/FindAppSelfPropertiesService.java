@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
@@ -64,9 +63,7 @@ public class FindAppSelfPropertiesService {
         order.setMinScope(minScope);
 
         FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getPropertyKeys();
     }
 
@@ -77,9 +74,7 @@ public class FindAppSelfPropertiesService {
         order.setProfileId(profileId);
 
         FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
 
         Map<String, String> values = new HashMap<>();
         for (PropertyValueInfo propertyValue : result.getPropertyValues()) {
