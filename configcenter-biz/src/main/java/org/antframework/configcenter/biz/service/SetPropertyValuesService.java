@@ -12,7 +12,6 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
@@ -21,7 +20,6 @@ import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -42,10 +40,15 @@ public class SetPropertyValuesService {
     @ServiceExecute
     public void execute(ServiceContext<SetPropertyValuesOrder, EmptyResult> context) {
         SetPropertyValuesOrder order = context.getOrder();
-
-        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
+        // 校验环境是否存在（如果有必要）
+        for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
+            if (keyValue.getValue() != null) {
+                Profile profile = profileDao.findLockByProfileId(order.getProfileId());
+                if (profile == null) {
+                    throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
+                }
+                break;
+            }
         }
         // 设置属性value
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
@@ -55,13 +58,6 @@ public class SetPropertyValuesService {
                 deleteSingleValue(order, keyValue);
             }
         }
-    }
-
-    @ServiceAfter
-    public void after(ServiceContext<SetPropertyValuesOrder, EmptyResult> context) {
-        SetPropertyValuesOrder order = context.getOrder();
-        // 刷新客户端
-        RefreshClientsUtils.refresh(order.getAppId(), order.getProfileId());
     }
 
     // 设置单个属性value
