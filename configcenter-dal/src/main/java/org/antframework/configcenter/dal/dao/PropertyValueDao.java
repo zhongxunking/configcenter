@@ -29,8 +29,4 @@ public interface PropertyValueDao {
     List<PropertyValue> findByAppIdAndProfileId(String appId, String profileId);
 
     void delete(PropertyValue propertyValue);
-
-    boolean existsByProfileId(String profileId);
-
-    boolean existsByAppIdAndKey(String appId, String key);
 }

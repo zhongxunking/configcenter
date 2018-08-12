@@ -39,6 +39,4 @@ public interface AppDao {
     void delete(App app);
 
     Page<App> query(Collection<QueryParam> queryParams, Pageable pageable);
-
-    List<App> findAll();
 }

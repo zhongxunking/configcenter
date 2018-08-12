@@ -28,7 +28,5 @@ public interface PropertyKeyDao {
 
     void delete(PropertyKey propertyKey);
 
-    boolean existsByAppId(String appId);
-
     List<PropertyKey> findByAppId(String appId);
 }
