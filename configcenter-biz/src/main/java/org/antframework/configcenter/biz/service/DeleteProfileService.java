@@ -66,6 +66,9 @@ public class DeleteProfileService {
 
             order.addKeyValue(keyValue);
         }
+        if (order.getKeyValues().size() <= 0) {
+            return;
+        }
 
         EmptyResult result = propertyValueService.setPropertyValues(order);
         FacadeUtils.assertSuccess(result);
