@@ -25,8 +25,8 @@ public class RefreshServiceProvider implements RefreshService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public EmptyResult syncDataToZk(EmptyOrder order) {
-        return serviceEngine.execute("syncDataToZkService", order);
+    public EmptyResult refreshZk(EmptyOrder order) {
+        return serviceEngine.execute("refreshZkService", order);
     }
 
     @Override

@@ -21,10 +21,10 @@ public final class RefreshUtils {
     private static final RefreshService REFRESH_SERVICE = Contexts.getApplicationContext().getBean(RefreshService.class);
 
     /**
-     * 同步数据到zookeeper
+     * 刷新zookeeper
      */
-    public static void syncDataToZk() {
-        REFRESH_SERVICE.syncDataToZk(new EmptyOrder());
+    public static void refreshZk() {
+        REFRESH_SERVICE.refreshZk(new EmptyOrder());
     }
 
     /**

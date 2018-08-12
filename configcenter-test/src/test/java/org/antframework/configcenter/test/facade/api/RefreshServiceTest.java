@@ -27,8 +27,8 @@ public class RefreshServiceTest extends AbstractTest {
     private RefreshService refreshService;
 
     @Test
-    public void testSyncDataToZk() {
-        EmptyResult result = refreshService.syncDataToZk(new EmptyOrder());
+    public void testRefreshZk() {
+        EmptyResult result = refreshService.refreshZk(new EmptyOrder());
         checkResult(result, Status.SUCCESS);
     }
 

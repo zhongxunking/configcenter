@@ -76,7 +76,7 @@ public class DeleteProfileService {
 
     @ServiceAfter
     public void after(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
-        // 同步数据到zookeeper
-        RefreshUtils.syncDataToZk();
+        // 刷新zookeeper
+        RefreshUtils.refreshZk();
     }
 }

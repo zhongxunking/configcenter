@@ -25,10 +25,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 同步所有环境、应用到zookeeper服务
+ * 刷新zookeeper服务
  */
 @Service
-public class SyncDataToZkService {
+public class RefreshZkService {
     @Autowired
     private ZkTemplate zkTemplate;
 

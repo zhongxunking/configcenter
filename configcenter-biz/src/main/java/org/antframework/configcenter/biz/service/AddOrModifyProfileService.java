@@ -43,7 +43,7 @@ public class AddOrModifyProfileService {
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
-        // 同步数据到zookeeper
-        RefreshUtils.syncDataToZk();
+        // 刷新zookeeper
+        RefreshUtils.refreshZk();
     }
 }

@@ -64,7 +64,7 @@ public class AddOrModifyAppService {
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
-        // 同步数据到zookeeper
-        RefreshUtils.syncDataToZk();
+        // 刷新zookeeper
+        RefreshUtils.refreshZk();
     }
 }
