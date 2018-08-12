@@ -10,7 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
-import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
+import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -26,22 +26,22 @@ public class RefreshController {
     private RefreshService refreshService;
 
     /**
-     * 触发客户端刷新配置
+     * 刷新客户端
      *
      * @param appId     应用id（不传表示刷新所有应用）
      * @param profileId 环境id（不传表示刷新所有环境）
      */
-    @RequestMapping("/triggerClientsRefresh")
-    public EmptyResult triggerClientsRefresh(String appId, String profileId) {
+    @RequestMapping("/refreshClients")
+    public EmptyResult refreshClients(String appId, String profileId) {
         if (appId == null) {
             ManagerAssert.admin();
         } else {
             ManagerAssert.adminOrHaveRelation(appId);
         }
-        TriggerClientsRefreshOrder order = new TriggerClientsRefreshOrder();
+        RefreshClientsOrder order = new RefreshClientsOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
 
-        return refreshService.triggerClientsRefresh(order);
+        return refreshService.refreshClients(order);
     }
 }

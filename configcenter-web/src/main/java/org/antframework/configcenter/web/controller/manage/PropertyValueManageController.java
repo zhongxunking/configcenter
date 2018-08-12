@@ -70,7 +70,7 @@ public class PropertyValueManageController {
 
         EmptyResult result = propertyValueService.setPropertyValues(order);
         // 刷新客户端
-        RefreshUtils.triggerClientsRefresh(appId, profileId);
+        RefreshUtils.refreshClients(appId, profileId);
         return result;
     }
 

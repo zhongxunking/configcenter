@@ -58,7 +58,7 @@ public class PropertyKeyManageController {
 
         EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
         // 刷新客户端
-        RefreshUtils.triggerClientsRefresh(appId, null);
+        RefreshUtils.refreshClients(appId, null);
         return result;
     }
 
@@ -77,7 +77,7 @@ public class PropertyKeyManageController {
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         // 刷新客户端
-        RefreshUtils.triggerClientsRefresh(appId, null);
+        RefreshUtils.refreshClients(appId, null);
         return result;
     }
 

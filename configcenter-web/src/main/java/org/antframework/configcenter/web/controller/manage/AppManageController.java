@@ -56,7 +56,7 @@ public class AppManageController {
 
         EmptyResult result = appService.addOrModifyApp(order);
         // 刷新客户端
-        RefreshUtils.triggerClientsRefresh(appId, null);
+        RefreshUtils.refreshClients(appId, null);
         return result;
     }
 

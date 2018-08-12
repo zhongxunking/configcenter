@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.util;
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.configcenter.facade.api.RefreshService;
-import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
+import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 
 /**
  * 刷新工具类
@@ -28,16 +28,16 @@ public final class RefreshUtils {
     }
 
     /**
-     * 触发客户端刷新
+     * 刷新客户端
      *
      * @param appId     应用id（null表示刷新所有应用）
      * @param profileId 环境id（null表示刷新所有环境）
      */
-    public static void triggerClientsRefresh(String appId, String profileId) {
-        TriggerClientsRefreshOrder order = new TriggerClientsRefreshOrder();
+    public static void refreshClients(String appId, String profileId) {
+        RefreshClientsOrder order = new RefreshClientsOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
 
-        REFRESH_SERVICE.triggerClientsRefresh(order);
+        REFRESH_SERVICE.refreshClients(order);
     }
 }

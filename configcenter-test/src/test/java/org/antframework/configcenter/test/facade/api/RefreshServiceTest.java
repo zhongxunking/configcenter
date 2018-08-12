@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.RefreshService;
-import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
+import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -33,29 +33,29 @@ public class RefreshServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testTriggerClientsRefresh() {
-        TriggerClientsRefreshOrder order = new TriggerClientsRefreshOrder();
+    public void testRefreshClients() {
+        RefreshClientsOrder order = new RefreshClientsOrder();
         order.setAppId("scbfund");
         order.setProfileId("dev");
-        EmptyResult result = refreshService.triggerClientsRefresh(order);
+        EmptyResult result = refreshService.refreshClients(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientsRefreshOrder();
+        order = new RefreshClientsOrder();
         order.setAppId("scbfund");
         order.setProfileId(null);
-        result = refreshService.triggerClientsRefresh(order);
+        result = refreshService.refreshClients(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientsRefreshOrder();
+        order = new RefreshClientsOrder();
         order.setAppId(null);
         order.setProfileId("dev");
-        result = refreshService.triggerClientsRefresh(order);
+        result = refreshService.refreshClients(order);
         checkResult(result, Status.SUCCESS);
 
-        order = new TriggerClientsRefreshOrder();
+        order = new RefreshClientsOrder();
         order.setAppId(null);
         order.setProfileId(null);
-        result = refreshService.triggerClientsRefresh(order);
+        result = refreshService.refreshClients(order);
         checkResult(result, Status.SUCCESS);
     }
 }

@@ -11,9 +11,9 @@ package org.antframework.configcenter.facade.order;
 import org.antframework.common.util.facade.AbstractOrder;
 
 /**
- * 触发客户端刷新配置order
+ * 刷新客户端order
  */
-public class TriggerClientsRefreshOrder extends AbstractOrder {
+public class RefreshClientsOrder extends AbstractOrder {
     // 根应用id（null表示刷新所有应用）
     private String appId;
     // 环境id（null表示刷新所有环境）

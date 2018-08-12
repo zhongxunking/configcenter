@@ -16,7 +16,7 @@ import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.AppTree;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.FindAppTreeOrder;
-import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
+import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.apache.commons.lang3.time.DateFormatUtils;
 import org.bekit.service.annotation.service.Service;
@@ -34,15 +34,15 @@ import java.util.List;
  * 触发客户端刷新配置服务
  */
 @Service
-public class TriggerClientsRefreshService {
+public class RefreshClientsService {
     @Autowired
     private AppService appService;
     @Autowired
     private ZkTemplate zkTemplate;
 
     @ServiceExecute
-    public void execute(ServiceContext<TriggerClientsRefreshOrder, EmptyResult> context) {
-        TriggerClientsRefreshOrder order = context.getOrder();
+    public void execute(ServiceContext<RefreshClientsOrder, EmptyResult> context) {
+        RefreshClientsOrder order = context.getOrder();
         // 获取需要刷新的应用
         List<AppInfo> apps = new ArrayList<>();
         extractApps(getAppTree(order.getAppId()), apps);
@@ -76,7 +76,7 @@ public class TriggerClientsRefreshService {
     }
 
     // 获取需要刷新的环境id
-    private List<String> getProfileIds(TriggerClientsRefreshOrder order) {
+    private List<String> getProfileIds(RefreshClientsOrder order) {
         List<String> allProfileIds = new ArrayList<>();
         for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
             allProfileIds.add(profile.getProfileId());
