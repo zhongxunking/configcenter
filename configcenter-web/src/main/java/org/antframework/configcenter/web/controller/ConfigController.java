@@ -11,7 +11,7 @@ package org.antframework.configcenter.web.controller;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.BizConfiguration;
+import org.antframework.configcenter.biz.ConfigcenterProperties;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
@@ -28,7 +28,7 @@ public class ConfigController {
     @Autowired
     private ConfigService configService;
     @Autowired
-    private BizConfiguration bizConfiguration;
+    private ConfigcenterProperties configcenterProperties;
 
     /**
      * 查找应用在特定环境中的配置
@@ -56,7 +56,7 @@ public class ConfigController {
         meta.setStatus(Status.SUCCESS);
         meta.setCode(CommonResultCode.SUCCESS.getCode());
         meta.setMessage(CommonResultCode.SUCCESS.getMessage());
-        meta.setZkUrls(bizConfiguration.getProperties().getZkUrls().toArray(new String[0]));
+        meta.setZkUrls(configcenterProperties.getZkUrls().toArray(new String[0]));
 
         return meta;
     }

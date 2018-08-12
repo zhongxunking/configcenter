@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * 触发客户端刷新配置服务
+ * 刷新客户端服务
  */
 @Service
 public class RefreshClientsService {
