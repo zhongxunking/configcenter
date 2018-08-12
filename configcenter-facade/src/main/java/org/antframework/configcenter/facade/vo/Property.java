@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.vo;
 
+import org.antframework.common.util.tostring.ToString;
+
 /**
  * 属性
  */
@@ -35,5 +37,10 @@ public final class Property {
 
     public Scope getScope() {
         return scope;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }
