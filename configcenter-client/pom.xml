@@ -15,7 +15,6 @@
         <dependency>
             <groupId>org.antframework.common</groupId>
             <artifactId>ant-common-util</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.curator</groupId>
