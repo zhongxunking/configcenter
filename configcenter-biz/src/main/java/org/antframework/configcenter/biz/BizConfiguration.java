@@ -23,18 +23,18 @@ import java.util.TimerTask;
  * biz层配置
  */
 @Configuration
-@EnableConfigurationProperties(ConfigcenterProperties.class)
+@EnableConfigurationProperties(MetaProperties.class)
 public class BizConfiguration {
     // 刷新zookeeper任务的执行周期（单位：毫秒）
     private static final long REFRESH_ZK_TASK_RERIOD = 5 * 60 * 1000;
 
     @Autowired
-    private ConfigcenterProperties properties;
+    private MetaProperties metaProperties;
 
     // zookeeper操作类
     @Bean
     public ZkTemplate zkTemplate() {
-        return ZkTemplate.create(properties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
+        return ZkTemplate.create(metaProperties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
     }
 
     // 刷新zookeeper的定时器

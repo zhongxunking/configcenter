@@ -15,11 +15,11 @@ import org.springframework.validation.annotation.Validated;
 import java.util.Set;
 
 /**
- * 配置中心属性
+ * 元数据配置
  */
-@ConfigurationProperties("configcenter")
+@ConfigurationProperties("meta")
 @Validated
-public class ConfigcenterProperties {
+public class MetaProperties {
     /**
      * 必填：配置中心使用的zookeeper地址，存在多个zookeeper的话以“,”分隔（比如：192.168.0.1:2181,192.168.0.2:2181）
      */
