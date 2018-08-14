@@ -14,22 +14,36 @@ import org.antframework.configcenter.spring.context.Contexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
 /**
- * 配置中心应用监听器（将配置中心加入到environment）
+ * environment初始化器（将配置中心的配置加入到environment）
  */
-@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class ConfigcenterApplicationListener implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+public class EnvironmentInitalizer implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         // 创建配置上下文属性资源
         PropertySource propertySource = new ConfigContextPropertySource(ConfigContexts.get(Contexts.getAppId()));
         // 将属性资源添加到environment中
-        event.getEnvironment().getPropertySources().addLast(propertySource);
+        MutablePropertySources propertySources = event.getEnvironment().getPropertySources();
+        if (ConfigcenterProperties.INSTANCE.getPriorTo() == null) {
+            propertySources.addLast(propertySource);
+        } else {
+            propertySources.addBefore(ConfigcenterProperties.INSTANCE.getPriorTo(), propertySource);
+        }
+    }
+
+    @Override
+    public int getOrder() {
+        if (ConfigcenterProperties.INSTANCE.isInitBeforeLogging()) {
+            return LoggingApplicationListener.DEFAULT_ORDER - 1;
+        } else {
+            return LoggingApplicationListener.DEFAULT_ORDER + 1;
+        }
     }
 
     /**

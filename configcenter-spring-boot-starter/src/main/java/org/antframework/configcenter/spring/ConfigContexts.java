@@ -46,14 +46,12 @@ public final class ConfigContexts {
 
     // 构建配置上下文
     private static ConfigContext buildConfigContext(String queriedAppId) {
-        ConfigcenterProperties properties = Contexts.buildProperties(ConfigcenterProperties.class);
-
         ConfigContext.InitParams initParams = new ConfigContext.InitParams();
         initParams.setMainAppId(Contexts.getAppId());
         initParams.setQueriedAppId(queriedAppId);
         initParams.setProfileId(Contexts.getProfile());
-        initParams.setServerUrl(properties.getServerUrl());
-        initParams.setCacheFilePath(properties.getCacheDirPath() + File.separator + String.format("configcenter-%s-%s.properties", queriedAppId, Contexts.getProfile()));
+        initParams.setServerUrl(ConfigcenterProperties.INSTANCE.getServerUrl());
+        initParams.setCacheFilePath(ConfigcenterProperties.INSTANCE.getCacheDirPath() + File.separator + String.format("configcenter-%s-%s.properties", queriedAppId, Contexts.getProfile()));
 
         return new ConfigContext(initParams);
     }

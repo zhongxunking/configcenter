@@ -16,6 +16,8 @@ import org.antframework.configcenter.spring.listener.annotation.ConfigListenerTy
 import org.bekit.event.EventPublisher;
 import org.bekit.event.bus.EventBusesHolder;
 import org.bekit.event.publisher.DefaultEventPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -30,6 +32,7 @@ import org.springframework.core.ResolvableType;
  * 所有配置上下文的生命周期
  */
 public class ConfigContextsLifeCycle implements GenericApplicationListener {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigContextsLifeCycle.class);
 
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
@@ -82,7 +85,11 @@ public class ConfigContextsLifeCycle implements GenericApplicationListener {
     // 关闭所有配置上下文
     private void closeConfigContexts() {
         for (String appId : ConfigContexts.getAppIds()) {
-            ConfigContexts.get(appId).close();
+            try {
+                ConfigContexts.get(appId).close();
+            } catch (Throwable e) {
+                logger.error("关闭配置中心上下文出错：", e);
+            }
         }
     }
 }
