@@ -26,6 +26,14 @@ public class ConfigChangedEventType {
         this.prefix = prefix;
     }
 
+    public String getAppId() {
+        return appId;
+    }
+
+    public String getPrefix() {
+        return prefix;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(appId, prefix);
