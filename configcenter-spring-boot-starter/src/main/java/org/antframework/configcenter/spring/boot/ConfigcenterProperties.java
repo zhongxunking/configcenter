@@ -47,9 +47,13 @@ public class ConfigcenterProperties {
      */
     private String priorTo = null;
     /**
-     * 选填：配置中心的配置是否比日志先初始化（默认为比日志后初始化）。比日志先初始化的好处：在配置中心的日志相关配置会生效；坏处：初始化配置中心的配置报错时，日志打印不出来。比日志后初始化的好处：初始化配置中心的配置报错时，能打印日志；坏处：在配置中心的日志相关配置不会生效（除了日志级别：logging.level.XXX）。总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以默认为比日志后初始化。
+     * 选填：配置中心的配置是否比日志先初始化（默认为比日志后初始化）。
+     * <p>
+     * 比日志先初始化的好处：在配置中心的日志相关配置会生效；坏处：初始化配置中心的配置报错时，日志打印不出来。
+     * 比日志后初始化的好处：初始化配置中心的配置报错时，能打印日志；坏处：在配置中心的日志相关配置不会生效（除了日志级别：logging.level.XXX）。
+     * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以默认为比日志后初始化。
      */
-    private boolean InitBeforeLogging = false;
+    private boolean initBeforeLogging = false;
 
     public String getServerUrl() {
         return serverUrl;
@@ -76,10 +80,10 @@ public class ConfigcenterProperties {
     }
 
     public boolean isInitBeforeLogging() {
-        return InitBeforeLogging;
+        return initBeforeLogging;
     }
 
     public void setInitBeforeLogging(boolean initBeforeLogging) {
-        InitBeforeLogging = initBeforeLogging;
+        this.initBeforeLogging = initBeforeLogging;
     }
 }
