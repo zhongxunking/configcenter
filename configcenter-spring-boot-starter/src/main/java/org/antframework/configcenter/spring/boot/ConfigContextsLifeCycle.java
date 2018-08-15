@@ -77,7 +77,7 @@ public class ConfigContextsLifeCycle implements GenericApplicationListener {
                 // 开始监听配置是否被修改
                 configContext.listenConfigChanged();
                 // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
-                configContext.refreshConfig();
+                configContext.refresh();
             }
         }
     }

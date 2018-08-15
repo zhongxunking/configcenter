@@ -51,7 +51,7 @@ public final class ConfigContexts {
         initParams.setQueriedAppId(queriedAppId);
         initParams.setProfileId(Contexts.getProfile());
         initParams.setServerUrl(ConfigcenterProperties.INSTANCE.getServerUrl());
-        initParams.setCacheFilePath(ConfigcenterProperties.INSTANCE.getCacheDir() + File.separator + String.format("configcenter-%s-%s.properties", queriedAppId, Contexts.getProfile()));
+        initParams.setCacheFile(ConfigcenterProperties.INSTANCE.getCacheDir() + File.separator + String.format("configcenter-%s-%s.properties", queriedAppId, Contexts.getProfile()));
 
         return new ConfigContext(initParams);
     }

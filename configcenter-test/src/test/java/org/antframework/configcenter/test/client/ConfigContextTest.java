@@ -32,7 +32,7 @@ public class ConfigContextTest {
         initParams.setMainAppId("scbfund");
         initParams.setQueriedAppId("scbfund");
         initParams.setServerUrl("http://localhost:6220");
-        initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
+        initParams.setCacheFile(System.getProperty("user.home") + "/var/config/scbfund.properties");
 
         ConfigContext configContext = new ConfigContext(initParams);
         configContext.getListenerRegistrar().register(new ConfigListener() {
@@ -44,7 +44,7 @@ public class ConfigContextTest {
             }
         });
         configContext.listenConfigChanged();
-        configContext.refreshConfig();
+        configContext.refresh();
         Thread.sleep(200000);
         configContext.close();
     }
@@ -68,7 +68,7 @@ public class ConfigContextTest {
             }
         });
         configContext.listenConfigChanged();
-        configContext.refreshConfig();
+        configContext.refresh();
         Thread.sleep(200000);
         configContext.close();
     }
