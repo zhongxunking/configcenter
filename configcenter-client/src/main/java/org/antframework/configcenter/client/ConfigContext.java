@@ -35,7 +35,7 @@ public class ConfigContext {
     public ConfigContext(InitParams initParams) {
         this.initParams = initParams;
         serverRequester = new ServerRequester(initParams);
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester, initParams.getCacheFilePath());
+        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester, initParams.getCacheFile());
         configRefresher.initConfig();
     }
 
@@ -58,15 +58,18 @@ public class ConfigContext {
      */
     public synchronized void listenConfigChanged() {
         if (refreshTrigger == null) {
-            refreshTrigger = new RefreshTrigger(configRefresher, serverRequester.getZkUrls(), initParams);
+            refreshTrigger = new RefreshTrigger(configRefresher, serverRequester, initParams);
         }
     }
 
     /**
-     * 刷新配置（异步）
+     * 刷新配置和zookeeper链接（异步）
      */
-    public void refreshConfig() {
+    public void refresh() {
         configRefresher.refresh();
+        if (refreshTrigger != null) {
+            refreshTrigger.refreshZk();
+        }
     }
 
     /**
@@ -92,7 +95,7 @@ public class ConfigContext {
         // 必填：服务端地址
         private String serverUrl;
         // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
-        private String cacheFilePath;
+        private String cacheFile;
 
         public String getMainAppId() {
             return mainAppId;
@@ -126,12 +129,12 @@ public class ConfigContext {
             this.serverUrl = serverUrl;
         }
 
-        public String getCacheFilePath() {
-            return cacheFilePath;
+        public String getCacheFile() {
+            return cacheFile;
         }
 
-        public void setCacheFilePath(String cacheFilePath) {
-            this.cacheFilePath = cacheFilePath;
+        public void setCacheFile(String cacheFile) {
+            this.cacheFile = cacheFile;
         }
     }
 }

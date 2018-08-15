@@ -45,12 +45,12 @@ public class ConfigRefresher {
     // 缓存文件
     private MapFile cacheFile;
 
-    public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ServerRequester serverRequester, String cacheFilePath) {
+    public ConfigRefresher(ConfigurableConfigProperties properties, ListenerRegistrar listenerRegistrar, ServerRequester serverRequester, String cacheFile) {
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
         this.serverRequester = serverRequester;
-        if (cacheFilePath != null) {
-            this.cacheFile = new MapFile(cacheFilePath);
+        if (cacheFile != null) {
+            this.cacheFile = new MapFile(cacheFile);
         }
     }
 
