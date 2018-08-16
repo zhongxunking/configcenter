@@ -83,7 +83,7 @@ public class ConfigRefresher {
                 if (cacheFile == null) {
                     throw e;
                 }
-                logger.warn("尝试从缓存文件读取配置");
+                logger.warn("尝试从缓存文件[{}]读取配置", cacheFile.getFilePath());
                 if (!cacheFile.exists()) {
                     throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
                 }

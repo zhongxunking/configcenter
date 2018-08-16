@@ -69,7 +69,7 @@ public class RefreshTrigger {
             metaCacheFile = new MapFile(calcMetaCacheFile(initParams.getCacheFile()));
         }
         nodePath = ZkTemplate.buildPath(initParams.getProfileId(), initParams.getQueriedAppId());
-        executor = new TriggerExecutor(getInitZkUrls());
+        executor = buildInitExecutor();
     }
 
     // 计算元数据缓存文件
@@ -83,28 +83,34 @@ public class RefreshTrigger {
         return path;
     }
 
-    // 获取初始化的zookeeper地址
-    private String[] getInitZkUrls() {
-        String[] zkUrls;
-        boolean fromServer = true;
+    // 构建初始的触发执行器
+    private TriggerExecutor buildInitExecutor() {
         try {
-            zkUrls = serverRequester.getZkUrls();
+            String[] zkUrls;
+            boolean fromServer = true;
+            try {
+                zkUrls = serverRequester.getZkUrls();
+            } catch (Throwable e) {
+                logger.error("从配置中心读取zookeeper地址失败：{}", e.getMessage());
+                if (metaCacheFile == null) {
+                    throw e;
+                }
+                logger.warn("尝试从缓存文件[{}]读取zookeeper地址", metaCacheFile.getFilePath());
+                zkUrls = StringUtils.split(metaCacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
+                if (zkUrls == null) {
+                    throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", metaCacheFile.getFilePath()));
+                }
+                fromServer = false;
+            }
+            if (fromServer && metaCacheFile != null) {
+                metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
+            }
+
+            return new TriggerExecutor(zkUrls);
         } catch (Throwable e) {
-            logger.error("从配置中心读取zookeeper地址失败：{}", e.getMessage());
-            if (metaCacheFile == null) {
-                throw e;
-            }
-            logger.warn("尝试从缓存文件读取zookeeper地址");
-            zkUrls = StringUtils.split(metaCacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
-            if (zkUrls == null) {
-                throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", metaCacheFile.getFilePath()));
-            }
-            fromServer = false;
+            close();
+            throw e;
         }
-        if (fromServer && metaCacheFile != null) {
-            metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
-        }
-        return zkUrls;
     }
 
     /**
@@ -118,7 +124,9 @@ public class RefreshTrigger {
      * 关闭（释放相关资源）
      */
     public void close() {
-        executor.close();
+        if (executor != null) {
+            executor.close();
+        }
         threadPool.shutdown();
     }
 
