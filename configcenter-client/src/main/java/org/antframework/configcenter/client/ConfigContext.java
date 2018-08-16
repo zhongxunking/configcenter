@@ -14,6 +14,9 @@ import org.antframework.configcenter.client.support.ConfigRefresher;
 import org.antframework.configcenter.client.support.ListenerRegistrar;
 import org.antframework.configcenter.client.support.RefreshTrigger;
 import org.antframework.configcenter.client.support.ServerRequester;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
 
 /**
  * 配置上下文
@@ -33,6 +36,7 @@ public class ConfigContext {
     private RefreshTrigger refreshTrigger;
 
     public ConfigContext(InitParams initParams) {
+        initParams.check();
         this.initParams = initParams;
         serverRequester = new ServerRequester(initParams);
         configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester, initParams.getCacheFile());
@@ -135,6 +139,21 @@ public class ConfigContext {
 
         public void setCacheFile(String cacheFile) {
             this.cacheFile = cacheFile;
+        }
+
+        /**
+         * 校验参数
+         */
+        public void check() {
+            if (mainAppId == null || queriedAppId == null || profileId == null || serverUrl == null) {
+                throw new IllegalArgumentException("主体应用id、被查询配置的应用id、环境id、服务端地址为必传项");
+            }
+            if (cacheFile != null) {
+                if (StringUtils.equals(cacheFile, RefreshTrigger.META_CACHE_FILE_NAME)
+                        || cacheFile.endsWith(File.separator + RefreshTrigger.META_CACHE_FILE_NAME)) {
+                    throw new IllegalArgumentException(String.format("缓存文件[%s]的文件名不能为%s", cacheFile, RefreshTrigger.META_CACHE_FILE_NAME));
+                }
+            }
         }
     }
 }

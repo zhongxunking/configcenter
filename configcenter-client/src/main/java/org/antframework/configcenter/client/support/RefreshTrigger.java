@@ -16,6 +16,7 @@ import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -29,8 +30,10 @@ import java.util.concurrent.TimeUnit;
  */
 public class RefreshTrigger {
     private static final Logger logger = LoggerFactory.getLogger(RefreshTrigger.class);
-    // 缓存文件后缀
-    private static final String CACHE_FILE_SUFFIX = "-meta";
+    /**
+     * 元数据缓存文件名称
+     */
+    public static final String META_CACHE_FILE_NAME = "meta.properties";
     // zookeeper地址在缓存文件中的key
     private static final String ZK_URLS_KEY = "zkUrls";
     // zookeeper地址分隔符
@@ -53,7 +56,7 @@ public class RefreshTrigger {
     // 服务端请求器
     private ServerRequester serverRequester;
     // 缓存文件
-    private MapFile cacheFile;
+    private MapFile metaCacheFile;
     // 监听的节点
     private String nodePath;
     // 触发执行器
@@ -63,10 +66,21 @@ public class RefreshTrigger {
         this.configRefresher = configRefresher;
         this.serverRequester = serverRequester;
         if (initParams.getCacheFile() != null) {
-            cacheFile = new MapFile(initParams.getCacheFile() + CACHE_FILE_SUFFIX);
+            metaCacheFile = new MapFile(calcMetaCacheFile(initParams.getCacheFile()));
         }
         nodePath = ZkTemplate.buildPath(initParams.getProfileId(), initParams.getQueriedAppId());
         executor = new TriggerExecutor(getInitZkUrls());
+    }
+
+    // 计算元数据缓存文件
+    private String calcMetaCacheFile(String configCacheFile) {
+        String path = new File(configCacheFile).getAbsolutePath();
+        path = new File(path).getParent();
+        if (!path.endsWith(File.separator)) {
+            path += File.separator;
+        }
+        path += META_CACHE_FILE_NAME;
+        return path;
     }
 
     // 获取初始化的zookeeper地址
@@ -77,18 +91,18 @@ public class RefreshTrigger {
             zkUrls = serverRequester.getZkUrls();
         } catch (Throwable e) {
             logger.error("从配置中心读取zookeeper地址失败：{}", e.getMessage());
-            if (cacheFile == null) {
+            if (metaCacheFile == null) {
                 throw e;
             }
             logger.warn("尝试从缓存文件读取zookeeper地址");
-            zkUrls = StringUtils.split(cacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
+            zkUrls = StringUtils.split(metaCacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
             if (zkUrls == null) {
-                throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", cacheFile.getFilePath()));
+                throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", metaCacheFile.getFilePath()));
             }
             fromServer = false;
         }
-        if (fromServer && cacheFile != null) {
-            cacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
+        if (fromServer && metaCacheFile != null) {
+            metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
         }
         return zkUrls;
     }
@@ -114,6 +128,9 @@ public class RefreshTrigger {
         public void run() {
             try {
                 String[] newZkUrls = serverRequester.getZkUrls();
+                if (metaCacheFile != null) {
+                    metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(newZkUrls, ZK_URLS_SEPARATOR));
+                }
                 if (isChanged(newZkUrls)) {
                     executor.close();
                     executor = new TriggerExecutor(newZkUrls);

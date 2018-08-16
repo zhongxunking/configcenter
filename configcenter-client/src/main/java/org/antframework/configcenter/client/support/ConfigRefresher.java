@@ -80,16 +80,15 @@ public class ConfigRefresher {
                 newProperties = serverRequester.findConfig();
             } catch (Throwable e) {
                 logger.error("从配置中心读取配置失败：{}", e.getMessage());
-                if (cacheFile != null) {
-                    logger.warn("尝试从缓存文件读取配置");
-                    if (!cacheFile.exists()) {
-                        throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
-                    }
-                    newProperties = cacheFile.readAll();
-                    fromServer = false;
-                } else {
+                if (cacheFile == null) {
                     throw e;
                 }
+                logger.warn("尝试从缓存文件读取配置");
+                if (!cacheFile.exists()) {
+                    throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
+                }
+                newProperties = cacheFile.readAll();
+                fromServer = false;
             }
             if (fromServer && cacheFile != null) {
                 cacheFile.replace(newProperties);
