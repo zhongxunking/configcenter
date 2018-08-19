@@ -38,10 +38,10 @@ public class ConfigcenterProperties {
     @NotBlank
     private String serverUrl;
     /**
-     * 选填：缓存目录（默认为：/var/apps/config/${appId}）
+     * 选填：缓存目录（默认为：/var/apps/config）
      */
     @NotBlank
-    private String cacheDir = "/var/apps/config/" + Contexts.getAppId();
+    private String cacheDir = "/var/apps/config";
     /**
      * 选填：配置中心的配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
      */
