@@ -9,6 +9,7 @@
 package org.antframework.configcenter.spring.boot;
 
 import org.antframework.configcenter.client.ConfigContext;
+import org.antframework.configcenter.client.support.Config;
 import org.antframework.configcenter.spring.ConfigContexts;
 import org.antframework.configcenter.spring.context.Contexts;
 import org.antframework.configcenter.spring.listener.DefaultConfigListener;
@@ -29,10 +30,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
 /**
- * 所有配置上下文的生命周期
+ * 配置上下文的生命周期
  */
-public class ConfigContextsLifeCycle implements GenericApplicationListener {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigContextsLifeCycle.class);
+public class ConfigContextLifeCycle implements GenericApplicationListener {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigContextLifeCycle.class);
 
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
@@ -61,35 +62,29 @@ public class ConfigContextsLifeCycle implements GenericApplicationListener {
         return Ordered.LOWEST_PRECEDENCE;
     }
 
-    // 使所有配置上下文准备好
+    // 使配置上下文准备好
     private void readyConfigContexts() {
+        ConfigContext configContext = ConfigContexts.getContext();
         // 创建事件发布器
         EventBusesHolder eventBusesHolder = Contexts.getApplicationContext().getBean(EventBusesHolder.class);
         EventPublisher eventPublisher = new DefaultEventPublisher(eventBusesHolder.getEventBus(ConfigListenerType.class));
-
-        for (String appId : ConfigContexts.getAppIds()) {
-            ConfigContext configContext = ConfigContexts.get(appId);
-            // 添加默认监听器
-            configContext.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
-            // 判断是否监听配置被修改
-            boolean listenEnable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_ENABLE_PROPERTY_NAME, Boolean.class, Boolean.TRUE);
-            if (listenEnable) {
-                // 开始监听配置是否被修改
-                configContext.listenConfigChanged();
-                // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
-                configContext.refresh();
-            }
+        // 添加默认监听器
+        for (String appId : configContext.getAppIds()) {
+            Config config = configContext.getConfig(appId);
+            config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
+        }
+        // 判断是否监听配置被修改
+        boolean listenEnable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_ENABLE_PROPERTY_NAME, Boolean.class, Boolean.TRUE);
+        if (listenEnable) {
+            // 开始监听配置是否被修改
+            configContext.listenConfigChanged();
+            // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
+            configContext.refresh();
         }
     }
 
-    // 关闭所有配置上下文
+    // 关闭配置上下文
     private void closeConfigContexts() {
-        for (String appId : ConfigContexts.getAppIds()) {
-            try {
-                ConfigContexts.get(appId).close();
-            } catch (Throwable e) {
-                logger.error("关闭配置中心上下文出错：", e);
-            }
-        }
+        ConfigContexts.getContext().close();
     }
 }

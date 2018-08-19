@@ -16,6 +16,7 @@ import org.antframework.configcenter.client.support.TaskExecutor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.Set;
 
 /**
  * 配置上下文
@@ -50,11 +51,11 @@ public class ConfigContext {
     /**
      * 获取配置
      *
-     * @param queriedAppId 被查询配置的应用id
+     * @param appId 被查询配置的应用id
      * @return 指定应用的配置
      */
-    public Config getConfig(String queriedAppId) {
-        return configsCache.get(queriedAppId);
+    public Config getConfig(String appId) {
+        return configsCache.get(appId);
     }
 
     /**
@@ -94,6 +95,13 @@ public class ConfigContext {
                 }
             });
         }
+    }
+
+    /**
+     * 获取所有已查找配置的应用id
+     */
+    public Set<String> getAppIds() {
+        return configsCache.getAllKeys();
     }
 
     /**
