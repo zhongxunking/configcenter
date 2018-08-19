@@ -60,7 +60,7 @@ public class Config {
     /**
      * 刷新配置
      */
-    public void refresh() {
+    public synchronized void refresh() {
         configRefresher.refresh();
     }
 }

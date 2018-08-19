@@ -98,12 +98,20 @@ public class RefreshTrigger {
     }
 
     /**
-     * 新增需被触发刷新的应用
+     * 添加应用（添加失败不会报错）
      *
      * @param appId 应用id
      */
-    public void addTriggeredApp(String appId) {
-        listenersCache.get(appId);
+    public void addApp(String appId) {
+        if (!listenersCache.getAllKeys().contains(appId)) {
+            synchronized (this) {
+                try {
+                    listenersCache.get(appId);
+                } catch (Throwable e) {
+                    logger.error("添加应用出错：", e);
+                }
+            }
+        }
     }
 
     // 监听应用
@@ -114,7 +122,7 @@ public class RefreshTrigger {
                 try {
                     refresher.refresh(appId);
                 } catch (Throwable e) {
-                    logger.error("触发刷新出错：", e);
+                    logger.error("触发刷新配置出错：", e);
                 }
             }
         };
@@ -124,7 +132,7 @@ public class RefreshTrigger {
     /**
      * 刷新zookeeper链接
      */
-    public void refreshZk() {
+    public synchronized void refreshZk() {
         String[] newZkUrls = metaRequester.getZkUrls();
         if (cacheFile != null) {
             cacheFile.store(ZK_URLS_KEY, StringUtils.join(newZkUrls, ZK_URLS_SEPARATOR));
@@ -140,7 +148,7 @@ public class RefreshTrigger {
             zkTemplate = ZkTemplate.create(newZkUrls, ZK_CONFIG_NAMESPACE);
             // 监听应用
             for (String appId : appIds) {
-                listenersCache.get(appId);
+                addApp(appId);
             }
         }
     }
@@ -148,7 +156,7 @@ public class RefreshTrigger {
     /**
      * 关闭（释放相关资源）
      */
-    public void close() {
+    public synchronized void close() {
         clearListenersAndZk();
     }
 

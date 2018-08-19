@@ -25,11 +25,15 @@ public class ConfigContext {
     private final Cache<String, Config> configsCache = new Cache<>(new Cache.Supplier<String, Config>() {
         @Override
         public Config get(String key) {
-            return createConfig(key);
+            Config config = new Config(key, serverRequester, calcCacheDir());
+            if (refreshTrigger != null) {
+                refreshTrigger.addApp(key);
+            }
+            return config;
         }
     });
     // 任务执行器
-    private TaskExecutor taskExecutor = new TaskExecutor();
+    private final TaskExecutor taskExecutor = new TaskExecutor();
     // 初始化参数
     private final InitParams initParams;
     // 服务端请求器
@@ -53,11 +57,6 @@ public class ConfigContext {
         return configsCache.get(queriedAppId);
     }
 
-    // 创建配置
-    private Config createConfig(String queriedAppId) {
-        return new Config(queriedAppId, serverRequester, calcCacheDir());
-    }
-
     /**
      * 开始监听配置是否被修改
      */
@@ -68,22 +67,13 @@ public class ConfigContext {
         RefreshTrigger.Refresher refresher = new RefreshTrigger.Refresher() {
             @Override
             public void refresh(String appId) {
-                refresh(appId);
+                refreshConfig(appId);
             }
         };
-        refreshTrigger = new RefreshTrigger(initParams.getProfileId(), serverRequester, refresher, calcCacheDir());
-    }
-
-    // 计算缓存文件夹路径
-    private String calcCacheDir() {
-        String cacheDir = initParams.getCacheDir();
-        if (cacheDir != null) {
-            if (!cacheDir.endsWith(File.separator)) {
-                cacheDir += File.separator;
-            }
-            cacheDir += initParams.getMainAppId() + File.separator + initParams.getProfileId();
+        refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, calcCacheDir());
+        for (String appId : configsCache.getAllKeys()) {
+            refreshTrigger.addApp(appId);
         }
-        return cacheDir;
     }
 
     /**
@@ -92,6 +82,9 @@ public class ConfigContext {
     public void refresh() {
         for (String appId : configsCache.getAllKeys()) {
             refreshConfig(appId);
+            if (refreshTrigger != null) {
+                refreshTrigger.addApp(appId);
+            }
         }
         if (refreshTrigger != null) {
             taskExecutor.execute(new TaskExecutor.Task<RefreshTrigger>(refreshTrigger) {
@@ -103,16 +96,6 @@ public class ConfigContext {
         }
     }
 
-    // 刷新配置
-    private void refreshConfig(String appId) {
-        taskExecutor.execute(new TaskExecutor.Task<Config>(configsCache.get(appId)) {
-            @Override
-            protected void doRun(Config target) {
-                target.refresh();
-            }
-        });
-    }
-
     /**
      * 关闭（释放相关资源）
      */
@@ -121,6 +104,28 @@ public class ConfigContext {
             refreshTrigger.close();
         }
         taskExecutor.close();
+    }
+
+    // 计算缓存文件夹路径
+    private String calcCacheDir() {
+        String cacheDir = initParams.cacheDir;
+        if (cacheDir != null) {
+            if (!cacheDir.endsWith(File.separator)) {
+                cacheDir += File.separator;
+            }
+            cacheDir += initParams.mainAppId + File.separator + initParams.profileId;
+        }
+        return cacheDir;
+    }
+
+    // 刷新配置
+    private void refreshConfig(String appId) {
+        taskExecutor.execute(new TaskExecutor.Task<Config>(configsCache.get(appId)) {
+            @Override
+            protected void doRun(Config target) {
+                target.refresh();
+            }
+        });
     }
 
     /**
