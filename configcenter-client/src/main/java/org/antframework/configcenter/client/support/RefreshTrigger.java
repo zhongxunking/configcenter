@@ -9,21 +9,17 @@
 package org.antframework.configcenter.client.support;
 
 import org.antframework.common.util.file.MapFile;
+import org.antframework.common.util.other.Cache;
 import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.client.ConfigContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.curator.framework.recipes.cache.NodeCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 /**
  * 刷新触发器
@@ -33,7 +29,7 @@ public class RefreshTrigger {
     /**
      * 元数据缓存文件名称
      */
-    public static final String META_CACHE_FILE_NAME = "meta.properties";
+    public static final String META_CACHE_FILE_NAME = "configcenter-meta.properties";
     // zookeeper地址在缓存文件中的key
     private static final String ZK_URLS_KEY = "zkUrls";
     // zookeeper地址分隔符
@@ -41,172 +37,149 @@ public class RefreshTrigger {
     // 配置中心在zookeeper中的命名空间
     private static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
 
-    // 执行刷新zookeeper连接任务的线程池
-    private ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
-            0,
-            1,
-            5,
-            TimeUnit.SECONDS,
-            new ArrayBlockingQueue<>(1),
-            new ThreadPoolExecutor.DiscardPolicy());
-    // 刷新zookeeper连接任务
-    private RefreshZkTask refreshZkTask = new RefreshZkTask();
-    // 配置刷新器
-    private ConfigRefresher configRefresher;
-    // 服务端请求器
-    private ServerRequester serverRequester;
+    // 监听器缓存
+    private Cache<String, NodeCache> listenersCache = new Cache<>(new Cache.Supplier<String, NodeCache>() {
+        @Override
+        public NodeCache get(String key) {
+            return listenApp(key);
+        }
+    });
+    // 环境id
+    private String profileId;
+    // 元数据请求器
+    private ServerRequester.MetaRequester metaRequester;
+    // 刷新器
+    private Refresher refresher;
     // 缓存文件
-    private MapFile metaCacheFile;
-    // 监听的节点
-    private String nodePath;
-    // 触发执行器
-    private TriggerExecutor executor;
+    private MapFile cacheFile;
+    // zookeeper操作类
+    private ZkTemplate zkTemplate;
 
-    public RefreshTrigger(ConfigRefresher configRefresher, ServerRequester serverRequester, ConfigContext.InitParams initParams) {
-        this.configRefresher = configRefresher;
-        this.serverRequester = serverRequester;
-        if (initParams.getCacheFile() != null) {
-            metaCacheFile = new MapFile(calcMetaCacheFile(initParams.getCacheFile()));
-        }
-        nodePath = ZkTemplate.buildPath(initParams.getProfileId(), initParams.getQueriedAppId());
-        executor = buildInitExecutor();
+    public RefreshTrigger(String profileId, ServerRequester serverRequester, Refresher refresher, String cacheDir) {
+        this.profileId = profileId;
+        metaRequester = serverRequester.createMetaRequester();
+        this.refresher = refresher;
+        cacheFile = buildCacheFile(cacheDir);
+        zkTemplate = buildInitZkTemplate();
     }
 
-    // 计算元数据缓存文件
-    private String calcMetaCacheFile(String configCacheFile) {
-        String path = new File(configCacheFile).getAbsolutePath();
-        path = new File(path).getParent();
-        if (!path.endsWith(File.separator)) {
-            path += File.separator;
+    // 构建缓存文件
+    private MapFile buildCacheFile(String cacheDir) {
+        if (cacheDir == null) {
+            return null;
         }
-        path += META_CACHE_FILE_NAME;
-        return path;
+        String cacheFile = cacheDir + File.separator + META_CACHE_FILE_NAME;
+        return new MapFile(cacheFile);
     }
 
-    // 构建初始的触发执行器
-    private TriggerExecutor buildInitExecutor() {
+    // 构建初始的ZkTemplate
+    private ZkTemplate buildInitZkTemplate() {
+        String[] zkUrls;
+        boolean fromServer = true;
         try {
-            String[] zkUrls;
-            boolean fromServer = true;
-            try {
-                zkUrls = serverRequester.getZkUrls();
-            } catch (Throwable e) {
-                logger.error("从配置中心读取zookeeper地址失败：{}", e.getMessage());
-                if (metaCacheFile == null) {
-                    throw e;
-                }
-                logger.warn("尝试从缓存文件[{}]读取zookeeper地址", metaCacheFile.getFilePath());
-                zkUrls = StringUtils.split(metaCacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
-                if (zkUrls == null) {
-                    throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", metaCacheFile.getFilePath()));
-                }
-                fromServer = false;
-            }
-            if (fromServer && metaCacheFile != null) {
-                metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
-            }
-
-            return new TriggerExecutor(zkUrls);
+            zkUrls = metaRequester.getZkUrls();
         } catch (Throwable e) {
-            close();
-            throw e;
+            logger.error("从配置中心读取zookeeper地址失败：{}", e.getMessage());
+            if (cacheFile == null) {
+                throw e;
+            }
+            logger.warn("尝试从缓存文件[{}]读取zookeeper地址", cacheFile.getFilePath());
+            zkUrls = StringUtils.split(cacheFile.read(ZK_URLS_KEY), ZK_URLS_SEPARATOR);
+            if (zkUrls == null || zkUrls.length <= 0) {
+                throw new IllegalStateException(String.format("不存在缓存文件[%s]或该缓存文件中不存在zookeeper地址", cacheFile.getFilePath()));
+            }
+            fromServer = false;
         }
+        if (fromServer && cacheFile != null) {
+            cacheFile.store(ZK_URLS_KEY, StringUtils.join(zkUrls, ZK_URLS_SEPARATOR));
+        }
+
+        return ZkTemplate.create(zkUrls, ZK_CONFIG_NAMESPACE);
+    }
+
+    /**
+     * 新增需被触发刷新的应用
+     *
+     * @param appId 应用id
+     */
+    public void addTriggeredApp(String appId) {
+        listenersCache.get(appId);
+    }
+
+    // 监听应用
+    private NodeCache listenApp(String appId) {
+        ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
+            @Override
+            public void nodeChanged() throws Exception {
+                try {
+                    refresher.refresh(appId);
+                } catch (Throwable e) {
+                    logger.error("触发刷新出错：", e);
+                }
+            }
+        };
+        return zkTemplate.listenNode(ZkTemplate.buildPath(profileId, appId), false, listener);
     }
 
     /**
      * 刷新zookeeper链接
      */
     public void refreshZk() {
-        threadPool.execute(refreshZkTask);
+        String[] newZkUrls = metaRequester.getZkUrls();
+        if (cacheFile != null) {
+            cacheFile.store(ZK_URLS_KEY, StringUtils.join(newZkUrls, ZK_URLS_SEPARATOR));
+        }
+        Set<String> newZks = new HashSet<>(Arrays.asList(newZkUrls));
+        Set<String> oldZks = new HashSet<>(Arrays.asList(zkTemplate.getZkUrls()));
+        if (!newZks.equals(oldZks)) {
+            // zk地址有变更，则所有操作移到新zk上
+            Set<String> appIds = new HashSet<>(listenersCache.getAllKeys());
+            // 清理监听器和zk链接
+            clearListenersAndZk();
+            // 创建新zk链接
+            zkTemplate = ZkTemplate.create(newZkUrls, ZK_CONFIG_NAMESPACE);
+            // 监听应用
+            for (String appId : appIds) {
+                listenersCache.get(appId);
+            }
+        }
     }
 
     /**
      * 关闭（释放相关资源）
      */
     public void close() {
-        if (executor != null) {
-            executor.close();
-        }
-        threadPool.shutdown();
+        clearListenersAndZk();
     }
 
-    // 刷新zookeeper链接的任务
-    private class RefreshZkTask implements Runnable {
-        @Override
-        public void run() {
+    // 清理监听器和zk链接
+    private void clearListenersAndZk() {
+        for (String appId : listenersCache.getAllKeys()) {
             try {
-                String[] newZkUrls = serverRequester.getZkUrls();
-                if (metaCacheFile != null) {
-                    metaCacheFile.store(ZK_URLS_KEY, StringUtils.join(newZkUrls, ZK_URLS_SEPARATOR));
-                }
-                if (isChanged(newZkUrls)) {
-                    executor.close();
-                    executor = new TriggerExecutor(newZkUrls);
-                }
+                listenersCache.get(appId).close();
             } catch (Throwable e) {
-                logger.error("刷新zookeeper链接出错：{}", e.getMessage());
+                logger.error("关闭zookeeper监听器出错：", e);
             }
         }
-
-        // zookeeper地址是否有变化
-        private boolean isChanged(String[] newZkUrls) {
-            Set<String> newZks = new HashSet<>(Arrays.asList(newZkUrls));
-            Set<String> oldZks = new HashSet<>(Arrays.asList(executor.getZkUrls()));
-            return !newZks.equals(oldZks);
+        listenersCache.clear();
+        try {
+            zkTemplate.close();
+        } catch (Throwable e) {
+            logger.error("关闭zookeeper链接出错：", e);
         }
+        zkTemplate = null;
     }
 
-    // 触发执行器
-    private class TriggerExecutor {
-        // zookeeper地址
-        private String[] zkUrls;
-        // zookeeper操作类
-        private ZkTemplate zkTemplate;
-        // 被监听的节点
-        private NodeCache nodeCache;
-
-        public TriggerExecutor(String[] zkUrls) {
-            this.zkUrls = zkUrls;
-            zkTemplate = ZkTemplate.create(zkUrls, ZK_CONFIG_NAMESPACE);
-            nodeCache = listenZkNode();
-        }
-
-        // 监听zookeeper节点
-        private NodeCache listenZkNode() {
-            ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
-                @Override
-                public void nodeChanged() throws Exception {
-                    try {
-                        configRefresher.refresh();
-                    } catch (Throwable e) {
-                        logger.error("触发刷新出错：", e);
-                    }
-                }
-            };
-            return zkTemplate.listenNode(nodePath, false, listener);
-        }
+    /**
+     * 刷新器
+     */
+    public interface Refresher {
 
         /**
-         * 获取zookeeper地址
+         * 刷新
+         *
+         * @param appId 需被刷新的应用
          */
-        public String[] getZkUrls() {
-            return zkUrls;
-        }
-
-        /**
-         * 关闭（释放相关资源）
-         */
-        public void close() {
-            try {
-                nodeCache.close();
-            } catch (IOException e) {
-                logger.error("关闭zookeeper节点监听器出错：", e);
-            }
-            try {
-                zkTemplate.close();
-            } catch (Throwable e) {
-                logger.error("关闭zookeeper链接出错：", e);
-            }
-        }
+        void refresh(String appId);
     }
 }

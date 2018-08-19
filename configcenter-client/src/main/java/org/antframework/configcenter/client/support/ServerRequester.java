@@ -10,7 +10,6 @@ package org.antframework.configcenter.client.support;
 
 import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.client.ConfigContext;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -34,50 +33,75 @@ import java.util.Map;
 public class ServerRequester {
     // 发送http请求的客户端
     private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
-    // 查询配置url
+    // 查询配置的url
     private static final String QUERY_CONFIG_URL_SUFFIX = "/config/findProperties";
-    // 查询元数据url
+    // 查询元数据的url
     private static final String QUERY_META_URL_SUFFIX = "/config/meta";
 
-    // 获取配置的请求
-    private HttpUriRequest configRequest;
-    // 获取元数据的请求
-    private HttpUriRequest metaRequest;
+    // 服务端地址
+    private final String serverUrl;
+    // 主应用id
+    private final String mainAppId;
+    // 环境id
+    private final String profileId;
 
-    public ServerRequester(ConfigContext.InitParams initParams) {
-        configRequest = buildConfigRequest(initParams);
-        metaRequest = buildMetaRequest(initParams);
+    public ServerRequester(String serverUrl, String mainAppId, String profileId) {
+        this.serverUrl = serverUrl;
+        this.mainAppId = mainAppId;
+        this.profileId = profileId;
     }
 
     /**
-     * 查找配置
+     * 创建配置请求器
+     *
+     * @param queriedAppId 被查询配置的应用id
+     * @return 配置请求器
      */
-    public Map<String, String> findConfig() {
-        try {
-            String resultStr = HTTP_CLIENT.execute(configRequest, new BasicResponseHandler());
-            FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
-            if (result == null) {
-                throw new RuntimeException("请求配置中心失败");
-            }
-            if (!result.isSuccess()) {
-                throw new RuntimeException("从配置中心读取配置失败：" + result.getMessage());
-            }
-            return result.getProperties();
-        } catch (IOException e) {
-            return ExceptionUtils.rethrow(e);
-        }
+    public ConfigRequester createConfigRequester(String queriedAppId) {
+        return new ConfigRequester(queriedAppId);
     }
 
-    // 构建配置请求
-    private HttpUriRequest buildConfigRequest(ConfigContext.InitParams initParams) {
-        List<NameValuePair> params = new ArrayList<>();
-        params.add(new BasicNameValuePair("mainAppId", initParams.getMainAppId()));
-        params.add(new BasicNameValuePair("queriedAppId", initParams.getQueriedAppId()));
-        params.add(new BasicNameValuePair("profileId", initParams.getProfileId()));
+    /**
+     * 配置请求器
+     */
+    public class ConfigRequester {
+        // 被查询配置的应用id
+        private final String queriedAppId;
 
-        HttpPost httpPost = new HttpPost(initParams.getServerUrl() + QUERY_CONFIG_URL_SUFFIX);
-        httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
-        return httpPost;
+        public ConfigRequester(String queriedAppId) {
+            this.queriedAppId = queriedAppId;
+        }
+
+        /**
+         * 查找配置
+         */
+        public Map<String, String> findConfig() {
+            try {
+                String resultStr = HTTP_CLIENT.execute(buildConfigRequest(), new BasicResponseHandler());
+                FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
+                if (result == null) {
+                    throw new RuntimeException("请求配置中心失败");
+                }
+                if (!result.isSuccess()) {
+                    throw new RuntimeException("从配置中心获取配置失败：" + result.getMessage());
+                }
+                return result.getProperties();
+            } catch (IOException e) {
+                return ExceptionUtils.rethrow(e);
+            }
+        }
+
+        // 构建配置请求
+        private HttpUriRequest buildConfigRequest() {
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("mainAppId", mainAppId));
+            params.add(new BasicNameValuePair("queriedAppId", queriedAppId));
+            params.add(new BasicNameValuePair("profileId", profileId));
+
+            HttpPost httpPost = new HttpPost(serverUrl + QUERY_CONFIG_URL_SUFFIX);
+            httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            return httpPost;
+        }
     }
 
     // 查找应用在特定环境中的配置result
@@ -95,27 +119,41 @@ public class ServerRequester {
     }
 
     /**
-     * 获取配置中心使用的zookeeper
+     * 创建元数据请求器
+     *
+     * @return 元数据请求器
      */
-    public String[] getZkUrls() {
-        try {
-            String resultStr = HTTP_CLIENT.execute(metaRequest, new BasicResponseHandler());
-            MetaResult result = JSON.parseObject(resultStr, MetaResult.class);
-            if (result == null) {
-                throw new RuntimeException("请求配置中心失败");
-            }
-            if (!result.isSuccess()) {
-                throw new RuntimeException("从配置中心获取元数据失败：" + result.getMessage());
-            }
-            return result.getZkUrls();
-        } catch (IOException e) {
-            return ExceptionUtils.rethrow(e);
-        }
+    public MetaRequester createMetaRequester() {
+        return new MetaRequester();
     }
 
-    // 构建元数据请求
-    private HttpUriRequest buildMetaRequest(ConfigContext.InitParams initParams) {
-        return new HttpGet(initParams.getServerUrl() + QUERY_META_URL_SUFFIX);
+    /**
+     * 元数据请求器
+     */
+    public class MetaRequester {
+        /**
+         * 获取配置中心使用的zookeeper地址
+         */
+        public String[] getZkUrls() {
+            try {
+                String resultStr = HTTP_CLIENT.execute(buildMetaRequest(), new BasicResponseHandler());
+                MetaResult result = JSON.parseObject(resultStr, MetaResult.class);
+                if (result == null) {
+                    throw new RuntimeException("请求配置中心失败");
+                }
+                if (!result.isSuccess()) {
+                    throw new RuntimeException("从配置中心获取zookeeper地址失败：" + result.getMessage());
+                }
+                return result.getZkUrls();
+            } catch (IOException e) {
+                return ExceptionUtils.rethrow(e);
+            }
+        }
+
+        // 构建元数据请求
+        private HttpUriRequest buildMetaRequest() {
+            return new HttpGet(serverUrl + QUERY_META_URL_SUFFIX);
+        }
     }
 
     // 元数据result
