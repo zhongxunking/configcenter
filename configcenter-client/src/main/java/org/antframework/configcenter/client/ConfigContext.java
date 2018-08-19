@@ -99,7 +99,7 @@ public class ConfigContext {
     /**
      * 关闭（释放相关资源）
      */
-    public void close() {
+    public synchronized void close() {
         if (refreshTrigger != null) {
             refreshTrigger.close();
         }
