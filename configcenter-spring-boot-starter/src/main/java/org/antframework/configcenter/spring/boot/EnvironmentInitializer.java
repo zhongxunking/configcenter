@@ -28,7 +28,7 @@ import org.springframework.core.env.PropertySource;
  * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为日志初始化后再初始化配置中心的配置。
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class EnvironmentInitalizer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
