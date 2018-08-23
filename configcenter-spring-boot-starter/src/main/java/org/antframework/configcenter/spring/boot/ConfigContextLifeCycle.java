@@ -27,10 +27,15 @@ import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 /**
  * 配置上下文的生命周期
  */
 public class ConfigContextLifeCycle implements GenericApplicationListener {
+    // 刷新定时器
+    private Timer refreshTimer;
 
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
@@ -49,8 +54,9 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ApplicationReadyEvent) {
             readyConfigContext();
+            initTimer();
         } else {
-            closeConfigContext();
+            close();
         }
     }
 
@@ -75,13 +81,28 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
         if (!listenDisable) {
             // 开始监听配置是否被修改
             configContext.listenConfigChanged();
-            // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
-            configContext.refresh();
         }
     }
 
-    // 关闭配置上下文
-    private void closeConfigContext() {
+    // 初始化刷新定时器
+    private void initTimer() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                ConfigContexts.getContext().refresh();
+            }
+        };
+
+        refreshTimer = new Timer("Timer-refreshConfigContext", true);
+        // 应用启动期间配置有可能被修改，在此立即触发一次刷新
+        refreshTimer.schedule(task, 0, ConfigcenterProperties.INSTANCE.getRefreshPeriod() * 1000);
+    }
+
+    // 关闭配置上下文和刷新定时器
+    private void close() {
         ConfigContexts.getContext().close();
+        if (refreshTimer != null) {
+            refreshTimer.cancel();
+        }
     }
 }

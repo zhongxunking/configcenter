@@ -26,7 +26,7 @@ import java.util.TimerTask;
 @EnableConfigurationProperties(MetaProperties.class)
 public class BizConfiguration {
     // 刷新zookeeper任务的执行周期（单位：毫秒）
-    private static final long REFRESH_ZK_TASK_RERIOD = 5 * 60 * 1000;
+    private static final long REFRESH_ZK_TASK_PERIOD = 5 * 60 * 1000;
 
     @Autowired
     private MetaProperties metaProperties;
@@ -48,7 +48,7 @@ public class BizConfiguration {
         };
 
         Timer timer = new Timer("Timer-refreshZk", true);
-        timer.schedule(task, REFRESH_ZK_TASK_RERIOD, REFRESH_ZK_TASK_RERIOD);
+        timer.schedule(task, REFRESH_ZK_TASK_PERIOD, REFRESH_ZK_TASK_PERIOD);
 
         return timer;
     }

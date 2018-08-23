@@ -13,6 +13,8 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
+import javax.validation.constraints.Min;
+
 /**
  * 配置中心属性
  */
@@ -43,6 +45,11 @@ public class ConfigcenterProperties {
     @NotBlank
     private String cacheDir = "/var/apps/config";
     /**
+     * 选填：配置刷新周期（单位：秒。默认为5分钟刷新一次）
+     */
+    @Min(1)
+    private int refreshPeriod = 5 * 60;
+    /**
      * 选填：配置中心的配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
      */
     private String priorTo = null;
@@ -61,6 +68,14 @@ public class ConfigcenterProperties {
 
     public void setCacheDir(String cacheDir) {
         this.cacheDir = cacheDir;
+    }
+
+    public int getRefreshPeriod() {
+        return refreshPeriod;
+    }
+
+    public void setRefreshPeriod(int refreshPeriod) {
+        this.refreshPeriod = refreshPeriod;
     }
 
     public String getPriorTo() {
