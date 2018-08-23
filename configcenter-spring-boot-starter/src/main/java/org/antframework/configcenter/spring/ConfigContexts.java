@@ -9,6 +9,7 @@
 package org.antframework.configcenter.spring;
 
 import org.antframework.configcenter.client.ConfigContext;
+import org.antframework.configcenter.client.support.Config;
 import org.antframework.configcenter.spring.boot.ConfigcenterProperties;
 import org.antframework.configcenter.spring.context.Contexts;
 
@@ -35,5 +36,15 @@ public final class ConfigContexts {
      */
     public static ConfigContext getContext() {
         return CONFIG_CONTEXT;
+    }
+
+    /**
+     * 获取配置
+     *
+     * @param appId 被查询配置的应用id
+     * @return 配置
+     */
+    public static Config getConfig(String appId) {
+        return CONFIG_CONTEXT.getConfig(appId);
     }
 }

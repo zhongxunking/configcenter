@@ -24,9 +24,9 @@ public class ConfigcenterProperties {
      */
     public static final String APP_ID_PATTERN = "${configcenter.app-id:${spring.application.name}}";
     /**
-     * 是否开启监听配置被修改事件的属性名（默认为开启）
+     * 是否关闭监听配置被修改事件的属性名（默认为开启）
      */
-    public static final String LISTEN_ENABLE_PROPERTY_NAME = "configcenter.listen.enable";
+    public static final String LISTEN_DISABLE_PROPERTY_NAME = "configcenter.listen.disable";
     /**
      * 实例
      */

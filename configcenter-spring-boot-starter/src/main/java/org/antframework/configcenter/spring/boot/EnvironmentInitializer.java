@@ -33,7 +33,7 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         // 创建配置中心属性资源
-        PropertySource propertySource = new ConfigcenterPropertySource(ConfigContexts.getContext().getConfig(Contexts.getAppId()));
+        PropertySource propertySource = new ConfigcenterPropertySource(ConfigContexts.getConfig(Contexts.getAppId()));
         // 将属性资源添加到environment中
         MutablePropertySources propertySources = event.getEnvironment().getPropertySources();
         if (ConfigcenterProperties.INSTANCE.getPriorTo() == null) {

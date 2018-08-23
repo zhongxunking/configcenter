@@ -16,6 +16,7 @@ import org.antframework.configcenter.client.support.TaskExecutor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
+import java.util.Collections;
 import java.util.Set;
 
 /**
@@ -72,7 +73,7 @@ public class ConfigContext {
             }
         };
         refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, calcCacheDir());
-        for (String appId : configsCache.getAllKeys()) {
+        for (String appId : getAppIds()) {
             refreshTrigger.addApp(appId);
         }
     }
@@ -81,7 +82,7 @@ public class ConfigContext {
      * 刷新配置和zookeeper链接（异步）
      */
     public void refresh() {
-        for (String appId : configsCache.getAllKeys()) {
+        for (String appId : getAppIds()) {
             refreshConfig(appId);
             if (refreshTrigger != null) {
                 refreshTrigger.addApp(appId);
@@ -101,7 +102,7 @@ public class ConfigContext {
      * 获取所有已查找配置的应用id
      */
     public Set<String> getAppIds() {
-        return configsCache.getAllKeys();
+        return Collections.unmodifiableSet(configsCache.getAllKeys());
     }
 
     /**

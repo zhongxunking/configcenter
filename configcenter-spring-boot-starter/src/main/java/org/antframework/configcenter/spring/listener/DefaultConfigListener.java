@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 默认的配置监听器
+ * 默认的配置监听器（将配置变更消息通知到@ConfigListener监听器）
  */
 public class DefaultConfigListener implements ConfigListener {
     /**

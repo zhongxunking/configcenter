@@ -17,8 +17,6 @@ import org.antframework.configcenter.spring.listener.annotation.ConfigListenerTy
 import org.bekit.event.EventPublisher;
 import org.bekit.event.bus.EventBusesHolder;
 import org.bekit.event.publisher.DefaultEventPublisher;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -33,7 +31,6 @@ import org.springframework.core.ResolvableType;
  * 配置上下文的生命周期
  */
 public class ConfigContextLifeCycle implements GenericApplicationListener {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigContextLifeCycle.class);
 
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
@@ -51,9 +48,9 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ApplicationReadyEvent) {
-            readyConfigContexts();
+            readyConfigContext();
         } else {
-            closeConfigContexts();
+            closeConfigContext();
         }
     }
 
@@ -63,7 +60,7 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     }
 
     // 使配置上下文准备好
-    private void readyConfigContexts() {
+    private void readyConfigContext() {
         ConfigContext configContext = ConfigContexts.getContext();
         // 创建事件发布器
         EventBusesHolder eventBusesHolder = Contexts.getApplicationContext().getBean(EventBusesHolder.class);
@@ -74,8 +71,8 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
         // 判断是否监听配置被修改
-        boolean listenEnable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_ENABLE_PROPERTY_NAME, Boolean.class, Boolean.TRUE);
-        if (listenEnable) {
+        boolean listenDisable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_DISABLE_PROPERTY_NAME, Boolean.class, Boolean.FALSE);
+        if (!listenDisable) {
             // 开始监听配置是否被修改
             configContext.listenConfigChanged();
             // 刷新配置（应用启动期间配置有可能被修改，在此触发一次刷新）
@@ -84,7 +81,7 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     }
 
     // 关闭配置上下文
-    private void closeConfigContexts() {
+    private void closeConfigContext() {
         ConfigContexts.getContext().close();
     }
 }
