@@ -52,6 +52,14 @@ public class ConfigContextTest {
                 }
             }
         });
+        configContext.getConfig("common").getListenerRegistrar().register(new ConfigListener() {
+            @Override
+            public void onChange(List<ChangedProperty> changedProperties) {
+                for (ChangedProperty changedProperty : changedProperties) {
+                    logger.info("监听到配置更新：{}", changedProperty);
+                }
+            }
+        });
         configContext.listenConfigChanged();
         configContext.refresh();
         try {

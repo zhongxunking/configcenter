@@ -8,6 +8,9 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -16,6 +19,8 @@ import java.util.concurrent.TimeUnit;
  * 任务执行器
  */
 public class TaskExecutor {
+    private static final Logger logger = LoggerFactory.getLogger(TaskExecutor.class);
+
     // 执行任务的线程池
     private ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
             0,
@@ -64,7 +69,11 @@ public class TaskExecutor {
 
         @Override
         public void run() {
-            doRun(target);
+            try {
+                doRun(target);
+            } catch (Throwable e) {
+                logger.error("请求配置中心失败：{}", e.getMessage());
+            }
         }
 
         protected abstract void doRun(T target);
