@@ -187,7 +187,7 @@ public class ConfigContext {
          */
         public void check() {
             if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
-                throw new IllegalArgumentException("主体服务端地址、应用id、环境id为必传项");
+                throw new IllegalArgumentException("服务端地址、主体应用id、环境id为必传项");
             }
         }
     }
