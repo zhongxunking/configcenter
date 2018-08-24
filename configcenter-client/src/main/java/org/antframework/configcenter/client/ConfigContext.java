@@ -27,7 +27,7 @@ public class ConfigContext {
     private final Cache<String, Config> configsCache = new Cache<>(new Cache.Supplier<String, Config>() {
         @Override
         public Config get(String key) {
-            Config config = new Config(key, serverRequester, calcCacheDir());
+            Config config = new Config(key, serverRequester, initParams.calcCacheDir());
             if (refreshTrigger != null) {
                 refreshTrigger.addApp(key);
             }
@@ -72,7 +72,7 @@ public class ConfigContext {
                 refreshConfig(appId);
             }
         };
-        refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, calcCacheDir());
+        refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, initParams.calcCacheDir());
         for (String appId : getAppIds()) {
             refreshTrigger.addApp(appId);
         }
@@ -115,18 +115,6 @@ public class ConfigContext {
         taskExecutor.close();
     }
 
-    // 计算缓存文件夹路径
-    private String calcCacheDir() {
-        String cacheDir = initParams.cacheDir;
-        if (cacheDir != null) {
-            if (!cacheDir.endsWith(File.separator)) {
-                cacheDir += File.separator;
-            }
-            cacheDir += initParams.mainAppId + File.separator + initParams.profileId;
-        }
-        return cacheDir;
-    }
-
     // 刷新配置
     private void refreshConfig(String appId) {
         taskExecutor.execute(new TaskExecutor.Task<Config>(configsCache.get(appId)) {
@@ -141,6 +129,9 @@ public class ConfigContext {
      * 客户端初始化参数
      */
     public static class InitParams {
+        // 缓存文件夹附加路径
+        private static final String CACHE_DIR_APPENDING = "configcenter";
+
         // 必填：服务端地址
         private String serverUrl;
         // 必填：主体应用id
@@ -182,13 +173,23 @@ public class ConfigContext {
             this.cacheDir = cacheDir;
         }
 
-        /**
-         * 校验参数
-         */
-        public void check() {
+        // 校验参数
+        void check() {
             if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
                 throw new IllegalArgumentException("服务端地址、主体应用id、环境id为必传项");
             }
+        }
+
+        // 计算真正使用的缓存文件夹路径
+        String calcCacheDir() {
+            String cacheDirToUse = cacheDir;
+            if (cacheDirToUse != null) {
+                if (!cacheDirToUse.endsWith(File.separator)) {
+                    cacheDirToUse += File.separator;
+                }
+                cacheDirToUse += CACHE_DIR_APPENDING + File.separator + mainAppId + File.separator + profileId;
+            }
+            return cacheDirToUse;
         }
     }
 }
