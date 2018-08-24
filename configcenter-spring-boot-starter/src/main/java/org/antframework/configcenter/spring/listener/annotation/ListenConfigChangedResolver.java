@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.spring.listener.annotation;
 
-import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.antframework.configcenter.spring.context.Contexts;
 import org.apache.commons.lang3.StringUtils;
@@ -78,10 +77,9 @@ public class ListenConfigChangedResolver implements ListenResolver {
             param = changedProperties;
         } else {
             if (changedProperties.size() > 1) {
-                throw new IllegalStateException(String.format("有多个以[%s]为前缀的配置项有变更，监听方法[%s]入参无法传多个变更项，可以考虑将入参换成（List<ModifiedProperty>）形式。具体变更的配置：%s",
-                        listenMethod.toString(),
+                throw new IllegalStateException(String.format("有多个以[%s]为前缀的配置项有变更，监听方法[%s]入参无法传多个变更项，可以考虑将入参换成（List<ModifiedProperty>）形式。",
                         eventType.getPrefix(),
-                        ToString.toString(changedProperties)));
+                        listenMethod.toString()));
             }
             param = changedProperties.get(0);
         }
