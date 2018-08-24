@@ -24,6 +24,8 @@ import java.util.List;
  * 监听配置被修改解决器
  */
 public class ListenConfigChangedResolver implements ListenResolver {
+    // 监听方法
+    private Method listenMethod;
     // 事件类型
     private ConfigChangedEventType eventType;
     // 监听的是否是单个key
@@ -35,6 +37,8 @@ public class ListenConfigChangedResolver implements ListenResolver {
         if (configListenerAnnotation == null) {
             throw new IllegalArgumentException("@ListenConfigModified只能标注在配置监听器（@ConfigListener）的方法上");
         }
+        this.listenMethod = listenMethod;
+        // 计算被监听的应用id
         String appId = configListenerAnnotation.appId();
         if (StringUtils.isEmpty(appId)) {
             appId = Contexts.getAppId();
@@ -74,7 +78,8 @@ public class ListenConfigChangedResolver implements ListenResolver {
             param = changedProperties;
         } else {
             if (changedProperties.size() > 1) {
-                throw new IllegalStateException(String.format("有多个以[%s]为前缀的配置项有变更，当前监听方法入参无法传多个变更项，可以考虑将入参换成（List<ModifiedProperty>）形式。具体变更的配置：%s",
+                throw new IllegalStateException(String.format("有多个以[%s]为前缀的配置项有变更，监听方法[%s]入参无法传多个变更项，可以考虑将入参换成（List<ModifiedProperty>）形式。具体变更的配置：%s",
+                        listenMethod.toString(),
                         eventType.getPrefix(),
                         ToString.toString(changedProperties)));
             }
