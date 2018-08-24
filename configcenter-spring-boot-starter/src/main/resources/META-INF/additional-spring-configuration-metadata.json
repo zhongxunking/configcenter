@@ -8,10 +8,10 @@
     },
     {
       "sourceType": "org.antframework.configcenter.spring.boot.ConfigcenterProperties",
-      "name": "configcenter.listen.enable",
-      "description": "选填：是否开启监听配置被修改事件（默认为开启）",
+      "name": "configcenter.listen.disable",
+      "description": "选填：是否关闭监听配置是否被修改（默认为开启）",
       "type": "java.lang.Boolean",
-      "defaultValue": true
+      "defaultValue": false
     }
   ]
 }

@@ -76,7 +76,7 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
             Config config = configContext.getConfig(appId);
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
-        // 判断是否监听配置被修改
+        // 判断是否监听配置是否被修改
         boolean listenDisable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_DISABLE_PROPERTY_NAME, Boolean.class, Boolean.FALSE);
         if (!listenDisable) {
             // 开始监听配置是否被修改
