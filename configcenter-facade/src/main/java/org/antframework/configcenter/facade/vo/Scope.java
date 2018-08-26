@@ -13,17 +13,17 @@ package org.antframework.configcenter.facade.vo;
  */
 public enum Scope {
     /**
-     * 私有的
+     * 私有
      */
     PRIVATE,
 
     /**
-     * 受保护的
+     * 可继承
      */
     PROTECTED,
 
     /**
-     * 公共的
+     * 公开
      */
     PUBLIC
 }

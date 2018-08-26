@@ -18,8 +18,8 @@ public class AddOrModifyAppOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
-    // 备注
-    private String memo;
+    // 应用名
+    private String appName;
     // 父应用id（null表示无父应用）
     private String parent;
 
@@ -31,12 +31,12 @@ public class AddOrModifyAppOrder extends AbstractOrder {
         this.appId = appId;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getAppName() {
+        return appName;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setAppName(String appName) {
+        this.appName = appName;
     }
 
     public String getParent() {

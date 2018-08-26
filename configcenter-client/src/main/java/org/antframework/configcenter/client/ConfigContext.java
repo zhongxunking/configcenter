@@ -8,89 +8,146 @@
  */
 package org.antframework.configcenter.client;
 
-import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
-import org.antframework.configcenter.client.core.DefaultConfigProperties;
-import org.antframework.configcenter.client.support.ConfigRefresher;
-import org.antframework.configcenter.client.support.ListenerRegistrar;
+import org.antframework.common.util.other.Cache;
+import org.antframework.configcenter.client.support.Config;
 import org.antframework.configcenter.client.support.RefreshTrigger;
+import org.antframework.configcenter.client.support.ServerRequester;
+import org.antframework.configcenter.client.support.TaskExecutor;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.File;
+import java.util.Collections;
+import java.util.Set;
 
 /**
  * 配置上下文
  */
 public class ConfigContext {
-    // 配置属性
-    private ConfigurableConfigProperties properties = new DefaultConfigProperties();
-    // 监听器注册器
-    private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
+    // config缓存
+    private final Cache<String, Config> configsCache = new Cache<>(new Cache.Supplier<String, Config>() {
+        @Override
+        public Config get(String key) {
+            Config config = new Config(key, serverRequester, initParams.calcCacheDir());
+            if (refreshTrigger != null) {
+                refreshTrigger.addApp(key);
+            }
+            return config;
+        }
+    });
+    // 任务执行器
+    private final TaskExecutor taskExecutor = new TaskExecutor();
     // 初始化参数
-    private InitParams initParams;
-    // 配置刷新器
-    private ConfigRefresher configRefresher;
+    private final InitParams initParams;
+    // 服务端请求器
+    private final ServerRequester serverRequester;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
 
     public ConfigContext(InitParams initParams) {
+        initParams.check();
         this.initParams = initParams;
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, initParams);
-        configRefresher.initConfig();
+        serverRequester = new ServerRequester(initParams.serverUrl, initParams.mainAppId, initParams.profileId);
     }
 
     /**
-     * 获取属性
+     * 获取配置
+     *
+     * @param appId 被查询配置的应用id
+     * @return 指定应用的配置
      */
-    public ConfigProperties getProperties() {
-        return properties;
-    }
-
-    /**
-     * 获取监听器注册器
-     */
-    public ListenerRegistrar getListenerRegistrar() {
-        return listenerRegistrar;
+    public Config getConfig(String appId) {
+        return configsCache.get(appId);
     }
 
     /**
      * 开始监听配置是否被修改
      */
     public synchronized void listenConfigChanged() {
-        if (refreshTrigger == null) {
-            refreshTrigger = new RefreshTrigger(configRefresher, initParams);
+        if (refreshTrigger != null) {
+            return;
+        }
+        RefreshTrigger.Refresher refresher = new RefreshTrigger.Refresher() {
+            @Override
+            public void refresh(String appId) {
+                refreshConfig(appId);
+            }
+        };
+        refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, initParams.calcCacheDir());
+        for (String appId : getAppIds()) {
+            refreshTrigger.addApp(appId);
         }
     }
 
     /**
-     * 刷新配置（异步）
+     * 刷新配置和zookeeper链接（异步）
      */
-    public void refreshConfig() {
-        configRefresher.refresh();
+    public void refresh() {
+        for (String appId : getAppIds()) {
+            refreshConfig(appId);
+            if (refreshTrigger != null) {
+                refreshTrigger.addApp(appId);
+            }
+        }
+        if (refreshTrigger != null) {
+            taskExecutor.execute(new TaskExecutor.Task<RefreshTrigger>(refreshTrigger) {
+                @Override
+                protected void doRun(RefreshTrigger target) {
+                    target.refreshZk();
+                }
+            });
+        }
+    }
+
+    /**
+     * 获取所有已查找配置的应用id
+     */
+    public Set<String> getAppIds() {
+        return Collections.unmodifiableSet(configsCache.getAllKeys());
     }
 
     /**
      * 关闭（释放相关资源）
      */
-    public void close() {
+    public synchronized void close() {
         if (refreshTrigger != null) {
             refreshTrigger.close();
         }
-        configRefresher.close();
+        taskExecutor.close();
+    }
+
+    // 刷新配置
+    private void refreshConfig(String appId) {
+        taskExecutor.execute(new TaskExecutor.Task<Config>(configsCache.get(appId)) {
+            @Override
+            protected void doRun(Config target) {
+                target.refresh();
+            }
+        });
     }
 
     /**
      * 客户端初始化参数
      */
     public static class InitParams {
-        // 必填：主体应用id
-        private String mainAppId;
-        // 必填：被查询配置的应用id
-        private String queriedAppId;
-        // 必填：环境id
-        private String profileId;
+        // 缓存文件夹附加路径
+        private static final String CACHE_DIR_APPENDING = "configcenter";
+
         // 必填：服务端地址
         private String serverUrl;
-        // 选填：缓存文件路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
-        private String cacheFilePath;
-        // 选填：配置中心使用的zookeeper地址（如果不需要调用listenConfigChanged()触发监听配置是否被修改，可以不用填）
-        private String[] zkUrls;
+        // 必填：主体应用id
+        private String mainAppId;
+        // 必填：环境id
+        private String profileId;
+        // 选填：缓存文件夹路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
+        private String cacheDir;
+
+        public String getServerUrl() {
+            return serverUrl;
+        }
+
+        public void setServerUrl(String serverUrl) {
+            this.serverUrl = serverUrl;
+        }
 
         public String getMainAppId() {
             return mainAppId;
@@ -98,14 +155,6 @@ public class ConfigContext {
 
         public void setMainAppId(String mainAppId) {
             this.mainAppId = mainAppId;
-        }
-
-        public String getQueriedAppId() {
-            return queriedAppId;
-        }
-
-        public void setQueriedAppId(String queriedAppId) {
-            this.queriedAppId = queriedAppId;
         }
 
         public String getProfileId() {
@@ -116,28 +165,31 @@ public class ConfigContext {
             this.profileId = profileId;
         }
 
-        public String getServerUrl() {
-            return serverUrl;
+        public String getCacheDir() {
+            return cacheDir;
         }
 
-        public void setServerUrl(String serverUrl) {
-            this.serverUrl = serverUrl;
+        public void setCacheDir(String cacheDir) {
+            this.cacheDir = cacheDir;
         }
 
-        public String getCacheFilePath() {
-            return cacheFilePath;
+        // 校验参数
+        void check() {
+            if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
+                throw new IllegalArgumentException("服务端地址、主体应用id、环境id为必传项");
+            }
         }
 
-        public void setCacheFilePath(String cacheFilePath) {
-            this.cacheFilePath = cacheFilePath;
-        }
-
-        public String[] getZkUrls() {
-            return zkUrls;
-        }
-
-        public void setZkUrls(String... zkUrls) {
-            this.zkUrls = zkUrls;
+        // 计算真正使用的缓存文件夹路径
+        String calcCacheDir() {
+            String cacheDirToUse = cacheDir;
+            if (cacheDirToUse != null) {
+                if (!cacheDirToUse.endsWith(File.separator)) {
+                    cacheDirToUse += File.separator;
+                }
+                cacheDirToUse += CACHE_DIR_APPENDING + File.separator + mainAppId + File.separator + profileId;
+            }
+            return cacheDirToUse;
         }
     }
 }

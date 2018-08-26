@@ -8,17 +8,16 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.RefreshClientsUtils;
+import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
-import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
+import org.antframework.configcenter.facade.api.PropertyValueService;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,7 +30,7 @@ public class DeletePropertyKeyService {
     @Autowired
     private PropertyKeyDao propertyKeyDao;
     @Autowired
-    private PropertyValueDao propertyValueDao;
+    private PropertyValueService propertyValueService;
 
     @ServiceExecute
     public void execute(ServiceContext<DeletePropertyKeyOrder, EmptyResult> context) {
@@ -41,17 +40,26 @@ public class DeletePropertyKeyService {
         if (propertyKey == null) {
             return;
         }
-        if (propertyValueDao.existsByAppIdAndKey(order.getAppId(), order.getKey())) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]的属性key[%s]还存在属性值，不能删除", order.getAppId(), order.getKey()));
+        // 删除该key在所有环境的value
+        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
+            deletePropertyValue(order.getAppId(), order.getKey(), profile.getProfileId());
         }
-
+        // 删除key
         propertyKeyDao.delete(propertyKey);
     }
 
-    @ServiceAfter
-    public void after(ServiceContext<DeletePropertyKeyOrder, EmptyResult> context) {
-        DeletePropertyKeyOrder order = context.getOrder();
-        // 刷新客户端
-        RefreshClientsUtils.refresh(order.getAppId(), null);
+    // 删除属性value
+    private void deletePropertyValue(String appId, String key, String profileId) {
+        SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
+        keyValue.setKey(key);
+        keyValue.setValue(null);
+
+        SetPropertyValuesOrder order = new SetPropertyValuesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.addKeyValue(keyValue);
+
+        EmptyResult result = propertyValueService.setPropertyValues(order);
+        FacadeUtils.assertSuccess(result);
     }
 }

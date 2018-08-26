@@ -29,7 +29,7 @@ public interface PropertyKeyService {
     EmptyResult deletePropertyKey(DeletePropertyKeyOrder order);
 
     /**
-     * 查找应用所有的属性key
+     * 查找应用的属性key
      */
     FindAppPropertyKeysResult findAppPropertyKeys(FindAppPropertyKeysOrder order);
 }

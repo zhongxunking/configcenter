@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,6 +11,7 @@ package org.antframework.configcenter.test.client;
 import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ChangedProperty;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.slf4j.Logger;
@@ -26,52 +27,46 @@ public class ConfigContextTest {
     private static final Logger logger = LoggerFactory.getLogger(ConfigContextTest.class);
 
     @Test
-    public void testConfigContext() throws InterruptedException {
-        ConfigContext.InitParams initParams = new ConfigContext.InitParams();
-        initParams.setProfileId("dev");
-        initParams.setMainAppId("scbfund");
-        initParams.setQueriedAppId("scbfund");
-        initParams.setServerUrl("http://localhost:6220");
-        initParams.setCacheFilePath(System.getProperty("user.home") + "/var/config/scbfund.properties");
-        initParams.setZkUrls("localhost:2181");
-
-        ConfigContext configContext = new ConfigContext(initParams);
-        configContext.getListenerRegistrar().register(new ConfigListener() {
-            @Override
-            public void onChange(List<ChangedProperty> changedProperties) {
-                for (ChangedProperty changedProperty : changedProperties) {
-                    logger.info("监听到配置更新：{}", changedProperty);
-                }
-            }
-        });
-        configContext.listenConfigChanged();
-        configContext.refreshConfig();
-        Thread.sleep(200000);
-        configContext.close();
+    public void testConfigContext_withCache() throws InterruptedException {
+        testConfigContext(System.getProperty("user.home") + "/var/config");
     }
 
     @Test
-    public void testConfigContext_noCacheFile() throws InterruptedException {
+    public void testConfigContext_withoutCache() throws InterruptedException {
+        testConfigContext(null);
+    }
+
+    private void testConfigContext(String cacheDir) {
         ConfigContext.InitParams initParams = new ConfigContext.InitParams();
-        initParams.setProfileId("dev");
+        initParams.setServerUrl("http://localhost:6220");
         initParams.setMainAppId("scbfund");
-        initParams.setQueriedAppId("scbfund");
-        initParams.setServerUrl("http://localhost:8080");
-        initParams.setZkUrls("localhost:2181");
+        initParams.setProfileId("dev");
+        initParams.setCacheDir(cacheDir);
 
         ConfigContext configContext = new ConfigContext(initParams);
-        configContext.getListenerRegistrar().register(new ConfigListener() {
+        configContext.getConfig("scbfund").getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
-                logger.info("监听到配置更新：");
+                for (ChangedProperty changedProperty : changedProperties) {
+                    logger.info("监听到配置更新：{}", changedProperty);
+                }
+            }
+        });
+        configContext.getConfig("common").getListenerRegistrar().register(new ConfigListener() {
+            @Override
+            public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
                     logger.info("监听到配置更新：{}", changedProperty);
                 }
             }
         });
         configContext.listenConfigChanged();
-        configContext.refreshConfig();
-        Thread.sleep(200000);
+        configContext.refresh();
+        try {
+            Thread.sleep(200000);
+        } catch (InterruptedException e) {
+            ExceptionUtils.rethrow(e);
+        }
         configContext.close();
     }
 }

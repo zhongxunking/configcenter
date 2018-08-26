@@ -8,52 +8,48 @@
  */
 package org.antframework.configcenter.biz;
 
-import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.zookeeper.ZkTemplate;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.vo.ZkConstant;
-import org.hibernate.validator.constraints.NotEmpty;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * biz层配置
  */
 @Configuration
+@EnableConfigurationProperties(MetaProperties.class)
 public class BizConfiguration {
-    // 属性
-    private ConfigcenterProperties properties = Contexts.buildProperties(ConfigcenterProperties.class);
+    // 刷新zookeeper任务的执行周期（单位：毫秒）
+    private static final long REFRESH_ZK_TASK_PERIOD = 5 * 60 * 1000;
+
+    @Autowired
+    private MetaProperties metaProperties;
 
     // zookeeper操作类
     @Bean
     public ZkTemplate zkTemplate() {
-        return ZkTemplate.create(properties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
+        return ZkTemplate.create(metaProperties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
     }
 
-    /**
-     * 配置中心属性
-     */
-    @ConfigurationProperties(ConfigcenterProperties.PREFIX)
-    public static class ConfigcenterProperties {
-        /**
-         * 属性前缀
-         */
-        public static final String PREFIX = "configcenter";
+    // 刷新zookeeper的定时器
+    @Bean(destroyMethod = "cancel")
+    public Timer refreshZkTimer() {
+        TimerTask task = new TimerTask() {
+            @Override
+            public void run() {
+                RefreshUtils.refreshZk();
+            }
+        };
 
-        /**
-         * 必填：配置中心使用的zookeeper地址，存在多个zookeeper的话以“,”分隔（比如：192.168.0.1:2181,192.168.0.2:2181）
-         */
-        @NotEmpty
-        private Set<String> zkUrls;
+        Timer timer = new Timer("Timer-refreshZk", true);
+        timer.schedule(task, REFRESH_ZK_TASK_PERIOD, REFRESH_ZK_TASK_PERIOD);
 
-        public Set<String> getZkUrls() {
-            return zkUrls;
-        }
-
-        public void setZkUrls(Set<String> zkUrls) {
-            this.zkUrls = zkUrls;
-        }
+        return timer;
     }
 }

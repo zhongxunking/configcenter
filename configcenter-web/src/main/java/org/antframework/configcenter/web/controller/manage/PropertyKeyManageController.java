@@ -8,17 +8,27 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 属性key管理controller
@@ -46,7 +56,10 @@ public class PropertyKeyManageController {
         order.setScope(scope);
         order.setMemo(memo);
 
-        return propertyKeyService.addOrModifyPropertyKey(order);
+        EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
+        // 刷新客户端
+        RefreshUtils.refreshClients(appId, null);
+        return result;
     }
 
     /**
@@ -62,20 +75,78 @@ public class PropertyKeyManageController {
         order.setAppId(appId);
         order.setKey(key);
 
-        return propertyKeyService.deletePropertyKey(order);
+        EmptyResult result = propertyKeyService.deletePropertyKey(order);
+        // 刷新客户端
+        RefreshUtils.refreshClients(appId, null);
+        return result;
     }
 
     /**
-     * 查找应用所有的属性key
+     * 查找应用继承的属性key（包含应用自己）
      *
-     * @param appId 应用id（必须）
+     * @param appId 应用id
      */
-    @RequestMapping("/findAppPropertyKeys")
-    public FindAppPropertyKeysResult findAppPropertyKeys(String appId) {
+    @RequestMapping("/findInheritedPropertyKeys")
+    public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
         ManagerAssert.adminOrHaveRelation(appId);
-        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
-        order.setAppId(appId);
 
-        return propertyKeyService.findAppPropertyKeys(order);
+        FindInheritedPropertyKeysResult result = new FindInheritedPropertyKeysResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+            result.addAppPropertyKeys(getAppPropertyKeys(app.getAppId(), appId));
+        }
+
+        return result;
+    }
+
+    // 获取应用的属性key
+    private FindInheritedPropertyKeysResult.AppPropertyKeys getAppPropertyKeys(String appId, String mainAppId) {
+        Scope minScope = Scope.PRIVATE;
+        if (!StringUtils.equals(appId, mainAppId)) {
+            minScope = Scope.PROTECTED;
+        }
+
+        return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
+    }
+
+    /**
+     * 查找应用继承的所有应用的属性key
+     */
+    public static class FindInheritedPropertyKeysResult extends AbstractResult {
+        // 由近及远继承的所用应用的属性key
+        private List<AppPropertyKeys> appPropertyKeyses = new ArrayList<>();
+
+        public void addAppPropertyKeys(AppPropertyKeys appPropertyKeys) {
+            appPropertyKeyses.add(appPropertyKeys);
+        }
+
+        public List<AppPropertyKeys> getAppPropertyKeyses() {
+            return appPropertyKeyses;
+        }
+
+        /**
+         * 应用属性key
+         */
+        public static class AppPropertyKeys {
+            // 应用id
+            private String appId;
+            // 属性key
+            private List<PropertyKeyInfo> propertyKeys;
+
+            public AppPropertyKeys(String appId, List<PropertyKeyInfo> propertyKeys) {
+                this.appId = appId;
+                this.propertyKeys = propertyKeys;
+            }
+
+            public String getAppId() {
+                return appId;
+            }
+
+            public List<PropertyKeyInfo> getPropertyKeys() {
+                return propertyKeys;
+            }
+        }
     }
 }

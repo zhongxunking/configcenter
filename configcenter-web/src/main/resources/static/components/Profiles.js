@@ -1,0 +1,194 @@
+// 环境管理组件
+const ProfilesTemplate = `
+<div>
+    <el-row>
+        <el-col>
+            <el-form :v-model="queryProfilesForm" :inline="true" size="small">
+                <el-form-item>
+                    <el-input v-model="queryProfilesForm.profileId" clearable placeholder="环境id"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-search" @click="queryProfiles">查询</el-button>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" icon="el-icon-plus" @click="addProfileDialogVisible = true">新增</el-button>
+                </el-form-item>
+            </el-form>
+        </el-col>
+    </el-row>
+    <el-table :data="profiles" v-loading="profilesLoading" border stripe>
+        <el-table-column prop="profileId" label="环境id"></el-table-column>
+        <el-table-column prop="profileName" label="环境名">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ row.profileName }}</span>
+                <el-input v-else v-model="row.editingProfileName" size="small" clearable placeholder="请输入环境名"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" header-align="center" width="160px">
+            <template slot-scope="{ row }">
+                <el-row>
+                    <el-col :span="12" style="text-align: center">
+                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                        </el-tooltip>
+                        <template v-else>
+                            <el-button-group>
+                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
+                                </el-tooltip>
+                                <el-popover placement="top" v-model="row.savePopoverShowing">
+                                    <p>确定保存修改？</p>
+                                    <div style="text-align: right; margin: 0">
+                                        <el-button size="mini" type="text" @click="row.savePopoverShowing = false">取消</el-button>
+                                        <el-button type="primary" size="mini" @click="saveEditing(row)">确定</el-button>
+                                    </div>
+                                    <el-tooltip slot="reference" :disabled="row.savePopoverShowing" content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="row.savePopoverShowing = true" type="success" icon="el-icon-check" size="small" circle></el-button>
+                                    </el-tooltip>
+                                </el-popover>
+                            </el-button-group>
+                        </template>
+                    </el-col>
+                    <el-col :span="12" style="text-align: center">
+                        <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="deleteProfile(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                        </el-tooltip>
+                    </el-col>
+                </el-row>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-row style="margin-top: 10px">
+        <el-col style="text-align: end">
+            <el-pagination :total="totalProfiles" :current-page.sync="queryProfilesForm.pageNo" :page-size.sync="queryProfilesForm.pageSize" @current-change="queryProfiles" layout="total,prev,pager,next" small background></el-pagination>
+        </el-col>
+    </el-row>
+    <el-dialog :visible.sync="addProfileDialogVisible" :before-close="closeAddProfileDialog" title="新增环境" width="40%">
+        <el-form ref="addProfileForm" :model="addProfileForm" label-width="20%">
+            <el-form-item label="环境id" prop="profileId" :rules="[{required:true, message:'请输入环境id', trigger:'blur'}]">
+                <el-input v-model="addProfileForm.profileId" clearable placeholder="请输入环境id" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="环境名">
+                <el-input v-model="addProfileForm.profileName" clearable placeholder="请输入环境名" style="width: 90%"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddProfileDialog">取消</el-button>
+            <el-button type="primary" @click="addProfile">提交</el-button>
+        </div>
+    </el-dialog>
+</div>
+`;
+
+const Profiles = {
+    template: ProfilesTemplate,
+    data: function () {
+        return {
+            queryProfilesForm: {
+                pageNo: 1,
+                pageSize: 10,
+                profileId: null
+            },
+            profilesLoading: false,
+            totalProfiles: 0,
+            profiles: [],
+            addProfileDialogVisible: false,
+            addProfileForm: {
+                profileId: null,
+                profileName: null
+            }
+        };
+    },
+    created: function () {
+        this.queryProfiles();
+    },
+    methods: {
+        queryProfiles: function () {
+            this.profilesLoading = true;
+
+            const theThis = this;
+            this.doQueryProfiles(this.queryProfilesForm, function (result) {
+                theThis.totalProfiles = result.totalCount;
+                theThis.profiles = result.infos;
+                theThis.profiles.forEach(function (profile) {
+                    Vue.set(profile, 'editing', false);
+                    Vue.set(profile, 'editingProfileName', null);
+                    Vue.set(profile, 'savePopoverShowing', false);
+                });
+                theThis.profilesLoading = false;
+            }, function () {
+                theThis.profilesLoading = false;
+            });
+        },
+        startEditing: function (profile) {
+            profile.editing = true;
+            profile.editingProfileName = profile.profileName;
+        },
+        saveEditing: function (profile) {
+            profile.savePopoverShowing = false;
+            this.doAddOrModifyProfile({
+                profileId: profile.profileId,
+                profileName: profile.editingProfileName
+            }, function () {
+                profile.editing = false;
+                profile.profileName = profile.editingProfileName;
+            });
+        },
+        deleteProfile: function (profile) {
+            const theThis = this;
+            Vue.prototype.$confirm('确定删除环境？', '警告', {type: 'warning'})
+                .then(function () {
+                    axios.post('../manage/profile/deleteProfile', {profileId: profile.profileId})
+                        .then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            Vue.prototype.$message.success(result.message);
+                            theThis.queryProfiles();
+                        });
+                });
+        },
+        addProfile: function () {
+            const theThis = this;
+            this.$refs.addProfileForm.validate(function (valid) {
+                if (!valid) {
+                    return;
+                }
+                theThis.doAddOrModifyProfile(theThis.addProfileForm, function () {
+                    theThis.closeAddProfileDialog();
+                    theThis.queryProfiles();
+                });
+            })
+        },
+        closeAddProfileDialog: function () {
+            this.addProfileDialogVisible = false;
+            this.addProfileForm.profileId = null;
+            this.addProfileForm.profileName = null;
+        },
+        doQueryProfiles: function (params, processResult, failCallback) {
+            axios.get('../manage/profile/queryProfiles', {params: params})
+                .then(function (result) {
+                    if (result.success) {
+                        processResult(result);
+                    } else {
+                        Vue.prototype.$message.error(result.message);
+                        if (failCallback) {
+                            failCallback(result);
+                        }
+                    }
+                });
+        },
+        doAddOrModifyProfile: function (params, successCallback) {
+            axios.post('../manage/profile/addOrModifyProfile', params)
+                .then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    successCallback();
+                });
+        }
+    }
+};

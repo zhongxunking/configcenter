@@ -10,7 +10,7 @@ package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
+import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 
 /**
  * 刷新服务
@@ -18,12 +18,12 @@ import org.antframework.configcenter.facade.order.TriggerClientsRefreshOrder;
 public interface RefreshService {
 
     /**
-     * 同步所有环境、应用到zookeeper
+     * 刷新zookeeper
      */
-    EmptyResult syncDataToZk(EmptyOrder order);
+    EmptyResult refreshZk(EmptyOrder order);
 
     /**
-     * 触发客户端刷新配置
+     * 刷新客户端
      */
-    EmptyResult triggerClientsRefresh(TriggerClientsRefreshOrder order);
+    EmptyResult refreshClients(RefreshClientsOrder order);
 }

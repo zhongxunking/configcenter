@@ -8,17 +8,14 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.bekit.service.annotation.service.Service;
@@ -36,8 +33,6 @@ import java.util.Map;
 @Service
 public class FindAppSelfPropertiesService {
     @Autowired
-    private PropertyKeyService propertyKeyService;
-    @Autowired
     private PropertyValueService propertyValueService;
 
     @ServiceExecute
@@ -45,31 +40,15 @@ public class FindAppSelfPropertiesService {
         FindAppSelfPropertiesOrder order = context.getOrder();
         FindAppSelfPropertiesResult result = context.getResult();
         // 获取应用自己的属性key
-        List<PropertyKeyInfo> propertyKeys = getAppPropertyKeys(order.getAppId());
+        List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(order.getAppId(), order.getMinScope());
         // 获取应用自己的属性value
         Map<String, String> values = getAppProfilePropertyValues(order.getAppId(), order.getProfileId());
         // 组装属性
         for (PropertyKeyInfo propertyKey : propertyKeys) {
-            if (propertyKey.getScope().compareTo(order.getMinScope()) < 0) {
-                // 如果作用域小于要求值，则忽略该属性
-                continue;
-            }
             // 添加属性
             String value = values.get(propertyKey.getKey());
             result.addProperty(new Property(propertyKey.getKey(), value, propertyKey.getScope()));
         }
-    }
-
-    // 获取应用所有的属性key
-    private List<PropertyKeyInfo> getAppPropertyKeys(String appId) {
-        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
-        order.setAppId(appId);
-
-        FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
-        return result.getPropertyKeys();
     }
 
     // 获取应用在特定环境的所有属性value
@@ -79,9 +58,7 @@ public class FindAppSelfPropertiesService {
         order.setProfileId(profileId);
 
         FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
 
         Map<String, String> values = new HashMap<>();
         for (PropertyValueInfo propertyValue : result.getPropertyValues()) {

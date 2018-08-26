@@ -9,9 +9,9 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import org.antframework.common.util.facade.AbstractQueryResult;
-import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.*;
@@ -42,19 +42,22 @@ public class AppManageController {
     /**
      * 添加或修改应用
      *
-     * @param appId  应用id（必须）
-     * @param memo   备注（可选）
-     * @param parent 父应用id（可选）
+     * @param appId   应用id（必须）
+     * @param appName 应用名（可选）
+     * @param parent  父应用id（可选）
      */
     @RequestMapping("/addOrModifyApp")
-    public EmptyResult addOrModifyApp(String appId, String memo, String parent) {
+    public EmptyResult addOrModifyApp(String appId, String appName, String parent) {
         ManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppId(appId);
-        order.setMemo(memo);
+        order.setAppName(appName);
         order.setParent(parent);
 
-        return appService.addOrModifyApp(order);
+        EmptyResult result = appService.addOrModifyApp(order);
+        // 刷新客户端
+        RefreshUtils.refreshClients(appId, null);
+        return result;
     }
 
     /**
@@ -70,7 +73,6 @@ public class AppManageController {
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppId(appId);
-
         return appService.deleteApp(order);
     }
 
@@ -179,9 +181,7 @@ public class AppManageController {
     // 获取应用
     private AppInfo getApp(String appId) {
         FindAppResult result = findApp(appId);
-        if (!result.isSuccess()) {
-            throw new BizException(Status.FAIL, result.getCode(), result.getMessage());
-        }
+        FacadeUtils.assertSuccess(result);
         return result.getApp();
     }
 

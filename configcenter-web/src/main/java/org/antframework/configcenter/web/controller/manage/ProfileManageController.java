@@ -33,15 +33,15 @@ public class ProfileManageController {
     /**
      * 新增或修改环境
      *
-     * @param profileId 环境id（必须）
-     * @param memo      备注（可选）
+     * @param profileId   环境id（必须）
+     * @param profileName 环境名（可选）
      */
     @RequestMapping("/addOrModifyProfile")
-    public EmptyResult addOrModifyProfile(String profileId, String memo) {
+    public EmptyResult addOrModifyProfile(String profileId, String profileName) {
         ManagerAssert.admin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId(profileId);
-        order.setMemo(memo);
+        order.setProfileName(profileName);
 
         return profileService.addOrModifyProfile(order);
     }

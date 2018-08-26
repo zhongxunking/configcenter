@@ -2,104 +2,159 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>管理</title>
-    <script type="text/javascript" src="../common/jquery-3.2.1.js"></script>
-    <link rel="stylesheet" href="../common/common.css" type="text/css">
-    <script type="text/javascript" src="../common/commonManager.js"></script>
-    <script type="text/javascript">
-        $(document).ready(function () {
-            if (manager.type == "ADMIN") {
-                $("#adminOptions").show();
-                $("#managerNameDiv").html("超级管理员：" + manager.name);
-            } else {
-                $("#adminOptions").hide();
-                $("#managerNameDiv").html("普通管理员：" + manager.name);
-            }
-            changeDetailWindowUrl("managedApp.html")
-        });
-
-        function changeDetailWindowUrl(newUrl) {
-            $("#detailWindow").attr("src", newUrl);
-        }
-
-        function logout() {
-            $.ajax({
-                url: "../manager/main/logout",
-                data: {},
-                async: false,
-                success: function (ajaxResult) {
-                    if (ajaxResult.success) {
-                        manager = null;
-                        window.top.location.href = "login.html";
-                    } else {
-                        alert("失败，原因：" + ajaxResult.message);
-                    }
-                },
-                error: function () {
-                    alert("请求服务失败");
-                }
-            });
-        }
-    </script>
+    <title>配置中心</title>
+    <script src="../common/import.js"></script>
+    <script src="../components/Configs.js"></script>
+    <script src="../components/PropertyKeys.js"></script>
+    <script src="../components/PropertyValues.js"></script>
+    <script src="../components/Apps.js"></script>
+    <script src="../components/Profiles.js"></script>
 </head>
 <body>
-<div id="logout">
-    <span id="managerNameDiv"></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<input type="button" onclick="logout()" value="退出">
+<div id="mainApp">
+    <manager-main :title-html="titleHtml"
+                  :routes="routes"
+                  :target-name="targetName"
+                  :find-target="findTarget"
+                  :query-matched-targets="queryMatchedTargets"></manager-main>
 </div>
-<br><br><br>
-<div>
-    <table width="100%" height="1000px">
-        <tr>
-            <td width="30%" valign="top">
-                <table align="right">
-                    <tr>
-                        <td>
-                            <button onclick='changeDetailWindowUrl("managedApp.html")'>首页</button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <div id="adminOptions" style="display:none;">
-                                <table>
-                                    <tr>
-                                        <td>
-                                            <button onclick='changeDetailWindowUrl("app.html")'>应用</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <button onclick='changeDetailWindowUrl("profile.html")'>环境</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <button onclick='changeDetailWindowUrl("manager.html")'>管理员</button>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>
-                                            <button onclick='changeDetailWindowUrl("relation.html")'>管理员与应用关联
-                                            </button>
-                                        </td>
-                                    </tr>
-                                </table>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>
-                            <button onclick='changeDetailWindowUrl("myself.html")'>
-                                修改个人信息
-                            </button>
-                        </td>
-                    </tr>
-                </table>
-            </td>
-            <td width="70%">
-                <iframe id="detailWindow" src="" width="100%" height="100%"></iframe>
-            </td>
-        </tr>
-    </table>
-</div>
+<script>
+    // 普通管理员全权限
+    const NORMAL_MANAGER_ROUTES = [{
+        path: '/configs',
+        component: {
+            template: '<router-view></router-view>'
+        },
+        meta: {
+            title: '配置',
+            icon: 'el-icon-tickets'
+        },
+        children: [{
+            path: '',
+            component: Configs
+        }, {
+            path: ':appId',
+            props: true,
+            component: {
+                props: ['appId'],
+                template: '<router-view :appId="appId"></router-view>'
+            },
+            meta: {
+                title: '应用'
+            },
+            children: [{
+                path: '',
+                component: PropertyKeys
+            }, {
+                path: ':profileId',
+                props: true,
+                component: PropertyValues,
+                meta: {
+                    title: '环境'
+                }
+            }]
+        }]
+    }];
+    // 超级管理员权限
+    const ADMIN_MANAGER_ROUTES = Object.assign([], NORMAL_MANAGER_ROUTES);
+    ADMIN_MANAGER_ROUTES.push({
+        path: '/apps',
+        component: Apps,
+        meta: {
+            title: '应用',
+            icon: 'el-icon-menu'
+        }
+    }, {
+        path: '/profiles',
+        component: Profiles,
+        meta: {
+            title: '环境',
+            icon: 'configcenter-iconfont configcenter-icon-cloud'
+        }
+    });
+    // 查找目标对象
+    const FIND_TARGET = function (targetId, successCallback) {
+        axios.get('../manage/app/findApp', {
+            params: {
+                appId: targetId
+            }
+        }).then(function (result) {
+            if (!result.success) {
+                Vue.prototype.$message.error(result.message);
+                return;
+            }
+            successCallback(TO_TARGET(result.app));
+        });
+    };
+    // 查找匹配的目标对象
+    const QUERY_MATCHED_TARGETS = function (targetId, successCallback) {
+        axios.get('../manage/app/queryApps', {
+            params: {
+                pageNo: 1,
+                pageSize: 100,
+                appId: targetId
+            }
+        }).then(function (result) {
+            if (!result.success) {
+                Vue.prototype.$message.error(result.message);
+                return;
+            }
+            let targets = [];
+            result.infos.forEach(function (app) {
+                targets.push(TO_TARGET(app));
+            });
+            successCallback(targets);
+        });
+    };
+    // 将应用转换为目标对象
+    const TO_TARGET = function (app) {
+        if (!app) {
+            return {};
+        }
+
+        let label = app.appId;
+        if (app.appName) {
+            label += '（' + app.appName + '）';
+        }
+        return {
+            id: app.appId,
+            label: label
+        };
+    };
+
+    // 主页面应用
+    let mainApp;
+    // 查找当权管理员
+    axios.get('../manager/main/current')
+        .then(function (result) {
+            if (!result.success) {
+                Vue.prototype.$message.error(result.message);
+                return;
+            }
+            if (result.manager === null) {
+                // 未登录，则跳转到登录页面
+                Vue.prototype.$alert('未登录或登录已超时，请进行登录', '警告', {
+                    callback: function () {
+                        window.location.href = MANAGER_LOGIN_PATH;
+                    }
+                });
+                return;
+            }
+
+            mainApp = new Vue({
+                el: '#mainApp',
+                data: {
+                    titleHtml: `
+                        <i class="configcenter-iconfont configcenter-icon-deploymentunit" style="font-size: xx-large;color: #1cf0b2"></i>
+                        <span style="font-size: xx-large;color: #fff;">配置中心</span>
+                    `,
+                    routes: result.manager.type === 'NORMAL' ? NORMAL_MANAGER_ROUTES : ADMIN_MANAGER_ROUTES,
+                    targetName: '应用',
+                    findTarget: FIND_TARGET,
+                    queryMatchedTargets: QUERY_MATCHED_TARGETS
+                }
+            });
+        });
+</script>
 </body>
 </html>

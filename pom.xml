@@ -24,6 +24,7 @@
         <module>configcenter-web</module>
         <module>configcenter-assemble</module>
         <module>configcenter-client</module>
+        <module>configcenter-spring-boot-starter</module>
         <module>configcenter-test</module>
     </modules>
 

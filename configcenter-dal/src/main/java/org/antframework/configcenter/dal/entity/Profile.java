@@ -22,9 +22,9 @@ public class Profile extends AbstractEntity {
     @Column(unique = true, length = 64)
     private String profileId;
 
-    // 备注
+    // 环境名
     @Column
-    private String memo;
+    private String profileName;
 
     public String getProfileId() {
         return profileId;
@@ -34,11 +34,11 @@ public class Profile extends AbstractEntity {
         this.profileId = profileId;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getProfileName() {
+        return profileName;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 }

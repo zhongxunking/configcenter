@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用的所有属性key-result
+ * 查找应用的属性key-result
  */
 public class FindAppPropertyKeysResult extends AbstractResult {
-    // 应用所有的属性key
+    // 应用的属性key
     private List<PropertyKeyInfo> propertyKeys = new ArrayList<>();
 
     public List<PropertyKeyInfo> getPropertyKeys() {

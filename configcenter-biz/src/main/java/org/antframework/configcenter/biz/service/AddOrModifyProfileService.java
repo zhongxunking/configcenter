@@ -9,21 +9,16 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.dal.dao.AppDao;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
-import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
-import org.apache.zookeeper.CreateMode;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.List;
 
 /**
  * 添加或修改环境服务
@@ -32,10 +27,6 @@ import java.util.List;
 public class AddOrModifyProfileService {
     @Autowired
     private ProfileDao profileDao;
-    @Autowired
-    private AppDao appDao;
-    @Autowired
-    private ZkTemplate zkTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
@@ -52,13 +43,7 @@ public class AddOrModifyProfileService {
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
-        AddOrModifyProfileOrder order = context.getOrder();
-        // 创建环境节点
-        zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId()), CreateMode.PERSISTENT);
-        // 创建该环境节点下所有应用节点
-        List<App> apps = appDao.findAll();
-        for (App app : apps) {
-            zkTemplate.createNode(ZkTemplate.buildPath(order.getProfileId(), app.getAppId()), CreateMode.PERSISTENT);
-        }
+        // 刷新zookeeper
+        RefreshUtils.refreshZk();
     }
 }

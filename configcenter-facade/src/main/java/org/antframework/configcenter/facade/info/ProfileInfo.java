@@ -16,8 +16,8 @@ import org.antframework.common.util.facade.AbstractInfo;
 public class ProfileInfo extends AbstractInfo {
     // 环境id
     private String profileId;
-    // 备注
-    private String memo;
+    // 环境名
+    private String profileName;
 
     public String getProfileId() {
         return profileId;
@@ -27,11 +27,11 @@ public class ProfileInfo extends AbstractInfo {
         this.profileId = profileId;
     }
 
-    public String getMemo() {
-        return memo;
+    public String getProfileName() {
+        return profileName;
     }
 
-    public void setMemo(String memo) {
-        this.memo = memo;
+    public void setProfileName(String profileName) {
+        this.profileName = profileName;
     }
 }

@@ -34,7 +34,7 @@ public interface ProfileDao {
 
     void delete(Profile profile);
 
-    Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);
-
     List<Profile> findAll();
+
+    Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

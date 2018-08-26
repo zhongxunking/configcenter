@@ -8,12 +8,13 @@
  */
 package org.antframework.configcenter.web.controller;
 
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.MetaProperties;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
-import org.antframework.configcenter.facade.vo.Scope;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +27,8 @@ import org.springframework.web.bind.annotation.RestController;
 public class ConfigController {
     @Autowired
     private ConfigService configService;
+    @Autowired
+    private MetaProperties metaProperties;
 
     /**
      * 查找应用在特定环境中的配置
@@ -45,19 +48,32 @@ public class ConfigController {
     }
 
     /**
-     * 查找应用自己的在特定环境中的配置
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     * @param minScope  最小作用域
+     * 获取配置中心元数据
      */
-    @RequestMapping("/findAppSelfProperties")
-    public FindAppSelfPropertiesResult findAppSelfProperties(String appId, String profileId, Scope minScope) {
-        FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setMinScope(minScope);
+    @RequestMapping("/meta")
+    public MetaResult meta() {
+        MetaResult meta = new MetaResult();
+        meta.setStatus(Status.SUCCESS);
+        meta.setCode(CommonResultCode.SUCCESS.getCode());
+        meta.setMessage(CommonResultCode.SUCCESS.getMessage());
+        meta.setZkUrls(metaProperties.getZkUrls().toArray(new String[0]));
 
-        return configService.findAppSelfProperties(order);
+        return meta;
+    }
+
+    /**
+     * 元数据result
+     */
+    public static class MetaResult extends AbstractResult {
+        // 配置中心使用的zookeeper地址
+        private String[] zkUrls;
+
+        public String[] getZkUrls() {
+            return zkUrls;
+        }
+
+        public void setZkUrls(String[] zkUrls) {
+            this.zkUrls = zkUrls;
+        }
     }
 }
