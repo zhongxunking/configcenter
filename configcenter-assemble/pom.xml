@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.antframework.configcenter</groupId>
         <artifactId>configcenter</artifactId>
-        <version>1.1.0.RELEASE</version>
+        <version>1.2.0.RELEASE</version>
     </parent>
 
     <artifactId>configcenter-assemble</artifactId>
