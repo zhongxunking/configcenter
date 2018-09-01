@@ -23,6 +23,9 @@
 <img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 />
 
 ## 2. 部署服务端
+以下是集群部署架构图（如果不需要集群，则去掉多服务端和nginx）：<br/>
+<img src="https://note.youdao.com/yws/api/personal/file/WEBc68603367698b77744c82c6c92750a05?method=download&shareKey=84a80b0f98dd664989715565dfc2853e" width=600 />
+
 [下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.2.0.RELEASE/configcenter-assemble-1.2.0.RELEASE-exec.jar)。说明：
 - 服务端使用的springboot，直接命令启动下载好的jar包即可，无需部署tomcat。
 - 服务端使用hibernate自动生成表结构，无需导入sql。
