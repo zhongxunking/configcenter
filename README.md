@@ -20,7 +20,7 @@
 - zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有变更，服务端会通知zookeeper，zookeeper接收到消息后会把消息分发给客户端，客户端收到消息后就会调用服务端读取最新配置。
 
 整体设计图：<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 />
+<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 align="center" />
 
 ## 2. 部署服务端
 [下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.2.0.RELEASE/configcenter-assemble-1.2.0.RELEASE-exec.jar)。说明：
