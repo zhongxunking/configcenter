@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.spring.boot;
 
-import org.antframework.configcenter.client.support.Config;
+import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.spring.ConfigContexts;
 import org.antframework.configcenter.spring.context.Contexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;

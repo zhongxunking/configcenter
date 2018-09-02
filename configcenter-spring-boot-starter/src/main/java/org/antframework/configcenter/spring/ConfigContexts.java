@@ -8,8 +8,8 @@
  */
 package org.antframework.configcenter.spring;
 
+import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.client.ConfigContext;
-import org.antframework.configcenter.client.support.Config;
 import org.antframework.configcenter.spring.boot.ConfigcenterProperties;
 import org.antframework.configcenter.spring.context.Contexts;
 
