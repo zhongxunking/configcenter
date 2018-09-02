@@ -28,8 +28,10 @@ public class ListenerRegistrar {
     /**
      * 注册监听器
      */
-    public void register(ConfigListener listener) {
-        listeners.add(listener);
+    public synchronized void register(ConfigListener listener) {
+        if (!listeners.contains(listener)) {
+            listeners.add(listener);
+        }
     }
 
     /**
@@ -40,7 +42,7 @@ public class ListenerRegistrar {
     }
 
     // 配置被修改触发监听器
-    void onChange(List<ChangedProperty> changedProperties) {
+    synchronized void onChange(List<ChangedProperty> changedProperties) {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
