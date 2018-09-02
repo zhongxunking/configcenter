@@ -4,9 +4,10 @@
 > 配置中心现在基本上是大型互联网公司的标配，用于存储管理公司内部各个系统的配置，降低维护成本。本配置中心提供了配置管理基本功能，提供配置更新推送能力，提供客户端配置缓存能力。
 
 2. 环境要求：
-> * 服务端：jdk1.8
-> * 客户端：jdk1.8
-> * zookeeper
+> - 服务端：jdk1.8
+> - 客户端：jdk1.8
+> - zookeeper
+> - MySQL
 
 > 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
 
@@ -23,12 +24,13 @@
 <img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 />
 
 ## 2. 部署服务端
-以下是集群部署架构图（如果不需要集群，则去掉多服务端和nginx）：<br/>
+[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.2.0.RELEASE/configcenter-assemble-1.2.0.RELEASE-exec.jar)。以下是集群部署架构图：<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBc68603367698b77744c82c6c92750a05?method=download&shareKey=84a80b0f98dd664989715565dfc2853e" width=600 />
 
-[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.2.0.RELEASE/configcenter-assemble-1.2.0.RELEASE-exec.jar)。说明：
+<span style="font-size: large">说明：</span>
+- 出于安全考虑，当外网（包括配置管理员）尝试通过http请求访问服务端<span style="color:red">/config/*</span>路径时，nginx应该进行拦截；而客户端通过内网访问/config/*路径时，nginx应该允许访问。
 - 服务端使用的springboot，直接命令启动下载好的jar包即可，无需部署tomcat。
-- 服务端使用hibernate自动生成表结构，无需导入sql。
+- 服务端使用hibernate自动生成表结构，无需导入sql（只需要服务端第一次启动时拥有向数据库执行ddl语句权限，启动成功后就可以删除该权限，以后每次启动都不需要该权限）。
 - 服务端在启动时会在"/var/apps/"下创建日志文件，请确保服务端对该目录拥有写权限。
 - 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有非线上环境配置）；二是线上环境配置中心（管理线上环境配置）。
 - 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）。
@@ -36,7 +38,7 @@
 
 启动服务端命令模板：
 ```shell
-java -jar configcenter-assemble-1.2.0.RELEASE-exec.jar --spring.profiles.active="环境编码" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址,如果存在多个zookeeper以英文逗号分隔"
+java -jar configcenter-assemble-1.2.0.RELEASE-exec.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址,如果存在多个zookeeper以英文逗号分隔"
 ```
 比如我本地开发时启动命令：
 ```shell
@@ -177,7 +179,7 @@ public class MyConfigListener {
 ```
 也可以监听其他应用的公开配置变更事件：
 ```java
-// 监听账务系统的配置变更事件
+// 监听账务系统的公开配置变更事件
 @ConfigListener(appId = "account")
 public class MyConfigListener {
     // 监听所有配置
@@ -191,7 +193,7 @@ public class MyConfigListener {
 ## 4. 配置管理介绍
 进入服务端地址模板：http://IP地址:6220
 
-4.1 第一次进入服务端需设置一个超级管理员<br/>
+4.1 第一次进入服务端需初始化一个超级管理员<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBdf29971c7ad36423982fedfaa31af838?method=download&shareKey=71ab956ca03dad07319d6b83644d0286" width=500 />
 
 4.2 点击确定，进入初始化页面<br/>
@@ -236,10 +238,10 @@ public class MyConfigListener {
 4.15 点击上图中的环境，进入对应环境的配置管理，可进行配置修改<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEB623aa7a707b02c190b9ae151a7af811a?method=download&shareKey=7f6b7b3b6c95294ba2de31ff8a2f19e6" width=700 />
 
-4.16 修改配置后，点击提交修改按钮，进行真正修改（应用的配置会自动修改成最新配置）<br/>
+4.16 修改配置后，点击提交修改按钮，进行真正修改（配置变更消息会自动推送给应用）<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEB9859bfdff9931bf59acec77a87150401?method=download&shareKey=f0d7b84c6a2e43891feb031631c53d7e" width=700 />
 
-4.17 点击环境下拉框中的环境，进入对应环境的配置管理页面<br/>
+4.17 点击环境下拉框，可以进入其他环境的配置管理页面<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBe6bcfbad97f20dace1222818fc84b6bd?method=download&shareKey=0eee229a85534056743549b3e8dd0ab4" width=700 />
 
 4.18 点击左侧导航栏管理员，会进入管理员管理页面<br/>
@@ -251,7 +253,7 @@ public class MyConfigListener {
 4.20 点击左侧导航栏权限，会进入权限管理页面<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEB7af9cc8567530ff0f83e36a686db4046?method=download&shareKey=465a88d8ef824b260d400c2589ef64e3" width=700 />
 
-4.21 点击新增按钮，可以将应用分配置管理员进行管理<br/>
+4.21 点击新增按钮，可以将应用分配给管理员进行管理<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEB52963da9d8ffa4337864bf9cdb94529c?method=download&shareKey=a272a1da145a026b2cfaf8a77acca6e1" width=700 />
 
 4.22 权限分配后如下：<br/>
