@@ -13,7 +13,7 @@
 
 3. 技术交流和支持
 > 加微信群进行技术交流和支持，如果二维码失效，可以先加我微信（zhong_xun_）再拉进群<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width="150" />
+> <img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width="150" />
 
 ## 1. 整体设计
 配置就是不同应用在不同环境的一些键值对。本配置中心内的角色有：服务端、客户端、zookeeper。
