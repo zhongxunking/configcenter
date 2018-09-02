@@ -3,13 +3,17 @@
 1. 简介
 > 配置中心现在基本上是大型互联网公司的标配，用于存储管理公司内部各个系统的配置，降低维护成本。本配置中心提供了配置管理基本功能，提供配置更新推送能力，提供客户端配置缓存能力。
 
-2. 环境要求：
+2. 环境要求
 > - 服务端：jdk1.8
 > - 客户端：jdk1.8
 > - zookeeper
 > - MySQL
 
 > 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
+
+3. 技术交流和支持
+> 加微信群进行技术交流和支持，如果二维码失效，可以先加我微信（zhong_xun_）再拉进群<br/>
+<img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width="150" />
 
 ## 1. 整体设计
 配置就是不同应用在不同环境的一些键值对。本配置中心内的角色有：服务端、客户端、zookeeper。
