@@ -45,7 +45,7 @@ public class ConfigRefresher {
     /**
      * 初始化配置（先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
      */
-    public void initConfig() {
+    public synchronized void initConfig() {
         Map<String, String> newProperties;
         boolean fromServer = true;
         try {
@@ -71,7 +71,7 @@ public class ConfigRefresher {
     /**
      * 刷新配置
      */
-    public void refresh() {
+    public synchronized void refresh() {
         Map<String, String> newProperties = configRequester.findConfig();
         if (cacheFile != null) {
             cacheFile.replace(newProperties);

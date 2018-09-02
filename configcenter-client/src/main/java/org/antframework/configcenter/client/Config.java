@@ -6,12 +6,15 @@
  * 修订记录:
  * @author 钟勋 2018-08-19 00:13 创建
  */
-package org.antframework.configcenter.client.support;
+package org.antframework.configcenter.client;
 
 import org.antframework.common.util.file.MapFile;
-import org.antframework.configcenter.client.ConfigProperties;
+import org.antframework.configcenter.client.core.ConfigProperties;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
+import org.antframework.configcenter.client.support.ConfigRefresher;
+import org.antframework.configcenter.client.support.ListenerRegistrar;
+import org.antframework.configcenter.client.support.ServerRequester;
 
 import java.io.File;
 
@@ -58,9 +61,9 @@ public class Config {
     }
 
     /**
-     * 刷新配置
+     * 刷新配置（同步）
      */
-    public synchronized void refresh() {
+    public void refresh() {
         configRefresher.refresh();
     }
 }

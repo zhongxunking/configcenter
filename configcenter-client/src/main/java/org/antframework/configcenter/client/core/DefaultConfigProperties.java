@@ -10,25 +10,18 @@ package org.antframework.configcenter.client.core;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 /**
  * 配置属性默认实现
  */
 public class DefaultConfigProperties implements ConfigurableConfigProperties {
-    // 属性value为null时的占位符
-    private static final String NULL_VALUE = DefaultConfigProperties.class.getName() + "#NULL_VALUE";
-
     // 属性
-    private Map<String, String> properties = new ConcurrentHashMap<>();
+    private volatile Map<String, String> properties = new HashMap<>();
 
     @Override
     public String getProperty(String key) {
-        return toOriginal(properties.get(key));
+        return properties.get(key);
     }
 
     @Override
@@ -45,18 +38,8 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
     @Override
     public synchronized List<ChangedProperty> replaceProperties(Map<String, String> newProperties) {
         List<ChangedProperty> changedProperties = analyseChanges(properties, newProperties);
-        applyChanges(properties, changedProperties);
+        properties = new HashMap<>(newProperties);
         return changedProperties;
-    }
-
-    // 转换为原始value
-    private static String toOriginal(String savable) {
-        return StringUtils.equals(savable, NULL_VALUE) ? null : savable;
-    }
-
-    // 转换为可保存value
-    private static String toSavable(String original) {
-        return original == null ? NULL_VALUE : original;
     }
 
     // 分析被修改的属性
@@ -65,9 +48,9 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
         // 分析删除和修改的属性
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
-                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.REMOVE, key, toOriginal(oldProperties.get(key)), null));
-            } else if (!StringUtils.equals(newProperties.get(key), toOriginal(oldProperties.get(key)))) {
-                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.UPDATE, key, toOriginal(oldProperties.get(key)), newProperties.get(key)));
+                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.REMOVE, key, oldProperties.get(key), null));
+            } else if (!StringUtils.equals(newProperties.get(key), oldProperties.get(key))) {
+                changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.UPDATE, key, oldProperties.get(key), newProperties.get(key)));
             }
         }
         // 分析新增的属性
@@ -78,22 +61,5 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
         }
 
         return changedProperties;
-    }
-
-    // 应用被修改的属性
-    private static void applyChanges(Map<String, String> properties, List<ChangedProperty> changedProperties) {
-        for (ChangedProperty changedProperty : changedProperties) {
-            switch (changedProperty.getType()) {
-                case ADD:
-                case UPDATE:
-                    properties.put(changedProperty.getKey(), toSavable(changedProperty.getNewValue()));
-                    break;
-                case REMOVE:
-                    properties.remove(changedProperty.getKey());
-                    break;
-                default:
-                    throw new IllegalArgumentException("无法识别的修改类型");
-            }
-        }
     }
 }

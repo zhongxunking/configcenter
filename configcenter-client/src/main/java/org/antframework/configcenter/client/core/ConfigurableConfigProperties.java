@@ -8,8 +8,6 @@
  */
 package org.antframework.configcenter.client.core;
 
-import org.antframework.configcenter.client.ConfigProperties;
-
 import java.util.List;
 import java.util.Map;
 

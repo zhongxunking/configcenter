@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2017-09-11 13:47 创建
  */
-package org.antframework.configcenter.client;
+package org.antframework.configcenter.client.core;
 
 /**
  * 配置属性

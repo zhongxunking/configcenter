@@ -9,7 +9,6 @@
 package org.antframework.configcenter.client;
 
 import org.antframework.common.util.other.Cache;
-import org.antframework.configcenter.client.support.Config;
 import org.antframework.configcenter.client.support.RefreshTrigger;
 import org.antframework.configcenter.client.support.ServerRequester;
 import org.antframework.configcenter.client.support.TaskExecutor;
