@@ -12,7 +12,7 @@
 > 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
 
 3. 技术交流和支持
-> 加微信群进行技术交流和支持，如果二维码失效，可以先加我微信（zhong_xun_）再拉进群<br/>
+> 加微信群进行技术交流和支持，也可以先加我微信（zhong_xun_）再拉进群。如果本项目对你有帮助，欢迎Star和Fork。<br/>
 > <img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width="150" />
 
 ## 1. 整体设计
