@@ -16,6 +16,9 @@
 > <img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width="150" />
 
 ## 1. 整体设计
+整体设计图：<br/>
+<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=500 /><br/>
+
 配置就是不同应用在不同环境的一些键值对。本配置中心内的角色有：服务端、客户端、zookeeper。
 
 - 服务端：管理不同应用在不同环境中的配置，配置数据落地到MySQL数据库。为客户端提供http查询应用在指定环境中的配置。当一个应用在指定环境中的配置有了变更（增删改），则服务端会通过zookeeper通知客户端。
@@ -23,9 +26,6 @@
 - 客户端：客户端刚启动时会通过http请求服务端读取当前应用在当前环境中的最新配置。如果从服务端读取失败，则客户端会尝试从本地缓存文件中读取配置，如果本地无缓存文件，则会抛出异常。客户端启动成功后，外部可以触发客户端监听配置变更事件。当监听到配置有变更时，客户端会再次通过http请求服务端读取最新配置，然后把最新配置保存到缓存文件，最后将最新配置和当前客户端中旧配置进行比较，将变化部分通知给应用。
 
 - zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有变更，服务端会通知zookeeper，zookeeper接收到消息后会把消息分发给客户端，客户端收到消息后就会调用服务端读取最新配置。
-
-整体设计图：<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 />
 
 ## 2. 部署服务端
 [下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.2.1.RELEASE/configcenter-assemble-1.2.1.RELEASE-exec.jar)。以下是集群部署架构图：<br/>
