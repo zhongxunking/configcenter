@@ -12,7 +12,7 @@
 > 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
 
 3. 演示环境
-> 地址：http://configcenter.antframework.org:6220 <br/>
+> 地址：<a href="http://configcenter.antframework.org:6220" target="_blank">http://configcenter.antframework.org:6220</a><br/>
 > 账号：admin 密码：123
 
 4. 技术交流和支持
