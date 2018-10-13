@@ -26,6 +26,10 @@ public class Profile extends AbstractEntity {
     @Column
     private String profileName;
 
+    // 父环境id（null表示无父环境）
+    @Column
+    private String parent;
+
     public String getProfileId() {
         return profileId;
     }
@@ -40,5 +44,13 @@ public class Profile extends AbstractEntity {
 
     public void setProfileName(String profileName) {
         this.profileName = profileName;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }
