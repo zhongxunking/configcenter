@@ -36,6 +36,8 @@ public interface ProfileDao {
 
     void delete(Profile profile);
 
+    List<Profile> findByParent(String parent);
+
     List<Profile> findAll();
 
     Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);

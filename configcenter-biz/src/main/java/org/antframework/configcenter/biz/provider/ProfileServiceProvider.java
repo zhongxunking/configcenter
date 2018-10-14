@@ -15,10 +15,7 @@ import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
-import org.antframework.configcenter.facade.result.FindProfileResult;
-import org.antframework.configcenter.facade.result.QueryProfilesResult;
+import org.antframework.configcenter.facade.result.*;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,6 +46,11 @@ public class ProfileServiceProvider implements ProfileService {
     @Override
     public FindInheritedProfilesResult findInheritedProfiles(FindInheritedProfilesOrder order) {
         return serviceEngine.execute("findInheritedProfilesService", order);
+    }
+
+    @Override
+    public FindProfileTreeResult findProfileTree(FindProfileTreeOrder order) {
+        return serviceEngine.execute("findProfileTreeService", order);
     }
 
     @Override

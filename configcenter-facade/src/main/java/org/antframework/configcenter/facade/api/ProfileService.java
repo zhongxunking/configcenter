@@ -11,10 +11,7 @@ package org.antframework.configcenter.facade.api;
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
-import org.antframework.configcenter.facade.result.FindProfileResult;
-import org.antframework.configcenter.facade.result.QueryProfilesResult;
+import org.antframework.configcenter.facade.result.*;
 
 /**
  * 环境服务
@@ -39,6 +36,11 @@ public interface ProfileService {
      * 查找环境继承的所有环境
      */
     FindInheritedProfilesResult findInheritedProfiles(FindInheritedProfilesOrder order);
+
+    /**
+     * 查找环境树
+     */
+    FindProfileTreeResult findProfileTree(FindProfileTreeOrder order);
 
     /**
      * 查找所有环境
