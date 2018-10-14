@@ -14,8 +14,10 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
+import org.antframework.configcenter.facade.order.FindProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -35,6 +37,7 @@ public class ProfileServiceTest extends AbstractTest {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId("dev");
         order.setProfileName("开发环境");
+        order.setParent(null);
 
         EmptyResult result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
@@ -46,6 +49,15 @@ public class ProfileServiceTest extends AbstractTest {
         order.setProfileId("dev");
 
         EmptyResult result = profileService.deleteProfile(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindProfile() {
+        FindProfileOrder order = new FindProfileOrder();
+        order.setProfileId("dev");
+
+        FindProfileResult result = profileService.findProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 
