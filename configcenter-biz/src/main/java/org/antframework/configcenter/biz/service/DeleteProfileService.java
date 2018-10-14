@@ -45,7 +45,7 @@ public class DeleteProfileService {
             return;
         }
         if (profileDao.existsByParent(order.getProfileId())) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境%s存在子环境，不能删除", order.getProfileId()));
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]存在子环境，不能删除", order.getProfileId()));
         }
         // 删除所有应用在该环境下的所有属性value
         for (AppInfo app : AppUtils.findAllApps()) {
