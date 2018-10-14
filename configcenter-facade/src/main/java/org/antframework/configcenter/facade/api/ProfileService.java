@@ -12,8 +12,10 @@ import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
+import org.antframework.configcenter.facade.order.FindProfileOrder;
 import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 
 /**
@@ -29,6 +31,11 @@ public interface ProfileService {
      * 删除环境
      */
     EmptyResult deleteProfile(DeleteProfileOrder order);
+
+    /**
+     * 查找环境
+     */
+    FindProfileResult findProfile(FindProfileOrder order);
 
     /**
      * 查找所有环境
