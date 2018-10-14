@@ -8,12 +8,13 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.ProfileTree;
 
 /**
  * 查找环境树result
  */
-public class FindProfileTreeResult {
+public class FindProfileTreeResult extends AbstractResult {
     // 环境树
     private ProfileTree profileTree;
 
