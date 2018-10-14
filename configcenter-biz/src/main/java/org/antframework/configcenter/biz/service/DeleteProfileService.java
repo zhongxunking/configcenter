@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
@@ -44,6 +43,9 @@ public class DeleteProfileService {
         Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
             return;
+        }
+        if (profileDao.existsByParent(order.getProfileId())) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境%s存在子环境，不能删除", order.getProfileId()));
         }
         // 删除所有应用在该环境下的所有属性value
         for (AppInfo app : AppUtils.findAllApps()) {

@@ -32,6 +32,8 @@ public interface ProfileDao {
 
     Profile findByProfileId(String profileId);
 
+    boolean existsByParent(String parent);
+
     void delete(Profile profile);
 
     List<Profile> findAll();
