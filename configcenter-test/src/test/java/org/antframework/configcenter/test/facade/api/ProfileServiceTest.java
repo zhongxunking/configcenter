@@ -12,11 +12,9 @@ import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ProfileService;
-import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
-import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.FindProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfilesOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
+import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
 import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.configcenter.test.AbstractTest;
@@ -35,11 +33,17 @@ public class ProfileServiceTest extends AbstractTest {
     @Test
     public void testAddOrModifyProfile() {
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
+        order.setProfileId("offline");
+        order.setProfileName("线下环境");
+        order.setParent(null);
+        EmptyResult result = profileService.addOrModifyProfile(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyProfileOrder();
         order.setProfileId("dev");
         order.setProfileName("开发环境");
-        order.setParent(null);
-
-        EmptyResult result = profileService.addOrModifyProfile(order);
+        order.setParent("offline");
+        result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 
@@ -58,6 +62,15 @@ public class ProfileServiceTest extends AbstractTest {
         order.setProfileId("dev");
 
         FindProfileResult result = profileService.findProfile(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindInheritedProfiles() {
+        FindInheritedProfilesOrder order = new FindInheritedProfilesOrder();
+        order.setProfileId("dev");
+
+        FindInheritedProfilesResult result = profileService.findInheritedProfiles(order);
         checkResult(result, Status.SUCCESS);
     }
 
