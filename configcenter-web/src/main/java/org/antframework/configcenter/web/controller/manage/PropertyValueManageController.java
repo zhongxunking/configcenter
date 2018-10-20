@@ -11,17 +11,15 @@ package org.antframework.configcenter.web.controller.manage;
 import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ProfileProperty;
-import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +27,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * 属性value管理controller
@@ -89,28 +88,14 @@ public class PropertyValueManageController {
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        // 获取继承的所有应用的配置
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            result.addAppProperty(getAppProperty(app.getAppId(), profileId, appId));
+            // 获取应用的配置
+            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
+            List<ProfileProperty> profileProperties = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, minScope);
+            result.addAppProperty(new FindInheritedPropertiesResult.AppProperty(app.getAppId(), profileProperties));
         }
-
         return result;
-    }
-
-    // 获取应用的配置
-    private FindInheritedPropertiesResult.AppProperty getAppProperty(String appId, String profileId, String mainAppId) {
-        Scope minScope = Scope.PRIVATE;
-        if (!StringUtils.equals(appId, mainAppId)) {
-            minScope = Scope.PROTECTED;
-        }
-
-        FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setMinScope(minScope);
-
-        FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
-        FacadeUtils.assertSuccess(result);
-        return new FindInheritedPropertiesResult.AppProperty(appId, result.getProfileProperties());
     }
 
     /**
