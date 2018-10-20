@@ -33,7 +33,7 @@ public final class AppUtils {
      * 查找应用继承的所有应用
      *
      * @param appId 被查询的应用id
-     * @return 继承的所有应用
+     * @return 由近及远继承的所有应用
      */
     public static List<AppInfo> findInheritedApps(String appId) {
         FindInheritedAppsOrder order = new FindInheritedAppsOrder();

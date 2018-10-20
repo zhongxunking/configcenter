@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 查找应用自己的属性order
+ * 查找应用自己的在特定环境中的配置order
  */
 public class FindAppSelfPropertiesOrder extends AbstractOrder {
     // 应用id

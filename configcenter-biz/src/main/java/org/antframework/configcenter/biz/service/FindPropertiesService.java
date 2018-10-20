@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
@@ -77,11 +78,13 @@ public class FindPropertiesService {
         FacadeUtils.assertSuccess(result);
 
         Map<String, String> properties = new HashMap<>();
-        for (Property property : result.getProperties()) {
-            if (property.getValue() != null) {
-                // 只允许有效的属性
-                properties.put(property.getKey(), property.getValue());
+        for (ProfileProperty profileProperty : result.getProfileProperties()) {
+            Map<String, String> temp = new HashMap<>();
+            for (Property property : profileProperty.getProperties()) {
+                temp.put(property.getKey(), property.getValue());
             }
+            temp.putAll(properties);
+            properties = temp;
         }
         return properties;
     }

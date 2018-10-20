@@ -9,23 +9,23 @@
 package org.antframework.configcenter.facade.result;
 
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.info.ProfileProperty;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用自己的属性result
+ * 查找应用自己的在特定环境中的配置result
  */
 public class FindAppSelfPropertiesResult extends AbstractResult {
-    // 属性
-    private List<Property> properties = new ArrayList<>();
+    // 由近及远继承的所用环境中的配置
+    private List<ProfileProperty> profileProperties = new ArrayList<>();
 
-    public List<Property> getProperties() {
-        return properties;
+    public List<ProfileProperty> getProfileProperties() {
+        return profileProperties;
     }
 
-    public void addProperty(Property property) {
-        properties.add(property);
+    public void addProfileProperty(ProfileProperty profileProperty) {
+        profileProperties.add(profileProperty);
     }
 }
