@@ -28,19 +28,19 @@ public class RefreshController {
     /**
      * 刷新客户端
      *
-     * @param appId     应用id（不传表示刷新所有应用）
-     * @param profileId 环境id（不传表示刷新所有环境）
+     * @param rootAppId     根应用id（不传表示刷新所有应用）
+     * @param rootProfileId 根环境id（不传表示刷新所有环境）
      */
     @RequestMapping("/refreshClients")
-    public EmptyResult refreshClients(String appId, String profileId) {
-        if (appId == null) {
+    public EmptyResult refreshClients(String rootAppId, String rootProfileId) {
+        if (rootAppId == null) {
             ManagerAssert.admin();
         } else {
-            ManagerAssert.adminOrHaveRelation(appId);
+            ManagerAssert.adminOrHaveRelation(rootAppId);
         }
         RefreshClientsOrder order = new RefreshClientsOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
+        order.setRootAppId(rootAppId);
+        order.setRootProfileId(rootProfileId);
 
         return refreshService.refreshClients(order);
     }
