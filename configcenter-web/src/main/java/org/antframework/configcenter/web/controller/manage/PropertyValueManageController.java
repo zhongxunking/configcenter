@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
-import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ProfileProperty;
@@ -37,8 +36,6 @@ import java.util.Objects;
 public class PropertyValueManageController {
     @Autowired
     private PropertyValueService propertyValueService;
-    @Autowired
-    private ConfigService configService;
 
     /**
      * 设置多个属性value
