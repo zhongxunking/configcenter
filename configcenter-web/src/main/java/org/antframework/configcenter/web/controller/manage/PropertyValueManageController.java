@@ -15,10 +15,10 @@ import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
-import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.apache.commons.lang3.StringUtils;
@@ -90,14 +90,14 @@ public class PropertyValueManageController {
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            result.addAppProperties(getAppProperties(app.getAppId(), profileId, appId));
+            result.addAppProperty(getAppProperty(app.getAppId(), profileId, appId));
         }
 
         return result;
     }
 
     // 获取应用的配置
-    private FindInheritedPropertiesResult.AppProperties getAppProperties(String appId, String profileId, String mainAppId) {
+    private FindInheritedPropertiesResult.AppProperty getAppProperty(String appId, String profileId, String mainAppId) {
         Scope minScope = Scope.PRIVATE;
         if (!StringUtils.equals(appId, mainAppId)) {
             minScope = Scope.PROTECTED;
@@ -110,7 +110,7 @@ public class PropertyValueManageController {
 
         FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
         FacadeUtils.assertSuccess(result);
-        return new FindInheritedPropertiesResult.AppProperties(appId, result.getProperties());
+        return new FindInheritedPropertiesResult.AppProperty(appId, result.getProfileProperties());
     }
 
     /**
@@ -118,36 +118,36 @@ public class PropertyValueManageController {
      */
     public static class FindInheritedPropertiesResult extends AbstractResult {
         // 由近及远继承的所有应用的配置
-        private List<AppProperties> appPropertieses = new ArrayList<>();
+        private List<AppProperty> appProperties = new ArrayList<>();
 
-        public void addAppProperties(AppProperties appProperties) {
-            appPropertieses.add(appProperties);
+        public List<AppProperty> getAppProperties() {
+            return appProperties;
         }
 
-        public List<AppProperties> getAppPropertieses() {
-            return appPropertieses;
+        public void addAppProperty(AppProperty appProperty) {
+            appProperties.add(appProperty);
         }
 
         /**
          * 应用配置
          */
-        public static class AppProperties implements Serializable {
+        public static class AppProperty implements Serializable {
             // 应用id
             private String appId;
-            // 配置
-            private List<Property> properties;
+            // 由近及远继承的所用环境中的配置
+            private List<ProfileProperty> profileProperties;
 
-            public AppProperties(String appId, List<Property> properties) {
+            public AppProperty(String appId, List<ProfileProperty> profileProperties) {
                 this.appId = appId;
-                this.properties = properties;
+                this.profileProperties = profileProperties;
             }
 
             public String getAppId() {
                 return appId;
             }
 
-            public List<Property> getProperties() {
-                return properties;
+            public List<ProfileProperty> getProfileProperties() {
+                return profileProperties;
             }
         }
     }
