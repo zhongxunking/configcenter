@@ -13,9 +13,12 @@ import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.info.ProfileInfo;
+import org.antframework.configcenter.facade.info.ProfileTree;
 import org.antframework.configcenter.facade.order.FindInheritedProfilesOrder;
+import org.antframework.configcenter.facade.order.FindProfileTreeOrder;
 import org.antframework.configcenter.facade.result.FindAllProfilesResult;
 import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 
 import java.util.List;
 
@@ -39,6 +42,21 @@ public final class ProfileUtils {
         FindInheritedProfilesResult result = PROFILE_SERVICE.findInheritedProfiles(order);
         FacadeUtils.assertSuccess(result);
         return result.getInheritedProfiles();
+    }
+
+    /**
+     * 获取环境树
+     *
+     * @param profileId 根节点环境id（null表示查找所有环境）
+     * @return 环境树
+     */
+    public static ProfileTree findProfileTree(String profileId) {
+        FindProfileTreeOrder order = new FindProfileTreeOrder();
+        order.setProfileId(profileId);
+
+        FindProfileTreeResult result = PROFILE_SERVICE.findProfileTree(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getProfileTree();
     }
 
     /**
