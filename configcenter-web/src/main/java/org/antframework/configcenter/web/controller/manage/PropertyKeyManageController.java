@@ -27,6 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -129,7 +130,7 @@ public class PropertyKeyManageController {
         /**
          * 应用属性key
          */
-        public static class AppPropertyKeys {
+        public static class AppPropertyKeys implements Serializable {
             // 应用id
             private String appId;
             // 属性key

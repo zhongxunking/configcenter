@@ -26,6 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -130,7 +131,7 @@ public class PropertyValueManageController {
         /**
          * 应用配置
          */
-        public static class AppProperties {
+        public static class AppProperties implements Serializable {
             // 应用id
             private String appId;
             // 配置

@@ -8,13 +8,14 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 应用树
  */
-public class AppTree {
+public class AppTree implements Serializable {
     // 根节点
     private AppInfo app;
     // 子树

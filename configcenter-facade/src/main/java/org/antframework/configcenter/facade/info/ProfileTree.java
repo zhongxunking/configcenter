@@ -8,13 +8,14 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * 环境树
  */
-public class ProfileTree {
+public class ProfileTree implements Serializable {
     // 根节点
     private ProfileInfo profile;
     // 子树
