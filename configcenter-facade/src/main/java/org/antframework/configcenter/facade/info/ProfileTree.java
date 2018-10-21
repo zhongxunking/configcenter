@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import org.antframework.common.util.tostring.ToString;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,5 +37,10 @@ public class ProfileTree implements Serializable {
 
     public void addChild(ProfileTree child) {
         children.add(child);
+    }
+
+    @Override
+    public String toString() {
+        return ToString.toString(this);
     }
 }

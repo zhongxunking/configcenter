@@ -10,10 +10,12 @@ package org.antframework.configcenter.facade.vo;
 
 import org.antframework.common.util.tostring.ToString;
 
+import java.io.Serializable;
+
 /**
  * 属性
  */
-public final class Property {
+public final class Property implements Serializable {
     // key
     private final String key;
     // value
