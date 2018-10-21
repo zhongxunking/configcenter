@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -29,33 +30,62 @@ public class PropertyValueServiceTest extends AbstractTest {
 
     @Test
     public void testSetPropertyValue() {
-        SetPropertyValuesOrder order = new SetPropertyValuesOrder();
-        order.setAppId("scbfund");
-        order.setProfileId("dev");
+        // 设置offline环境value
+        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
+        for (String appId : appIds) {
+            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
+            order.setAppId(appId);
+            order.setProfileId("offline");
 
-        SetPropertyValuesOrder.KeyValue keyValue1 = new SetPropertyValuesOrder.KeyValue();
-        keyValue1.setKey("datasource.url");
-        keyValue1.setValue("jdbc:mysql://localhost:3306/scbfund-dev");
-        order.addKeyValue(keyValue1);
+            for (Scope scope : Scope.values()) {
+                SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
+                keyValue.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
+                keyValue.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), "offline"));
+                order.addKeyValue(keyValue);
+            }
 
-        SetPropertyValuesOrder.KeyValue keyValue2 = new SetPropertyValuesOrder.KeyValue();
-        keyValue2.setKey("collection.accNo");
-        keyValue2.setValue("20170903200000000001");
-        order.addKeyValue(keyValue2);
+            EmptyResult result = propertyValueService.setPropertyValues(order);
+            checkResult(result, Status.SUCCESS);
+        }
+        // 删除value
+        for (String appId : appIds) {
+            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
+            order.setAppId(appId);
+            order.setProfileId("offline");
 
-        SetPropertyValuesOrder.KeyValue keyValue3 = new SetPropertyValuesOrder.KeyValue();
-        keyValue3.setKey("cashier.url");
-        keyValue3.setValue("http://localhost:8080/cashier");
-        order.addKeyValue(keyValue3);
+            SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
+            keyValue.setKey(String.format("%s-%s-key1", appId, "public"));
+            keyValue.setValue(null);
+            order.addKeyValue(keyValue);
 
-        EmptyResult result = propertyValueService.setPropertyValues(order);
-        checkResult(result, Status.SUCCESS);
+            EmptyResult result = propertyValueService.setPropertyValues(order);
+            checkResult(result, Status.SUCCESS);
+        }
+        // 设置dev环境value
+        for (String appId : appIds) {
+            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
+            order.setAppId(appId);
+            order.setProfileId("dev");
+
+            for (Scope scope : Scope.values()) {
+                if (scope == Scope.PRIVATE) {
+                    continue;
+                }
+                SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
+                keyValue.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
+                keyValue.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), "dev"));
+                order.addKeyValue(keyValue);
+            }
+
+            EmptyResult result = propertyValueService.setPropertyValues(order);
+            checkResult(result, Status.SUCCESS);
+        }
     }
 
     @Test
     public void testFindAppProfilePropertyValues() {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
-        order.setAppId("scbfund");
+        order.setAppId("customer");
         order.setProfileId("dev");
 
         FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);

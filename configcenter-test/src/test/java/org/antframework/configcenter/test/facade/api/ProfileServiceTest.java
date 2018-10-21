@@ -42,14 +42,47 @@ public class ProfileServiceTest extends AbstractTest {
         order.setParent("offline");
         result = profileService.addOrModifyProfile(order);
         checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyProfileOrder();
+        order.setProfileId("test");
+        order.setProfileName("测试环境");
+        order.setParent("offline");
+        result = profileService.addOrModifyProfile(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyProfileOrder();
+        order.setProfileId("online");
+        order.setProfileName("线上环境");
+        order.setParent(null);
+        result = profileService.addOrModifyProfile(order);
+        checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyProfileOrder();
+        order.setProfileId("pre");
+        order.setProfileName("预发布环境");
+        order.setParent("online");
+        result = profileService.addOrModifyProfile(order);
+        checkResult(result, Status.SUCCESS);
+        checkResult(result, Status.SUCCESS);
+
+        order = new AddOrModifyProfileOrder();
+        order.setProfileId("pro");
+        order.setProfileName("生产环境");
+        order.setParent("online");
+        result = profileService.addOrModifyProfile(order);
+        checkResult(result, Status.SUCCESS);
     }
 
     @Test
     public void testDeleteProfile() {
         DeleteProfileOrder order = new DeleteProfileOrder();
-        order.setProfileId("dev");
-
+        order.setProfileId("offline");
         EmptyResult result = profileService.deleteProfile(order);
+        checkResult(result, Status.FAIL);
+
+        order = new DeleteProfileOrder();
+        order.setProfileId("dev");
+        result = profileService.deleteProfile(order);
         checkResult(result, Status.SUCCESS);
     }
 
