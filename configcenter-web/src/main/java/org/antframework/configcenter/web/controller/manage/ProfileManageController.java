@@ -11,11 +11,8 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.ProfileService;
-import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
-import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfilesOrder;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
-import org.antframework.configcenter.facade.result.QueryProfilesResult;
+import org.antframework.configcenter.facade.order.*;
+import org.antframework.configcenter.facade.result.*;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -35,13 +32,15 @@ public class ProfileManageController {
      *
      * @param profileId   环境id（必须）
      * @param profileName 环境名（可选）
+     * @param parent      父环境id（可选）
      */
     @RequestMapping("/addOrModifyProfile")
-    public EmptyResult addOrModifyProfile(String profileId, String profileName) {
+    public EmptyResult addOrModifyProfile(String profileId, String profileName, String parent) {
         ManagerAssert.admin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId(profileId);
         order.setProfileName(profileName);
+        order.setParent(parent);
 
         return profileService.addOrModifyProfile(order);
     }
@@ -58,6 +57,45 @@ public class ProfileManageController {
         order.setProfileId(profileId);
 
         return profileService.deleteProfile(order);
+    }
+
+    /**
+     * 查找环境
+     *
+     * @param profileId 环境id（必填）
+     */
+    @RequestMapping("/findProfile")
+    public FindProfileResult findProfile(String profileId) {
+        FindProfileOrder order = new FindProfileOrder();
+        order.setProfileId(profileId);
+
+        return profileService.findProfile(order);
+    }
+
+    /**
+     * 查找环境继承的所有环境
+     *
+     * @param profileId 环境id（必填）
+     */
+    @RequestMapping("findInheritedProfiles")
+    public FindInheritedProfilesResult findInheritedProfiles(String profileId) {
+        FindInheritedProfilesOrder order = new FindInheritedProfilesOrder();
+        order.setProfileId(profileId);
+
+        return profileService.findInheritedProfiles(order);
+    }
+
+    /**
+     * 查找环境树
+     *
+     * @param profileId 根节点环境id（不填表示查找所有环境）
+     */
+    @RequestMapping("/findProfileTree")
+    FindProfileTreeResult findProfileTree(String profileId) {
+        FindProfileTreeOrder order = new FindProfileTreeOrder();
+        order.setProfileId(profileId);
+
+        return profileService.findProfileTree(order);
     }
 
     /**

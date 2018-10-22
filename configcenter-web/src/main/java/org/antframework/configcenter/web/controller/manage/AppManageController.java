@@ -106,7 +106,7 @@ public class AppManageController {
     /**
      * 查找应用树
      *
-     * @param appId 应用id（必须）
+     * @param appId 根节点应用id（不填表示查找所有应用）
      */
     @RequestMapping("/findAppTree")
     private FindAppTreeResult findAppTree(String appId) {
