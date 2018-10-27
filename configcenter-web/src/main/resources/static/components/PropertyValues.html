@@ -15,13 +15,13 @@
             </el-select>
         </el-col>
     </el-row>
-    <div v-for="appProperties in appPropertieses" style="margin-bottom: 50px">
-        <el-row v-if="appProperties.appId === appId" style="margin-bottom: 10px">
+    <div v-for="appProperty in appProperties" style="margin-bottom: 50px">
+        <el-row v-if="appProperty.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="6" :span="12" style="text-align: center;">
-                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties.app) }}</span>
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
-                <el-button icon="el-icon-close" @click="findAppPropertieses" :disabled="!edited" size="small">取消修改</el-button>
+                <el-button icon="el-icon-close" @click="findAppProperties" :disabled="!edited" size="small">取消修改</el-button>
                 <el-popover placement="top" v-model="submitPopoverShowing">
                     <p>提交后应用的配置将被修改，确定提交？</p>
                     <div style="text-align: right; margin: 0">
@@ -34,11 +34,24 @@
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
-                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperties.app) }}</span>
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appProperties.properties" v-loading="appProperties.appId === appId ? selfPropertiesLoading : false" :key="appProperties.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appProperties.appId === appId ? '100%' : 'calc(100% - 90px)'}">
-            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+
+        <el-table v-for="profileProperty in appProperty.profileProperties"
+                  :data="profileProperty.properties"
+                  :span-method="profilePropertySpanMethod"
+                  :show-header="profileProperty.profileId === profileId"
+                  :key="appProperty.appId + ':' + profileProperty.profileId"
+                  :default-sort="{prop: 'key'}"
+                  :style="{width: appProperty.appId === appId && profileProperty.profileId === profileId ? '100%' : 'calc(100% - 90px)'}"
+                  border stripe>
+            <el-table-column label="环境" width="200px">
+                <template slot-scope="{ row }">
+                    <span>{{ toShowingProfile(profileProperty.profile) }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="key" label="属性key"></el-table-column>
             <el-table-column prop="value" label="属性值">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
@@ -56,7 +69,7 @@
                     <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入属性值"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" sortable width="140px">
+            <el-table-column prop="scope" label="作用域" width="140px">
                 <template slot-scope="{ row }">
                     <div>
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -65,7 +78,7 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appProperties.appId === appId" label="操作" header-align="center" width="90px">
+            <el-table-column v-if="appProperty.appId === appId && profileProperty.profileId === profileId" label="操作" header-align="center" width="90px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col style="text-align: center">
@@ -91,26 +104,19 @@
     const propertyValuesApp = new Vue({
         el: '#propertyValuesApp',
         data: {
-            appId: 'scbfund',
+            appId: 'customer',
             profileId: 'dev',
             currentProfileId: 'dev',
             allProfiles: [],
             selfPropertiesLoading: false,
-            appPropertieses: [],
+            appProperties: [],
             submitPopoverShowing: false
         },
         computed: {
             edited: function () {
-                const theThis = this;
-
                 let edited = false;
-                this.appPropertieses.forEach(function (appProperties) {
-                    if (appProperties.appId !== theThis.appId) {
-                        return;
-                    }
-                    appProperties.properties.forEach(function (property) {
-                        edited = edited || property.edited;
-                    });
+                this.appProperties[0].profileProperties[0].properties.forEach(function (property) {
+                    edited = edited || property.edited;
                 });
 
                 return edited;
@@ -119,12 +125,12 @@
         watch: {
             '$route': function () {
                 this.findAllProfiles();
-                this.findAppPropertieses();
+                this.findAppProperties();
             }
         },
         created: function () {
             this.findAllProfiles();
-            this.findAppPropertieses();
+            this.findAppProperties();
         },
         methods: {
             findAllProfiles: function () {
@@ -138,7 +144,10 @@
                         theThis.allProfiles = result.profiles;
                     });
             },
-            findAppPropertieses: function () {
+            switchProfile: function (profileId) {
+                this.$router.replace('/configs/' + this.appId + '/' + profileId);
+            },
+            findAppProperties: function () {
                 const theThis = this;
                 this.selfPropertiesLoading = true;
                 axios.get('../manage/propertyValue/findInheritedProperties', {
@@ -152,30 +161,63 @@
                         Vue.prototype.$message.error(result.message);
                         return;
                     }
-                    theThis.appPropertieses = result.appPropertieses;
-                    theThis.appPropertieses.forEach(function (appProperties) {
-                        appProperties.properties.forEach(function (property) {
-                            Vue.set(property, 'edited', false);
-                            Vue.set(property, 'editing', false);
-                            Vue.set(property, 'editingValue', null);
+                    theThis.appProperties = result.appProperties;
+                    theThis.appProperties.forEach(function (appProperty) {
+                        Vue.set(appProperty, 'app', null);
+                        theThis.doFindApp(appProperty.appId, function (app) {
+                            appProperty.app = app;
                         });
-                        Vue.set(appProperties, 'app', null);
-                        axios.get('../manage/app/findApp', {
-                            params: {
-                                appId: appProperties.appId
-                            }
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            appProperties.app = result.app;
+                        appProperty.profileProperties.forEach(function (profileProperty) {
+                            Vue.set(profileProperty, 'profile', null);
+                            theThis.doFindProfile(profileProperty.profileId, function (profile) {
+                                profileProperty.profile = profile;
+                            });
+                            profileProperty.properties.forEach(function (property) {
+                                Vue.set(property, 'propertiesSize', profileProperty.properties.length);
+                                if (appProperty.appId === theThis.appId && profileProperty.profileId === theThis.profileId) {
+                                    Vue.set(property, 'edited', false);
+                                    Vue.set(property, 'editing', false);
+                                    Vue.set(property, 'editingValue', null);
+                                }
+                            });
                         });
                     });
                 });
             },
-            switchProfile: function (profileId) {
-                this.$router.replace('/configs/' + this.appId + '/' + profileId);
+            doFindApp: function (appId, processApp) {
+                axios.get('../manage/app/findApp', {
+                    params: {
+                        appId: appId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    processApp(result.app);
+                });
+            },
+            doFindProfile: function (profileId, processProfile) {
+                axios.get('../manage/profile/findProfile', {
+                    params: {
+                        profileId: profileId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    processProfile(result.profile);
+                });
+            },
+            profilePropertySpanMethod: function ({row, column, rowIndex, columnIndex}) {
+                if (columnIndex === 0) {
+                    if (rowIndex === 0) {
+                        return [row.propertiesSize, 1];
+                    } else {
+                        return [0, 0];
+                    }
+                }
             },
             startEditing: function (property) {
                 property.editing = true;
@@ -197,16 +239,11 @@
 
                 const theThis = this;
                 let keys = [], values = [];
-                this.appPropertieses.forEach(function (appProperties) {
-                    if (appProperties.appId !== theThis.appId) {
-                        return;
+                this.appProperties[0].profileProperties[0].properties.forEach(function (property) {
+                    if (property.edited) {
+                        keys.push(property.key);
+                        values.push(property.value);
                     }
-                    appProperties.properties.forEach(function (property) {
-                        if (property.edited) {
-                            keys.push(property.key);
-                            values.push(property.value);
-                        }
-                    });
                 });
 
                 this.selfPropertiesLoading = true;
@@ -222,7 +259,7 @@
                         return;
                     }
                     Vue.prototype.$message.success(result.message);
-                    theThis.findAppPropertieses();
+                    theThis.findAppProperties();
                 });
             },
             toShowingProfile: function (profile) {
