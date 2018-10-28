@@ -39,20 +39,25 @@
         </el-row>
 
         <el-table v-for="profileProperty in appProperty.profileProperties"
-                  :data="profileProperty.properties"
+                  :data="profileProperty.properties.length !== 0 ? profileProperty.properties : [{empty:true, propertiesSize:1, appId:appProperty.appId}]"
                   :span-method="profilePropertySpanMethod"
                   :show-header="profileProperty.profileId === profileId"
                   :key="appProperty.appId + ':' + profileProperty.profileId"
                   :default-sort="{prop: 'key'}"
                   :style="{width: appProperty.appId === appId && profileProperty.profileId === profileId ? '100%' : 'calc(100% - 90px)'}"
                   border stripe>
-            <el-table-column label="环境" width="200px">
+            <el-table-column label="环境" :resizable="false" width="200px">
                 <template slot-scope="{ row }">
                     <span>{{ toShowingProfile(profileProperty.profile) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="key" label="属性key"></el-table-column>
-            <el-table-column prop="value" label="属性值">
+            <el-table-column prop="key" label="属性key" :resizable="false" :align="profileProperty.properties.length !== 0 ? 'left' : 'center'">
+                <template slot-scope="{ row }">
+                    <span v-if="row.empty" class="el-table__empty-text">暂无数据</span>
+                    <span v-else>{{ row.key }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="value" label="属性值" :resizable="false">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <div v-if="!row.edited">
@@ -69,7 +74,7 @@
                     <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入属性值"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" width="140px">
+            <el-table-column prop="scope" label="作用域" :resizable="false" width="140px">
                 <template slot-scope="{ row }">
                     <div>
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -78,7 +83,7 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appProperty.appId === appId && profileProperty.profileId === profileId" label="操作" header-align="center" width="90px">
+            <el-table-column v-if="appProperty.appId === appId && profileProperty.profileId === profileId" label="操作" header-align="center" :resizable="false" width="90px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col style="text-align: center">
@@ -216,6 +221,17 @@
                         return [row.propertiesSize, 1];
                     } else {
                         return [0, 0];
+                    }
+                }
+                if (row.empty) {
+                    if (columnIndex !== 1) {
+                        return [0, 0];
+                    } else {
+                        if (row.appId === this.appId) {
+                            return [1, 4];
+                        } else {
+                            return [1, 3];
+                        }
                     }
                 }
             },
