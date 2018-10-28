@@ -119,10 +119,23 @@
         },
         computed: {
             edited: function () {
+                const theThis = this;
+
                 let edited = false;
-                this.appProperties[0].profileProperties[0].properties.forEach(function (property) {
-                    edited = edited || property.edited;
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId !== theThis.profileId) {
+                            return;
+                        }
+                        profileProperty.properties.forEach(function (property) {
+                            edited = edited || property.edited;
+                        });
+                    })
                 });
+
 
                 return edited;
             }
@@ -172,26 +185,46 @@
                         propertyKeys.forEach(function (propertyKey) {
                             propertyKeysMap[propertyKey.key] = propertyKey;
                         });
-                        theThis.appProperties[0].profileProperties.forEach(function (profileProperty) {
-                            profileProperty.properties.forEach(function (property) {
-                                delete propertyKeysMap[property.key];
+                        let newSize = 0;
+                        theThis.appProperties.forEach(function (appProperty) {
+                            if (appProperty.appId !== theThis.appId) {
+                                return;
+                            }
+                            appProperty.profileProperties.forEach(function (profileProperty) {
+                                if (profileProperty.profileId === theThis.profileId) {
+                                    newSize = profileProperty.properties.length;
+                                }
+                                profileProperty.properties.forEach(function (property) {
+                                    delete propertyKeysMap[property.key];
+                                });
                             });
                         });
-                        let newSize = theThis.appProperties[0].profileProperties[0].properties.length + Object.getOwnPropertyNames(propertyKeysMap).length;
-                        theThis.appProperties[0].profileProperties[0].properties.forEach(function (property) {
-                            Vue.set(property, 'propertiesSize', newSize);
+                        newSize += Object.getOwnPropertyNames(propertyKeysMap).length;
+
+                        theThis.appProperties.forEach(function (appProperty) {
+                            if (appProperty.appId !== theThis.appId) {
+                                return;
+                            }
+                            appProperty.profileProperties.forEach(function (profileProperty) {
+                                if (profileProperty.profileId !== theThis.profileId) {
+                                    return;
+                                }
+                                for (let key in propertyKeysMap) {
+                                    profileProperty.properties.push({
+                                        propertiesSize: newSize,
+                                        key: propertyKeysMap[key].key,
+                                        value: null,
+                                        scope: propertyKeysMap[key].scope,
+                                        edited: false,
+                                        editing: false,
+                                        editingValue: null
+                                    });
+                                }
+                                profileProperty.properties.forEach(function (property) {
+                                    Vue.set(property, 'propertiesSize', newSize);
+                                });
+                            })
                         });
-                        for (let key in propertyKeysMap) {
-                            theThis.appProperties[0].profileProperties[0].properties.push({
-                                propertiesSize: newSize,
-                                key: propertyKeysMap[key].key,
-                                value: null,
-                                scope: propertyKeysMap[key].scope,
-                                edited: false,
-                                editing: false,
-                                editingValue: null
-                            });
-                        }
                     });
                     theThis.appProperties.forEach(function (appProperty) {
                         Vue.set(appProperty, 'app', null);
@@ -242,6 +275,8 @@
                 });
             },
             doFindPropertyKeys: function (appId, processor) {
+                const theThis = this;
+
                 axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
                     params: {
                         appId: appId
@@ -251,7 +286,12 @@
                         Vue.prototype.$message.error(result.message);
                         return;
                     }
-                    processor(result.appPropertyKeyses[0].propertyKeys);
+                    result.appPropertyKeyses.forEach(function (appPropertyKeys) {
+                        if (appPropertyKeys.appId !== theThis.appId) {
+                            return;
+                        }
+                        processor(appPropertyKeys.propertyKeys);
+                    });
                 });
             },
             profilePropertySpanMethod: function ({row, column, rowIndex, columnIndex}) {
@@ -294,11 +334,21 @@
 
                 const theThis = this;
                 let keys = [], values = [];
-                this.appProperties[0].profileProperties[0].properties.forEach(function (property) {
-                    if (property.edited) {
-                        keys.push(property.key);
-                        values.push(property.value);
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
                     }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId !== theThis.profileId) {
+                            return;
+                        }
+                        profileProperty.properties.forEach(function (property) {
+                            if (property.edited) {
+                                keys.push(property.key);
+                                values.push(property.value);
+                            }
+                        })
+                    })
                 });
 
                 this.selfPropertiesLoading = true;
