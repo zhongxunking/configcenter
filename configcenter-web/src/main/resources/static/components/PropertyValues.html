@@ -39,12 +39,12 @@
         </el-row>
 
         <el-table v-for="profileProperty in appProperty.profileProperties"
-                  :data="profileProperty.properties.length !== 0 ? profileProperty.properties : [{empty:true, propertiesSize:1, appId:appProperty.appId}]"
+                  :data="profileProperty.properties.length !== 0 ? profileProperty.properties : [{empty:true, propertiesSize:1, appId:appProperty.appId, profileId:profileProperty.profileId}]"
                   :span-method="profilePropertySpanMethod"
                   :show-header="profileProperty.profileId === profileId"
                   :key="appProperty.appId + ':' + profileProperty.profileId"
                   :default-sort="{prop: 'key'}"
-                  :style="{width: appProperty.appId === appId && profileProperty.profileId === profileId ? '100%' : 'calc(100% - 90px)'}"
+                  :style="{width: appProperty.appId === appId ? '100%' : 'calc(100% - 90px)'}"
                   border stripe>
             <el-table-column label="环境" :resizable="false" width="200px">
                 <template slot-scope="{ row }">
@@ -83,23 +83,26 @@
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appProperty.appId === appId && profileProperty.profileId === profileId" label="操作" header-align="center" :resizable="false" width="90px">
+            <el-table-column v-if="appProperty.appId === appId" label="操作" header-align="center" align="center" :resizable="false" width="90px">
                 <template slot-scope="{ row }">
-                    <el-row>
-                        <el-col style="text-align: center">
-                            <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                    <template v-if="profileProperty.profileId === profileId">
+                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                        </el-tooltip>
+                        <el-button-group v-else>
+                            <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
                             </el-tooltip>
-                            <el-button-group v-else>
-                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
-                                </el-tooltip>
-                                <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
-                                </el-tooltip>
-                            </el-button-group>
-                        </el-col>
-                    </el-row>
+                            <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
+                            </el-tooltip>
+                        </el-button-group>
+                    </template>
+                    <template v-else-if="showOverride(row.key)">
+                        <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
+                            <el-button @click="overrideProperty(row)" icon="el-icon-upload2" size="small" circle></el-button>
+                        </el-tooltip>
+                    </template>
                 </template>
             </el-table-column>
         </el-table>
@@ -135,8 +138,6 @@
                         });
                     })
                 });
-
-
                 return edited;
             }
         },
@@ -223,7 +224,7 @@
                                 profileProperty.properties.forEach(function (property) {
                                     Vue.set(property, 'propertiesSize', newSize);
                                 });
-                            })
+                            });
                         });
                     });
                     theThis.appProperties.forEach(function (appProperty) {
@@ -294,6 +295,27 @@
                     });
                 });
             },
+            showOverride: function (key) {
+                const theThis = this;
+
+                let show = true;
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId !== theThis.profileId) {
+                            return;
+                        }
+                        profileProperty.properties.forEach(function (property) {
+                            if (property.key === key) {
+                                show = false;
+                            }
+                        });
+                    });
+                });
+                return show;
+            },
             profilePropertySpanMethod: function ({row, column, rowIndex, columnIndex}) {
                 if (columnIndex === 0) {
                     if (rowIndex === 0) {
@@ -313,6 +335,33 @@
                         }
                     }
                 }
+            },
+            overrideProperty: function (property) {
+                const theThis = this;
+
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId !== theThis.profileId) {
+                            return;
+                        }
+                        let newSize = profileProperty.properties.length + 1;
+                        profileProperty.properties.push({
+                            propertiesSize: newSize,
+                            key: property.key,
+                            value: null,
+                            scope: property.scope,
+                            edited: false,
+                            editing: true,
+                            editingValue: null
+                        });
+                        profileProperty.properties.forEach(function (property) {
+                            Vue.set(property, 'propertiesSize', newSize);
+                        });
+                    });
+                });
             },
             startEditing: function (property) {
                 property.editing = true;
