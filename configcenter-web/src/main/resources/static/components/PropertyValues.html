@@ -74,7 +74,7 @@
                     <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入属性值"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" :resizable="false" width="140px">
+            <el-table-column prop="scope" label="作用域" :resizable="false" width="100px">
                 <template slot-scope="{ row }">
                     <div>
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -167,6 +167,32 @@
                         return;
                     }
                     theThis.appProperties = result.appProperties;
+                    theThis.doFindPropertyKeys(theThis.appId, function (propertyKeys) {
+                        let propertyKeysMap = {};
+                        propertyKeys.forEach(function (propertyKey) {
+                            propertyKeysMap[propertyKey.key] = propertyKey;
+                        });
+                        theThis.appProperties[0].profileProperties.forEach(function (profileProperty) {
+                            profileProperty.properties.forEach(function (property) {
+                                delete propertyKeysMap[property.key];
+                            });
+                        });
+                        let newSize = theThis.appProperties[0].profileProperties[0].properties.length + Object.getOwnPropertyNames(propertyKeysMap).length;
+                        theThis.appProperties[0].profileProperties[0].properties.forEach(function (property) {
+                            Vue.set(property, 'propertiesSize', newSize);
+                        });
+                        for (let key in propertyKeysMap) {
+                            theThis.appProperties[0].profileProperties[0].properties.push({
+                                propertiesSize: newSize,
+                                key: propertyKeysMap[key].key,
+                                value: null,
+                                scope: propertyKeysMap[key].scope,
+                                edited: false,
+                                editing: false,
+                                editingValue: null
+                            });
+                        }
+                    });
                     theThis.appProperties.forEach(function (appProperty) {
                         Vue.set(appProperty, 'app', null);
                         theThis.doFindApp(appProperty.appId, function (app) {
@@ -213,6 +239,19 @@
                         return;
                     }
                     processProfile(result.profile);
+                });
+            },
+            doFindPropertyKeys: function (appId, processor) {
+                axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                    params: {
+                        appId: appId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    processor(result.appPropertyKeyses[0].propertyKeys);
                 });
             },
             profilePropertySpanMethod: function ({row, column, rowIndex, columnIndex}) {
