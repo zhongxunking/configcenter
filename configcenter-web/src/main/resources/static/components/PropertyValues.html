@@ -60,14 +60,14 @@
             <el-table-column prop="value" label="属性值" :resizable="false">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
-                        <div v-if="!row.edited">
-                            <el-tag v-if="row.value === null">无效</el-tag>
-                            <span v-else>{{ row.value }}</span>
+                        <div v-if="row.editedValue === row.value">
+                            <el-tag v-if="row.editedValue === null">无效</el-tag>
+                            <span v-else>{{ row.editedValue }}</span>
                         </div>
                         <div v-else style="margin-top: 10px; margin-right: 30px">
                             <el-badge value="已修改">
-                                <el-tag v-if="row.value === null">无效</el-tag>
-                                <span v-else>{{ row.value }}</span>
+                                <el-tag v-if="row.editedValue === null">无效</el-tag>
+                                <span v-else>{{ row.editedValue }}</span>
                             </el-badge>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
                         </el-tooltip>
                         <el-button-group v-else>
                             <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
+                                <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="small" circle></el-button>
                             </el-tooltip>
                             <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
                                 <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
@@ -134,7 +134,7 @@
                             return;
                         }
                         profileProperty.properties.forEach(function (property) {
-                            edited = edited || property.edited;
+                            edited = edited || property.editedValue !== property.value;
                         });
                     })
                 });
@@ -216,9 +216,9 @@
                                         key: propertyKeysMap[key].key,
                                         value: null,
                                         scope: propertyKeysMap[key].scope,
-                                        edited: false,
                                         editing: false,
-                                        editingValue: null
+                                        editingValue: null,
+                                        editedValue: null
                                     });
                                 }
                                 profileProperty.properties.forEach(function (property) {
@@ -239,11 +239,9 @@
                             });
                             profileProperty.properties.forEach(function (property) {
                                 Vue.set(property, 'propertiesSize', profileProperty.properties.length);
-                                if (appProperty.appId === theThis.appId && profileProperty.profileId === theThis.profileId) {
-                                    Vue.set(property, 'edited', false);
-                                    Vue.set(property, 'editing', false);
-                                    Vue.set(property, 'editingValue', null);
-                                }
+                                Vue.set(property, 'editing', false);
+                                Vue.set(property, 'editingValue', null);
+                                Vue.set(property, 'editedValue', property.value);
                             });
                         });
                     });
@@ -347,36 +345,96 @@
                         if (profileProperty.profileId !== theThis.profileId) {
                             return;
                         }
+                        for (let temp in profileProperty.properties) {
+                            if (temp.key === property.key) {
+                                return;
+                            }
+                        }
+
                         let newSize = profileProperty.properties.length + 1;
-                        profileProperty.properties.push({
+                        let temp = {
                             propertiesSize: newSize,
                             key: property.key,
                             value: null,
                             scope: property.scope,
-                            edited: false,
-                            editing: true,
-                            editingValue: null
-                        });
+                            editing: false,
+                            editingValue: null,
+                            editedValue: null
+                        };
+                        profileProperty.properties.push(temp);
                         profileProperty.properties.forEach(function (property) {
                             Vue.set(property, 'propertiesSize', newSize);
                         });
+                        theThis.startEditing(temp);
                     });
                 });
             },
             startEditing: function (property) {
                 property.editing = true;
-                property.editingValue = property.value;
+                property.editingValue = property.editedValue;
+            },
+            cancelEditing: function (property) {
+                property.editing = false;
+                property.editingValue = null;
+
+                this.removeIfNecessary(property);
             },
             saveEditing: function (property) {
-                property.edited = true;
                 property.editing = false;
-                property.value = property.editingValue;
-                if (property.value !== null) {
-                    property.value = property.value.trim();
+                property.editedValue = property.editingValue;
+                if (property.editedValue !== null) {
+                    property.editedValue = property.editedValue.trim();
                 }
-                if (!property.value) {
-                    property.value = null;
+                if (!property.editedValue) {
+                    property.editedValue = null;
                 }
+                property.editingValue = null;
+
+                if (this.removeIfNecessary(property)) {
+                    Vue.prototype.$message.error("无效的覆盖");
+                }
+            },
+            removeIfNecessary: function (property) {
+                if (property.value !== null || property.editedValue !== null) {
+                    return false;
+                }
+
+                const theThis = this;
+
+                let remove = false;
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (remove || profileProperty.profileId === theThis.profileId) {
+                            return;
+                        }
+                        profileProperty.properties.forEach(function (tempProperty) {
+                            remove = remove || tempProperty.key === property.key;
+                        });
+                    });
+                });
+                if (!remove) {
+                    return false;
+                }
+                this.appProperties.forEach(function (appProperty) {
+                    if (appProperty.appId !== theThis.appId) {
+                        return;
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId !== theThis.profileId) {
+                            return;
+                        }
+                        for (let i = 0; i < profileProperty.properties.length; i++) {
+                            if (profileProperty.properties[i].key === property.key) {
+                                profileProperty.properties.splice(i, 1);
+                                break;
+                            }
+                        }
+                    });
+                });
+                return true;
             },
             submitEdited: function () {
                 this.submitPopoverShowing = false;
@@ -392,9 +450,9 @@
                             return;
                         }
                         profileProperty.properties.forEach(function (property) {
-                            if (property.edited) {
+                            if (property.editedValue !== property.value) {
                                 keys.push(property.key);
-                                values.push(property.value);
+                                values.push(property.editedValue);
                             }
                         })
                     })
