@@ -96,20 +96,20 @@ public class PropertyKeyManageController {
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            result.addAppPropertyKeys(getAppPropertyKeys(app.getAppId(), appId));
+            result.addAppPropertyKey(getAppPropertyKey(app.getAppId(), appId));
         }
 
         return result;
     }
 
     // 获取应用的属性key
-    private FindInheritedPropertyKeysResult.AppPropertyKeys getAppPropertyKeys(String appId, String mainAppId) {
+    private FindInheritedPropertyKeysResult.AppPropertyKey getAppPropertyKey(String appId, String mainAppId) {
         Scope minScope = Scope.PRIVATE;
         if (!StringUtils.equals(appId, mainAppId)) {
             minScope = Scope.PROTECTED;
         }
 
-        return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
+        return new FindInheritedPropertyKeysResult.AppPropertyKey(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
     }
 
     /**
@@ -117,26 +117,26 @@ public class PropertyKeyManageController {
      */
     public static class FindInheritedPropertyKeysResult extends AbstractResult {
         // 由近及远继承的所用应用的属性key
-        private List<AppPropertyKeys> appPropertyKeyses = new ArrayList<>();
+        private List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
 
-        public void addAppPropertyKeys(AppPropertyKeys appPropertyKeys) {
-            appPropertyKeyses.add(appPropertyKeys);
+        public void addAppPropertyKey(AppPropertyKey appPropertyKey) {
+            appPropertyKeys.add(appPropertyKey);
         }
 
-        public List<AppPropertyKeys> getAppPropertyKeyses() {
-            return appPropertyKeyses;
+        public List<AppPropertyKey> getAppPropertyKeys() {
+            return appPropertyKeys;
         }
 
         /**
-         * 应用属性key
+         * 应用的属性key
          */
-        public static class AppPropertyKeys implements Serializable {
+        public static class AppPropertyKey implements Serializable {
             // 应用id
             private String appId;
             // 属性key
             private List<PropertyKeyInfo> propertyKeys;
 
-            public AppPropertyKeys(String appId, List<PropertyKeyInfo> propertyKeys) {
+            public AppPropertyKey(String appId, List<PropertyKeyInfo> propertyKeys) {
                 this.appId = appId;
                 this.propertyKeys = propertyKeys;
             }

@@ -298,11 +298,11 @@ const PropertyValues = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                result.appPropertyKeyses.forEach(function (appPropertyKeys) {
-                    if (appPropertyKeys.appId !== theThis.appId) {
+                result.appPropertyKeys.forEach(function (appPropertyKey) {
+                    if (appPropertyKey.appId !== theThis.appId) {
                         return;
                     }
-                    processor(appPropertyKeys.propertyKeys);
+                    processor(appPropertyKey.propertyKeys);
                 });
             });
         },

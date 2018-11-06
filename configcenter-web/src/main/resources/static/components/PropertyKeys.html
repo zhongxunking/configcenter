@@ -10,20 +10,20 @@
     <el-row style="margin-bottom: 10px">
         <el-col>
             <span style="font-size: large;">环境：</span>
-            <el-button v-for="(profile, index) in allProfiles" v-if="index < 6" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
-            <el-button v-if="allProfiles.length > 6" type="text" icon="el-icon-more" style="margin-right: 5px"></el-button>
-            <!--<router-link v-for="(profile, index) in allProfiles" v-if="index < 6" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
+            <el-button v-for="(profile, index) in allProfiles" v-if="index < 8" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
+            <el-button v-if="allProfiles.length > 8" type="text" icon="el-icon-more" style="margin-right: 5px"></el-button>
+            <!--<router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">-->
             <!--<el-button type="text">{{ profile.profileId }}</el-button>-->
             <!--</router-link>-->
-            <!--<router-link v-if="allProfiles.length > 6" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
+            <!--<router-link v-if="allProfiles.length > 8" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
             <!--<el-button type="text" icon="el-icon-more"></el-button>-->
             <!--</router-link>-->
         </el-col>
     </el-row>
-    <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
-        <el-row v-if="appPropertyKeys.appId === appId" style="margin-bottom: 10px">
+    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 50px">
+        <el-row v-if="appPropertyKey.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
-                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
             <el-col :span="4" style="text-align: end;">
                 <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
@@ -31,10 +31,10 @@
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center">
-                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeys.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 160px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -56,7 +56,7 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKeys.appId === appId" label="操作" header-align="center" width="160px">
+            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="160px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col :span="12" style="text-align: center">
@@ -117,10 +117,10 @@
     const propertyKeysApp = new Vue({
         el: '#propertyKeysApp',
         data: {
-            appId: 'scbfund',
+            appId: 'customer',
             allProfiles: [],
             selfPropertyKeysLoading: false,
-            appPropertyKeyses: [],
+            appPropertyKeys: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
                 key: null,
@@ -130,21 +130,35 @@
         },
         created: function () {
             this.findAllProfiles();
-            this.findAppPropertyKeyses();
+            this.findAppPropertyKeys();
         },
         methods: {
             findAllProfiles: function () {
                 const theThis = this;
-                axios.get('../manage/profile/findAllProfiles')
-                    .then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
+                axios.get('../manage/profile/findProfileTree', {
+                    params: {
+                        profileId: null
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    let extractProfiles = function (profileTree, level) {
+                        let profiles = [];
+                        if (profileTree.profile !== null) {
+                            profileTree.profile.level = level;
+                            profiles.push(profileTree.profile);
                         }
-                        theThis.allProfiles = result.profiles;
-                    });
+                        profileTree.children.forEach(function (child) {
+                            profiles = profiles.concat(extractProfiles(child, level + 1));
+                        });
+                        return profiles;
+                    };
+                    theThis.allProfiles = extractProfiles(result.profileTree, -1);
+                });
             },
-            findAppPropertyKeyses: function () {
+            findAppPropertyKeys: function () {
                 const theThis = this;
                 this.selfPropertyKeysLoading = true;
                 axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
@@ -157,25 +171,25 @@
                         Vue.prototype.$message.error(result.message);
                         return;
                     }
-                    theThis.appPropertyKeyses = result.appPropertyKeyses;
-                    theThis.appPropertyKeyses.forEach(function (appPropertyKeys) {
-                        appPropertyKeys.propertyKeys.forEach(function (propertyKey) {
+                    theThis.appPropertyKeys = result.appPropertyKeys;
+                    theThis.appPropertyKeys.forEach(function (appPropertyKey) {
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
                             Vue.set(propertyKey, 'editing', false);
                             Vue.set(propertyKey, 'editingScope', null);
                             Vue.set(propertyKey, 'editingMemo', null);
                             Vue.set(propertyKey, 'savePopoverShowing', false);
                         });
-                        Vue.set(appPropertyKeys, 'app', null);
+                        Vue.set(appPropertyKey, 'app', null);
                         axios.get('../manage/app/findApp', {
                             params: {
-                                appId: appPropertyKeys.appId
+                                appId: appPropertyKey.appId
                             }
                         }).then(function (result) {
                             if (!result.success) {
                                 Vue.prototype.$message.error(result.message);
                                 return;
                             }
-                            appPropertyKeys.app = result.app;
+                            appPropertyKey.app = result.app;
                         });
                     });
                 });
@@ -212,7 +226,7 @@
                                 return;
                             }
                             Vue.prototype.$message.success(result.message);
-                            theThis.findAppPropertyKeyses();
+                            theThis.findAppPropertyKeys();
                         });
                     });
             },
@@ -225,7 +239,7 @@
                     const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
                     theThis.doAddOrModifyPropertyKey(params, function () {
                         theThis.closeAddPropertyKeyDialog();
-                        theThis.findAppPropertyKeyses();
+                        theThis.findAppPropertyKeys();
                     });
                 })
             },
