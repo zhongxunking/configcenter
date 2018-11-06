@@ -45,7 +45,7 @@ public class PropertyValueManageController {
      * @param keys      一个或多个key（必须，json格式）
      * @param values    与keys一一对应的values（必须，json格式）
      */
-    @RequestMapping("/setPropertyValue")
+    @RequestMapping("/setPropertyValues")
     public EmptyResult setPropertyValues(String appId, String profileId, String keys, String values) {
         ManagerAssert.adminOrHaveRelation(appId);
 

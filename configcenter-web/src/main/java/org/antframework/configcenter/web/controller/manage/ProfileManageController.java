@@ -77,7 +77,7 @@ public class ProfileManageController {
      *
      * @param profileId 环境id（必填）
      */
-    @RequestMapping("findInheritedProfiles")
+    @RequestMapping("/findInheritedProfiles")
     public FindInheritedProfilesResult findInheritedProfiles(String profileId) {
         FindInheritedProfilesOrder order = new FindInheritedProfilesOrder();
         order.setProfileId(profileId);
@@ -91,7 +91,7 @@ public class ProfileManageController {
      * @param profileId 根节点环境id（不填表示查找所有环境）
      */
     @RequestMapping("/findProfileTree")
-    FindProfileTreeResult findProfileTree(String profileId) {
+    public FindProfileTreeResult findProfileTree(String profileId) {
         FindProfileTreeOrder order = new FindProfileTreeOrder();
         order.setProfileId(profileId);
 
