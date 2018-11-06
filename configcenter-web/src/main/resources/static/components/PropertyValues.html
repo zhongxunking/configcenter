@@ -11,7 +11,10 @@
         <el-col>
             <span style="font-size: large;color: #409EFF;">环境：</span>
             <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
-                <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId"></el-option>
+                <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId">
+                    <span v-for="i in profile.level">-</span>
+                    <span>{{ toShowingProfile(profile) }}</span>
+                </el-option>
             </el-select>
         </el-col>
     </el-row>
@@ -154,14 +157,28 @@
         methods: {
             findAllProfiles: function () {
                 const theThis = this;
-                axios.get('../manage/profile/findAllProfiles')
-                    .then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
+                axios.get('../manage/profile/findProfileTree', {
+                    params: {
+                        profileId: null
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    let extractProfiles = function (profileTree, level) {
+                        let profiles = [];
+                        if (profileTree.profile !== null) {
+                            profileTree.profile.level = level;
+                            profiles.push(profileTree.profile);
                         }
-                        theThis.allProfiles = result.profiles;
-                    });
+                        profileTree.children.forEach(function (child) {
+                            profiles = profiles.concat(extractProfiles(child, level + 1));
+                        });
+                        return profiles;
+                    };
+                    theThis.allProfiles = extractProfiles(result.profileTree, -1);
+                });
             },
             switchProfile: function (profileId) {
                 this.$router.replace('/configs/' + this.appId + '/' + profileId);
@@ -459,7 +476,7 @@
                 });
 
                 this.selfPropertiesLoading = true;
-                axios.post('../manage/propertyValue/setPropertyValue', {
+                axios.post('../manage/propertyValue/setPropertyValues', {
                     appId: this.appId,
                     profileId: this.profileId,
                     keys: JSON.stringify(keys),
