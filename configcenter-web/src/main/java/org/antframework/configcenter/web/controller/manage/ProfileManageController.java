@@ -8,11 +8,13 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.*;
+import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
+import org.antframework.configcenter.facade.result.FindProfileTreeResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.manager.web.common.ManagerAssert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -96,15 +98,6 @@ public class ProfileManageController {
         order.setProfileId(profileId);
 
         return profileService.findProfileTree(order);
-    }
-
-    /**
-     * 查找所有环境
-     */
-    @RequestMapping("/findAllProfiles")
-    public FindAllProfilesResult findAllProfiles() {
-        ManagerAssert.currentManager();
-        return profileService.findAllProfiles(new EmptyOrder());
     }
 
     /**

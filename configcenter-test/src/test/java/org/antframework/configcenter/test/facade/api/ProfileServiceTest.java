@@ -8,12 +8,14 @@
  */
 package org.antframework.configcenter.test.facade.api;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.*;
+import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
+import org.antframework.configcenter.facade.result.FindProfileTreeResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -110,12 +112,6 @@ public class ProfileServiceTest extends AbstractTest {
         order.setProfileId(null);
 
         FindProfileTreeResult result = profileService.findProfileTree(order);
-        checkResult(result, Status.SUCCESS);
-    }
-
-    @Test
-    public void testFindAllProfiles() {
-        FindAllProfilesResult result = profileService.findAllProfiles(new EmptyOrder());
         checkResult(result, Status.SUCCESS);
     }
 

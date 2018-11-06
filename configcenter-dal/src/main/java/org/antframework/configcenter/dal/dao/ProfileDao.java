@@ -38,7 +38,5 @@ public interface ProfileDao {
 
     List<Profile> findByParent(String parent);
 
-    List<Profile> findAll();
-
     Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

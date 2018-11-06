@@ -9,13 +9,15 @@
 package org.antframework.configcenter.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueries;
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.*;
+import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
+import org.antframework.configcenter.facade.result.FindProfileTreeResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,11 +53,6 @@ public class ProfileServiceProvider implements ProfileService {
     @Override
     public FindProfileTreeResult findProfileTree(FindProfileTreeOrder order) {
         return serviceEngine.execute("findProfileTreeService", order);
-    }
-
-    @Override
-    public FindAllProfilesResult findAllProfiles(EmptyOrder order) {
-        return serviceEngine.execute("findAllProfilesService", order);
     }
 
     @Override
