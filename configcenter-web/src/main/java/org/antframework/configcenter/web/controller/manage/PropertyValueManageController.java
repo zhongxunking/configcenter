@@ -18,7 +18,7 @@ import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.configcenter.web.common.ManagerApps;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +47,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/setPropertyValues")
     public EmptyResult setPropertyValues(String appId, String profileId, String keys, String values) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
 
         List<String> parsedKeys = JSON.parseArray(keys, String.class);
         List<String> parsedValues = JSON.parseArray(values, String.class);
@@ -79,7 +79,7 @@ public class PropertyValueManageController {
      */
     @RequestMapping("/findInheritedProperties")
     public FindInheritedPropertiesResult findInheritedProperties(String appId, String profileId) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedPropertiesResult result = new FindInheritedPropertiesResult();
         result.setStatus(Status.SUCCESS);

@@ -11,7 +11,8 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
-import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,9 +35,9 @@ public class RefreshController {
     @RequestMapping("/refreshClients")
     public EmptyResult refreshClients(String rootAppId, String rootProfileId) {
         if (rootAppId == null) {
-            ManagerAssert.admin();
+            Managers.admin();
         } else {
-            ManagerAssert.adminOrHaveRelation(rootAppId);
+            ManagerApps.adminOrHaveApp(rootAppId);
         }
         RefreshClientsOrder order = new RefreshClientsOrder();
         order.setRootAppId(rootAppId);

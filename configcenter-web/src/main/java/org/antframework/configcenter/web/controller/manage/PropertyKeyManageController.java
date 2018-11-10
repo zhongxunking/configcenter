@@ -21,7 +21,7 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.configcenter.web.common.ManagerApps;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -50,7 +50,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -71,7 +71,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -89,7 +89,7 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/findInheritedPropertyKeys")
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedPropertyKeysResult result = new FindInheritedPropertyKeysResult();
         result.setStatus(Status.SUCCESS);
