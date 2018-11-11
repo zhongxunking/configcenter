@@ -5,6 +5,7 @@
     <title>配置中心</title>
     <script src="../common/import.js"></script>
     <script src="../components/Configs.js"></script>
+    <script src="../components/ManagerApps.js"></script>
     <script src="../components/PropertyKeys.js"></script>
     <script src="../components/PropertyValues.js"></script>
     <script src="../components/Apps.js"></script>
@@ -14,12 +15,10 @@
 <div id="mainApp">
     <manager-main :title-html="titleHtml"
                   :routes="routes"
-                  :target-name="targetName"
-                  :find-target="findTarget"
-                  :query-matched-targets="queryMatchedTargets"></manager-main>
+                  :manager="manager"></manager-main>
 </div>
 <script>
-    // 普通管理员全权限
+    // 普通管理员权限
     const NORMAL_MANAGER_ROUTES = [{
         path: '/configs',
         component: {
@@ -71,90 +70,30 @@
             title: '环境',
             icon: 'configcenter-iconfont configcenter-icon-cloud'
         }
+    }, GET_MANAGER_MANAGERS_ROUTE(), {
+        path: '/managerApps',
+        component: ManagerApps,
+        meta: {
+            title: '权限',
+            icon: 'el-icon-view'
+        }
     });
-    // 查找目标对象
-    const FIND_TARGET = function (targetId, successCallback) {
-        axios.get('../manage/app/findApp', {
-            params: {
-                appId: targetId
-            }
-        }).then(function (result) {
-            if (!result.success) {
-                Vue.prototype.$message.error(result.message);
-                return;
-            }
-            successCallback(TO_TARGET(result.app));
-        });
-    };
-    // 查找匹配的目标对象
-    const QUERY_MATCHED_TARGETS = function (targetId, successCallback) {
-        axios.get('../manage/app/queryApps', {
-            params: {
-                pageNo: 1,
-                pageSize: 100,
-                appId: targetId
-            }
-        }).then(function (result) {
-            if (!result.success) {
-                Vue.prototype.$message.error(result.message);
-                return;
-            }
-            let targets = [];
-            result.infos.forEach(function (app) {
-                targets.push(TO_TARGET(app));
-            });
-            successCallback(targets);
-        });
-    };
-    // 将应用转换为目标对象
-    const TO_TARGET = function (app) {
-        if (!app) {
-            return {};
-        }
-
-        let label = app.appId;
-        if (app.appName) {
-            label += '（' + app.appName + '）';
-        }
-        return {
-            id: app.appId,
-            label: label
-        };
-    };
 
     // 主页面应用
     let mainApp;
-    // 查找当权管理员
-    axios.get('../manager/main/current')
-        .then(function (result) {
-            if (!result.success) {
-                Vue.prototype.$message.error(result.message);
-                return;
-            }
-            if (result.manager === null) {
-                // 未登录，则跳转到登录页面
-                Vue.prototype.$alert('未登录或登录已超时，请进行登录', '警告', {
-                    callback: function () {
-                        window.location.href = MANAGER_LOGIN_PATH;
-                    }
-                });
-                return;
-            }
-
-            mainApp = new Vue({
-                el: '#mainApp',
-                data: {
-                    titleHtml: `
-                        <i class="configcenter-iconfont configcenter-icon-deploymentunit" style="font-size: xx-large;color: #1cf0b2"></i>
-                        <span style="font-size: xx-large;color: #fff;">配置中心</span>
+    GET_CURRENT_MANAGER(function (manager) {
+        mainApp = new Vue({
+            el: '#mainApp',
+            data: {
+                titleHtml: `
+                        <i class="configcenter-iconfont configcenter-icon-deploymentunit" style="font-size: x-large;color: #1cf0b2"></i>
+                        <span style="font-size: x-large;color: #fff;">配置中心</span>
                     `,
-                    routes: result.manager.type === 'NORMAL' ? NORMAL_MANAGER_ROUTES : ADMIN_MANAGER_ROUTES,
-                    targetName: '应用',
-                    findTarget: FIND_TARGET,
-                    queryMatchedTargets: QUERY_MATCHED_TARGETS
-                }
-            });
+                routes: manager.type === 'NORMAL' ? NORMAL_MANAGER_ROUTES : ADMIN_MANAGER_ROUTES,
+                manager: manager
+            }
         });
+    });
 </script>
 </body>
 </html>
