@@ -81,7 +81,7 @@ public class AppManageController {
      */
     @RequestMapping("/findApp")
     public FindAppResult findApp(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
+        Managers.currentManager();
         FindAppOrder order = new FindAppOrder();
         order.setAppId(appId);
 
