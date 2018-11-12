@@ -21,7 +21,9 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
+import org.antframework.configcenter.web.common.KeySecurityLevels;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.SecurityLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,7 +31,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 属性key管理controller
@@ -85,7 +89,7 @@ public class PropertyKeyManageController {
     /**
      * 查找应用继承的属性key（包含应用自己）
      *
-     * @param appId 应用id
+     * @param appId 应用id（必须）
      */
     @RequestMapping("/findInheritedPropertyKeys")
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
@@ -110,6 +114,27 @@ public class PropertyKeyManageController {
         }
 
         return new FindInheritedPropertyKeysResult.AppPropertyKey(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
+    }
+
+    /**
+     * 查找指定应用所有的配置key的安全等级
+     *
+     * @param appId 应用id（必须）
+     * @return 配置key的安全等级
+     */
+    @RequestMapping("/findKeySecurityLevels")
+    public FindKeySecurityLevelsResult findKeySecurityLevels(String appId) {
+        FindKeySecurityLevelsResult result = new FindKeySecurityLevelsResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+
+        Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
+        for (String key : keyLevels.keySet()) {
+            result.setKeyLevel(key, keyLevels.get(key));
+        }
+
+        return result;
     }
 
     /**
@@ -148,6 +173,22 @@ public class PropertyKeyManageController {
             public List<PropertyKeyInfo> getPropertyKeys() {
                 return propertyKeys;
             }
+        }
+    }
+
+    /**
+     * 查找指定应用所有的配置key的安全等级result
+     */
+    public static class FindKeySecurityLevelsResult extends AbstractResult {
+        // key对应的安全等级
+        private Map<String, SecurityLevel> keyLevels = new HashMap<>();
+
+        public Map<String, SecurityLevel> getKeyLevels() {
+            return keyLevels;
+        }
+
+        public void setKeyLevel(String key, SecurityLevel level) {
+            keyLevels.put(key, level);
         }
     }
 }

@@ -22,7 +22,7 @@ import org.springframework.beans.BeanUtils;
 /**
  * 管理员与应用关系的工具类
  */
-public class ManagerApps {
+public final class ManagerApps {
     // 关系类型
     private static final String RELATION_TYPE = "manager-app";
     // 关系服务

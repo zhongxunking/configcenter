@@ -17,8 +17,13 @@ import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
+import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
+import org.antframework.configcenter.web.common.KeySecurityLevels;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.SecurityLevel;
+import org.antframework.manager.facade.enums.ManagerType;
+import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -26,6 +31,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -34,6 +40,8 @@ import java.util.Objects;
 @RestController
 @RequestMapping("/manage/propertyValue")
 public class PropertyValueManageController {
+    // 掩码后的配置value
+    private static final String MASKED_VALUE = "";
     @Autowired
     private PropertyValueService propertyValueService;
 
@@ -53,6 +61,17 @@ public class PropertyValueManageController {
         List<String> parsedValues = JSON.parseArray(values, String.class);
         if (parsedKeys.size() != parsedValues.size()) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
+        }
+        if (Managers.currentManager().getType() != ManagerType.ADMIN) {
+            // 通过安全等级校验权限
+            Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
+            for (String key : parsedKeys) {
+                SecurityLevel level = keyLevels.get(key);
+                if (level == SecurityLevel.UNREADABLE_UNWRITEABLE
+                        || level == SecurityLevel.READABLE_UNWRITEABLE) {
+                    throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
+                }
+            }
         }
 
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
@@ -90,9 +109,30 @@ public class PropertyValueManageController {
             // 获取应用的配置
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             List<ProfileProperty> profileProperties = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, minScope);
+            if (Managers.currentManager().getType() != ManagerType.ADMIN) {
+                // 掩码不允许读的配置
+                maskUnreadableProperty(profileProperties, app.getAppId());
+            }
             result.addAppProperty(new FindInheritedPropertiesResult.AppProperty(app.getAppId(), profileProperties));
         }
         return result;
+    }
+
+    // 掩码不允许读的配置
+    private static void maskUnreadableProperty(List<ProfileProperty> profileProperties, String appId) {
+        Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
+        for (ProfileProperty profileProperty : profileProperties) {
+            List<Property> temp = new ArrayList<>();
+            for (Property property : profileProperty.getProperties()) {
+                SecurityLevel level = keyLevels.get(property.getKey());
+                if (level == SecurityLevel.UNREADABLE_UNWRITEABLE) {
+                    property = new Property(property.getKey(), MASKED_VALUE, property.getScope());
+                }
+                temp.add(property);
+            }
+            profileProperty.getProperties().clear();
+            profileProperty.getProperties().addAll(temp);
+        }
     }
 
     /**
