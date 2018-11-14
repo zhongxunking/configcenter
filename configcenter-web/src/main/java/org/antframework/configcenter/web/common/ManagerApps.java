@@ -40,7 +40,7 @@ public final class ManagerApps {
             ManagerInfo manager = Managers.currentManager();
             RelationInfo relation = Relations.findRelation(RELATION_TYPE, manager.getManagerId(), appId);
             if (relation == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), CommonResultCode.UNAUTHORIZED.getMessage());
+                throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), CommonResultCode.ILLEGAL_STATE.getMessage());
             }
         }
     }

@@ -11,6 +11,11 @@ package org.antframework.configcenter.web.common;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.PropertyKeyInfo;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.Managers;
 import org.antframework.manager.web.Relations;
@@ -18,6 +23,7 @@ import org.antframework.manager.web.Relations;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 配置key的可操作范围工具类
@@ -37,10 +43,26 @@ public final class KeyOperationScopes {
             Managers.admin();
         } catch (BizException e) {
             Managers.currentManager();
-            Map<String, OperationScope> scopeMap = findKeyOperationScopes(appId);
-            OperationScope scope = scopeMap.getOrDefault(key, OperationScope.READ_WRITE);
-            if (scope != OperationScope.READ_WRITE) {
-                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), CommonResultCode.UNAUTHORIZED.getMessage());
+            // 根据应用继承关系，一级一级判断是否拥有权限
+            for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+                Map<String, OperationScope> scopeMap = findKeyOperationScopes(app.getAppId());
+
+                Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
+                List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope);
+                for (PropertyKeyInfo propertyKey : propertyKeys) {
+                    if (!Objects.equals(propertyKey.getKey(), key)) {
+                        continue;
+                    }
+                    OperationScope scope = scopeMap.getOrDefault(key, OperationScope.READ_WRITE);
+                    if (scope == OperationScope.READ_WRITE) {
+                        return;
+                    } else {
+                        throw new BizException(Status.FAIL,
+                                CommonResultCode.ILLEGAL_STATE.getCode(),
+                                String.format("无法新建或修改配置key[%s]，因为应用[%s]指定该key为敏感配置。" +
+                                        "如果确定需要添加或修改该key，请让超级管理员进行添加", key, app.getAppId()));
+                    }
+                }
             }
         }
     }

@@ -68,7 +68,7 @@ public class PropertyValueManageController {
             for (String key : parsedKeys) {
                 OperationScope operationScope = scopeMap.getOrDefault(key, OperationScope.READ_WRITE);
                 if (operationScope != OperationScope.READ_WRITE) {
-                    throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
+                    throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
                 }
             }
         }
