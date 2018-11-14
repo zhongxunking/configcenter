@@ -21,9 +21,9 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyOperationScope;
 import org.antframework.configcenter.web.common.KeyOperationScopes;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.OperationScope;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,6 +54,7 @@ public class PropertyKeyManageController {
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
         ManagerApps.adminOrHaveApp(appId);
+        KeyOperationScopes.adminOrReadWrite(appId, key);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -75,11 +76,15 @@ public class PropertyKeyManageController {
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
         ManagerApps.adminOrHaveApp(appId);
+        KeyOperationScopes.adminOrReadWrite(appId, key);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
+        if (result.isSuccess()) {
+            KeyOperationScopes.deleteKeyOperationScope(appId, key);
+        }
         // 刷新客户端
         RefreshUtils.refreshClients(appId, null);
         return result;
@@ -128,7 +133,7 @@ public class PropertyKeyManageController {
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
 
-        Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+        Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
         result.setScopeMap(scopeMap);
 
         return result;
@@ -178,13 +183,13 @@ public class PropertyKeyManageController {
      */
     public static class FindKeySecurityLevelsResult extends AbstractResult {
         // key对应的可操作范围
-        private Map<String, KeyOperationScope> scopeMap;
+        private Map<String, OperationScope> scopeMap;
 
-        public Map<String, KeyOperationScope> getScopeMap() {
+        public Map<String, OperationScope> getScopeMap() {
             return scopeMap;
         }
 
-        public void setScopeMap(Map<String, KeyOperationScope> scopeMap) {
+        public void setScopeMap(Map<String, OperationScope> scopeMap) {
             this.scopeMap = scopeMap;
         }
     }

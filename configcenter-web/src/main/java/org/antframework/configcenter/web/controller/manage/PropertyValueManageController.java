@@ -19,9 +19,9 @@ import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyOperationScope;
 import org.antframework.configcenter.web.common.KeyOperationScopes;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.OperationScope;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,10 +64,10 @@ public class PropertyValueManageController {
         }
         if (Managers.currentManager().getType() != ManagerType.ADMIN) {
             // 通过可操作范围校验权限
-            Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+            Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
             for (String key : parsedKeys) {
-                KeyOperationScope operationScope = scopeMap.get(key);
-                if (operationScope == KeyOperationScope.READ || operationScope == KeyOperationScope.NONE) {
+                OperationScope operationScope = scopeMap.getOrDefault(key, OperationScope.READ_WRITE);
+                if (operationScope != OperationScope.READ_WRITE) {
                     throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
                 }
             }
@@ -119,12 +119,12 @@ public class PropertyValueManageController {
 
     // 掩码不允许读的配置
     private static void maskUnreadableProperty(List<ProfileProperty> profileProperties, String appId) {
-        Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+        Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
         for (ProfileProperty profileProperty : profileProperties) {
             List<Property> temp = new ArrayList<>();
             for (Property property : profileProperty.getProperties()) {
-                KeyOperationScope operationScope = scopeMap.get(property.getKey());
-                if (operationScope == KeyOperationScope.NONE) {
+                OperationScope operationScope = scopeMap.get(property.getKey());
+                if (operationScope == OperationScope.NONE) {
                     property = new Property(property.getKey(), MASKED_VALUE, property.getScope());
                 }
                 temp.add(property);

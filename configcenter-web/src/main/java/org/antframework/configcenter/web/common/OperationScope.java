@@ -9,9 +9,9 @@
 package org.antframework.configcenter.web.common;
 
 /**
- * 配置key的可操作范围
+ * 操作范围
  */
-public enum KeyOperationScope {
+public enum OperationScope {
     /**
      * 读写
      */
