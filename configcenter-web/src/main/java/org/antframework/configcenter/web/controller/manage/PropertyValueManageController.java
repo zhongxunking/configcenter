@@ -67,8 +67,7 @@ public class PropertyValueManageController {
             Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
             for (String key : parsedKeys) {
                 SecurityLevel level = keyLevels.get(key);
-                if (level == SecurityLevel.UNREADABLE_UNWRITEABLE
-                        || level == SecurityLevel.READABLE_UNWRITEABLE) {
+                if (level == SecurityLevel.READ || level == SecurityLevel.NONE) {
                     throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
                 }
             }
@@ -125,7 +124,7 @@ public class PropertyValueManageController {
             List<Property> temp = new ArrayList<>();
             for (Property property : profileProperty.getProperties()) {
                 SecurityLevel level = keyLevels.get(property.getKey());
-                if (level == SecurityLevel.UNREADABLE_UNWRITEABLE) {
+                if (level == SecurityLevel.NONE) {
                     property = new Property(property.getKey(), MASKED_VALUE, property.getScope());
                 }
                 temp.add(property);

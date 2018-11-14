@@ -15,13 +15,13 @@ public enum SecurityLevel {
     /**
      * 能读也能写
      */
-    READABLE_WRITEABLE,
+    READ_WRITE,
     /**
      * 能读但不能写
      */
-    READABLE_UNWRITEABLE,
+    READ,
     /**
      * 不能读也不能写
      */
-    UNREADABLE_UNWRITEABLE
+    NONE
 }

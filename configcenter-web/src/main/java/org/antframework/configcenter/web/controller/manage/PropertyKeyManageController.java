@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -130,9 +129,7 @@ public class PropertyKeyManageController {
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
 
         Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
-        for (String key : keyLevels.keySet()) {
-            result.setKeyLevel(key, keyLevels.get(key));
-        }
+        result.setKeyLevels(keyLevels);
 
         return result;
     }
@@ -181,14 +178,14 @@ public class PropertyKeyManageController {
      */
     public static class FindKeySecurityLevelsResult extends AbstractResult {
         // key对应的安全等级
-        private Map<String, SecurityLevel> keyLevels = new HashMap<>();
+        private Map<String, SecurityLevel> keyLevels;
 
         public Map<String, SecurityLevel> getKeyLevels() {
             return keyLevels;
         }
 
-        public void setKeyLevel(String key, SecurityLevel level) {
-            keyLevels.put(key, level);
+        public void setKeyLevels(Map<String, SecurityLevel> keyLevels) {
+            this.keyLevels = keyLevels;
         }
     }
 }
