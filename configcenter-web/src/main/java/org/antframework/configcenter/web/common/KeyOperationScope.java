@@ -4,24 +4,24 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2018-11-11 23:26 创建
+ * @author 钟勋 2018-11-14 21:54 创建
  */
 package org.antframework.configcenter.web.common;
 
 /**
- * 安全等级
+ * 配置key的可操作范围
  */
-public enum SecurityLevel {
+public enum KeyOperationScope {
     /**
-     * 能读也能写
+     * 读写
      */
     READ_WRITE,
     /**
-     * 能读但不能写
+     * 只读
      */
     READ,
     /**
-     * 不能读也不能写
+     * 无
      */
     NONE
 }

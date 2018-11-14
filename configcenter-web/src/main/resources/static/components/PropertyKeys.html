@@ -34,7 +34,7 @@
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 160px)'}">
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -42,7 +42,7 @@
                     <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入备注"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" sortable width="160px">
+            <el-table-column prop="scope" label="作用域" sortable width="120px">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -56,26 +56,26 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="securityLevel" label="安全级别" sortable width="160px">
+            <el-table-column prop="operationScope" label="可操作范围" sortable width="120px">
                 <template slot-scope="{ row }">
-                    <div v-if="!row.editing">
-                        <el-tag v-if="row.securityLevel === 'READ_WRITE'">读写</el-tag>
-                        <el-tag v-else-if="row.securityLevel === 'READ'" type="success">只读</el-tag>
-                        <el-tag v-else-if="row.securityLevel === 'NONE'" type="warning">无</el-tag>
+                    <div v-if="!row.editing || manager.type !== 'ADMIN'">
+                        <el-tag v-if="row.operationScope === 'READ_WRITE'" type="success">读写</el-tag>
+                        <el-tag v-else-if="row.operationScope === 'READ'" type="warning">只读</el-tag>
+                        <el-tag v-else-if="row.operationScope === 'NONE'" type="danger">无</el-tag>
                     </div>
-                    <el-select v-else v-model="row.editingSecurityLevel" size="small" placeholder="请选择安全级别" style="width: 90%">
+                    <el-select v-else v-model="row.editingOperationScope" size="small" placeholder="请范围" style="width: 90%">
                         <el-option value="READ_WRITE" label="读写"></el-option>
                         <el-option value="READ" label="只读"></el-option>
                         <el-option value="NONE" label="无"></el-option>
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="160px">
+            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="16" style="text-align: center">
                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type==='NORMAL' && row.operationScope!=='READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
                             </el-tooltip>
                             <template v-else>
                                 <el-button-group>
@@ -95,9 +95,9 @@
                                 </el-button-group>
                             </template>
                         </el-col>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deletePropertyKey(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                                <el-button @click="deletePropertyKey(row)" type="danger" :disabled="manager.type==='NORMAL' && row.operationScope!=='READ_WRITE'" icon="el-icon-delete" size="small" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>
@@ -128,232 +128,235 @@
     </el-dialog>
 </div>
 <script>
-    const RELATION_TYPE_APP_KEY_SECURITY_LEVEL = 'app-key-securityLevel';
+    const RELATION_TYPE_APP_KEY_OPERATION_SCOPE = 'app-key-operationScope';
 
-    const SECURITY_LEVEL_READ_WRITE = 'READ_WRITE';
-    const SECURITY_LEVEL_READ = 'READ';
-    const SECURITY_LEVEL_NONE = 'NONE';
+    const OPERATION_SCOPE_READ_WRITE = 'READ_WRITE';
+    const OPERATION_SCOPE_READ = 'READ';
+    const OPERATION_SCOPE_NONE = 'NONE';
 
-    const propertyKeysApp = new Vue({
-        el: '#propertyKeysApp',
-        data: {
-            appId: 'customer',
-            allProfiles: [],
-            selfPropertyKeysLoading: false,
-            appPropertyKeys: [],
-            addPropertyKeyVisible: false,
-            addPropertyKeyForm: {
-                key: null,
-                scope: null,
-                memo: null
-            }
-        },
-        created: function () {
-            this.findAllProfiles();
-            this.findAppPropertyKeys();
-        },
-        methods: {
-            findAllProfiles: function () {
-                const theThis = this;
-                axios.get('../manage/profile/findProfileTree', {
-                    params: {
-                        profileId: null
-                    }
-                }).then(function (result) {
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    let extractProfiles = function (profileTree, level) {
-                        let profiles = [];
-                        if (profileTree.profile !== null) {
-                            profileTree.profile.level = level;
-                            profiles.push(profileTree.profile);
+    GET_CURRENT_MANAGER(function (manager) {
+        const propertyKeysApp = new Vue({
+            el: '#propertyKeysApp',
+            data: {
+                appId: 'customer',
+                manager: manager,
+                allProfiles: [],
+                selfPropertyKeysLoading: false,
+                appPropertyKeys: [],
+                addPropertyKeyVisible: false,
+                addPropertyKeyForm: {
+                    key: null,
+                    scope: null,
+                    memo: null
+                }
+            },
+            created: function () {
+                this.findAllProfiles();
+                this.findAppPropertyKeys();
+            },
+            methods: {
+                findAllProfiles: function () {
+                    const theThis = this;
+                    axios.get('../manage/profile/findProfileTree', {
+                        params: {
+                            profileId: null
                         }
-                        profileTree.children.forEach(function (child) {
-                            profiles = profiles.concat(extractProfiles(child, level + 1));
-                        });
-                        return profiles;
-                    };
-                    theThis.allProfiles = extractProfiles(result.profileTree, -1);
-                });
-            },
-            findAppPropertyKeys: function () {
-                const theThis = this;
-                this.selfPropertyKeysLoading = true;
-                axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
-                    params: {
-                        appId: this.appId
-                    }
-                }).then(function (result) {
-                    theThis.selfPropertyKeysLoading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    theThis.appPropertyKeys = result.appPropertyKeys;
-                    theThis.appPropertyKeys.forEach(function (appPropertyKey) {
-                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                            Vue.set(propertyKey, 'editing', false);
-                            Vue.set(propertyKey, 'editingScope', null);
-                            Vue.set(propertyKey, 'editingMemo', null);
-                            Vue.set(propertyKey, 'securityLevel', SECURITY_LEVEL_NONE);
-                            Vue.set(propertyKey, 'editingSecurityLevel', null);
-                            Vue.set(propertyKey, 'savePopoverShowing', false);
-                        });
-
-                        Vue.set(appPropertyKey, 'app', null);
-                        axios.get('../manage/app/findApp', {
-                            params: {
-                                appId: appPropertyKey.appId
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        let extractProfiles = function (profileTree, level) {
+                            let profiles = [];
+                            if (profileTree.profile !== null) {
+                                profileTree.profile.level = level;
+                                profiles.push(profileTree.profile);
                             }
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            appPropertyKey.app = result.app;
-                        });
-
-                        axios.get('../manage/propertyKey/findKeySecurityLevels', {
-                            params: {
-                                appId: appPropertyKey.appId
-                            }
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            const keyLevels = result.keyLevels;
-                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                let level = keyLevels[propertyKey.key];
-                                if (!level) {
-                                    level = SECURITY_LEVEL_READ_WRITE;
-                                }
-                                propertyKey.securityLevel = level;
-                                propertyKey.editingSecurityLevel = null;
+                            profileTree.children.forEach(function (child) {
+                                profiles = profiles.concat(extractProfiles(child, level + 1));
                             });
-                        });
+                            return profiles;
+                        };
+                        theThis.allProfiles = extractProfiles(result.profileTree, -1);
                     });
-                });
-            },
-            startEditing: function (propertyKey) {
-                propertyKey.editing = true;
-                propertyKey.editingScope = propertyKey.scope;
-                propertyKey.editingMemo = propertyKey.memo;
-                propertyKey.editingSecurityLevel = propertyKey.securityLevel;
-            },
-            saveEditing: function (propertyKey) {
-                propertyKey.savePopoverShowing = false;
-
-                this.doAddOrModifyPropertyKey({
-                    appId: propertyKey.appId,
-                    key: propertyKey.key,
-                    scope: propertyKey.editingScope,
-                    memo: propertyKey.editingMemo
-                }, function () {
-                    propertyKey.scope = propertyKey.editingScope;
-                    propertyKey.memo = propertyKey.editingMemo;
-
-                    if (propertyKey.editingSecurityLevel === propertyKey.securityLevel) {
-                        propertyKey.editing = false;
-                        return;
-                    }
-                    if (propertyKey.editingSecurityLevel === SECURITY_LEVEL_READ_WRITE) {
-                        axios.post('../manager/relation/delete', {
-                            type: RELATION_TYPE_APP_KEY_SECURITY_LEVEL,
-                            source: propertyKey.appId,
-                            target: propertyKey.key
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            Vue.prototype.$message.success(result.message);
-                            propertyKey.securityLevel = propertyKey.editingSecurityLevel;
-
-                            propertyKey.editing = false;
-                        });
-                    } else {
-                        axios.post('../manager/relation/addOrModify', {
-                            type: RELATION_TYPE_APP_KEY_SECURITY_LEVEL,
-                            source: propertyKey.appId,
-                            target: propertyKey.key,
-                            value: propertyKey.editingSecurityLevel
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            Vue.prototype.$message.success(result.message);
-                            propertyKey.securityLevel = propertyKey.editingSecurityLevel;
-
-                            propertyKey.editing = false;
-                        });
-                    }
-                });
-            },
-            deletePropertyKey: function (propertyKey) {
-                const theThis = this;
-                Vue.prototype.$confirm('确定删除配置key？', '警告', {type: 'warning'})
-                    .then(function () {
-                        axios.post('../manage/propertyKey/deletePropertyKey', {
-                            appId: propertyKey.appId,
-                            key: propertyKey.key
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            Vue.prototype.$message.success(result.message);
-                            theThis.findAppPropertyKeys();
-                        });
-                    });
-            },
-            addPropertyKey: function () {
-                const theThis = this;
-                this.$refs.addPropertyKeyForm.validate(function (valid) {
-                    if (!valid) {
-                        return;
-                    }
-                    const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
-                    theThis.doAddOrModifyPropertyKey(params, function () {
-                        theThis.closeAddPropertyKeyDialog();
-                        theThis.findAppPropertyKeys();
-                    });
-                })
-            },
-            closeAddPropertyKeyDialog: function () {
-                this.addPropertyKeyVisible = false;
-                this.addPropertyKeyForm.key = null;
-                this.addPropertyKeyForm.scope = null;
-                this.addPropertyKeyForm.memo = null;
-            },
-            toShowingApp: function (app) {
-                if (!app) {
-                    return '';
-                }
-                let text = app.appId;
-                if (app.appName) {
-                    text += '（' + app.appName + '）';
-                }
-                return text;
-            },
-            doAddOrModifyPropertyKey: function (params, successCallback) {
-                const theThis = this;
-                this.selfPropertyKeysLoading = true;
-                axios.post('../manage/propertyKey/addOrModifyPropertyKey', params)
-                    .then(function (result) {
+                },
+                findAppPropertyKeys: function () {
+                    const theThis = this;
+                    this.selfPropertyKeysLoading = true;
+                    axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                        params: {
+                            appId: this.appId
+                        }
+                    }).then(function (result) {
                         theThis.selfPropertyKeysLoading = false;
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        Vue.prototype.$message.success(result.message);
-                        successCallback();
+                        theThis.appPropertyKeys = result.appPropertyKeys;
+                        theThis.appPropertyKeys.forEach(function (appPropertyKey) {
+                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                                Vue.set(propertyKey, 'editing', false);
+                                Vue.set(propertyKey, 'editingScope', null);
+                                Vue.set(propertyKey, 'editingMemo', null);
+                                Vue.set(propertyKey, 'operationScope', OPERATION_SCOPE_NONE);
+                                Vue.set(propertyKey, 'editingOperationScope', null);
+                                Vue.set(propertyKey, 'savePopoverShowing', false);
+                            });
+
+                            Vue.set(appPropertyKey, 'app', null);
+                            axios.get('../manage/app/findApp', {
+                                params: {
+                                    appId: appPropertyKey.appId
+                                }
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                appPropertyKey.app = result.app;
+                            });
+
+                            axios.get('../manage/propertyKey/findKeyOperationScopes', {
+                                params: {
+                                    appId: appPropertyKey.appId
+                                }
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                const scopeMap = result.scopeMap;
+                                appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                                    let operationScope = scopeMap[propertyKey.key];
+                                    if (!operationScope) {
+                                        operationScope = OPERATION_SCOPE_READ_WRITE;
+                                    }
+                                    propertyKey.operationScope = operationScope;
+                                    propertyKey.editingOperationScope = null;
+                                });
+                            });
+                        });
                     });
+                },
+                startEditing: function (propertyKey) {
+                    propertyKey.editing = true;
+                    propertyKey.editingScope = propertyKey.scope;
+                    propertyKey.editingMemo = propertyKey.memo;
+                    propertyKey.editingOperationScope = propertyKey.operationScope;
+                },
+                saveEditing: function (propertyKey) {
+                    propertyKey.savePopoverShowing = false;
+
+                    this.doAddOrModifyPropertyKey({
+                        appId: propertyKey.appId,
+                        key: propertyKey.key,
+                        scope: propertyKey.editingScope,
+                        memo: propertyKey.editingMemo
+                    }, function () {
+                        propertyKey.scope = propertyKey.editingScope;
+                        propertyKey.memo = propertyKey.editingMemo;
+
+                        if (propertyKey.editingOperationScope === propertyKey.operationScope) {
+                            propertyKey.editing = false;
+                            return;
+                        }
+                        if (propertyKey.editingOperationScope === OPERATION_SCOPE_READ_WRITE) {
+                            axios.post('../manager/relation/delete', {
+                                type: RELATION_TYPE_APP_KEY_OPERATION_SCOPE,
+                                source: propertyKey.appId,
+                                target: propertyKey.key
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                Vue.prototype.$message.success(result.message);
+                                propertyKey.operationScope = propertyKey.editingOperationScope;
+
+                                propertyKey.editing = false;
+                            });
+                        } else {
+                            axios.post('../manager/relation/addOrModify', {
+                                type: RELATION_TYPE_APP_KEY_OPERATION_SCOPE,
+                                source: propertyKey.appId,
+                                target: propertyKey.key,
+                                value: propertyKey.editingOperationScope
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                Vue.prototype.$message.success(result.message);
+                                propertyKey.operationScope = propertyKey.editingOperationScope;
+
+                                propertyKey.editing = false;
+                            });
+                        }
+                    });
+                },
+                deletePropertyKey: function (propertyKey) {
+                    const theThis = this;
+                    Vue.prototype.$confirm('确定删除配置key？', '警告', {type: 'warning'})
+                        .then(function () {
+                            axios.post('../manage/propertyKey/deletePropertyKey', {
+                                appId: propertyKey.appId,
+                                key: propertyKey.key
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                Vue.prototype.$message.success(result.message);
+                                theThis.findAppPropertyKeys();
+                            });
+                        });
+                },
+                addPropertyKey: function () {
+                    const theThis = this;
+                    this.$refs.addPropertyKeyForm.validate(function (valid) {
+                        if (!valid) {
+                            return;
+                        }
+                        const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
+                        theThis.doAddOrModifyPropertyKey(params, function () {
+                            theThis.closeAddPropertyKeyDialog();
+                            theThis.findAppPropertyKeys();
+                        });
+                    })
+                },
+                closeAddPropertyKeyDialog: function () {
+                    this.addPropertyKeyVisible = false;
+                    this.addPropertyKeyForm.key = null;
+                    this.addPropertyKeyForm.scope = null;
+                    this.addPropertyKeyForm.memo = null;
+                },
+                toShowingApp: function (app) {
+                    if (!app) {
+                        return '';
+                    }
+                    let text = app.appId;
+                    if (app.appName) {
+                        text += '（' + app.appName + '）';
+                    }
+                    return text;
+                },
+                doAddOrModifyPropertyKey: function (params, successCallback) {
+                    const theThis = this;
+                    this.selfPropertyKeysLoading = true;
+                    axios.post('../manage/propertyKey/addOrModifyPropertyKey', params)
+                        .then(function (result) {
+                            theThis.selfPropertyKeysLoading = false;
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            Vue.prototype.$message.success(result.message);
+                            successCallback();
+                        });
+                }
             }
-        }
+        });
     });
 </script>
 </body>

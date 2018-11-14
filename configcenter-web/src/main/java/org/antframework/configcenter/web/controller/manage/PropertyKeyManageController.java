@@ -21,9 +21,9 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeySecurityLevels;
+import org.antframework.configcenter.web.common.KeyOperationScope;
+import org.antframework.configcenter.web.common.KeyOperationScopes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.SecurityLevel;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -116,20 +116,20 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找指定应用所有的配置key的安全等级
+     * 查找指定应用所有的配置key的可操作范围
      *
      * @param appId 应用id（必须）
-     * @return 配置key的安全等级
+     * @return 配置key的可操作范围
      */
-    @RequestMapping("/findKeySecurityLevels")
-    public FindKeySecurityLevelsResult findKeySecurityLevels(String appId) {
+    @RequestMapping("/findKeyOperationScopes")
+    public FindKeySecurityLevelsResult findKeyOperationScopes(String appId) {
         FindKeySecurityLevelsResult result = new FindKeySecurityLevelsResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
 
-        Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
-        result.setKeyLevels(keyLevels);
+        Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+        result.setScopeMap(scopeMap);
 
         return result;
     }
@@ -174,18 +174,18 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找指定应用所有的配置key的安全等级result
+     * 查找指定应用所有的配置key的可操作类型result
      */
     public static class FindKeySecurityLevelsResult extends AbstractResult {
-        // key对应的安全等级
-        private Map<String, SecurityLevel> keyLevels;
+        // key对应的可操作范围
+        private Map<String, KeyOperationScope> scopeMap;
 
-        public Map<String, SecurityLevel> getKeyLevels() {
-            return keyLevels;
+        public Map<String, KeyOperationScope> getScopeMap() {
+            return scopeMap;
         }
 
-        public void setKeyLevels(Map<String, SecurityLevel> keyLevels) {
-            this.keyLevels = keyLevels;
+        public void setScopeMap(Map<String, KeyOperationScope> scopeMap) {
+            this.scopeMap = scopeMap;
         }
     }
 }

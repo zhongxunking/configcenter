@@ -19,9 +19,9 @@ import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeySecurityLevels;
+import org.antframework.configcenter.web.common.KeyOperationScope;
+import org.antframework.configcenter.web.common.KeyOperationScopes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.SecurityLevel;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,11 +63,11 @@ public class PropertyValueManageController {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
         }
         if (Managers.currentManager().getType() != ManagerType.ADMIN) {
-            // 通过安全等级校验权限
-            Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
+            // 通过可操作范围校验权限
+            Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
             for (String key : parsedKeys) {
-                SecurityLevel level = keyLevels.get(key);
-                if (level == SecurityLevel.READ || level == SecurityLevel.NONE) {
+                KeyOperationScope operationScope = scopeMap.get(key);
+                if (operationScope == KeyOperationScope.READ || operationScope == KeyOperationScope.NONE) {
                     throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
                 }
             }
@@ -119,12 +119,12 @@ public class PropertyValueManageController {
 
     // 掩码不允许读的配置
     private static void maskUnreadableProperty(List<ProfileProperty> profileProperties, String appId) {
-        Map<String, SecurityLevel> keyLevels = KeySecurityLevels.findKeySecurityLevels(appId);
+        Map<String, KeyOperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
         for (ProfileProperty profileProperty : profileProperties) {
             List<Property> temp = new ArrayList<>();
             for (Property property : profileProperty.getProperties()) {
-                SecurityLevel level = keyLevels.get(property.getKey());
-                if (level == SecurityLevel.NONE) {
+                KeyOperationScope operationScope = scopeMap.get(property.getKey());
+                if (operationScope == KeyOperationScope.NONE) {
                     property = new Property(property.getKey(), MASKED_VALUE, property.getScope());
                 }
                 temp.add(property);
