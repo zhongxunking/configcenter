@@ -26,7 +26,7 @@ const PropertyKeysTemplate = `
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 160px)'}">
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
             <el-table-column prop="key" label="属性key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -34,7 +34,7 @@ const PropertyKeysTemplate = `
                     <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入备注"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" sortable width="160px">
+            <el-table-column prop="scope" label="作用域" sortable width="120px">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -48,12 +48,26 @@ const PropertyKeysTemplate = `
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="160px">
+            <el-table-column prop="operationScope" label="可操作范围" sortable width="120px">
+                <template slot-scope="{ row }">
+                    <div v-if="!row.editing || manager.type !== 'ADMIN'">
+                        <el-tag v-if="row.operationScope === 'READ_WRITE'" type="success">读写</el-tag>
+                        <el-tag v-else-if="row.operationScope === 'READ'" type="warning">只读</el-tag>
+                        <el-tag v-else-if="row.operationScope === 'NONE'" type="danger">无</el-tag>
+                    </div>
+                    <el-select v-else v-model="row.editingOperationScope" size="small" placeholder="请范围" style="width: 90%">
+                        <el-option value="READ_WRITE" label="读写"></el-option>
+                        <el-option value="READ" label="只读"></el-option>
+                        <el-option value="NONE" label="无"></el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="16" style="text-align: center">
                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type==='NORMAL' && row.operationScope!=='READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
                             </el-tooltip>
                             <template v-else>
                                 <el-button-group>
@@ -73,9 +87,9 @@ const PropertyKeysTemplate = `
                                 </el-button-group>
                             </template>
                         </el-col>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deletePropertyKey(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                                <el-button @click="deletePropertyKey(row)" type="danger" :disabled="manager.type==='NORMAL' && row.operationScope!=='READ_WRITE'" icon="el-icon-delete" size="small" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>
@@ -107,11 +121,19 @@ const PropertyKeysTemplate = `
 </div>
 `;
 
+const RELATION_TYPE_APP_KEY_OPERATION_SCOPE = 'app-key-operationScope';
+
+const OPERATION_SCOPE_READ_WRITE = 'READ_WRITE';
+const OPERATION_SCOPE_READ = 'READ';
+const OPERATION_SCOPE_NONE = 'NONE';
+
+
 const PropertyKeys = {
     template: PropertyKeysTemplate,
     props: ['appId'],
     data: function () {
         return {
+            manager: CURRENT_MANAGER,
             allProfiles: [],
             selfPropertyKeysLoading: false,
             appPropertyKeys: [],
@@ -172,8 +194,11 @@ const PropertyKeys = {
                         Vue.set(propertyKey, 'editing', false);
                         Vue.set(propertyKey, 'editingScope', null);
                         Vue.set(propertyKey, 'editingMemo', null);
+                        Vue.set(propertyKey, 'operationScope', OPERATION_SCOPE_NONE);
+                        Vue.set(propertyKey, 'editingOperationScope', null);
                         Vue.set(propertyKey, 'savePopoverShowing', false);
                     });
+
                     Vue.set(appPropertyKey, 'app', null);
                     axios.get('../manage/app/findApp', {
                         params: {
@@ -186,6 +211,26 @@ const PropertyKeys = {
                         }
                         appPropertyKey.app = result.app;
                     });
+
+                    axios.get('../manage/propertyKey/findKeyOperationScopes', {
+                        params: {
+                            appId: appPropertyKey.appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        const scopeMap = result.scopeMap;
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            let operationScope = scopeMap[propertyKey.key];
+                            if (!operationScope) {
+                                operationScope = OPERATION_SCOPE_READ_WRITE;
+                            }
+                            propertyKey.operationScope = operationScope;
+                            propertyKey.editingOperationScope = null;
+                        });
+                    });
                 });
             });
         },
@@ -193,6 +238,7 @@ const PropertyKeys = {
             propertyKey.editing = true;
             propertyKey.editingScope = propertyKey.scope;
             propertyKey.editingMemo = propertyKey.memo;
+            propertyKey.editingOperationScope = propertyKey.operationScope;
         },
         saveEditing: function (propertyKey) {
             propertyKey.savePopoverShowing = false;
@@ -203,9 +249,45 @@ const PropertyKeys = {
                 scope: propertyKey.editingScope,
                 memo: propertyKey.editingMemo
             }, function () {
-                propertyKey.editing = false;
                 propertyKey.scope = propertyKey.editingScope;
                 propertyKey.memo = propertyKey.editingMemo;
+
+                if (propertyKey.editingOperationScope === propertyKey.operationScope) {
+                    propertyKey.editing = false;
+                    return;
+                }
+                if (propertyKey.editingOperationScope === OPERATION_SCOPE_READ_WRITE) {
+                    axios.post('../manager/relation/delete', {
+                        type: RELATION_TYPE_APP_KEY_OPERATION_SCOPE,
+                        source: propertyKey.appId,
+                        target: propertyKey.key
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        propertyKey.operationScope = propertyKey.editingOperationScope;
+
+                        propertyKey.editing = false;
+                    });
+                } else {
+                    axios.post('../manager/relation/addOrModify', {
+                        type: RELATION_TYPE_APP_KEY_OPERATION_SCOPE,
+                        source: propertyKey.appId,
+                        target: propertyKey.key,
+                        value: propertyKey.editingOperationScope
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        propertyKey.operationScope = propertyKey.editingOperationScope;
+
+                        propertyKey.editing = false;
+                    });
+                }
             });
         },
         deletePropertyKey: function (propertyKey) {
