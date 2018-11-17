@@ -175,7 +175,7 @@ const ManagerApps = {
             const theThis = this;
             Vue.prototype.$confirm('确定删除该权限？', '警告', {type: 'warning'})
                 .then(function () {
-                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/delete', {
+                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/deletes', {
                         type: MANAGER_APP_RELATION_TYPE,
                         source: relation.source,
                         target: relation.target

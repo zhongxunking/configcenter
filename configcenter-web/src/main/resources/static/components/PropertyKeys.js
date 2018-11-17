@@ -250,7 +250,7 @@ const PropertyKeys = {
                     return;
                 }
                 if (propertyKey.editingPrivilege === 'READ_WRITE') {
-                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/delete', {
+                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/deletes', {
                         type: 'app-key-privilege',
                         source: propertyKey.appId,
                         target: propertyKey.key
