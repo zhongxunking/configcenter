@@ -16,7 +16,8 @@ import javax.persistence.*;
  * 属性value
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appId", "key", "profileId"}), indexes = @Index(columnList = "appId,profileId"))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key_profileId", columnNames = {"appId", "key", "profileId"}),
+        indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
 public class PropertyValue extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -31,7 +32,7 @@ public class PropertyValue extends AbstractEntity {
     private String profileId;
 
     // 属性value
-    @Column
+    @Column(length = 2048)
     private String value;
 
     public String getAppId() {

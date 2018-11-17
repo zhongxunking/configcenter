@@ -12,14 +12,17 @@ import org.antframework.boot.jpa.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * 环境
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_profileId", columnNames = "profileId"))
 public class Profile extends AbstractEntity {
     // 环境id
-    @Column(unique = true, length = 64)
+    @Column(length = 64)
     private String profileId;
 
     // 环境名
@@ -27,7 +30,7 @@ public class Profile extends AbstractEntity {
     private String profileName;
 
     // 父环境id（null表示无父环境）
-    @Column
+    @Column(length = 64)
     private String parent;
 
     public String getProfileId() {

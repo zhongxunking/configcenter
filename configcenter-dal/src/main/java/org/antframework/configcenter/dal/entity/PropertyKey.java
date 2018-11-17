@@ -17,7 +17,7 @@ import javax.persistence.*;
  * 属性key
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"appId", "key"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key", columnNames = {"appId", "key"}))
 public class PropertyKey extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -28,7 +28,7 @@ public class PropertyKey extends AbstractEntity {
     private String key;
 
     // 作用域
-    @Column
+    @Column(length = 64)
     @Enumerated(EnumType.STRING)
     private Scope scope;
 
