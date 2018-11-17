@@ -19,9 +19,9 @@ import org.antframework.configcenter.facade.info.ProfileProperty;
 import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyOperationScopes;
+import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperationScope;
+import org.antframework.configcenter.web.common.Privilege;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,7 +41,7 @@ import java.util.Objects;
 @RequestMapping("/manage/propertyValue")
 public class PropertyValueManageController {
     // 掩码后的配置value
-    private static final String MASKED_VALUE = "";
+    private static final String MASKED_VALUE = "******";
     @Autowired
     private PropertyValueService propertyValueService;
 
@@ -63,11 +63,11 @@ public class PropertyValueManageController {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
         }
         if (Managers.currentManager().getType() != ManagerType.ADMIN) {
-            // 通过可操作范围校验权限
-            Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+            // 校验配置key权限
+            Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
             for (String key : parsedKeys) {
-                OperationScope operationScope = scopeMap.getOrDefault(key, OperationScope.READ_WRITE);
-                if (operationScope != OperationScope.READ_WRITE) {
+                Privilege privilege = keyPrivileges.getOrDefault(key, Privilege.READ_WRITE);
+                if (privilege != Privilege.READ_WRITE) {
                     throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("key[%s]为敏感配置，只有超级管理员才能修改", key));
                 }
             }
@@ -109,28 +109,28 @@ public class PropertyValueManageController {
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             List<ProfileProperty> profileProperties = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, minScope);
             if (Managers.currentManager().getType() != ManagerType.ADMIN) {
-                // 掩码不允许读的配置
-                maskUnreadableProperty(profileProperties, app.getAppId());
+                // 对敏感配置进行掩码
+                maskProperty(profileProperties, app.getAppId());
             }
             result.addAppProperty(new FindInheritedPropertiesResult.AppProperty(app.getAppId(), profileProperties));
         }
         return result;
     }
 
-    // 掩码不允许读的配置
-    private static void maskUnreadableProperty(List<ProfileProperty> profileProperties, String appId) {
-        Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
+    // 对敏感配置进行掩码
+    private static void maskProperty(List<ProfileProperty> profileProperties, String appId) {
+        Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
         for (ProfileProperty profileProperty : profileProperties) {
-            List<Property> temp = new ArrayList<>();
+            List<Property> maskedProperties = new ArrayList<>();
             for (Property property : profileProperty.getProperties()) {
-                OperationScope operationScope = scopeMap.get(property.getKey());
-                if (operationScope == OperationScope.NONE) {
+                Privilege privilege = keyPrivileges.getOrDefault(property.getKey(), Privilege.READ_WRITE);
+                if (privilege == Privilege.NONE) {
                     property = new Property(property.getKey(), MASKED_VALUE, property.getScope());
                 }
-                temp.add(property);
+                maskedProperties.add(property);
             }
             profileProperty.getProperties().clear();
-            profileProperty.getProperties().addAll(temp);
+            profileProperty.getProperties().addAll(maskedProperties);
         }
     }
 

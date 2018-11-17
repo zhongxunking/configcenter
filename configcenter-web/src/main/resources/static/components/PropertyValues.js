@@ -59,7 +59,7 @@ const PropertyValuesTemplate = `
                     <div v-if="!row.editing">
                         <div v-if="row.editedValue === row.value">
                             <el-tag v-if="row.editedValue === null">无效</el-tag>
-                            <el-tag v-else-if="manager.type === 'NORMAL' && row.operationScope === 'NONE'" type="danger">无权限</el-tag>
+                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
                             <span v-else>{{ row.editedValue }}</span>
                         </div>
                         <div v-else style="margin-top: 10px; margin-right: 30px">
@@ -85,7 +85,7 @@ const PropertyValuesTemplate = `
                 <template slot-scope="{ row }">
                     <template v-if="profileProperty.profileId === profileId">
                         <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.operationScope !== 'READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
+                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
                         </el-tooltip>
                         <el-button-group v-else>
                             <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
@@ -98,7 +98,7 @@ const PropertyValuesTemplate = `
                     </template>
                     <template v-else-if="showOverride(row.key)">
                         <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.operationScope !== 'READ_WRITE'" icon="el-icon-download" size="small" circle></el-button>
+                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-download" size="small" circle></el-button>
                         </el-tooltip>
                     </template>
                 </template>
@@ -258,13 +258,13 @@ const PropertyValues = {
                             Vue.set(property, 'editing', false);
                             Vue.set(property, 'editingValue', null);
                             Vue.set(property, 'editedValue', property.value);
-                            Vue.set(property, 'operationScope', 'READ_WRITE');
+                            Vue.set(property, 'privilege', 'READ_WRITE');
                         });
                     });
                 });
 
                 theThis.appProperties.forEach(function (appProperty) {
-                    axios.get('../manage/propertyKey/findKeyOperationScopes', {
+                    axios.get('../manage/propertyKey/findKeyPrivileges', {
                         params: {
                             appId: appProperty.appId
                         }
@@ -273,14 +273,14 @@ const PropertyValues = {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        const scopeMap = result.scopeMap;
+                        const keyPrivileges = result.keyPrivileges;
                         appProperty.profileProperties.forEach(function (profileProperty) {
                             profileProperty.properties.forEach(function (property) {
-                                let operationScope = scopeMap[property.key];
-                                if (!operationScope) {
-                                    operationScope = 'READ_WRITE';
+                                let privilege = keyPrivileges[property.key];
+                                if (!privilege) {
+                                    privilege = 'READ_WRITE';
                                 }
-                                Vue.set(property, 'operationScope', operationScope);
+                                property.privilege = privilege;
                             });
                         });
                     });

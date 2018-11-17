@@ -4,14 +4,14 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2018-11-14 21:54 创建
+ * @author 钟勋 2018-11-17 19:25 创建
  */
 package org.antframework.configcenter.web.common;
 
 /**
- * 操作范围
+ * 权限
  */
-public enum OperationScope {
+public enum Privilege {
     /**
      * 读写
      */

@@ -21,9 +21,9 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyOperationScopes;
+import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperationScope;
+import org.antframework.configcenter.web.common.Privilege;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -54,7 +54,7 @@ public class PropertyKeyManageController {
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyOperationScopes.adminOrReadWrite(appId, key);
+        KeyPrivileges.adminOrReadWrite(appId, key);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -76,14 +76,14 @@ public class PropertyKeyManageController {
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyOperationScopes.adminOrReadWrite(appId, key);
+        KeyPrivileges.adminOrReadWrite(appId, key);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         if (result.isSuccess()) {
-            KeyOperationScopes.deleteKeyOperationScope(appId, key);
+            KeyPrivileges.deletePrivilege(appId, key);
         }
         // 刷新客户端
         RefreshUtils.refreshClients(appId, null);
@@ -121,20 +121,20 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找指定应用所有的配置key的可操作范围
+     * 查找指定应用所有的配置key的权限
      *
      * @param appId 应用id（必须）
-     * @return 配置key的可操作范围
+     * @return 配置key的权限
      */
-    @RequestMapping("/findKeyOperationScopes")
-    public FindKeySecurityLevelsResult findKeyOperationScopes(String appId) {
-        FindKeySecurityLevelsResult result = new FindKeySecurityLevelsResult();
+    @RequestMapping("/findKeyPrivileges")
+    public FindKeyPrivilegesResult findKeyPrivileges(String appId) {
+        FindKeyPrivilegesResult result = new FindKeyPrivilegesResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
 
-        Map<String, OperationScope> scopeMap = KeyOperationScopes.findKeyOperationScopes(appId);
-        result.setScopeMap(scopeMap);
+        Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
+        result.setKeyPrivileges(keyPrivileges);
 
         return result;
     }
@@ -179,18 +179,18 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找指定应用所有的配置key的可操作类型result
+     * 查找指定应用所有的配置key的权限result
      */
-    public static class FindKeySecurityLevelsResult extends AbstractResult {
-        // key对应的可操作范围
-        private Map<String, OperationScope> scopeMap;
+    public static class FindKeyPrivilegesResult extends AbstractResult {
+        // key对应的权限
+        private Map<String, Privilege> keyPrivileges;
 
-        public Map<String, OperationScope> getScopeMap() {
-            return scopeMap;
+        public Map<String, Privilege> getKeyPrivileges() {
+            return keyPrivileges;
         }
 
-        public void setScopeMap(Map<String, OperationScope> scopeMap) {
-            this.scopeMap = scopeMap;
+        public void setKeyPrivileges(Map<String, Privilege> keyPrivileges) {
+            this.keyPrivileges = keyPrivileges;
         }
     }
 }
