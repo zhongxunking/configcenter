@@ -156,8 +156,8 @@ configcenter.app-id=customer
 
 # 选填：缓存文件夹路径（默认为：/var/apps/config）
 configcenter.cache-dir=/var/apps/config
-# 选填：是否关闭监听配置被修改（默认为开启）
-configcenter.listen.disable=false
+# 选填：是否开启监听配置被修改事件（默认为开启）
+configcenter.listen.enable=true
 # 选填：配置刷新周期（单位：秒。默认为每5分钟刷新一次）
 configcenter.refresh-period=300
 # 选填：配置中心的配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
