@@ -8,8 +8,8 @@
  */
 package org.antframework.configcenter.test.client;
 
-import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.ConfigListener;
+import org.antframework.configcenter.client.ConfigsContext;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Ignore;
@@ -23,28 +23,28 @@ import java.util.List;
  * 配置上下文单元测试
  */
 @Ignore
-public class ConfigContextTest {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigContextTest.class);
+public class ConfigsContextTest {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigsContextTest.class);
 
     @Test
-    public void testConfigContext_withCache() throws InterruptedException {
-        testConfigContext(System.getProperty("user.home") + "/var/config");
+    public void testConfigsContext_withCache() throws InterruptedException {
+        testConfigsContext(System.getProperty("user.home") + "/var/config");
     }
 
     @Test
-    public void testConfigContext_withoutCache() throws InterruptedException {
-        testConfigContext(null);
+    public void testConfigsContext_withoutCache() throws InterruptedException {
+        testConfigsContext(null);
     }
 
-    private void testConfigContext(String cacheDir) {
-        ConfigContext.InitParams initParams = new ConfigContext.InitParams();
+    private void testConfigsContext(String cacheDir) {
+        ConfigsContext.InitParams initParams = new ConfigsContext.InitParams();
         initParams.setServerUrl("http://localhost:6220");
         initParams.setMainAppId("scbfund");
         initParams.setProfileId("dev");
         initParams.setCacheDir(cacheDir);
 
-        ConfigContext configContext = new ConfigContext(initParams);
-        configContext.getConfig("scbfund").getListenerRegistrar().register(new ConfigListener() {
+        ConfigsContext configsContext = new ConfigsContext(initParams);
+        configsContext.getConfig("scbfund").getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
@@ -52,7 +52,7 @@ public class ConfigContextTest {
                 }
             }
         });
-        configContext.getConfig("common").getListenerRegistrar().register(new ConfigListener() {
+        configsContext.getConfig("common").getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
@@ -60,13 +60,13 @@ public class ConfigContextTest {
                 }
             }
         });
-        configContext.listenConfigChanged();
-        configContext.refresh();
+        configsContext.listenConfigChanged();
+        configsContext.refresh();
         try {
             Thread.sleep(200000);
         } catch (InterruptedException e) {
             ExceptionUtils.rethrow(e);
         }
-        configContext.close();
+        configsContext.close();
     }
 }

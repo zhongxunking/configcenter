@@ -98,23 +98,23 @@ java -jar configcenter-assemble-1.2.1.RELEASE-exec.jar --spring.profiles.active=
 客户端就是Java类，直接new就可以，只是需要传给它相应参数。一个应用可以创建多个客户端，每个客户端之间互不影响。
 ```java
 // 准备初始化参数
-ConfigContext.InitParams initParams = new ConfigContext.InitParams();
+ConfigsContext.InitParams initParams = new ConfigsContext.InitParams();
 initParams.setServerUrl("http://localhost:6220");   // 服务端地址
 initParams.setMainAppId("customer");   // 主体应用id
 initParams.setProfileId("dev");   // 环境id
 initParams.setCacheDir("/var/config");   // 缓存文件夹路径
 // 创建客户端
-ConfigContext configContext = new ConfigContext(initParams);
+ConfigsContext configsContext = new ConfigsContext(initParams);
 
 // 获取会员系统的配置
-Config customerConfig = configContext.getConfig("customer");
+Config customerConfig = configsContext.getConfig("customer");
 // 现在就可以获取会员系统的所有配置项了（下面获取redis地址配置）
 String redisHost = customerConfig.getProperties().getProperty("redis.host");
 
 // 不仅可以获取会员系统的配置，还可以获取其他应用的配置，不过只能获取其他应用的公开配置，
 // 因为当前主体应用为会员系统，现在是以会员系统为视角获取其他应用的配置
 // 下面获取账务系统的公开配置
-Config accountConfig = configContext.getConfig("account");
+Config accountConfig = configsContext.getConfig("account");
 
 // 还可以注册配置变更监听器
 customerConfig.getListenerRegistrar().register(new ConfigListener() {
@@ -126,12 +126,12 @@ customerConfig.getListenerRegistrar().register(new ConfigListener() {
     }
 });
 // 开启配置变更监听功能
-configContext.listenConfigChanged();
+configsContext.listenConfigChanged();
 
 // 系统正常运行...
 
 // 当系统运行结束时，需关闭客户端释放相关资源
-configContext.close();
+configsContext.close();
 ```
 
 ### 3.2 通过starter进行集成
@@ -165,7 +165,7 @@ configcenter.prior-to=applicationConfigurationProperties
 ```
 
 #### 3.2.3 使用配置
-可以通过spring的@Value注解、environment.getProperty(java.lang.String)获取配置，而不用直接使用客户端。也可以通过ConfigContexts.getConfig(java.lang.String)获取配置。
+可以通过spring的@Value注解、environment.getProperty(java.lang.String)获取配置，而不用直接使用客户端。也可以通过ConfigsContexts.getConfig(java.lang.String)获取配置。
 ```java
 // 通过@Value获取配置
 @Value("redis.host")
@@ -176,8 +176,8 @@ private Environment environment;
 public void doBiz() {
     // 通过environment获取配置
     String redisHostFromEnvironment = environment.getProperty("redis.host");
-    // 通过ConfigContexts.getConfig(java.lang.String)获取配置
-    Config config = ConfigContexts.getConfig("customer");
+    // 通过ConfigsContexts.getConfig(java.lang.String)获取配置
+    Config config = ConfigsContexts.getConfig("customer");
     String redisHostFromConfig = config.getProperties().getProperty("redis.host");
 }
 ```

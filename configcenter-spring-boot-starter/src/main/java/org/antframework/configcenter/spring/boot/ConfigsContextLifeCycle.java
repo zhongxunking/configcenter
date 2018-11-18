@@ -9,8 +9,8 @@
 package org.antframework.configcenter.spring.boot;
 
 import org.antframework.configcenter.client.Config;
-import org.antframework.configcenter.client.ConfigContext;
-import org.antframework.configcenter.spring.ConfigContexts;
+import org.antframework.configcenter.client.ConfigsContext;
+import org.antframework.configcenter.spring.ConfigsContexts;
 import org.antframework.configcenter.spring.context.Contexts;
 import org.antframework.configcenter.spring.listener.DefaultConfigListener;
 import org.antframework.configcenter.spring.listener.annotation.ConfigListenerType;
@@ -33,7 +33,7 @@ import java.util.TimerTask;
 /**
  * 配置上下文的生命周期
  */
-public class ConfigContextLifeCycle implements GenericApplicationListener {
+public class ConfigsContextLifeCycle implements GenericApplicationListener {
     // 刷新定时器
     private Timer refreshTimer;
 
@@ -53,7 +53,7 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ApplicationReadyEvent) {
-            readyConfigContext();
+            readyConfigsContext();
             initTimer();
         } else {
             close();
@@ -66,21 +66,21 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
     }
 
     // 使配置上下文准备好
-    private void readyConfigContext() {
-        ConfigContext configContext = ConfigContexts.getContext();
+    private void readyConfigsContext() {
+        ConfigsContext configsContext = ConfigsContexts.getContext();
         // 创建事件发布器
         EventBusesHolder eventBusesHolder = Contexts.getApplicationContext().getBean(EventBusesHolder.class);
         EventPublisher eventPublisher = new DefaultEventPublisher(eventBusesHolder.getEventBus(ConfigListenerType.class));
         // 添加默认监听器
-        for (String appId : configContext.getAppIds()) {
-            Config config = configContext.getConfig(appId);
+        for (String appId : configsContext.getAppIds()) {
+            Config config = configsContext.getConfig(appId);
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
         // 判断是否监听配置是否被修改
         boolean listenDisable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_DISABLE_PROPERTY_NAME, Boolean.class, Boolean.FALSE);
         if (!listenDisable) {
             // 开始监听配置是否被修改
-            configContext.listenConfigChanged();
+            configsContext.listenConfigChanged();
         }
     }
 
@@ -89,18 +89,18 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                ConfigContexts.getContext().refresh();
+                ConfigsContexts.getContext().refresh();
             }
         };
 
-        refreshTimer = new Timer("Timer-refreshConfigContext", true);
+        refreshTimer = new Timer("Timer-refreshConfigsContext", true);
         // 应用启动期间配置有可能被修改，在此立即触发一次刷新
         refreshTimer.schedule(task, 0, ConfigcenterProperties.INSTANCE.getRefreshPeriod() * 1000);
     }
 
     // 关闭配置上下文和刷新定时器
     private void close() {
-        ConfigContexts.getContext().close();
+        ConfigsContexts.getContext().close();
         if (refreshTimer != null) {
             refreshTimer.cancel();
         }

@@ -21,7 +21,7 @@ import java.util.Set;
 /**
  * 配置上下文
  */
-public class ConfigContext {
+public class ConfigsContext {
     // config缓存
     private final Cache<String, Config> configsCache = new Cache<>(new Cache.Supplier<String, Config>() {
         @Override
@@ -42,7 +42,7 @@ public class ConfigContext {
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
 
-    public ConfigContext(InitParams initParams) {
+    public ConfigsContext(InitParams initParams) {
         initParams.check();
         this.initParams = initParams;
         serverRequester = new ServerRequester(initParams.serverUrl, initParams.mainAppId, initParams.profileId);
