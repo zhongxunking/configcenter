@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 查找应用在特定环境中的配置order
+ * 查找应用在指定环境中的配置order
  */
 public class FindPropertiesOrder extends AbstractOrder {
     // 主体应用id

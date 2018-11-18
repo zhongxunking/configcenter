@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用自己的在特定环境中的配置result
+ * 查找应用自己的在指定环境中的配置result
  */
 public class FindAppSelfPropertiesResult extends AbstractResult {
     // 由近及远继承的所用环境中的配置

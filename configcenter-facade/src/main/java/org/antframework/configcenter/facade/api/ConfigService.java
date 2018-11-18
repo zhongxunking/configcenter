@@ -19,12 +19,12 @@ import org.antframework.configcenter.facade.result.FindPropertiesResult;
 public interface ConfigService {
 
     /**
-     * 查找应用在特定环境中的配置
+     * 查找应用在指定环境中的配置
      */
     FindPropertiesResult findProperties(FindPropertiesOrder order);
 
     /**
-     * 查找应用自己的在特定环境中的配置
+     * 查找应用自己的在指定环境中的配置
      */
     FindAppSelfPropertiesResult findAppSelfProperties(FindAppSelfPropertiesOrder order);
 }

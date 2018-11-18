@@ -24,7 +24,7 @@ import org.bekit.service.engine.ServiceContext;
 import java.util.*;
 
 /**
- * 查找应用在特定环境中的配置服务
+ * 查找应用在指定环境中的配置服务
  */
 @Service
 public class FindPropertiesService {

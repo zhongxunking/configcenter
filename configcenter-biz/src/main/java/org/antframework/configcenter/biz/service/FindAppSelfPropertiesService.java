@@ -32,7 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 查找应用自己的在特定环境中的配置服务
+ * 查找应用自己的在指定环境中的配置服务
  */
 @Service
 public class FindAppSelfPropertiesService {
@@ -61,7 +61,7 @@ public class FindAppSelfPropertiesService {
         }
     }
 
-    // 获取应用在特定环境的所有配置value
+    // 获取应用在指定环境的所有配置value
     private List<PropertyValueInfo> getPropertyValues(String appId, String profileId) {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);

@@ -26,7 +26,7 @@ public final class ConfigUtils {
     private static final ConfigService CONFIG_SERVICE = Contexts.getApplicationContext().getBean(ConfigService.class);
 
     /**
-     * 查找应用自己的在特定环境中的配置
+     * 查找应用自己的在指定环境中的配置
      *
      * @param appId     应用id
      * @param profileId 环境id

@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.AbstractResult;
 import java.util.Map;
 
 /**
- * 查找应用在特定环境中的配置result
+ * 查找应用在指定环境中的配置result
  */
 public class FindPropertiesResult extends AbstractResult {
     // 配置
