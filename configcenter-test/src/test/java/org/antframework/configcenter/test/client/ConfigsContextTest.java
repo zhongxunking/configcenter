@@ -39,12 +39,12 @@ public class ConfigsContextTest {
     private void testConfigsContext(String cacheDir) {
         ConfigsContext.InitParams initParams = new ConfigsContext.InitParams();
         initParams.setServerUrl("http://localhost:6220");
-        initParams.setMainAppId("scbfund");
+        initParams.setMainAppId("customer");
         initParams.setProfileId("dev");
         initParams.setCacheDir(cacheDir);
 
         ConfigsContext configsContext = new ConfigsContext(initParams);
-        configsContext.getConfig("scbfund").getListenerRegistrar().register(new ConfigListener() {
+        configsContext.getConfig("customer").getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
@@ -52,7 +52,7 @@ public class ConfigsContextTest {
                 }
             }
         });
-        configsContext.getConfig("common").getListenerRegistrar().register(new ConfigListener() {
+        configsContext.getConfig("account").getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
