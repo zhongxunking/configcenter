@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.test.client;
 
+import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.ConfigsContext;
 import org.antframework.configcenter.client.core.ChangedProperty;
@@ -44,7 +45,8 @@ public class ConfigsContextTest {
         initParams.setCacheDir(cacheDir);
 
         ConfigsContext configsContext = new ConfigsContext(initParams);
-        configsContext.getConfig("customer").getListenerRegistrar().register(new ConfigListener() {
+        Config customerConfig = configsContext.getConfig("customer");
+        customerConfig.getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
@@ -52,7 +54,8 @@ public class ConfigsContextTest {
                 }
             }
         });
-        configsContext.getConfig("account").getListenerRegistrar().register(new ConfigListener() {
+        Config accountConfig = configsContext.getConfig("account");
+        accountConfig.getListenerRegistrar().register(new ConfigListener() {
             @Override
             public void onChange(List<ChangedProperty> changedProperties) {
                 for (ChangedProperty changedProperty : changedProperties) {
