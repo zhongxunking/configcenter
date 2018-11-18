@@ -14,7 +14,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import javax.persistence.*;
 
 /**
- * 属性key
+ * 配置key
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key", columnNames = {"appId", "key"}))
@@ -23,7 +23,7 @@ public class PropertyKey extends AbstractEntity {
     @Column(length = 64)
     private String appId;
 
-    // 属性key
+    // key
     @Column(name = "`key`", length = 128)
     private String key;
 

@@ -45,7 +45,7 @@ public class DeleteAppService {
         if (appDao.existsByParent(order.getAppId())) {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]存在子应用，不能删除", order.getAppId()));
         }
-        // 删除该应用的所有属性key
+        // 删除该应用的所有配置key
         for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
             deletePropertyKey(propertyKey);
         }
@@ -53,7 +53,7 @@ public class DeleteAppService {
         appDao.delete(app);
     }
 
-    // 删除属性key
+    // 删除配置key
     private void deletePropertyKey(PropertyKeyInfo propertyKey) {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(propertyKey.getAppId());

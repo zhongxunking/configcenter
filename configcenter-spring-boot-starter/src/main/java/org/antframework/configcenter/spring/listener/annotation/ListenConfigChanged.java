@@ -23,7 +23,7 @@ import java.lang.annotation.*;
 public @interface ListenConfigChanged {
 
     /**
-     * 被监听的属性名前缀
+     * 被监听的配置key前缀
      */
     String prefix();
 

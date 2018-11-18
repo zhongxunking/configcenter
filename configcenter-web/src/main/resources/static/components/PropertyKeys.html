@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>属性key</title>
+    <title>配置key</title>
     <script src="../common/import.js"></script>
 </head>
 <body>
@@ -35,7 +35,7 @@
             </el-col>
         </el-row>
         <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
-            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+            <el-table-column prop="key" label="配置key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
                     <span v-if="!row.editing">{{ row.memo }}</span>

@@ -35,7 +35,7 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * 属性value管理controller
+ * 配置value管理controller
  */
 @RestController
 @RequestMapping("/manage/propertyValue")
@@ -46,7 +46,7 @@ public class PropertyValueManageController {
     private PropertyValueService propertyValueService;
 
     /**
-     * 设置多个属性value
+     * 设置多个配置value
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
@@ -60,7 +60,7 @@ public class PropertyValueManageController {
         List<String> parsedKeys = JSON.parseArray(keys, String.class);
         List<String> parsedValues = JSON.parseArray(values, String.class);
         if (parsedKeys.size() != parsedValues.size()) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "属性key和value数量不相等");
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), "配置key和value数量不相等");
         }
         if (Managers.currentManager().getType() != ManagerType.ADMIN) {
             // 校验配置key权限

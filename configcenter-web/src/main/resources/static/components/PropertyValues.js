@@ -1,4 +1,4 @@
-// 属性值管理组件
+// 配置value管理组件
 const PropertyValuesTemplate = `
 <div>
     <el-row style="margin-bottom: 10px">
@@ -48,13 +48,13 @@ const PropertyValuesTemplate = `
                     <span>{{ toShowingProfile(profileProperty.profile) }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="key" label="属性key" :resizable="false" :align="profileProperty.properties.length !== 0 ? 'left' : 'center'">
+            <el-table-column prop="key" label="配置key" :resizable="false" :align="profileProperty.properties.length !== 0 ? 'left' : 'center'">
                 <template slot-scope="{ row }">
                     <span v-if="row.empty" class="el-table__empty-text">暂无数据</span>
                     <span v-else>{{ row.key }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="value" label="属性值" :resizable="false">
+            <el-table-column prop="value" label="配置value" :resizable="false">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <div v-if="row.editedValue === row.value">
@@ -69,7 +69,7 @@ const PropertyValuesTemplate = `
                             </el-badge>
                         </div>
                     </div>
-                    <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入属性值"></el-input>
+                    <el-input v-else v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入配置value"></el-input>
                 </template>
             </el-table-column>
             <el-table-column prop="scope" label="作用域" :resizable="false" width="100px">

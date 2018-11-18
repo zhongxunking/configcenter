@@ -26,7 +26,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 设置多个属性value服务
+ * 设置多个配置value服务
  */
 @Service(enableTx = true)
 public class SetPropertyValuesService {
@@ -50,7 +50,7 @@ public class SetPropertyValuesService {
                 break;
             }
         }
-        // 设置属性value
+        // 设置配置value
         for (SetPropertyValuesOrder.KeyValue keyValue : order.getKeyValues()) {
             if (keyValue.getValue() != null) {
                 setSingleValue(order, keyValue);
@@ -60,11 +60,11 @@ public class SetPropertyValuesService {
         }
     }
 
-    // 设置单个属性value
+    // 设置单个配置value
     private void setSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
         PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), keyValue.getKey());
         if (propertyKey == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在属性key[%s]", order.getAppId(), keyValue.getKey()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在配置key[%s]", order.getAppId(), keyValue.getKey()));
         }
 
         PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), keyValue.getKey(), order.getProfileId());
@@ -76,7 +76,7 @@ public class SetPropertyValuesService {
         propertyValueDao.save(propertyValue);
     }
 
-    //构建属性value
+    //构建配置value
     private PropertyValue buildPropertyValue(SetPropertyValuesOrder setPropertyValueOrder, SetPropertyValuesOrder.KeyValue keyValue) {
         PropertyValue propertyValue = new PropertyValue();
         BeanUtils.copyProperties(setPropertyValueOrder, propertyValue);
@@ -84,7 +84,7 @@ public class SetPropertyValuesService {
         return propertyValue;
     }
 
-    // 删除单个属性value
+    // 删除单个配置value
     private void deleteSingleValue(SetPropertyValuesOrder order, SetPropertyValuesOrder.KeyValue keyValue) {
         PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), keyValue.getKey(), order.getProfileId());
         if (propertyValue != null) {

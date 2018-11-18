@@ -21,7 +21,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 属性value服务单元测试
+ * 配置value服务单元测试
  */
 @Ignore
 public class PropertyValueServiceTest extends AbstractTest {

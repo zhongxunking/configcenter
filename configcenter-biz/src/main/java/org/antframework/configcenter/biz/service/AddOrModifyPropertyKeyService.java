@@ -24,7 +24,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 添加或修改属性key服务
+ * 添加或修改配置key服务
  */
 @Service(enableTx = true)
 public class AddOrModifyPropertyKeyService {

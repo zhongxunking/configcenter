@@ -21,7 +21,7 @@ import java.util.List;
 public class ProfileProperty implements Serializable {
     // 环境id
     private String profileId;
-    // 属性
+    // 配置
     private List<Property> properties = new ArrayList<>();
 
     public String getProfileId() {

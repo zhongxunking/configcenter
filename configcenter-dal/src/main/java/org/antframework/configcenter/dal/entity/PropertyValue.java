@@ -13,7 +13,7 @@ import org.antframework.boot.jpa.AbstractEntity;
 import javax.persistence.*;
 
 /**
- * 属性value
+ * 配置value
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key_profileId", columnNames = {"appId", "key", "profileId"}),
@@ -23,7 +23,7 @@ public class PropertyValue extends AbstractEntity {
     @Column(length = 64)
     private String appId;
 
-    // 属性key
+    // key
     @Column(name = "`key`", length = 128)
     private String key;
 
@@ -31,7 +31,7 @@ public class PropertyValue extends AbstractEntity {
     @Column(length = 64)
     private String profileId;
 
-    // 属性value
+    // value
     @Column(length = 2048)
     private String value;
 

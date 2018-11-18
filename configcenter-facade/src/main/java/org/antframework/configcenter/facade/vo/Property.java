@@ -13,7 +13,7 @@ import org.antframework.common.util.tostring.ToString;
 import java.io.Serializable;
 
 /**
- * 属性
+ * 配置项
  */
 public final class Property implements Serializable {
     // key

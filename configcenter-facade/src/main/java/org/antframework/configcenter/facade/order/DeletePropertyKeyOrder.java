@@ -12,7 +12,7 @@ import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
- * 删除属性key-order
+ * 删除配置key-order
  */
 public class DeletePropertyKeyOrder extends AbstractOrder {
     // 应用id

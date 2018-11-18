@@ -23,7 +23,7 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 删除属性key服务
+ * 删除配置key服务
  */
 @Service(enableTx = true)
 public class DeletePropertyKeyService {
@@ -48,7 +48,7 @@ public class DeletePropertyKeyService {
         propertyKeyDao.delete(propertyKey);
     }
 
-    // 删除属性value
+    // 删除配置value
     private void deletePropertyValue(String appId, String key, String profileId) {
         SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
         keyValue.setKey(key);

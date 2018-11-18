@@ -106,7 +106,7 @@ public class ServerRequester {
 
     // 查找应用在特定环境中的配置result
     private static class FindPropertiesResult extends AbstractResult {
-        // 属性
+        // 配置
         private Map<String, String> properties;
 
         public Map<String, String> getProperties() {

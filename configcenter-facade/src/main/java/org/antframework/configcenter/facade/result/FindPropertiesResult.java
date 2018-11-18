@@ -16,7 +16,7 @@ import java.util.Map;
  * 查找应用在特定环境中的配置result
  */
 public class FindPropertiesResult extends AbstractResult {
-    // 属性
+    // 配置
     private Map<String, String> properties;
 
     public Map<String, String> getProperties() {

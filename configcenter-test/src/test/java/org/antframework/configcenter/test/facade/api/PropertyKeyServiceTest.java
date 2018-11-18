@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 属性key服务单元测试
+ * 配置key服务单元测试
  */
 @Ignore
 public class PropertyKeyServiceTest extends AbstractTest {

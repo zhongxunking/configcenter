@@ -35,7 +35,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 属性key管理controller
+ * 配置key管理controller
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
@@ -44,7 +44,7 @@ public class PropertyKeyManageController {
     private PropertyKeyService propertyKeyService;
 
     /**
-     * 新增或修改属性key
+     * 新增或修改配置key
      *
      * @param appId 应用id（必须）
      * @param key   key（必须）
@@ -68,7 +68,7 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 删除属性key
+     * 删除配置key
      *
      * @param appId 应用id（必须）
      * @param key   key（必须）
@@ -91,7 +91,7 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找应用继承的属性key（包含应用自己）
+     * 查找应用继承的配置key（包含应用自己）
      *
      * @param appId 应用id（必须）
      */
@@ -110,7 +110,7 @@ public class PropertyKeyManageController {
         return result;
     }
 
-    // 获取应用的属性key
+    // 获取应用的配置key
     private FindInheritedPropertyKeysResult.AppPropertyKey getAppPropertyKey(String appId, String mainAppId) {
         Scope minScope = Scope.PRIVATE;
         if (!StringUtils.equals(appId, mainAppId)) {
@@ -140,10 +140,10 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 查找应用继承的所有应用的属性key
+     * 查找应用继承的所有应用的配置key
      */
     public static class FindInheritedPropertyKeysResult extends AbstractResult {
-        // 由近及远继承的所用应用的属性key
+        // 由近及远继承的所用应用的配置key
         private List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
 
         public void addAppPropertyKey(AppPropertyKey appPropertyKey) {
@@ -155,12 +155,12 @@ public class PropertyKeyManageController {
         }
 
         /**
-         * 应用的属性key
+         * 应用的配置key
          */
         public static class AppPropertyKey implements Serializable {
             // 应用id
             private String appId;
-            // 属性key
+            // 配置key
             private List<PropertyKeyInfo> propertyKeys;
 
             public AppPropertyKey(String appId, List<PropertyKeyInfo> propertyKeys) {

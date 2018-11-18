@@ -1,4 +1,4 @@
-// 属性key管理组件
+// 配置key管理组件
 const PropertyKeysTemplate = `
 <div>
     <el-row style="margin-bottom: 10px">
@@ -27,7 +27,7 @@ const PropertyKeysTemplate = `
             </el-col>
         </el-row>
         <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
-            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+            <el-table-column prop="key" label="配置key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
                     <span v-if="!row.editing">{{ row.memo }}</span>

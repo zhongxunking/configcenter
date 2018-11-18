@@ -18,7 +18,7 @@ import java.util.Objects;
 public class ConfigChangedEventType {
     // 应用id
     private String appId;
-    // 被修改的属性名前缀
+    // 被修改的配置key前缀
     private String prefix;
 
     public ConfigChangedEventType(String appId, String prefix) {

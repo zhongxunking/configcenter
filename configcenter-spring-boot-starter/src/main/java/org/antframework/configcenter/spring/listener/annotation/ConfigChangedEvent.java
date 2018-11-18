@@ -18,9 +18,9 @@ import java.util.List;
 public class ConfigChangedEvent {
     // 应用id
     private String appId;
-    // 被修改的属性名前缀
+    // 被修改的配置key前缀
     private String prefix;
-    // 被修改的属性
+    // 被修改的配置
     private List<ChangedProperty> changedProperties;
 
     public ConfigChangedEvent(String appId, String prefix, List<ChangedProperty> changedProperties) {

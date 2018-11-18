@@ -61,7 +61,7 @@ public class FindAppSelfPropertiesService {
         }
     }
 
-    // 获取应用在特定环境的所有属性value
+    // 获取应用在特定环境的所有配置value
     private List<PropertyValueInfo> getPropertyValues(String appId, String profileId) {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);

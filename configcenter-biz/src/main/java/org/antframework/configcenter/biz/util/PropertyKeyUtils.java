@@ -19,18 +19,18 @@ import org.antframework.configcenter.facade.vo.Scope;
 import java.util.List;
 
 /**
- * 属性key服务工具类
+ * 配置key服务工具类
  */
 public final class PropertyKeyUtils {
-    // 属性key服务
+    // 配置key服务
     private static final PropertyKeyService PROPERTY_KEY_SERVICE = Contexts.getApplicationContext().getBean(PropertyKeyService.class);
 
     /**
-     * 查找应用的属性key
+     * 查找应用的配置key
      *
      * @param appId    应用id
      * @param minScope 最小作用域
-     * @return 应用的属性key
+     * @return 应用的配置key
      */
     public static List<PropertyKeyInfo> findAppPropertyKeys(String appId, Scope minScope) {
         FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();

@@ -23,7 +23,7 @@ import java.util.Map;
 public class ConfigRefresher {
     private static final Logger logger = LoggerFactory.getLogger(ConfigRefresher.class);
 
-    // 配置属性
+    // 配置项集合
     private ConfigurableConfigProperties properties;
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar;

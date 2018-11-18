@@ -29,7 +29,7 @@ import org.springframework.core.convert.converter.Converter;
 import java.util.List;
 
 /**
- * 查找应用的属性key服务
+ * 查找应用的配置key服务
  */
 @Service
 public class FindAppPropertyKeysService {
@@ -59,7 +59,7 @@ public class FindAppPropertyKeysService {
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
         for (PropertyKey propertyKey : propertyKeys) {
             if (propertyKey.getScope().compareTo(order.getMinScope()) < 0) {
-                // 如果作用域小于要求值，则忽略该属性key
+                // 如果作用域小于要求值，则忽略该配置key
                 continue;
             }
             result.addPropertyKey(INFO_CONVERTER.convert(propertyKey));

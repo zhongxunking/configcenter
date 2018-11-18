@@ -11,16 +11,16 @@ package org.antframework.configcenter.client.core;
 import org.antframework.common.util.tostring.ToString;
 
 /**
- * 被修改的属性
+ * 被修改的配置项
  */
 public class ChangedProperty {
     // 修改类型
     private ChangeType type;
-    // 属性key
+    // key
     private String key;
-    // 旧属性值
+    // 旧值
     private String oldValue;
-    // 新属性值
+    // 新值
     private String newValue;
 
     public ChangedProperty(ChangeType type, String key, String oldValue, String newValue) {

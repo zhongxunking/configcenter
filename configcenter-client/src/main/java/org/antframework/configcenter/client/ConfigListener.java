@@ -20,7 +20,7 @@ public interface ConfigListener {
     /**
      * 当配置被修改时调用本方法
      *
-     * @param changedProperties 被修改的属性
+     * @param changedProperties 被修改的配置
      */
     void onChange(List<ChangedProperty> changedProperties);
 }

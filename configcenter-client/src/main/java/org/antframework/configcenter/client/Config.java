@@ -22,7 +22,7 @@ import java.io.File;
  * 配置
  */
 public class Config {
-    // 配置属性
+    // 配置项集合
     private ConfigurableConfigProperties properties = new DefaultConfigProperties();
     // 监听器注册器
     private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
@@ -47,7 +47,7 @@ public class Config {
     }
 
     /**
-     * 获取配置属性
+     * 获取配置项集合
      */
     public ConfigProperties getProperties() {
         return properties;
