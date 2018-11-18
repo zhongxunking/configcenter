@@ -31,7 +31,7 @@ import org.springframework.core.convert.converter.Converter;
 import java.util.List;
 
 /**
- * 查找应用在指定环境的所有属性value服务
+ * 查找应用在指定环境的所有配置value服务
  */
 @Service
 public class FindAppProfilePropertyValuesService {

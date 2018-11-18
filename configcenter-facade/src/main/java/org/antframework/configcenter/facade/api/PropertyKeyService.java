@@ -15,21 +15,21 @@ import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
 
 /**
- * 属性key服务
+ * 配置key服务
  */
 public interface PropertyKeyService {
     /**
-     * 添加或修改属性key
+     * 添加或修改配置key
      */
     EmptyResult addOrModifyPropertyKey(AddOrModifyPropertyKeyOrder order);
 
     /**
-     * 删除属性key
+     * 删除配置key
      */
     EmptyResult deletePropertyKey(DeletePropertyKeyOrder order);
 
     /**
-     * 查找应用的属性key
+     * 查找应用的配置key
      */
     FindAppPropertyKeysResult findAppPropertyKeys(FindAppPropertyKeysOrder order);
 }

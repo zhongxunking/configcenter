@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 设置多个属性value-order
+ * 设置多个配置value-order
  */
 public class SetPropertyValuesOrder extends AbstractOrder {
     // 应用id
@@ -28,7 +28,7 @@ public class SetPropertyValuesOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-    // 属性key对应的value
+    // 配置key对应的value
     @Size(min = 1)
     @Valid
     private List<KeyValue> keyValues = new ArrayList<>();

@@ -12,12 +12,12 @@ import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.facade.vo.Scope;
 
 /**
- * 属性key-info
+ * 配置key-info
  */
 public class PropertyKeyInfo extends AbstractInfo {
     // 应用id
     private String appId;
-    // 属性key
+    // key
     private String key;
     // 作用域
     private Scope scope;

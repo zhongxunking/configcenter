@@ -9,15 +9,14 @@
 package org.antframework.configcenter.biz.provider;
 
 import org.antframework.boot.bekit.CommonQueries;
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.facade.api.ProfileService;
-import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
-import org.antframework.configcenter.facade.order.DeleteProfileOrder;
-import org.antframework.configcenter.facade.order.QueryProfilesOrder;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
+import org.antframework.configcenter.facade.order.*;
+import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
+import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,8 +41,18 @@ public class ProfileServiceProvider implements ProfileService {
     }
 
     @Override
-    public FindAllProfilesResult findAllProfiles(EmptyOrder order) {
-        return serviceEngine.execute("findAllProfilesService", order);
+    public FindProfileResult findProfile(FindProfileOrder order) {
+        return serviceEngine.execute("findProfileService", order);
+    }
+
+    @Override
+    public FindInheritedProfilesResult findInheritedProfiles(FindInheritedProfilesOrder order) {
+        return serviceEngine.execute("findInheritedProfilesService", order);
+    }
+
+    @Override
+    public FindProfileTreeResult findProfileTree(FindProfileTreeOrder order) {
+        return serviceEngine.execute("findProfileTreeService", order);
     }
 
     @Override

@@ -12,14 +12,17 @@ import org.antframework.boot.jpa.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 /**
  * 应用
  */
 @Entity
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId", columnNames = "appId"))
 public class App extends AbstractEntity {
     // 应用id
-    @Column(unique = true, length = 64)
+    @Column(length = 64)
     private String appId;
 
     // 应用名

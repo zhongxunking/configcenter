@@ -30,13 +30,13 @@ public final class RefreshUtils {
     /**
      * 刷新客户端
      *
-     * @param appId     应用id（null表示刷新所有应用）
-     * @param profileId 环境id（null表示刷新所有环境）
+     * @param rootAppId     根应用id（null表示刷新所有应用）
+     * @param rootProfileId 根环境id（null表示刷新所有环境）
      */
-    public static void refreshClients(String appId, String profileId) {
+    public static void refreshClients(String rootAppId, String rootProfileId) {
         RefreshClientsOrder order = new RefreshClientsOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
+        order.setRootAppId(rootAppId);
+        order.setRootProfileId(rootProfileId);
 
         REFRESH_SERVICE.refreshClients(order);
     }

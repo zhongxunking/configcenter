@@ -31,7 +31,7 @@ public class ConfigController {
     private MetaProperties metaProperties;
 
     /**
-     * 查找应用在特定环境中的配置
+     * 查找应用在指定环境中的配置
      *
      * @param mainAppId    主体应用id（必须）
      * @param queriedAppId 被查询配置的应用id（必须）

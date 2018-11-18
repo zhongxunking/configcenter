@@ -32,9 +32,9 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-        // 创建配置中心属性资源
+        // 创建配置资源
         PropertySource propertySource = new ConfigcenterPropertySource(ConfigContexts.getConfig(Contexts.getAppId()));
-        // 将属性资源添加到environment中
+        // 将配置资源添加到environment中
         MutablePropertySources propertySources = event.getEnvironment().getPropertySources();
         if (ConfigcenterProperties.INSTANCE.getPriorTo() == null) {
             propertySources.addLast(propertySource);
@@ -44,11 +44,11 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
     }
 
     /**
-     * 配置中心属性资源
+     * 配置中心配置资源
      */
     public static class ConfigcenterPropertySource extends EnumerablePropertySource<Config> {
         /**
-         * 属性资源名称
+         * 配置资源名称
          */
         public static final String PROPERTY_SOURCE_NAME = "configcenter";
 

@@ -24,6 +24,15 @@ const ProfilesTemplate = `
                 <el-input v-else v-model="row.editingProfileName" size="small" clearable placeholder="请输入环境名"></el-input>
             </template>
         </el-table-column>
+        <el-table-column prop="parent" label="父环境">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ toShowingProfile(row.parentProfile) }}</span>
+                <el-select v-else v-model="row.editingParent" filterable remote :remote-method="queryMatchedProfiles" @focus="queryMatchedProfiles(row.editingParent)" clearable size="small" placeholder="请选择父环境">
+                    <el-option v-if="matchedProfiles === null && row.parentProfile" :value="row.parentProfile.profileId" :label="toShowingProfile(row.parentProfile)" :key="row.parentProfile.profileId"></el-option>
+                    <el-option v-for="profile in matchedProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId"></el-option>
+                </el-select>
+            </template>
+        </el-table-column>
         <el-table-column label="操作" header-align="center" width="160px">
             <template slot-scope="{ row }">
                 <el-row>
@@ -71,6 +80,11 @@ const ProfilesTemplate = `
             <el-form-item label="环境名">
                 <el-input v-model="addProfileForm.profileName" clearable placeholder="请输入环境名" style="width: 90%"></el-input>
             </el-form-item>
+            <el-form-item label="父环境" prop="parent">
+                <el-select v-model="addProfileForm.parent" filterable remote :remote-method="queryMatchedProfiles" @focus="queryMatchedProfiles(addProfileForm.parent)" clearable placeholder="请选择父环境" style="width: 90%">
+                    <el-option v-for="profile in matchedProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId"></el-option>
+                </el-select>
+            </el-form-item>
         </el-form>
         <div slot="footer">
             <el-button @click="closeAddProfileDialog">取消</el-button>
@@ -92,10 +106,12 @@ const Profiles = {
             profilesLoading: false,
             totalProfiles: 0,
             profiles: [],
+            matchedProfiles: null,
             addProfileDialogVisible: false,
             addProfileForm: {
                 profileId: null,
-                profileName: null
+                profileName: null,
+                parent: null
             }
         };
     },
@@ -113,25 +129,54 @@ const Profiles = {
                 theThis.profiles.forEach(function (profile) {
                     Vue.set(profile, 'editing', false);
                     Vue.set(profile, 'editingProfileName', null);
+                    Vue.set(profile, 'editingParent', null);
                     Vue.set(profile, 'savePopoverShowing', false);
+                    Vue.set(profile, 'parentProfile', null);
+                    if (profile.parent) {
+                        theThis.doFindProfile(profile.parent, function (parentProfile) {
+                            profile.parentProfile = parentProfile;
+                        });
+                    }
                 });
                 theThis.profilesLoading = false;
             }, function () {
                 theThis.profilesLoading = false;
             });
         },
+        queryMatchedProfiles: function (profileId) {
+            const theThis = this;
+            this.doQueryProfiles({
+                pageNo: 1,
+                pageSize: 100,
+                profileId: profileId
+            }, function (result) {
+                theThis.matchedProfiles = result.infos;
+            });
+        },
         startEditing: function (profile) {
             profile.editing = true;
             profile.editingProfileName = profile.profileName;
+            profile.editingParent = profile.parent;
+            this.matchedProfiles = null;
         },
         saveEditing: function (profile) {
             profile.savePopoverShowing = false;
+
+            const theThis = this;
             this.doAddOrModifyProfile({
                 profileId: profile.profileId,
-                profileName: profile.editingProfileName
+                profileName: profile.editingProfileName,
+                parent: profile.editingParent
             }, function () {
                 profile.editing = false;
                 profile.profileName = profile.editingProfileName;
+                profile.parent = profile.editingParent;
+                profile.parentProfile = null;
+                if (profile.parent) {
+                    theThis.doFindProfile(profile.parent, function (parentProfile) {
+                        profile.parentProfile = parentProfile;
+                    });
+                }
             });
         },
         deleteProfile: function (profile) {
@@ -165,6 +210,17 @@ const Profiles = {
             this.addProfileDialogVisible = false;
             this.addProfileForm.profileId = null;
             this.addProfileForm.profileName = null;
+            this.addProfileForm.parent = null;
+        },
+        toShowingProfile: function (profile) {
+            if (!profile) {
+                return '';
+            }
+            let text = profile.profileId;
+            if (profile.profileName) {
+                text += '（' + profile.profileName + '）';
+            }
+            return text;
         },
         doQueryProfiles: function (params, processResult, failCallback) {
             axios.get('../manage/profile/queryProfiles', {params: params})
@@ -178,6 +234,19 @@ const Profiles = {
                         }
                     }
                 });
+        },
+        doFindProfile: function (profileId, processProfile) {
+            axios.get('../manage/profile/findProfile', {
+                params: {
+                    profileId: profileId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                processProfile(result.profile);
+            });
         },
         doAddOrModifyProfile: function (params, successCallback) {
             axios.post('../manage/profile/addOrModifyProfile', params)

@@ -12,8 +12,11 @@ import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.AppTree;
+import org.antframework.configcenter.facade.order.FindAppTreeOrder;
 import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
 import org.antframework.configcenter.facade.order.QueryAppsOrder;
+import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
 
@@ -33,7 +36,7 @@ public final class AppUtils {
      * 查找应用继承的所有应用
      *
      * @param appId 被查询的应用id
-     * @return 继承的所有应用
+     * @return 由近及远继承的所有应用
      */
     public static List<AppInfo> findInheritedApps(String appId) {
         FindInheritedAppsOrder order = new FindInheritedAppsOrder();
@@ -42,6 +45,21 @@ public final class AppUtils {
         FindInheritedAppsResult result = APP_SERVICE.findInheritedApps(order);
         FacadeUtils.assertSuccess(result);
         return result.getInheritedApps();
+    }
+
+    /**
+     * 获取环境树
+     *
+     * @param appId 根节点应用id（null表示查找所有应用）
+     * @return 应用树
+     */
+    public static AppTree findAppTree(String appId) {
+        FindAppTreeOrder order = new FindAppTreeOrder();
+        order.setAppId(appId);
+
+        FindAppTreeResult result = APP_SERVICE.findAppTree(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getAppTree();
     }
 
     /**

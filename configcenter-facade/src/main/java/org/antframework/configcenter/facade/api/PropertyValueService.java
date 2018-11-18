@@ -14,16 +14,16 @@ import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 
 /**
- * 属性value服务
+ * 配置value服务
  */
 public interface PropertyValueService {
     /**
-     * 设置多个属性value
+     * 设置多个配置value
      */
     EmptyResult setPropertyValues(SetPropertyValuesOrder order);
 
     /**
-     * 查找应用在指定环境的所有属性value
+     * 查找应用在指定环境的所有配置value
      */
     FindAppProfilePropertyValuesResult findAppProfilePropertyValues(FindAppProfilePropertyValuesOrder order);
 }

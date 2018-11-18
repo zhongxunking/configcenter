@@ -18,6 +18,8 @@ public class ProfileInfo extends AbstractInfo {
     private String profileId;
     // 环境名
     private String profileName;
+    // 父环境id（null表示无父环境）
+    private String parent;
 
     public String getProfileId() {
         return profileId;
@@ -33,5 +35,13 @@ public class ProfileInfo extends AbstractInfo {
 
     public void setProfileName(String profileName) {
         this.profileName = profileName;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 }

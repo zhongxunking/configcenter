@@ -22,7 +22,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 属性key服务单元测试
+ * 配置key服务单元测试
  */
 @Ignore
 public class PropertyKeyServiceTest extends AbstractTest {
@@ -31,36 +31,25 @@ public class PropertyKeyServiceTest extends AbstractTest {
 
     @Test
     public void testAddOrModifyPropertyKey() {
-        AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
-        order.setAppId("scbfund");
-        order.setKey("datasource.url");
-        order.setScope(Scope.PRIVATE);
-        order.setMemo("数据库地址");
-        EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
-        checkResult(result, Status.SUCCESS);
-
-        order = new AddOrModifyPropertyKeyOrder();
-        order.setAppId("scbfund");
-        order.setKey("collection.accNo");
-        order.setScope(Scope.PROTECTED);
-        order.setMemo("归集户帐号");
-        result = propertyKeyService.addOrModifyPropertyKey(order);
-        checkResult(result, Status.SUCCESS);
-
-        order = new AddOrModifyPropertyKeyOrder();
-        order.setAppId("scbfund");
-        order.setKey("cashier.url");
-        order.setScope(Scope.PUBLIC);
-        order.setMemo("收银台地址");
-        result = propertyKeyService.addOrModifyPropertyKey(order);
-        checkResult(result, Status.SUCCESS);
+        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
+        for (String appId : appIds) {
+            for (Scope scope : Scope.values()) {
+                AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
+                order.setAppId(appId);
+                order.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
+                order.setScope(scope);
+                order.setMemo(String.format("%s-%s-key1的备注", appId, scope.name().toLowerCase()));
+                EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
+                checkResult(result, Status.SUCCESS);
+            }
+        }
     }
 
     @Test
     public void testDeletePropertyKey() {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
-        order.setAppId("scbfund");
-        order.setKey("collection.accNo");
+        order.setAppId("common");
+        order.setKey("common-private-key1");
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         checkResult(result, Status.SUCCESS);
@@ -69,7 +58,7 @@ public class PropertyKeyServiceTest extends AbstractTest {
     @Test
     public void testFindAppPropertyKeys() {
         FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
-        order.setAppId("scbfund");
+        order.setAppId("customer");
         order.setMinScope(Scope.PROTECTED);
 
         FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);

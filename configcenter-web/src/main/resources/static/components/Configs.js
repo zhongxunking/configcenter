@@ -25,17 +25,12 @@ const ConfigsTemplate = `
         </el-table-column>
         <el-table-column label="环境">
             <template slot-scope="{ row }">
-                <router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + row.appId +'/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
+                <router-link v-for="(profile, index) in allProfiles" v-if="index < 12" :to="'/configs/' + row.appId +'/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
                     <el-button type="text">{{ profile.profileId }}</el-button>
                 </router-link>
-                <router-link v-if="allProfiles.length > 8" :to="'/configs/' + row.appId +'/' + allProfiles[0].profileId" style="margin-right: 10px">
+                <router-link v-if="allProfiles.length > 12" :to="'/configs/' + row.appId +'/' + allProfiles[0].profileId" style="margin-right: 10px">
                     <el-button type="text" icon="el-icon-more"></el-button>
                 </router-link>
-            </template>
-        </el-table-column>
-        <el-table-column label="操作" width="160px">
-            <template slot-scope="{ row }">
-                <el-button type="text" @click="showAppTree">应用树</el-button>
             </template>
         </el-table-column>
     </el-table>
@@ -83,15 +78,29 @@ const Configs = {
                 });
 
             this.allProfilesLoading = true;
-            axios.get('../manage/profile/findAllProfiles')
-                .then(function (result) {
-                    theThis.allProfilesLoading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
+            axios.get('../manage/profile/findProfileTree', {
+                params: {
+                    profileId: null
+                }
+            }).then(function (result) {
+                theThis.allProfilesLoading = false;
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                let extractProfiles = function (profileTree, level) {
+                    let profiles = [];
+                    if (profileTree.profile !== null) {
+                        profileTree.profile.level = level;
+                        profiles.push(profileTree.profile);
                     }
-                    theThis.allProfiles = result.profiles;
-                });
+                    profileTree.children.forEach(function (child) {
+                        profiles = profiles.concat(extractProfiles(child, level + 1));
+                    });
+                    return profiles;
+                };
+                theThis.allProfiles = extractProfiles(result.profileTree, -1);
+            });
         },
         toShowingApp: function (app) {
             if (!app) {
@@ -102,9 +111,6 @@ const Configs = {
                 text += '（' + app.appName + '）';
             }
             return text;
-        },
-        showAppTree: function () {
-            Vue.prototype.$message.success('开发中，请关注后续版本^_^');
         }
     }
 };

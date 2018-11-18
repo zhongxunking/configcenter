@@ -34,28 +34,18 @@ public class RefreshServiceTest extends AbstractTest {
 
     @Test
     public void testRefreshClients() {
-        RefreshClientsOrder order = new RefreshClientsOrder();
-        order.setAppId("scbfund");
-        order.setProfileId("dev");
-        EmptyResult result = refreshService.refreshClients(order);
-        checkResult(result, Status.SUCCESS);
+        String[] appIds = new String[]{null, "customer"};
+        String[] profiles = new String[]{null, "dev"};
 
-        order = new RefreshClientsOrder();
-        order.setAppId("scbfund");
-        order.setProfileId(null);
-        result = refreshService.refreshClients(order);
-        checkResult(result, Status.SUCCESS);
+        for (String appId : appIds) {
+            for (String profile : profiles) {
+                RefreshClientsOrder order = new RefreshClientsOrder();
+                order.setRootAppId(appId);
+                order.setRootProfileId(profile);
 
-        order = new RefreshClientsOrder();
-        order.setAppId(null);
-        order.setProfileId("dev");
-        result = refreshService.refreshClients(order);
-        checkResult(result, Status.SUCCESS);
-
-        order = new RefreshClientsOrder();
-        order.setAppId(null);
-        order.setProfileId(null);
-        result = refreshService.refreshClients(order);
-        checkResult(result, Status.SUCCESS);
+                EmptyResult result = refreshService.refreshClients(order);
+                checkResult(result, Status.SUCCESS);
+            }
+        }
     }
 }

@@ -32,9 +32,11 @@ public interface ProfileDao {
 
     Profile findByProfileId(String profileId);
 
+    boolean existsByParent(String parent);
+
     void delete(Profile profile);
 
-    List<Profile> findAll();
+    List<Profile> findByParent(String parent);
 
     Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

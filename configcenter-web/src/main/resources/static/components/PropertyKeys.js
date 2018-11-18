@@ -1,21 +1,21 @@
-// 属性key管理组件
+// 配置key管理组件
 const PropertyKeysTemplate = `
 <div>
     <el-row style="margin-bottom: 10px">
         <el-col>
             <span style="font-size: large;">环境：</span>
-            <router-link v-for="(profile, index) in allProfiles" v-if="index < 6" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
+            <router-link v-for="(profile, index) in allProfiles" v-if="index < 8" :to="'/configs/' + appId + '/' + profile.profileId" :key="profile.profileId" style="margin-right: 10px">
                 <el-button type="text">{{ profile.profileId }}</el-button>
             </router-link>
-            <router-link v-if="allProfiles.length > 6" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">
+            <router-link v-if="allProfiles.length > 8" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">
                 <el-button type="text" icon="el-icon-more"></el-button>
             </router-link>
         </el-col>
     </el-row>
-    <div v-for="appPropertyKeys in appPropertyKeyses" style="margin-bottom: 50px">
-        <el-row v-if="appPropertyKeys.appId === appId" style="margin-bottom: 10px">
+    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 50px">
+        <el-row v-if="appPropertyKey.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
-                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
             <el-col :span="4" style="text-align: end;">
                 <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
@@ -23,18 +23,18 @@ const PropertyKeysTemplate = `
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center">
-                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKeys.app) }}</span>
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKeys.propertyKeys" v-loading="appPropertyKeys.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKeys.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKeys.appId === appId ? '100%' : 'calc(100% - 160px)'}">
-            <el-table-column prop="key" label="属性key" sortable></el-table-column>
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
+            <el-table-column prop="key" label="配置key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
                     <span v-if="!row.editing">{{ row.memo }}</span>
                     <el-input v-else v-model="row.editingMemo" size="small" clearable placeholder="请输入备注"></el-input>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" sortable width="160px">
+            <el-table-column prop="scope" label="作用域" sortable width="120px">
                 <template slot-scope="{ row }">
                     <div v-if="!row.editing">
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
@@ -48,12 +48,26 @@ const PropertyKeysTemplate = `
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKeys.appId === appId" label="操作" header-align="center" width="160px">
+            <el-table-column prop="privilege" label="权限" sortable width="120px">
+                <template slot-scope="{ row }">
+                    <div v-if="!row.editing || manager.type === 'NORMAL'">
+                        <el-tag v-if="row.privilege === 'READ_WRITE'" type="success">读写</el-tag>
+                        <el-tag v-else-if="row.privilege === 'READ'" type="warning">只读</el-tag>
+                        <el-tag v-else-if="row.privilege === 'NONE'" type="danger">无</el-tag>
+                    </div>
+                    <el-select v-else v-model="row.editingPrivilege" size="small" placeholder="请选择权限" style="width: 90%">
+                        <el-option value="READ_WRITE" label="读写"></el-option>
+                        <el-option value="READ" label="只读"></el-option>
+                        <el-option value="NONE" label="无"></el-option>
+                    </el-select>
+                </template>
+            </el-table-column>
+            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="16" style="text-align: center">
                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="small" circle></el-button>
+                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type==='NORMAL' && row.privilege!=='READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
                             </el-tooltip>
                             <template v-else>
                                 <el-button-group>
@@ -73,9 +87,9 @@ const PropertyKeysTemplate = `
                                 </el-button-group>
                             </template>
                         </el-col>
-                        <el-col :span="12" style="text-align: center">
+                        <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deletePropertyKey(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                                <el-button @click="deletePropertyKey(row)" type="danger" :disabled="manager.type==='NORMAL' && row.privilege!=='READ_WRITE'" icon="el-icon-delete" size="small" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>
@@ -112,9 +126,10 @@ const PropertyKeys = {
     props: ['appId'],
     data: function () {
         return {
+            manager: CURRENT_MANAGER,
             allProfiles: [],
             selfPropertyKeysLoading: false,
-            appPropertyKeyses: [],
+            appPropertyKeys: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
                 key: null,
@@ -125,21 +140,35 @@ const PropertyKeys = {
     },
     created: function () {
         this.findAllProfiles();
-        this.findAppPropertyKeyses();
+        this.findAppPropertyKeys();
     },
     methods: {
         findAllProfiles: function () {
             const theThis = this;
-            axios.get('../manage/profile/findAllProfiles')
-                .then(function (result) {
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
+            axios.get('../manage/profile/findProfileTree', {
+                params: {
+                    profileId: null
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                let extractProfiles = function (profileTree, level) {
+                    let profiles = [];
+                    if (profileTree.profile !== null) {
+                        profileTree.profile.level = level;
+                        profiles.push(profileTree.profile);
                     }
-                    theThis.allProfiles = result.profiles;
-                });
+                    profileTree.children.forEach(function (child) {
+                        profiles = profiles.concat(extractProfiles(child, level + 1));
+                    });
+                    return profiles;
+                };
+                theThis.allProfiles = extractProfiles(result.profileTree, -1);
+            });
         },
-        findAppPropertyKeyses: function () {
+        findAppPropertyKeys: function () {
             const theThis = this;
             this.selfPropertyKeysLoading = true;
             axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
@@ -152,25 +181,48 @@ const PropertyKeys = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.appPropertyKeyses = result.appPropertyKeyses;
-                theThis.appPropertyKeyses.forEach(function (appPropertyKeys) {
-                    appPropertyKeys.propertyKeys.forEach(function (propertyKey) {
+                theThis.appPropertyKeys = result.appPropertyKeys;
+                theThis.appPropertyKeys.forEach(function (appPropertyKey) {
+                    appPropertyKey.propertyKeys.forEach(function (propertyKey) {
                         Vue.set(propertyKey, 'editing', false);
                         Vue.set(propertyKey, 'editingScope', null);
                         Vue.set(propertyKey, 'editingMemo', null);
+                        Vue.set(propertyKey, 'privilege', 'NONE');
+                        Vue.set(propertyKey, 'editingPrivilege', null);
                         Vue.set(propertyKey, 'savePopoverShowing', false);
                     });
-                    Vue.set(appPropertyKeys, 'app', null);
+
+                    Vue.set(appPropertyKey, 'app', null);
                     axios.get('../manage/app/findApp', {
                         params: {
-                            appId: appPropertyKeys.appId
+                            appId: appPropertyKey.appId
                         }
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        appPropertyKeys.app = result.app;
+                        appPropertyKey.app = result.app;
+                    });
+
+                    axios.get('../manage/propertyKey/findKeyPrivileges', {
+                        params: {
+                            appId: appPropertyKey.appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        const keyPrivileges = result.keyPrivileges;
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            let privilege = keyPrivileges[propertyKey.key];
+                            if (!privilege) {
+                                privilege = 'READ_WRITE';
+                            }
+                            propertyKey.privilege = privilege;
+                            propertyKey.editingPrivilege = null;
+                        });
                     });
                 });
             });
@@ -179,6 +231,7 @@ const PropertyKeys = {
             propertyKey.editing = true;
             propertyKey.editingScope = propertyKey.scope;
             propertyKey.editingMemo = propertyKey.memo;
+            propertyKey.editingPrivilege = propertyKey.privilege;
         },
         saveEditing: function (propertyKey) {
             propertyKey.savePopoverShowing = false;
@@ -189,9 +242,45 @@ const PropertyKeys = {
                 scope: propertyKey.editingScope,
                 memo: propertyKey.editingMemo
             }, function () {
-                propertyKey.editing = false;
                 propertyKey.scope = propertyKey.editingScope;
                 propertyKey.memo = propertyKey.editingMemo;
+
+                if (propertyKey.editingPrivilege === propertyKey.privilege) {
+                    propertyKey.editing = false;
+                    return;
+                }
+                if (propertyKey.editingPrivilege === 'READ_WRITE') {
+                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/deletes', {
+                        type: 'app-key-privilege',
+                        source: propertyKey.appId,
+                        target: propertyKey.key
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        propertyKey.privilege = propertyKey.editingPrivilege;
+
+                        propertyKey.editing = false;
+                    });
+                } else {
+                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/addOrModify', {
+                        type: 'app-key-privilege',
+                        source: propertyKey.appId,
+                        target: propertyKey.key,
+                        value: propertyKey.editingPrivilege
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        propertyKey.privilege = propertyKey.editingPrivilege;
+
+                        propertyKey.editing = false;
+                    });
+                }
             });
         },
         deletePropertyKey: function (propertyKey) {
@@ -207,7 +296,7 @@ const PropertyKeys = {
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.findAppPropertyKeyses();
+                        theThis.findAppPropertyKeys();
                     });
                 });
         },
@@ -220,7 +309,7 @@ const PropertyKeys = {
                 const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
                 theThis.doAddOrModifyPropertyKey(params, function () {
                     theThis.closeAddPropertyKeyDialog();
-                    theThis.findAppPropertyKeyses();
+                    theThis.findAppPropertyKeys();
                 });
             })
         },

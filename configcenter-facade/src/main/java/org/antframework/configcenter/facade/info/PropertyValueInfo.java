@@ -11,16 +11,16 @@ package org.antframework.configcenter.facade.info;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
- * 属性value-info
+ * 配置value-info
  */
 public class PropertyValueInfo extends AbstractInfo {
     // 应用id
     private String appId;
-    // 属性key
+    // key
     private String key;
     // 环境id
     private String profileId;
-    // 属性value
+    // value
     private String value;
 
     public String getAppId() {

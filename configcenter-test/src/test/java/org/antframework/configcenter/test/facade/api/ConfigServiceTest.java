@@ -30,42 +30,34 @@ public class ConfigServiceTest extends AbstractTest {
 
     @Test
     public void testFindProperties() {
-        FindPropertiesOrder order = new FindPropertiesOrder();
-        order.setMainAppId("scbfund");
-        order.setQueriedAppId("scbfund");
-        order.setProfileId("dev");
-        FindPropertiesResult result = configService.findProperties(order);
-        checkResult(result, Status.SUCCESS);
+        String[] queriedAppIds = new String[]{"customer", "account"};
+        String[] profileIds = new String[]{"offline", "dev"};
 
-        order = new FindPropertiesOrder();
-        order.setMainAppId("investment");
-        order.setQueriedAppId("scbfund");
-        order.setProfileId("dev");
-        result = configService.findProperties(order);
-        checkResult(result, Status.SUCCESS);
+        for (String queriedId : queriedAppIds) {
+            for (String profileId : profileIds) {
+                FindPropertiesOrder order = new FindPropertiesOrder();
+                order.setMainAppId("customer");
+                order.setQueriedAppId(queriedId);
+                order.setProfileId(profileId);
+
+                FindPropertiesResult result = configService.findProperties(order);
+                checkResult(result, Status.SUCCESS);
+            }
+        }
     }
 
     @Test
     public void testFindAppSelfProperties() {
-        FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
-        order.setAppId("scbfund");
-        order.setProfileId("dev");
-        order.setMinScope(Scope.PRIVATE);
-        FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
-        checkResult(result, Status.SUCCESS);
-
-        order = new FindAppSelfPropertiesOrder();
-        order.setAppId("scbfund");
-        order.setProfileId("dev");
-        order.setMinScope(Scope.PROTECTED);
-        result = configService.findAppSelfProperties(order);
-        checkResult(result, Status.SUCCESS);
-
-        order = new FindAppSelfPropertiesOrder();
-        order.setAppId("scbfund");
-        order.setProfileId("dev");
-        order.setMinScope(Scope.PUBLIC);
-        result = configService.findAppSelfProperties(order);
-        checkResult(result, Status.SUCCESS);
+        String[] profileIds = new String[]{"offline", "dev"};
+        for (String profileId : profileIds) {
+            for (Scope scope : Scope.values()) {
+                FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
+                order.setAppId("customer");
+                order.setProfileId(profileId);
+                order.setMinScope(scope);
+                FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
+                checkResult(result, Status.SUCCESS);
+            }
+        }
     }
 }

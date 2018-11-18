@@ -4,29 +4,27 @@
 
 /*
  * 修订记录:
- * @author 钟勋 2017-09-16 20:22 创建
+ * @author 钟勋 2018-10-14 20:02 创建
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
-import org.antframework.configcenter.facade.result.FindAllProfilesResult;
+import org.antframework.configcenter.facade.order.FindProfileOrder;
+import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.List;
-
 /**
- * 查找所有环境服务
+ * 查找环境服务
  */
 @Service
-public class FindAllProfilesService {
+public class FindProfileService {
     // info转换器
     private static final Converter<Profile, ProfileInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ProfileInfo.class);
 
@@ -34,12 +32,13 @@ public class FindAllProfilesService {
     private ProfileDao profileDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<EmptyOrder, FindAllProfilesResult> context) {
-        FindAllProfilesResult result = context.getResult();
+    public void execute(ServiceContext<FindProfileOrder, FindProfileResult> context) {
+        FindProfileOrder order = context.getOrder();
+        FindProfileResult result = context.getResult();
 
-        List<Profile> profiles = profileDao.findAll();
-        for (Profile profile : profiles) {
-            result.addProfile(INFO_CONVERTER.convert(profile));
+        Profile profile = profileDao.findByProfileId(order.getProfileId());
+        if (profile != null) {
+            result.setProfile(INFO_CONVERTER.convert(profile));
         }
     }
 }

@@ -11,7 +11,8 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
-import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,19 +29,19 @@ public class RefreshController {
     /**
      * 刷新客户端
      *
-     * @param appId     应用id（不传表示刷新所有应用）
-     * @param profileId 环境id（不传表示刷新所有环境）
+     * @param rootAppId     根应用id（不传表示刷新所有应用）
+     * @param rootProfileId 根环境id（不传表示刷新所有环境）
      */
     @RequestMapping("/refreshClients")
-    public EmptyResult refreshClients(String appId, String profileId) {
-        if (appId == null) {
-            ManagerAssert.admin();
+    public EmptyResult refreshClients(String rootAppId, String rootProfileId) {
+        if (rootAppId == null) {
+            Managers.admin();
         } else {
-            ManagerAssert.adminOrHaveRelation(appId);
+            ManagerApps.adminOrHaveApp(rootAppId);
         }
         RefreshClientsOrder order = new RefreshClientsOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
+        order.setRootAppId(rootAppId);
+        order.setRootProfileId(rootProfileId);
 
         return refreshService.refreshClients(order);
     }

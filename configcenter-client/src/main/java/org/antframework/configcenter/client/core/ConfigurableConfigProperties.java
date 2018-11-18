@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 可配置的配置属性
+ * 可配置的配置项集合
  */
 public interface ConfigurableConfigProperties extends ConfigProperties {
 
     /**
-     * 替换全部属性
+     * 替换全部配置项
      *
-     * @param newProperties 新属性
-     * @return 被修改的属性
+     * @param newProperties 新配置项
+     * @return 被修改的配置项
      */
     List<ChangedProperty> replaceProperties(Map<String, String> newProperties);
 }

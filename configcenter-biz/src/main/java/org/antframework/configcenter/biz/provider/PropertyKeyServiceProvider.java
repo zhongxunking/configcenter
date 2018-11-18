@@ -19,7 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
- * 属性key服务提供者
+ * 配置key服务提供者
  */
 @Service
 public class PropertyKeyServiceProvider implements PropertyKeyService {

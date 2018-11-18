@@ -15,23 +15,23 @@ import org.antframework.common.util.facade.AbstractOrder;
  */
 public class RefreshClientsOrder extends AbstractOrder {
     // 根应用id（null表示刷新所有应用）
-    private String appId;
-    // 环境id（null表示刷新所有环境）
-    private String profileId;
+    private String rootAppId;
+    // 根环境id（null表示刷新所有环境）
+    private String rootProfileId;
 
-    public String getAppId() {
-        return appId;
+    public String getRootAppId() {
+        return rootAppId;
     }
 
-    public void setAppId(String appId) {
-        this.appId = appId;
+    public void setRootAppId(String rootAppId) {
+        this.rootAppId = rootAppId;
     }
 
-    public String getProfileId() {
-        return profileId;
+    public String getRootProfileId() {
+        return rootProfileId;
     }
 
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
+    public void setRootProfileId(String rootProfileId) {
+        this.rootProfileId = rootProfileId;
     }
 }

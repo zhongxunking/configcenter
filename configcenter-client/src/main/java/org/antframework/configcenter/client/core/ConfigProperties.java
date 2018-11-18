@@ -9,24 +9,24 @@
 package org.antframework.configcenter.client.core;
 
 /**
- * 配置属性
+ * 配置项集合
  */
 public interface ConfigProperties {
     /**
-     * 获取属性
+     * 获取配置项value
      *
-     * @param key 属性key
-     * @return 属性value
+     * @param key 配置项key
+     * @return 配置项value
      */
     String getProperty(String key);
 
     /**
-     * 获取所有属性key
+     * 获取所有配置项key
      */
     String[] getPropertyKeys();
 
     /**
-     * 是否包含属性
+     * 是否包含指定配置项
      */
     boolean contains(String key);
 }

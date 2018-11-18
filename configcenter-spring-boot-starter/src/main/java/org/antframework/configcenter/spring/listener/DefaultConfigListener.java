@@ -44,10 +44,10 @@ public class DefaultConfigListener implements ConfigListener {
         dispatch(null, changedProperties);
     }
 
-    // 将被修改的属性按照属性名前缀进行递归分派
+    // 将被修改的配置按照key前缀进行递归分派
     private void dispatch(String prefixKey, List<ChangedProperty> cps) {
         Map<String, List<ChangedProperty>> dispatchedCps = new HashMap<>();
-        // 根据属性key前缀进行分拣
+        // 根据配置key前缀进行分拣
         for (ChangedProperty cp : cps) {
             if (cp.getKey() == null) {
                 continue;
@@ -61,7 +61,7 @@ public class DefaultConfigListener implements ConfigListener {
             }
             nextCps.add(nextCp);
         }
-        // 将分拣过的属性通过递归继续分拣
+        // 将分拣过的配置通过递归继续分拣
         for (String prefix : dispatchedCps.keySet()) {
             String nextPrefixKey = prefixKey == null ? prefix : prefixKey + KEY_SEPARATOR + prefix;
             dispatch(nextPrefixKey, dispatchedCps.get(prefix));

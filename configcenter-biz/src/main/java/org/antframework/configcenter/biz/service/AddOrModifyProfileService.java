@@ -8,7 +8,10 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import org.antframework.common.util.facade.BizException;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
@@ -19,6 +22,8 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 /**
  * 添加或修改环境服务
@@ -31,14 +36,31 @@ public class AddOrModifyProfileService {
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
-
+        // 校验是否出现循环继承和祖先是否存在
+        checkCycleAndAncestor(order.getProfileId(), order.getParent());
+        // 新增或修改环境
         Profile profile = profileDao.findLockByProfileId(order.getProfileId());
         if (profile == null) {
             profile = new Profile();
         }
         BeanUtils.copyProperties(order, profile);
-
         profileDao.save(profile);
+    }
+
+    // 校验是否出现循环继承和祖先是否存在
+    private void checkCycleAndAncestor(String profileId, String ancestorId) {
+        StringBuilder builder = new StringBuilder(profileId);
+        while (ancestorId != null) {
+            builder.append("-->").append(ancestorId);
+            if (Objects.equals(ancestorId, profileId)) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("出现循环继承[%s]", builder.toString()));
+            }
+            Profile ancestor = profileDao.findLockByProfileId(ancestorId);
+            if (ancestor == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", ancestorId));
+            }
+            ancestorId = ancestor.getParent();
+        }
     }
 
     @ServiceAfter

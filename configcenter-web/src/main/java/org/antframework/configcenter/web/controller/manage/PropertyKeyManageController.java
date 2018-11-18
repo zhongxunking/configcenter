@@ -21,17 +21,21 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.manager.web.common.ManagerAssert;
+import org.antframework.configcenter.web.common.KeyPrivileges;
+import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.Privilege;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
- * 属性key管理controller
+ * 配置key管理controller
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
@@ -40,7 +44,7 @@ public class PropertyKeyManageController {
     private PropertyKeyService propertyKeyService;
 
     /**
-     * 新增或修改属性key
+     * 新增或修改配置key
      *
      * @param appId 应用id（必须）
      * @param key   key（必须）
@@ -49,7 +53,8 @@ public class PropertyKeyManageController {
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
+        KeyPrivileges.adminOrReadWrite(appId, key);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -63,79 +68,102 @@ public class PropertyKeyManageController {
     }
 
     /**
-     * 删除属性key
+     * 删除配置key
      *
      * @param appId 应用id（必须）
      * @param key   key（必须）
      */
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
+        KeyPrivileges.adminOrReadWrite(appId, key);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
+        if (result.isSuccess()) {
+            KeyPrivileges.deletePrivilege(appId, key);
+        }
         // 刷新客户端
         RefreshUtils.refreshClients(appId, null);
         return result;
     }
 
     /**
-     * 查找应用继承的属性key（包含应用自己）
+     * 查找应用继承的配置key（包含应用自己）
      *
-     * @param appId 应用id
+     * @param appId 应用id（必须）
      */
     @RequestMapping("/findInheritedPropertyKeys")
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
-        ManagerAssert.adminOrHaveRelation(appId);
+        ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedPropertyKeysResult result = new FindInheritedPropertyKeysResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            result.addAppPropertyKeys(getAppPropertyKeys(app.getAppId(), appId));
+            result.addAppPropertyKey(getAppPropertyKey(app.getAppId(), appId));
         }
 
         return result;
     }
 
-    // 获取应用的属性key
-    private FindInheritedPropertyKeysResult.AppPropertyKeys getAppPropertyKeys(String appId, String mainAppId) {
+    // 获取应用的配置key
+    private FindInheritedPropertyKeysResult.AppPropertyKey getAppPropertyKey(String appId, String mainAppId) {
         Scope minScope = Scope.PRIVATE;
         if (!StringUtils.equals(appId, mainAppId)) {
             minScope = Scope.PROTECTED;
         }
 
-        return new FindInheritedPropertyKeysResult.AppPropertyKeys(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
+        return new FindInheritedPropertyKeysResult.AppPropertyKey(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
     }
 
     /**
-     * 查找应用继承的所有应用的属性key
+     * 查找指定应用所有的配置key的权限
+     *
+     * @param appId 应用id（必须）
+     * @return 配置key的权限
+     */
+    @RequestMapping("/findKeyPrivileges")
+    public FindKeyPrivilegesResult findKeyPrivileges(String appId) {
+        FindKeyPrivilegesResult result = new FindKeyPrivilegesResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+
+        Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
+        result.setKeyPrivileges(keyPrivileges);
+
+        return result;
+    }
+
+    /**
+     * 查找应用继承的所有应用的配置key
      */
     public static class FindInheritedPropertyKeysResult extends AbstractResult {
-        // 由近及远继承的所用应用的属性key
-        private List<AppPropertyKeys> appPropertyKeyses = new ArrayList<>();
+        // 由近及远继承的所用应用的配置key
+        private List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
 
-        public void addAppPropertyKeys(AppPropertyKeys appPropertyKeys) {
-            appPropertyKeyses.add(appPropertyKeys);
+        public void addAppPropertyKey(AppPropertyKey appPropertyKey) {
+            appPropertyKeys.add(appPropertyKey);
         }
 
-        public List<AppPropertyKeys> getAppPropertyKeyses() {
-            return appPropertyKeyses;
+        public List<AppPropertyKey> getAppPropertyKeys() {
+            return appPropertyKeys;
         }
 
         /**
-         * 应用属性key
+         * 应用的配置key
          */
-        public static class AppPropertyKeys {
+        public static class AppPropertyKey implements Serializable {
             // 应用id
             private String appId;
-            // 属性key
+            // 配置key
             private List<PropertyKeyInfo> propertyKeys;
 
-            public AppPropertyKeys(String appId, List<PropertyKeyInfo> propertyKeys) {
+            public AppPropertyKey(String appId, List<PropertyKeyInfo> propertyKeys) {
                 this.appId = appId;
                 this.propertyKeys = propertyKeys;
             }
@@ -147,6 +175,22 @@ public class PropertyKeyManageController {
             public List<PropertyKeyInfo> getPropertyKeys() {
                 return propertyKeys;
             }
+        }
+    }
+
+    /**
+     * 查找指定应用所有的配置key的权限result
+     */
+    public static class FindKeyPrivilegesResult extends AbstractResult {
+        // key对应的权限
+        private Map<String, Privilege> keyPrivileges;
+
+        public Map<String, Privilege> getKeyPrivileges() {
+            return keyPrivileges;
+        }
+
+        public void setKeyPrivileges(Map<String, Privilege> keyPrivileges) {
+            this.keyPrivileges = keyPrivileges;
         }
     }
 }

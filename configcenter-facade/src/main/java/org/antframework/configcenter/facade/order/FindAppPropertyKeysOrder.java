@@ -15,7 +15,7 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 查找应用的属性key-order
+ * 查找应用的配置key-order
  */
 public class FindAppPropertyKeysOrder extends AbstractOrder {
     // 应用id

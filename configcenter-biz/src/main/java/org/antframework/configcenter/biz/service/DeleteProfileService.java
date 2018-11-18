@@ -8,8 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
@@ -45,7 +44,10 @@ public class DeleteProfileService {
         if (profile == null) {
             return;
         }
-        // 删除所有应用在该环境下的所有属性value
+        if (profileDao.existsByParent(order.getProfileId())) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]存在子环境，不能删除", order.getProfileId()));
+        }
+        // 删除所有应用在该环境下的所有配置value
         for (AppInfo app : AppUtils.findAllApps()) {
             deleteAppProfileAllPropertyValues(app.getAppId(), order.getProfileId());
         }
@@ -53,7 +55,7 @@ public class DeleteProfileService {
         profileDao.delete(profile);
     }
 
-    // 删除应有在指定环境的所有属性value
+    // 删除应有在指定环境的所有配置value
     private void deleteAppProfileAllPropertyValues(String appId, String profileId) {
         SetPropertyValuesOrder order = new SetPropertyValuesOrder();
         order.setAppId(appId);
