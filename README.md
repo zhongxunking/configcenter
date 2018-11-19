@@ -69,7 +69,7 @@
 
 启动服务端命令模板：
 ```shell
-java -jar configcenter-assemble-1.3.0.RELEASE-exec.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址,如果存在多个zookeeper以英文逗号分隔"
+java -jar configcenter-assemble-1.3.0.RELEASE-exec.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址(IP:端口),如果存在多个zookeeper以英文逗号分隔"
 ```
 比如我本地测试时启动命令：
 ```shell
