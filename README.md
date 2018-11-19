@@ -61,7 +61,7 @@
 <span style="font-size: large">说明：</span>
 - 出于安全考虑，当外网（包括配置管理员）尝试通过http请求访问服务端/config/*路径时，nginx应该进行拦截；而客户端通过内网访问/config/*路径时，nginx应该允许访问。
 - 服务端使用的springboot，直接命令启动下载好的jar包即可，无需部署tomcat。
-- 有两种方式创建数据库表，根据具体情况选择其中一种方式：1、手动执行[创建表sql](https://github.com/zhongxunking/configcenter/wiki/v1.3.0.RELEASE%E6%95%B0%E6%8D%AE%E5%BA%93DDL)；2、让服务端拥有向数据库执行ddl语句权限，服务端第一次启动时会自动生成表结构，无需手动执行sql。
+- 有两种方式创建数据库表，根据具体情况选择其中一种方式：1、手动执行[建表sql](https://github.com/zhongxunking/configcenter/wiki/v1.3.0.RELEASE%E6%95%B0%E6%8D%AE%E5%BA%93DDL)；2、让服务端拥有向数据库执行ddl语句权限，服务端第一次启动时会自动建表，无需手动执行sql。
 - 服务端在启动时会在"/var/apps/"下创建日志文件，请确保服务端对该目录拥有写权限。
 - 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有非线上环境配置）；二是线上环境配置中心（管理线上环境配置）。
 - 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）。
