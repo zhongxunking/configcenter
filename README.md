@@ -13,7 +13,7 @@
 
 3. 演示环境
 > 地址：<a href="http://configcenter.antframework.org:6220" target="_blank">http://configcenter.antframework.org:6220</a><br/>
-> 超级管理员账号：admin 密码：123
+> 超级管理员账号：admin 密码：123 <br/>
 > 普通管理员账号：normal 密码：123
 
 4. 技术交流和支持
