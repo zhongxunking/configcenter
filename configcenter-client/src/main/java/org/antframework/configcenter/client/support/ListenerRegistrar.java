@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.slf4j.Logger;
@@ -46,6 +47,7 @@ public class ListenerRegistrar {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
+        logger.info("配置变更：{}", ToString.toString(changedProperties));
         for (ConfigListener listener : listeners) {
             try {
                 listener.onChange(changedProperties);

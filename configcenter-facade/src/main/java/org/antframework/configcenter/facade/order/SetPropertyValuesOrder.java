@@ -10,6 +10,7 @@ package org.antframework.configcenter.facade.order;
 
 import org.antframework.common.util.facade.AbstractOrder;
 import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.tostring.format.Mask;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.Valid;
@@ -65,6 +66,7 @@ public class SetPropertyValuesOrder extends AbstractOrder {
         @NotBlank
         private String key;
         // value
+        @Mask(allMask = true)
         private String value;
 
         public String getKey() {

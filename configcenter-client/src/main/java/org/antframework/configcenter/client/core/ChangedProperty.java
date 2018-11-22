@@ -9,18 +9,23 @@
 package org.antframework.configcenter.client.core;
 
 import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.tostring.format.Mask;
+
+import java.io.Serializable;
 
 /**
  * 被修改的配置项
  */
-public class ChangedProperty {
+public class ChangedProperty implements Serializable {
     // 修改类型
     private ChangeType type;
     // key
     private String key;
     // 旧值
+    @Mask(allMask = true)
     private String oldValue;
     // 新值
+    @Mask(allMask = true)
     private String newValue;
 
     public ChangedProperty(ChangeType type, String key, String oldValue, String newValue) {

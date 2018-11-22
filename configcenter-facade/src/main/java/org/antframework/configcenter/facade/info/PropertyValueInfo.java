@@ -9,6 +9,7 @@
 package org.antframework.configcenter.facade.info;
 
 import org.antframework.common.util.facade.AbstractInfo;
+import org.antframework.common.util.tostring.format.Mask;
 
 /**
  * 配置value-info
@@ -21,6 +22,7 @@ public class PropertyValueInfo extends AbstractInfo {
     // 环境id
     private String profileId;
     // value
+    @Mask(allMask = true)
     private String value;
 
     public String getAppId() {

@@ -9,6 +9,7 @@
 package org.antframework.configcenter.facade.result;
 
 import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.tostring.format.HideDetail;
 
 import java.util.Map;
 
@@ -17,6 +18,7 @@ import java.util.Map;
  */
 public class FindPropertiesResult extends AbstractResult {
     // 配置
+    @HideDetail
     private Map<String, String> properties;
 
     public Map<String, String> getProperties() {

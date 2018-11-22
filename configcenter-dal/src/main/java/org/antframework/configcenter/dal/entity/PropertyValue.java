@@ -9,6 +9,7 @@
 package org.antframework.configcenter.dal.entity;
 
 import org.antframework.boot.jpa.AbstractEntity;
+import org.antframework.common.util.tostring.format.Mask;
 
 import javax.persistence.*;
 
@@ -33,6 +34,7 @@ public class PropertyValue extends AbstractEntity {
 
     // value
     @Column(length = 2048)
+    @Mask(allMask = true)
     private String value;
 
     public String getAppId() {

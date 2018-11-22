@@ -10,6 +10,7 @@ package org.antframework.configcenter.client.support;
 
 import com.alibaba.fastjson.JSON;
 import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.tostring.format.HideDetail;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -107,6 +108,7 @@ public class ServerRequester {
     // 查找应用在指定环境中的配置result
     private static class FindPropertiesResult extends AbstractResult {
         // 配置
+        @HideDetail
         private Map<String, String> properties;
 
         public Map<String, String> getProperties() {
