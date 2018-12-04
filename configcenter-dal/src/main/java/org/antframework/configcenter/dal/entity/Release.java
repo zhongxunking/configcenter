@@ -8,9 +8,12 @@
  */
 package org.antframework.configcenter.dal.entity;
 
+import com.alibaba.fastjson.JSON;
 import org.antframework.boot.jpa.AbstractEntity;
+import org.antframework.configcenter.facade.vo.Property;
 
 import javax.persistence.*;
+import java.util.List;
 
 /**
  * 发布的配置
@@ -33,7 +36,8 @@ public class Release extends AbstractEntity {
 
     // 配置项集合
     @Column(length = 1024 * 1024)
-    private String properties;
+    @Convert(converter = PropertiesConverter.class)
+    private List<Property> properties;
 
     public String getAppId() {
         return appId;
@@ -59,11 +63,32 @@ public class Release extends AbstractEntity {
         this.version = version;
     }
 
-    public String getProperties() {
+    public List<Property> getProperties() {
         return properties;
     }
 
-    public void setProperties(String properties) {
+    public void setProperties(List<Property> properties) {
         this.properties = properties;
+    }
+
+    /**
+     * 配置项集合的jpa转换器
+     */
+    public static class PropertiesConverter implements AttributeConverter<List<Property>, String> {
+        @Override
+        public String convertToDatabaseColumn(List<Property> attribute) {
+            if (attribute == null) {
+                return null;
+            }
+            return JSON.toJSONString(attribute);
+        }
+
+        @Override
+        public List<Property> convertToEntityAttribute(String dbData) {
+            if (dbData == null) {
+                return null;
+            }
+            return JSON.parseArray(dbData, Property.class);
+        }
     }
 }
