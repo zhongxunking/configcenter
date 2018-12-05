@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.dal.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 
 import javax.persistence.Column;
@@ -20,6 +22,8 @@ import javax.persistence.UniqueConstraint;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId", columnNames = "appId"))
+@Getter
+@Setter
 public class App extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -32,28 +36,4 @@ public class App extends AbstractEntity {
     // 父应用id（null表示无父应用）
     @Column(length = 64)
     private String parent;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
 }

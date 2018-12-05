@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.dal.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 import org.antframework.configcenter.facade.vo.Scope;
 
@@ -18,6 +20,8 @@ import javax.persistence.*;
  */
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key", columnNames = {"appId", "key"}))
+@Getter
+@Setter
 public class PropertyKey extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -35,36 +39,4 @@ public class PropertyKey extends AbstractEntity {
     // 备注
     @Column
     private String memo;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public Scope getScope() {
-        return scope;
-    }
-
-    public void setScope(Scope scope) {
-        this.scope = scope;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo;
-    }
 }

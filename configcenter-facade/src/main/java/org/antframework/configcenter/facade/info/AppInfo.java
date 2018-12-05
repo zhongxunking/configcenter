@@ -8,11 +8,15 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
  * 应用info
  */
+@Getter
+@Setter
 public class AppInfo extends AbstractInfo {
     // 应用id
     private String appId;
@@ -20,28 +24,4 @@ public class AppInfo extends AbstractInfo {
     private String appName;
     // 父应用id（null表示无父应用）
     private String parent;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
 }

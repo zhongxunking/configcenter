@@ -8,11 +8,15 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
 
 /**
  * 环境info
  */
+@Getter
+@Setter
 public class ProfileInfo extends AbstractInfo {
     // 环境id
     private String profileId;
@@ -20,28 +24,4 @@ public class ProfileInfo extends AbstractInfo {
     private String profileName;
     // 父环境id（null表示无父环境）
     private String parent;
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public String getProfileName() {
-        return profileName;
-    }
-
-    public void setProfileName(String profileName) {
-        this.profileName = profileName;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
 }

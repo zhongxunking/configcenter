@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.common.util.tostring.format.Mask;
 
 /**
  * 配置value-info
  */
+@Getter
+@Setter
 public class PropertyValueInfo extends AbstractInfo {
     // 应用id
     private String appId;
@@ -24,36 +28,4 @@ public class PropertyValueInfo extends AbstractInfo {
     // value
     @Mask(allMask = true)
     private String value;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

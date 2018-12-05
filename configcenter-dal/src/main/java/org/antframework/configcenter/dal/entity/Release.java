@@ -9,6 +9,8 @@
 package org.antframework.configcenter.dal.entity;
 
 import com.alibaba.fastjson.JSON;
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 import org.antframework.configcenter.facade.vo.Property;
 
@@ -21,6 +23,8 @@ import java.util.List;
 @Entity(name = "`Release`")
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}),
         indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
+@Getter
+@Setter
 public class Release extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -39,37 +43,9 @@ public class Release extends AbstractEntity {
     @Convert(converter = PropertiesConverter.class)
     private List<Property> properties;
 
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public Long getVersion() {
-        return version;
-    }
-
-    public void setVersion(Long version) {
-        this.version = version;
-    }
-
-    public List<Property> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(List<Property> properties) {
-        this.properties = properties;
-    }
+    // 备注
+    @Column
+    private String memo;
 
     /**
      * 配置项集合的jpa转换器

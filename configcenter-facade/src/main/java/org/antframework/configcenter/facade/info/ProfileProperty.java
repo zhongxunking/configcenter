@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.facade.vo.Property;
 
@@ -18,23 +20,13 @@ import java.util.List;
 /**
  * 应用在环境中的配置
  */
+@Getter
 public class ProfileProperty implements Serializable {
     // 环境id
+    @Setter
     private String profileId;
     // 配置
     private List<Property> properties = new ArrayList<>();
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public List<Property> getProperties() {
-        return properties;
-    }
 
     public void addProperty(Property property) {
         properties.add(property);

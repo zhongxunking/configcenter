@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.facade.vo.Scope;
 
 /**
  * 配置key-info
  */
+@Getter
+@Setter
 public class PropertyKeyInfo extends AbstractInfo {
     // 应用id
     private String appId;
@@ -23,36 +27,4 @@ public class PropertyKeyInfo extends AbstractInfo {
     private Scope scope;
     // 备注
     private String memo;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public Scope getScope() {
-        return scope;
-    }
-
-    public void setScope(Scope scope) {
-        this.scope = scope;
-    }
-
-    public String getMemo() {
-        return memo;
-    }
-
-    public void setMemo(String memo) {
-        this.memo = memo;
-    }
 }

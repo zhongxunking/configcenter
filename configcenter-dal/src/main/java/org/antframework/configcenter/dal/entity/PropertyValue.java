@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.dal.entity;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 import org.antframework.common.util.tostring.format.Mask;
 
@@ -19,6 +21,8 @@ import javax.persistence.*;
 @Entity
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key_profileId", columnNames = {"appId", "key", "profileId"}),
         indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
+@Getter
+@Setter
 public class PropertyValue extends AbstractEntity {
     // 应用id
     @Column(length = 64)
@@ -36,36 +40,4 @@ public class PropertyValue extends AbstractEntity {
     @Column(length = 2048)
     @Mask(allMask = true)
     private String value;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
 }

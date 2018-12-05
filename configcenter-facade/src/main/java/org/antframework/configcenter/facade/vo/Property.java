@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.vo;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.Mask;
 
@@ -16,6 +18,8 @@ import java.io.Serializable;
 /**
  * 配置项
  */
+@AllArgsConstructor
+@Getter
 public final class Property implements Serializable {
     // key
     private final String key;
@@ -24,24 +28,6 @@ public final class Property implements Serializable {
     private final String value;
     // 作用域
     private final Scope scope;
-
-    public Property(String key, String value, Scope scope) {
-        this.key = key;
-        this.value = value;
-        this.scope = scope;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public Scope getScope() {
-        return scope;
-    }
 
     @Override
     public String toString() {

@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.facade.info;
 
+import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
 
 import java.io.Serializable;
@@ -17,22 +18,15 @@ import java.util.List;
 /**
  * 应用树
  */
+@Getter
 public class AppTree implements Serializable {
     // 根节点
-    private AppInfo app;
+    private final AppInfo app;
     // 子树
-    private List<AppTree> children = new ArrayList<>();
+    private final List<AppTree> children = new ArrayList<>();
 
     public AppTree(AppInfo app) {
         this.app = app;
-    }
-
-    public AppInfo getApp() {
-        return app;
-    }
-
-    public List<AppTree> getChildren() {
-        return children;
     }
 
     public void addChild(AppTree child) {
