@@ -8,20 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 
 /**
  * 查找环境树order
  */
+@Getter
+@Setter
 public class FindProfileTreeOrder extends AbstractOrder {
     // 根节点环境id（null表示查找所有环境）
     private String profileId;
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
 }

@@ -8,21 +8,17 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.ProfileTree;
 
 /**
  * 查找环境树result
  */
+@Getter
+@Setter
 public class FindProfileTreeResult extends AbstractResult {
     // 环境树
     private ProfileTree profileTree;
-
-    public ProfileTree getProfileTree() {
-        return profileTree;
-    }
-
-    public void setProfileTree(ProfileTree profileTree) {
-        this.profileTree = profileTree;
-    }
 }

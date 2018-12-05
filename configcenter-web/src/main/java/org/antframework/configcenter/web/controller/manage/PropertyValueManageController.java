@@ -9,6 +9,8 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import com.alibaba.fastjson.JSON;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
@@ -137,13 +139,10 @@ public class PropertyValueManageController {
     /**
      * 查找应用继承的全部配置
      */
+    @Getter
     public static class FindInheritedPropertiesResult extends AbstractResult {
         // 由近及远继承的所有应用的配置
-        private List<AppProperty> appProperties = new ArrayList<>();
-
-        public List<AppProperty> getAppProperties() {
-            return appProperties;
-        }
+        private final List<AppProperty> appProperties = new ArrayList<>();
 
         public void addAppProperty(AppProperty appProperty) {
             appProperties.add(appProperty);
@@ -152,24 +151,13 @@ public class PropertyValueManageController {
         /**
          * 应用配置
          */
+        @AllArgsConstructor
+        @Getter
         public static class AppProperty implements Serializable {
             // 应用id
-            private String appId;
+            private final String appId;
             // 由近及远继承的所用环境中的配置
-            private List<ProfileProperty> profileProperties;
-
-            public AppProperty(String appId, List<ProfileProperty> profileProperties) {
-                this.appId = appId;
-                this.profileProperties = profileProperties;
-            }
-
-            public String getAppId() {
-                return appId;
-            }
-
-            public List<ProfileProperty> getProfileProperties() {
-                return profileProperties;
-            }
+            private final List<ProfileProperty> profileProperties;
         }
     }
 }

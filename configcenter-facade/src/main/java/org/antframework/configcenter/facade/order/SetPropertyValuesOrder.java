@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.Mask;
@@ -22,37 +24,20 @@ import java.util.List;
 /**
  * 设置多个配置value-order
  */
+@Getter
 public class SetPropertyValuesOrder extends AbstractOrder {
     // 应用id
     @NotBlank
+    @Setter
     private String appId;
     // 环境id
     @NotBlank
+    @Setter
     private String profileId;
     // 配置key对应的value
     @Size(min = 1)
     @Valid
     private List<KeyValue> keyValues = new ArrayList<>();
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public List<KeyValue> getKeyValues() {
-        return keyValues;
-    }
 
     public void addKeyValue(KeyValue keyValue) {
         keyValues.add(keyValue);
@@ -61,6 +46,8 @@ public class SetPropertyValuesOrder extends AbstractOrder {
     /**
      * key-value对
      */
+    @Getter
+    @Setter
     public static class KeyValue implements Serializable {
         // key
         @NotBlank
@@ -68,22 +55,6 @@ public class SetPropertyValuesOrder extends AbstractOrder {
         // value
         @Mask(allMask = true)
         private String value;
-
-        public String getKey() {
-            return key;
-        }
-
-        public void setKey(String key) {
-            this.key = key;
-        }
-
-        public String getValue() {
-            return value;
-        }
-
-        public void setValue(String value) {
-            this.value = value;
-        }
 
         @Override
         public String toString() {

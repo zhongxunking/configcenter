@@ -8,22 +8,18 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 查找应用继承的所有应用order
  */
+@Getter
+@Setter
 public class FindInheritedAppsOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
 }

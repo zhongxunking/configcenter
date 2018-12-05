@@ -8,6 +8,9 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -142,55 +145,35 @@ public class PropertyKeyManageController {
     /**
      * 查找应用继承的所有应用的配置key
      */
+    @Getter
     public static class FindInheritedPropertyKeysResult extends AbstractResult {
         // 由近及远继承的所用应用的配置key
-        private List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
+        private final List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
 
         public void addAppPropertyKey(AppPropertyKey appPropertyKey) {
             appPropertyKeys.add(appPropertyKey);
         }
 
-        public List<AppPropertyKey> getAppPropertyKeys() {
-            return appPropertyKeys;
-        }
-
         /**
          * 应用的配置key
          */
+        @AllArgsConstructor
+        @Getter
         public static class AppPropertyKey implements Serializable {
             // 应用id
-            private String appId;
+            private final String appId;
             // 配置key
-            private List<PropertyKeyInfo> propertyKeys;
-
-            public AppPropertyKey(String appId, List<PropertyKeyInfo> propertyKeys) {
-                this.appId = appId;
-                this.propertyKeys = propertyKeys;
-            }
-
-            public String getAppId() {
-                return appId;
-            }
-
-            public List<PropertyKeyInfo> getPropertyKeys() {
-                return propertyKeys;
-            }
+            private final List<PropertyKeyInfo> propertyKeys;
         }
     }
 
     /**
      * 查找指定应用所有的配置key的权限result
      */
+    @Getter
+    @Setter
     public static class FindKeyPrivilegesResult extends AbstractResult {
         // key对应的权限
         private Map<String, Privilege> keyPrivileges;
-
-        public Map<String, Privilege> getKeyPrivileges() {
-            return keyPrivileges;
-        }
-
-        public void setKeyPrivileges(Map<String, Privilege> keyPrivileges) {
-            this.keyPrivileges = keyPrivileges;
-        }
     }
 }

@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.hibernate.validator.constraints.NotBlank;
@@ -17,6 +19,8 @@ import javax.validation.constraints.NotNull;
 /**
  * 查找应用自己的在指定环境中的配置order
  */
+@Getter
+@Setter
 public class FindAppSelfPropertiesOrder extends AbstractOrder {
     // 应用id
     @NotBlank
@@ -27,28 +31,4 @@ public class FindAppSelfPropertiesOrder extends AbstractOrder {
     // 最小作用域
     @NotNull
     private Scope minScope;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
-
-    public Scope getMinScope() {
-        return minScope;
-    }
-
-    public void setMinScope(Scope minScope) {
-        this.minScope = minScope;
-    }
 }

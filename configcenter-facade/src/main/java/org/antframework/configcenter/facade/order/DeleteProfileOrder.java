@@ -8,22 +8,18 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 删除环境order
  */
+@Getter
+@Setter
 public class DeleteProfileOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
 }

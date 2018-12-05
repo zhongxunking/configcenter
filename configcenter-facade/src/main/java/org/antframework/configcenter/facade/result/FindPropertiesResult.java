@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.tostring.format.HideDetail;
 
@@ -16,16 +18,10 @@ import java.util.Map;
 /**
  * 查找应用在指定环境中的配置result
  */
+@Getter
+@Setter
 public class FindPropertiesResult extends AbstractResult {
     // 配置
     @HideDetail
     private Map<String, String> properties;
-
-    public Map<String, String> getProperties() {
-        return properties;
-    }
-
-    public void setProperties(Map<String, String> properties) {
-        this.properties = properties;
-    }
 }

@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.facade.result;
 
+import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 
@@ -17,13 +18,10 @@ import java.util.List;
 /**
  * 查找环境继承的所有环境result
  */
+@Getter
 public class FindInheritedProfilesResult extends AbstractResult {
     // 由近及远继承的所用环境（该环境本身在第一位）
     private List<ProfileInfo> inheritedProfiles = new ArrayList<>();
-
-    public List<ProfileInfo> getInheritedProfiles() {
-        return inheritedProfiles;
-    }
 
     public void addInheritedProfile(ProfileInfo inheritedProfile) {
         inheritedProfiles.add(inheritedProfile);

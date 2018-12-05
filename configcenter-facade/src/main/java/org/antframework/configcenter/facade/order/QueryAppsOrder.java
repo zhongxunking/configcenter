@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractQueryOrder;
 import org.antframework.common.util.query.annotation.operator.QueryLike;
 
 /**
  * 查询应用order
  */
+@Getter
+@Setter
 public class QueryAppsOrder extends AbstractQueryOrder {
     // 应用id
     @QueryLike
@@ -21,20 +25,4 @@ public class QueryAppsOrder extends AbstractQueryOrder {
     // 父应用id
     @QueryLike
     private String parent;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
 }

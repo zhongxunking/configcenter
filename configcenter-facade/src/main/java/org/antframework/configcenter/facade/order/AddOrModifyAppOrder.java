@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 添加或修改应用order
  */
+@Getter
+@Setter
 public class AddOrModifyAppOrder extends AbstractOrder {
     // 应用id
     @NotBlank
@@ -22,28 +26,4 @@ public class AddOrModifyAppOrder extends AbstractOrder {
     private String appName;
     // 父应用id（null表示无父应用）
     private String parent;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getAppName() {
-        return appName;
-    }
-
-    public void setAppName(String appName) {
-        this.appName = appName;
-    }
-
-    public String getParent() {
-        return parent;
-    }
-
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
 }

@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 查找应用在指定环境中的配置order
  */
+@Getter
+@Setter
 public class FindPropertiesOrder extends AbstractOrder {
     // 主体应用id
     @NotBlank
@@ -24,28 +28,4 @@ public class FindPropertiesOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-
-    public String getMainAppId() {
-        return mainAppId;
-    }
-
-    public void setMainAppId(String mainAppId) {
-        this.mainAppId = mainAppId;
-    }
-
-    public String getQueriedAppId() {
-        return queriedAppId;
-    }
-
-    public void setQueriedAppId(String queriedAppId) {
-        this.queriedAppId = queriedAppId;
-    }
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
 }

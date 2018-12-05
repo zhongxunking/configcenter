@@ -8,12 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.hibernate.validator.constraints.NotBlank;
 
 /**
  * 删除配置key-order
  */
+@Getter
+@Setter
 public class DeletePropertyKeyOrder extends AbstractOrder {
     // 应用id
     @NotBlank
@@ -21,20 +25,4 @@ public class DeletePropertyKeyOrder extends AbstractOrder {
     // key
     @NotBlank
     private String key;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public void setKey(String key) {
-        this.key = key;
-    }
 }

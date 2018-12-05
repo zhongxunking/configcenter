@@ -8,22 +8,18 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractQueryOrder;
 import org.antframework.common.util.query.annotation.operator.QueryLike;
 
 /**
  * 查询环境order
  */
+@Getter
+@Setter
 public class QueryProfilesOrder extends AbstractQueryOrder {
     // 环境id
     @QueryLike
     private String profileId;
-
-    public String getProfileId() {
-        return profileId;
-    }
-
-    public void setProfileId(String profileId) {
-        this.profileId = profileId;
-    }
 }

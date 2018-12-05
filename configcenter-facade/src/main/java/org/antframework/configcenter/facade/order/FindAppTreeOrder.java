@@ -8,20 +8,16 @@
  */
 package org.antframework.configcenter.facade.order;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 
 /**
  * 查找应用树order
  */
+@Getter
+@Setter
 public class FindAppTreeOrder extends AbstractOrder {
     // 根节点应用id（null表示查找所有应用）
     private String appId;
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public void setAppId(String appId) {
-        this.appId = appId;
-    }
 }
