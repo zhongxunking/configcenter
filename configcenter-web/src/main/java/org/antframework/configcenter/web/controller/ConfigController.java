@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.web.controller;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
@@ -64,16 +66,10 @@ public class ConfigController {
     /**
      * 元数据result
      */
+    @Getter
+    @Setter
     public static class MetaResult extends AbstractResult {
         // 配置中心使用的zookeeper地址
         private String[] zkUrls;
-
-        public String[] getZkUrls() {
-            return zkUrls;
-        }
-
-        public void setZkUrls(String[] zkUrls) {
-            this.zkUrls = zkUrls;
-        }
     }
 }
