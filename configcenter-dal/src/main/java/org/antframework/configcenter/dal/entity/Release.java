@@ -18,10 +18,11 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * 发布的配置
+ * 配置发布
  */
-@Entity(name = "`Release`")
-@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}),
+@Entity
+@Table(name = "`Release`",
+        uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}),
         indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
 @Getter
 @Setter
@@ -38,14 +39,14 @@ public class Release extends AbstractEntity {
     @Column
     private Long version;
 
+    // 备注
+    @Column
+    private String memo;
+
     // 配置项集合
     @Column(length = 1024 * 1024)
     @Convert(converter = PropertiesConverter.class)
     private List<Property> properties;
-
-    // 备注
-    @Column
-    private String memo;
 
     /**
      * 配置项集合的jpa转换器
