@@ -14,6 +14,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
@@ -26,6 +27,7 @@ import org.antframework.configcenter.facade.order.AddReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -82,16 +84,11 @@ public class AddReleaseService {
         result.setReleaseInfo(INFO_CONVERTER.convert(release));
     }
 
-    // 构建配置项集合
-    private List<Property> buildProperties(AddReleaseOrder order) {
-        List<Property> properties = new ArrayList<>();
-
-        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(order.getAppId(), order.getProfileId());
-        for (PropertyValueInfo propertyValue : propertyValues) {
-            properties.add(new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope()));
-        }
-
-        return properties;
+    @ServiceAfter
+    public void after(ServiceContext<AddReleaseOrder, AddReleaseResult> context) {
+        AddReleaseOrder order = context.getOrder();
+        // 刷新客户端
+        RefreshUtils.refreshClients(order.getAppId(), order.getProfileId());
     }
 
     // 构建发布
@@ -102,5 +99,17 @@ public class AddReleaseService {
         release.setProperties(properties);
 
         return release;
+    }
+
+    // 构建配置项集合
+    private List<Property> buildProperties(AddReleaseOrder order) {
+        List<Property> properties = new ArrayList<>();
+
+        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(order.getAppId(), order.getProfileId());
+        for (PropertyValueInfo propertyValue : propertyValues) {
+            properties.add(new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope()));
+        }
+
+        return properties;
     }
 }
