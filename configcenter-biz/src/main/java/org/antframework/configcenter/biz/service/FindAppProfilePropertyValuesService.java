@@ -12,12 +12,12 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.AppDao;
-import org.antframework.configcenter.dal.dao.ProfileDao;
+import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
-import org.antframework.configcenter.dal.entity.App;
-import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyValue;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
@@ -39,21 +39,17 @@ public class FindAppProfilePropertyValuesService {
     private static final Converter<PropertyValue, PropertyValueInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyValueInfo.class);
 
     @Autowired
-    private AppDao appDao;
-    @Autowired
-    private ProfileDao profileDao;
-    @Autowired
     private PropertyValueDao propertyValueDao;
 
     @ServiceBefore
     public void before(ServiceContext<FindAppProfilePropertyValuesOrder, FindAppProfilePropertyValuesResult> context) {
         FindAppProfilePropertyValuesOrder order = context.getOrder();
 
-        App app = appDao.findByAppId(order.getAppId());
+        AppInfo app = AppUtils.findApp(order.getAppId());
         if (app == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
         }
-        Profile profile = profileDao.findByProfileId(order.getProfileId());
+        ProfileInfo profile = ProfileUtils.findProfile(order.getProfileId());
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
         }

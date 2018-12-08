@@ -10,8 +10,9 @@ package org.antframework.configcenter.biz.provider;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.PropertyValueService;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,8 +27,13 @@ public class PropertyValueServiceProvider implements PropertyValueService {
     private ServiceEngine serviceEngine;
 
     @Override
-    public EmptyResult setPropertyValues(SetPropertyValuesOrder order) {
-        return serviceEngine.execute("setPropertyValuesService", order);
+    public EmptyResult addOrModifyPropertyValue(AddOrModifyPropertyValueOrder order) {
+        return serviceEngine.execute("addOrModifyPropertyValueService", order);
+    }
+
+    @Override
+    public EmptyResult deletePropertyValue(DeletePropertyValueOrder order) {
+        return serviceEngine.execute("deletePropertyValueService", order);
     }
 
     @Override

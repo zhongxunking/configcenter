@@ -9,8 +9,9 @@
 package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 
 /**
@@ -18,9 +19,14 @@ import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesR
  */
 public interface PropertyValueService {
     /**
-     * 设置多个配置value
+     * 新增或删除配置value
      */
-    EmptyResult setPropertyValues(SetPropertyValuesOrder order);
+    EmptyResult addOrModifyPropertyValue(AddOrModifyPropertyValueOrder order);
+
+    /**
+     * 删除配置value
+     */
+    EmptyResult deletePropertyValue(DeletePropertyValueOrder order);
 
     /**
      * 查找应用在指定环境的所有配置value

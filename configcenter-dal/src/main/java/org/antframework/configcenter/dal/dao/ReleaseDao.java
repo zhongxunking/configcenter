@@ -12,7 +12,7 @@ import org.antframework.configcenter.dal.entity.Release;
 import org.springframework.data.repository.RepositoryDefinition;
 
 /**
- * 配置发布dao
+ * 发布dao
  */
 @RepositoryDefinition(domainClass = Release.class, idClass = Long.class)
 public interface ReleaseDao {

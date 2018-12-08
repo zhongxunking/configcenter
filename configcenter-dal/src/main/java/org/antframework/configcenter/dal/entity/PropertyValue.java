@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 import org.antframework.common.util.tostring.format.Mask;
+import org.antframework.configcenter.facade.vo.Scope;
 
 import javax.persistence.*;
 
@@ -40,4 +41,9 @@ public class PropertyValue extends AbstractEntity {
     @Column(length = 2048)
     @Mask(allMask = true)
     private String value;
+
+    // 作用域
+    @Column(length = 64)
+    @Enumerated(EnumType.STRING)
+    private Scope scope;
 }

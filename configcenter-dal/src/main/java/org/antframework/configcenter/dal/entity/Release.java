@@ -18,7 +18,7 @@ import javax.persistence.*;
 import java.util.List;
 
 /**
- * 配置发布
+ * 发布
  */
 @Entity
 @Table(name = "`Release`",

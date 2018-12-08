@@ -14,8 +14,10 @@ import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ProfileTree;
 import org.antframework.configcenter.facade.order.FindInheritedProfilesOrder;
+import org.antframework.configcenter.facade.order.FindProfileOrder;
 import org.antframework.configcenter.facade.order.FindProfileTreeOrder;
 import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
+import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 
 import java.util.ArrayList;
@@ -27,6 +29,21 @@ import java.util.List;
 public final class ProfileUtils {
     // 环境服务
     private static final ProfileService PROFILE_SERVICE = Contexts.getApplicationContext().getBean(ProfileService.class);
+
+    /**
+     * 查找环境
+     *
+     * @param profileId 环境id
+     * @return 环境（null表示无该环境）
+     */
+    public static ProfileInfo findProfile(String profileId) {
+        FindProfileOrder order = new FindProfileOrder();
+        order.setProfileId(profileId);
+
+        FindProfileResult result = PROFILE_SERVICE.findProfile(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getProfile();
+    }
 
     /**
      * 查找环境继承的所有环境

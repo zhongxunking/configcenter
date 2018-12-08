@@ -13,12 +13,8 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.AppTree;
-import org.antframework.configcenter.facade.order.FindAppTreeOrder;
-import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
-import org.antframework.configcenter.facade.order.QueryAppsOrder;
-import org.antframework.configcenter.facade.result.FindAppTreeResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
-import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.facade.order.*;
+import org.antframework.configcenter.facade.result.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +27,36 @@ public final class AppUtils {
     private static final int QUERY_APPS_PAGE_SIZE = 100;
     // 应用服务
     private static final AppService APP_SERVICE = Contexts.getApplicationContext().getBean(AppService.class);
+
+    /**
+     * 生产配置发布版本
+     *
+     * @param appId 应用id
+     * @return 版本
+     */
+    public static long produceReleaseVersion(String appId) {
+        ProduceReleaseVersionOrder order = new ProduceReleaseVersionOrder();
+        order.setAppId(appId);
+
+        ProduceReleaseVersionResult result = APP_SERVICE.produceReleaseVersion(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getReleaseVersion();
+    }
+
+    /**
+     * 查找应用
+     *
+     * @param appId 应用id
+     * @return 查找到的应用（null表示无该应用）
+     */
+    public static AppInfo findApp(String appId) {
+        FindAppOrder order = new FindAppOrder();
+        order.setAppId(appId);
+
+        FindAppResult result = APP_SERVICE.findApp(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getApp();
+    }
 
     /**
      * 查找应用继承的所有应用
