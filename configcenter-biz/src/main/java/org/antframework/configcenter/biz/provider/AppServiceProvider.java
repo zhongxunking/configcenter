@@ -14,10 +14,7 @@ import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.FindAppTreeResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
-import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.facade.result.*;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -38,6 +35,11 @@ public class AppServiceProvider implements AppService {
     @Override
     public EmptyResult deleteApp(DeleteAppOrder order) {
         return serviceEngine.execute("deleteAppService", order);
+    }
+
+    @Override
+    public ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order) {
+        return serviceEngine.execute("produceReleaseVersionService", order);
     }
 
     @Override

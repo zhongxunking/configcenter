@@ -12,10 +12,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.FindAppTreeResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
-import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.facade.result.*;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -70,6 +67,15 @@ public class AppServiceTest extends AbstractTest {
         order = new DeleteAppOrder();
         order.setAppId("customer");
         result = appService.deleteApp(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testProduceReleaseVersion() {
+        ProduceReleaseVersionOrder order = new ProduceReleaseVersionOrder();
+        order.setAppId("customer");
+
+        ProduceReleaseVersionResult result = appService.produceReleaseVersion(order);
         checkResult(result, Status.SUCCESS);
     }
 

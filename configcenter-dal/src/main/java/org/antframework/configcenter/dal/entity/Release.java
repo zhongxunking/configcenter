@@ -22,8 +22,7 @@ import java.util.List;
  */
 @Entity
 @Table(name = "`Release`",
-        uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}),
-        indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
+        uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}))
 @Getter
 @Setter
 public class Release extends AbstractEntity {

@@ -33,6 +33,10 @@ public class App extends AbstractEntity {
     @Column
     private String appName;
 
+    // 发布版本
+    @Column
+    private Long releaseVersion;
+
     // 父应用id（null表示无父应用）
     @Column(length = 64)
     private String parent;

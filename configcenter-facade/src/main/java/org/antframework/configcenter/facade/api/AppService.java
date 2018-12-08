@@ -10,10 +10,7 @@ package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindAppResult;
-import org.antframework.configcenter.facade.result.FindAppTreeResult;
-import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
-import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.facade.result.*;
 
 /**
  * 应用服务
@@ -28,6 +25,11 @@ public interface AppService {
      * 删除应用
      */
     EmptyResult deleteApp(DeleteAppOrder order);
+
+    /**
+     * 生产配置发布版本
+     */
+    ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order);
 
     /**
      * 查找应用

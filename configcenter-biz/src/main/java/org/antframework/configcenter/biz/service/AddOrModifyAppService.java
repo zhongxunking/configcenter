@@ -41,6 +41,7 @@ public class AddOrModifyAppService {
         App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
             app = new App();
+            app.setReleaseVersion(0L);
         }
         BeanUtils.copyProperties(order, app);
         appDao.save(app);

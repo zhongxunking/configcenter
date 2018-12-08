@@ -22,6 +22,8 @@ public class AppInfo extends AbstractInfo {
     private String appId;
     // 应用名
     private String appName;
+    // 发布版本
+    private Long releaseVersion;
     // 父应用id（null表示无父应用）
     private String parent;
 }
