@@ -65,7 +65,10 @@ public class AddOrModifyProfileService {
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
+        AddOrModifyProfileOrder order = context.getOrder();
         // 刷新zookeeper
         RefreshUtils.refreshZk();
+        // 刷新客户端
+        RefreshUtils.refreshClients(null, order.getProfileId());
     }
 }
