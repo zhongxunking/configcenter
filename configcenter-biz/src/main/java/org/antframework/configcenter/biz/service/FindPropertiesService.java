@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.info.ProfileProperty;
+import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.antframework.configcenter.facade.vo.Property;
@@ -64,9 +64,9 @@ public class FindPropertiesService {
     // 获取应用自己的配置
     private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope) {
         Map<String, String> properties = new HashMap<>();
-        for (ProfileProperty profileProperty : ConfigUtils.findAppSelfProperties(appId, profileId, minScope)) {
+        for (ReleaseInfo release : ConfigUtils.findAppSelfProperties(appId, profileId, minScope)) {
             Map<String, String> temp = new HashMap<>();
-            for (Property property : profileProperty.getProperties()) {
+            for (Property property : release.getProperties()) {
                 temp.put(property.getKey(), property.getValue());
             }
             temp.putAll(properties);

@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.util;
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.info.ProfileProperty;
+import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
 import org.antframework.configcenter.facade.vo.Scope;
@@ -33,7 +33,7 @@ public final class ConfigUtils {
      * @param minScope  最小作用域
      * @return 由近及远继承的所用环境中的配置
      */
-    public static List<ProfileProperty> findAppSelfProperties(String appId, String profileId, Scope minScope) {
+    public static List<ReleaseInfo> findAppSelfProperties(String appId, String profileId, Scope minScope) {
         FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -41,6 +41,6 @@ public final class ConfigUtils {
 
         FindAppSelfPropertiesResult result = CONFIG_SERVICE.findAppSelfProperties(order);
         FacadeUtils.assertSuccess(result);
-        return result.getProfileProperties();
+        return result.getReleases();
     }
 }

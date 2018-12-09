@@ -10,7 +10,7 @@ package org.antframework.configcenter.facade.result;
 
 import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.facade.info.ProfileProperty;
+import org.antframework.configcenter.facade.info.ReleaseInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -21,9 +21,9 @@ import java.util.List;
 @Getter
 public class FindAppSelfPropertiesResult extends AbstractResult {
     // 由近及远继承的所用环境中的配置
-    private List<ProfileProperty> profileProperties = new ArrayList<>();
+    private List<ReleaseInfo> releases = new ArrayList<>();
 
-    public void addProfileProperty(ProfileProperty profileProperty) {
-        profileProperties.add(profileProperty);
+    public void addRelease(ReleaseInfo release) {
+        releases.add(release);
     }
 }
