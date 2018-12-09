@@ -9,7 +9,10 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.Release;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
+
+import javax.persistence.LockModeType;
 
 /**
  * 发布dao
@@ -19,5 +22,8 @@ public interface ReleaseDao {
 
     void save(Release release);
 
-    Release findByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
+    void deleteByAppIdAndProfileIdAndVersionGreaterThan(String appId, String profileId, Long version);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Release findLockByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
 }

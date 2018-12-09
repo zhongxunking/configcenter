@@ -8,7 +8,9 @@
  */
 package org.antframework.configcenter.facade.api;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddReleaseOrder;
+import org.antframework.configcenter.facade.order.RevertReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 
 /**
@@ -19,4 +21,9 @@ public interface ReleaseService {
      * 新增发布
      */
     AddReleaseResult addRelease(AddReleaseOrder order);
+
+    /**
+     * 回滚发布
+     */
+    EmptyResult revertRelease(RevertReleaseOrder order);
 }

@@ -8,8 +8,10 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.order.AddReleaseOrder;
+import org.antframework.configcenter.facade.order.RevertReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,5 +28,10 @@ public class ReleaseServiceProvider implements ReleaseService {
     @Override
     public AddReleaseResult addRelease(AddReleaseOrder order) {
         return serviceEngine.execute("addReleaseService", order);
+    }
+
+    @Override
+    public EmptyResult revertRelease(RevertReleaseOrder order) {
+        return serviceEngine.execute("revertReleaseService", order);
     }
 }
