@@ -20,7 +20,7 @@ import java.util.List;
 /**
  * 配置value工具类
  */
-public class PropertyValueUtils {
+public final class PropertyValueUtils {
     // 配置value服务
     private static final PropertyValueService PROPERTY_VALUE_SERVICE = Contexts.getApplicationContext().getBean(PropertyValueService.class);
 

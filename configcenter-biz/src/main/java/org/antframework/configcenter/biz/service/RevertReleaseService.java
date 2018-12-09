@@ -20,6 +20,7 @@ import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.order.RevertReleaseOrder;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -50,9 +51,11 @@ public class RevertReleaseService {
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
         }
-        Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
-        if (release == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getVersion()));
+        if (order.getVersion() > ReleaseConstant.ORIGIN_VERSION) {
+            Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
+            if (release == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getVersion()));
+            }
         }
         // 回滚发布
         releaseDao.deleteByAppIdAndProfileIdAndVersionGreaterThan(order.getAppId(), order.getProfileId(), order.getVersion());

@@ -16,6 +16,7 @@ import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
@@ -41,7 +42,7 @@ public class AddOrModifyAppService {
         App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
             app = new App();
-            app.setReleaseVersion(0L);
+            app.setReleaseVersion(ReleaseConstant.ORIGIN_VERSION);
         }
         BeanUtils.copyProperties(order, app);
         appDao.save(app);
@@ -65,7 +66,10 @@ public class AddOrModifyAppService {
 
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
+        AddOrModifyAppOrder order = context.getOrder();
         // 刷新zookeeper
         RefreshUtils.refreshZk();
+        // 刷新客户端
+        RefreshUtils.refreshClients(order.getAppId(), null);
     }
 }

@@ -11,7 +11,11 @@ package org.antframework.configcenter.facade.order;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 /**
  * 回滚发布order
@@ -25,6 +29,8 @@ public class RevertReleaseOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-    // 回滚到的目标版本
-    private long version;
+    // 回滚到的目标版本（传入ReleaseConstant.ORIGIN_VERSION表示删除所有发布）
+    @Min(ReleaseConstant.ORIGIN_VERSION)
+    @NotNull
+    private Long version;
 }

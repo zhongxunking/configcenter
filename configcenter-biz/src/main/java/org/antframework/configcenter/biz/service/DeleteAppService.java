@@ -9,14 +9,19 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.*;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
+import org.antframework.configcenter.facade.api.ReleaseService;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.RevertReleaseOrder;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
@@ -33,6 +38,8 @@ public class DeleteAppService {
     private AppDao appDao;
     @Autowired
     private PropertyKeyService propertyKeyService;
+    @Autowired
+    private ReleaseService releaseService;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {
@@ -49,6 +56,10 @@ public class DeleteAppService {
         for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
             deletePropertyKey(propertyKey);
         }
+        // 删除该应用的所有发布
+        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
+            deleteReleases(order.getAppId(), profile.getProfileId());
+        }
         // 删除应用
         appDao.delete(app);
     }
@@ -60,6 +71,17 @@ public class DeleteAppService {
         order.setKey(propertyKey.getKey());
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
+        FacadeUtils.assertSuccess(result);
+    }
+
+    // 删除应用在指定环境的所有发布
+    private void deleteReleases(String appId, String profileId) {
+        RevertReleaseOrder order = new RevertReleaseOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setVersion(ReleaseConstant.ORIGIN_VERSION);
+
+        EmptyResult result = releaseService.revertRelease(order);
         FacadeUtils.assertSuccess(result);
     }
 
