@@ -26,4 +26,6 @@ public interface ReleaseDao {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Release findLockByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
+
+    Release findFirstByAppIdAndProfileIdOrderByVersionDesc(String appId, String profileId);
 }
