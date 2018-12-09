@@ -27,7 +27,7 @@ public interface AppService {
     EmptyResult deleteApp(DeleteAppOrder order);
 
     /**
-     * 生产配置发布版本
+     * 生产发布版本
      */
     ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order);
 

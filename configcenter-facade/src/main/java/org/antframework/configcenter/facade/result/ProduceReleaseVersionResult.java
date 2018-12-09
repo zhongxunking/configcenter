@@ -13,7 +13,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 
 /**
- * 生产配置发布版本result
+ * 生产发布版本result
  */
 @Getter
 @Setter

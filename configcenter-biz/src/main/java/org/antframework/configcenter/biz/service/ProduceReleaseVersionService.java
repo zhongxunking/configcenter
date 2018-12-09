@@ -21,7 +21,7 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * 生产配置发布版本-服务
+ * 生产发布版本-服务
  */
 @Service(enableTx = true)
 public class ProduceReleaseVersionService {
