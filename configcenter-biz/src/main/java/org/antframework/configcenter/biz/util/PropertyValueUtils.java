@@ -9,11 +9,14 @@
 package org.antframework.configcenter.biz.util;
 
 import org.antframework.boot.core.Contexts;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
@@ -39,5 +42,22 @@ public final class PropertyValueUtils {
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
+    }
+
+
+    /**
+     * 删除应用在指定环境的所有配置value
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     */
+    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
+        for (PropertyValueInfo propertyValue : PropertyValueUtils.findAppProfilePropertyValues(appId, profileId)) {
+            DeletePropertyValueOrder order = new DeletePropertyValueOrder();
+            BeanUtils.copyProperties(propertyValue, order);
+
+            EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
+            FacadeUtils.assertSuccess(result);
+        }
     }
 }

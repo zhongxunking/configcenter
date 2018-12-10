@@ -9,29 +9,19 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.ProfileUtils;
-import org.antframework.configcenter.biz.util.PropertyKeyUtils;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
-import org.antframework.configcenter.biz.util.RefreshUtils;
+import org.antframework.configcenter.biz.util.*;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
-import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
-import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.RevertReleaseOrder;
-import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -43,10 +33,6 @@ public class DeleteAppService {
     private AppDao appDao;
     @Autowired
     private PropertyKeyService propertyKeyService;
-    @Autowired
-    private PropertyValueService propertyValueService;
-    @Autowired
-    private ReleaseService releaseService;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {
@@ -63,10 +49,10 @@ public class DeleteAppService {
         for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
             deletePropertyKey(propertyKey);
         }
-        // 删除该应用的所有发布
+        // 删除该应用的在所有环境的配置value和发布
         for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
-            deletePropertyValues(order.getAppId(), profile.getProfileId());
-            deleteReleases(order.getAppId(), profile.getProfileId());
+            PropertyValueUtils.deleteAppProfilePropertyValues(order.getAppId(), profile.getProfileId());
+            ReleaseUtiles.deleteAppProfileReleases(order.getAppId(), profile.getProfileId());
         }
         // 删除应用
         appDao.delete(app);
@@ -79,28 +65,6 @@ public class DeleteAppService {
         order.setKey(propertyKey.getKey());
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
-        FacadeUtils.assertSuccess(result);
-    }
-
-    // 删除应用在指定环境的所有配置value
-    private void deletePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : PropertyValueUtils.findAppProfilePropertyValues(appId, profileId)) {
-            DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-            BeanUtils.copyProperties(propertyValue, order);
-
-            EmptyResult result = propertyValueService.deletePropertyValue(order);
-            FacadeUtils.assertSuccess(result);
-        }
-    }
-
-    // 删除应用在指定环境的所有发布
-    private void deleteReleases(String appId, String profileId) {
-        RevertReleaseOrder order = new RevertReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setVersion(ReleaseConstant.ORIGIN_VERSION);
-
-        EmptyResult result = releaseService.revertRelease(order);
         FacadeUtils.assertSuccess(result);
     }
 
