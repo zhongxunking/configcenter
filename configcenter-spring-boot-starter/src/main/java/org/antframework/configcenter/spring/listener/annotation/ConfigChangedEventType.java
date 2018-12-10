@@ -8,8 +8,6 @@
  */
 package org.antframework.configcenter.spring.listener.annotation;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.Objects;
 
 /**
@@ -45,7 +43,7 @@ public class ConfigChangedEventType {
             return false;
         }
         ConfigChangedEventType other = (ConfigChangedEventType) obj;
-        return StringUtils.equals(appId, other.appId)
-                && StringUtils.equals(prefix, other.prefix);
+        return Objects.equals(appId, other.appId)
+                && Objects.equals(prefix, other.prefix);
     }
 }

@@ -16,7 +16,6 @@ import org.antframework.configcenter.facade.order.FindPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
@@ -36,7 +35,7 @@ public class FindPropertiesService {
         // 获取被查询配置的应用和主体应用继承的所有应用
         List<String> queriedAppIds = getInheritedAppIds(order.getQueriedAppId());
         Set<String> mainAppIds;
-        if (StringUtils.equals(order.getMainAppId(), order.getQueriedAppId())) {
+        if (Objects.equals(order.getMainAppId(), order.getQueriedAppId())) {
             mainAppIds = new HashSet<>(queriedAppIds);
         } else {
             mainAppIds = new HashSet<>(getInheritedAppIds(order.getMainAppId()));
@@ -77,7 +76,7 @@ public class FindPropertiesService {
 
     // 计算最小作用域
     private Scope calcMinScope(String queriedAppId, String mainAppId, Set<String> mainAppIds) {
-        if (StringUtils.equals(queriedAppId, mainAppId)) {
+        if (Objects.equals(queriedAppId, mainAppId)) {
             return Scope.PRIVATE;
         } else if (mainAppIds.contains(queriedAppId)) {
             return Scope.PROTECTED;

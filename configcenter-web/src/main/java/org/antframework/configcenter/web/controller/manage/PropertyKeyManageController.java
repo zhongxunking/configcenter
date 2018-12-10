@@ -27,7 +27,6 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +35,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * 配置key管理controller
@@ -116,7 +116,7 @@ public class PropertyKeyManageController {
     // 获取应用的配置key
     private FindInheritedPropertyKeysResult.AppPropertyKey getAppPropertyKey(String appId, String mainAppId) {
         Scope minScope = Scope.PRIVATE;
-        if (!StringUtils.equals(appId, mainAppId)) {
+        if (!Objects.equals(appId, mainAppId)) {
             minScope = Scope.PROTECTED;
         }
 

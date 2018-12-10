@@ -17,13 +17,14 @@ import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
-import org.apache.commons.lang3.StringUtils;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.Objects;
 
 /**
  * 添加或修改应用服务
@@ -53,7 +54,7 @@ public class AddOrModifyAppService {
         StringBuilder builder = new StringBuilder(appId);
         while (ancestorId != null) {
             builder.append("-->").append(ancestorId);
-            if (StringUtils.equals(ancestorId, appId)) {
+            if (Objects.equals(ancestorId, appId)) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("出现循环继承[%s]", builder.toString()));
             }
             App ancestor = appDao.findLockByAppId(ancestorId);

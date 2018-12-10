@@ -8,8 +8,6 @@
  */
 package org.antframework.configcenter.client.core;
 
-import org.apache.commons.lang3.StringUtils;
-
 import java.util.*;
 
 /**
@@ -49,7 +47,7 @@ public class DefaultConfigProperties implements ConfigurableConfigProperties {
         for (String key : oldProperties.keySet()) {
             if (!newProperties.containsKey(key)) {
                 changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.REMOVE, key, oldProperties.get(key), null));
-            } else if (!StringUtils.equals(newProperties.get(key), oldProperties.get(key))) {
+            } else if (!Objects.equals(newProperties.get(key), oldProperties.get(key))) {
                 changedProperties.add(new ChangedProperty(ChangedProperty.ChangeType.UPDATE, key, oldProperties.get(key), newProperties.get(key)));
             }
         }
