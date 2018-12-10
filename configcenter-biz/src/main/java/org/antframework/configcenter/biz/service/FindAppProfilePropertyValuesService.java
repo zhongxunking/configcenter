@@ -61,6 +61,9 @@ public class FindAppProfilePropertyValuesService {
         FindAppProfilePropertyValuesResult result = context.getResult();
 
         List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(order.getAppId(), order.getProfileId());
+        // 忽略作用域不合要求的value
+        propertyValues.removeIf(propertyValue -> propertyValue.getScope().compareTo(order.getMinScope()) < 0);
+        // 设置result
         for (PropertyValue propertyValue : propertyValues) {
             result.addPropertyValue(INFO_CONVERTER.convert(propertyValue));
         }

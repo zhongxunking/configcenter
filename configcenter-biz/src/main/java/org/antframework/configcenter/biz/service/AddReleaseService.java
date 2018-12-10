@@ -26,6 +26,7 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceBefore;
@@ -81,7 +82,7 @@ public class AddReleaseService {
         Release release = buildRelease(order, version, buildProperties(order));
         releaseDao.save(release);
         // 设置返回结果
-        result.setReleaseInfo(INFO_CONVERTER.convert(release));
+        result.setRelease(INFO_CONVERTER.convert(release));
     }
 
     @ServiceAfter
@@ -105,7 +106,7 @@ public class AddReleaseService {
     private List<Property> buildProperties(AddReleaseOrder order) {
         List<Property> properties = new ArrayList<>();
 
-        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(order.getAppId(), order.getProfileId());
+        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(order.getAppId(), order.getProfileId(), Scope.PRIVATE);
         for (PropertyValueInfo propertyValue : propertyValues) {
             properties.add(new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope()));
         }

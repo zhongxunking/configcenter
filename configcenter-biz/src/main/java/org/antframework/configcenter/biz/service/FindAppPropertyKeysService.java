@@ -12,10 +12,10 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.AppDao;
+import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
-import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.PropertyKey;
+import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
@@ -37,15 +37,13 @@ public class FindAppPropertyKeysService {
     private static final Converter<PropertyKey, PropertyKeyInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
 
     @Autowired
-    private AppDao appDao;
-    @Autowired
     private PropertyKeyDao propertyKeyDao;
 
     @ServiceBefore
     public void before(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
         FindAppPropertyKeysOrder order = context.getOrder();
 
-        App app = appDao.findByAppId(order.getAppId());
+        AppInfo app = AppUtils.findApp(order.getAppId());
         if (app == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
@@ -57,11 +55,10 @@ public class FindAppPropertyKeysService {
         FindAppPropertyKeysResult result = context.getResult();
 
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
+        // 忽略作用域不合要求的key
+        propertyKeys.removeIf(propertyKey -> propertyKey.getScope().compareTo(order.getMinScope()) < 0);
+        // 设置result
         for (PropertyKey propertyKey : propertyKeys) {
-            if (propertyKey.getScope().compareTo(order.getMinScope()) < 0) {
-                // 如果作用域小于要求值，则忽略该配置key
-                continue;
-            }
             result.addPropertyKey(INFO_CONVERTER.convert(propertyKey));
         }
     }

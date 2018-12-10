@@ -16,6 +16,7 @@ import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;
@@ -32,18 +33,19 @@ public final class PropertyValueUtils {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param minScope  最小作用域
      * @return 配置value
      */
-    public static List<PropertyValueInfo> findAppProfilePropertyValues(String appId, String profileId) {
+    public static List<PropertyValueInfo> findAppProfilePropertyValues(String appId, String profileId, Scope minScope) {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setMinScope(minScope);
 
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
     }
-
 
     /**
      * 删除应用在指定环境的所有配置value
@@ -52,7 +54,7 @@ public final class PropertyValueUtils {
      * @param profileId 环境id
      */
     public static void deleteAppProfilePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : PropertyValueUtils.findAppProfilePropertyValues(appId, profileId)) {
+        for (PropertyValueInfo propertyValue : PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
             DeletePropertyValueOrder order = new DeletePropertyValueOrder();
             BeanUtils.copyProperties(propertyValue, order);
 

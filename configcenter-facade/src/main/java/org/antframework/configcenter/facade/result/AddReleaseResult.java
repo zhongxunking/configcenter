@@ -20,5 +20,5 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 @Setter
 public class AddReleaseResult extends AbstractResult {
     // 新增的发布
-    private ReleaseInfo releaseInfo;
+    private ReleaseInfo release;
 }
