@@ -18,7 +18,7 @@ import org.antframework.configcenter.facade.vo.ReleaseConstant;
 /**
  * 发布工具类
  */
-public final class ReleaseUtiles {
+public final class ReleaseUtils {
     // 发布服务
     private static final ReleaseService RELEASE_SERVICE = Contexts.getApplicationContext().getBean(ReleaseService.class);
 
