@@ -17,7 +17,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
-import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
@@ -64,10 +63,7 @@ public class PropertyKeyManageController {
         order.setScope(scope);
         order.setMemo(memo);
 
-        EmptyResult result = propertyKeyService.addOrModifyPropertyKey(order);
-        // 刷新客户端
-        RefreshUtils.refreshClients(appId, null);
-        return result;
+        return propertyKeyService.addOrModifyPropertyKey(order);
     }
 
     /**
@@ -88,8 +84,6 @@ public class PropertyKeyManageController {
         if (result.isSuccess()) {
             KeyPrivileges.deletePrivilege(appId, key);
         }
-        // 刷新客户端
-        RefreshUtils.refreshClients(appId, null);
         return result;
     }
 
@@ -135,9 +129,7 @@ public class PropertyKeyManageController {
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
-
-        Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
-        result.setKeyPrivileges(keyPrivileges);
+        result.setKeyPrivileges(KeyPrivileges.findPrivileges(appId));
 
         return result;
     }

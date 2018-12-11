@@ -19,7 +19,7 @@ import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesR
  */
 public interface PropertyValueService {
     /**
-     * 新增或删除配置value
+     * 新增或修改配置value
      */
     EmptyResult addOrModifyPropertyValue(AddOrModifyPropertyValueOrder order);
 

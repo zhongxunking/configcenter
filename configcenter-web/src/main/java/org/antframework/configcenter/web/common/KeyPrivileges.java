@@ -23,7 +23,6 @@ import org.antframework.manager.web.Managers;
 import org.antframework.manager.web.Relations;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -35,17 +34,40 @@ public final class KeyPrivileges {
     private static final String RELATION_TYPE = "app-key-privilege";
 
     /**
-     * 查找应用所有的配置key的权限
+     * 查找权限
+     *
+     * @param appId 应用id
+     * @param key   配置key
+     * @return 配置key的权限
+     */
+    public static Privilege findPrivilege(String appId, String key) {
+        Map<String, Privilege> keyPrivileges = findPrivileges(appId);
+        return keyPrivileges.getOrDefault(key, Privilege.READ_WRITE);
+    }
+
+    /**
+     * 查找应用及其继承的所有的配置key的权限
      *
      * @param appId 应用id
      * @return 配置key的权限
      */
     public static Map<String, Privilege> findPrivileges(String appId) {
         Map<String, Privilege> keyPrivileges = new HashMap<>();
-        List<RelationInfo> relations = Relations.findAllSourceRelations(RELATION_TYPE, appId);
-        for (RelationInfo relation : relations) {
-            keyPrivileges.put(relation.getTarget(), Privilege.valueOf(relation.getValue()));
+
+        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+            Map<String, Privilege> temp = new HashMap<>();
+            for (RelationInfo relation : Relations.findAllSourceRelations(RELATION_TYPE, app.getAppId())) {
+                temp.put(relation.getTarget(), Privilege.valueOf(relation.getValue()));
+            }
+            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
+            for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope)) {
+                temp.putIfAbsent(propertyKey.getKey(), Privilege.READ_WRITE);
+            }
+
+            temp.putAll(keyPrivileges);
+            keyPrivileges = temp;
         }
+
         return keyPrivileges;
     }
 
@@ -70,26 +92,8 @@ public final class KeyPrivileges {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        // 根据应用继承关系，一级一级判断是否拥有权限
-        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            Map<String, Privilege> keyPrivileges = findPrivileges(app.getAppId());
-
-            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope);
-            for (PropertyKeyInfo propertyKey : propertyKeys) {
-                if (!Objects.equals(propertyKey.getKey(), key)) {
-                    continue;
-                }
-                Privilege privilege = keyPrivileges.getOrDefault(key, Privilege.READ_WRITE);
-                if (privilege == Privilege.READ_WRITE) {
-                    return;
-                } else {
-                    throw new BizException(Status.FAIL,
-                            CommonResultCode.ILLEGAL_STATE.getCode(),
-                            String.format("无法新建或修改配置key[%s]，因为应用[%s]指定该key为敏感配置。" +
-                                    "如果确定需要添加或修改该key，请让超级管理员进行操作", key, app.getAppId()));
-                }
-            }
+        if (findPrivilege(appId, key) != Privilege.READ_WRITE) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("无权限操作敏感配置key[%s]", key));
         }
     }
 }

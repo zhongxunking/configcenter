@@ -11,7 +11,6 @@ package org.antframework.configcenter.web.controller.manage;
 import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.*;
@@ -19,6 +18,7 @@ import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
@@ -52,10 +52,7 @@ public class AppManageController {
         order.setAppName(appName);
         order.setParent(parent);
 
-        EmptyResult result = appService.addOrModifyApp(order);
-        // 刷新客户端
-        RefreshUtils.refreshClients(appId, null);
-        return result;
+        return appService.addOrModifyApp(order);
     }
 
     /**
@@ -71,7 +68,12 @@ public class AppManageController {
         // 删除应用
         DeleteAppOrder order = new DeleteAppOrder();
         order.setAppId(appId);
-        return appService.deleteApp(order);
+        EmptyResult result = appService.deleteApp(order);
+        if (result.isSuccess()) {
+            // 删除应用的所有配置key的权限
+            KeyPrivileges.deletePrivilege(appId, null);
+        }
+        return result;
     }
 
     /**
