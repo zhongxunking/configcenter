@@ -34,7 +34,7 @@ public class ReleaseServiceTest extends AbstractTest {
     private ReleaseService releaseService;
 
     @Test
-    private void testAddRelease() {
+    public void testAddRelease() {
         String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
         String[] profileIds = new String[]{"offline", "dev"};
         for (String appId : appIds) {
@@ -52,7 +52,7 @@ public class ReleaseServiceTest extends AbstractTest {
     }
 
     @Test
-    private void testRevertRelease() {
+    public void testRevertRelease() {
         String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
         String[] profileIds = new String[]{"offline", "dev"};
         for (String appId : appIds) {
@@ -69,7 +69,7 @@ public class ReleaseServiceTest extends AbstractTest {
     }
 
     @Test
-    private void testFindCurrentRelease() {
+    public void testFindCurrentRelease() {
         String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
         String[] profileIds = new String[]{"offline", "dev"};
         for (String appId : appIds) {
@@ -85,7 +85,7 @@ public class ReleaseServiceTest extends AbstractTest {
     }
 
     @Test
-    private void testQueryReleases() {
+    public void testQueryReleases() {
         String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
         String[] profileIds = new String[]{"offline", "dev"};
         for (String appId : appIds) {

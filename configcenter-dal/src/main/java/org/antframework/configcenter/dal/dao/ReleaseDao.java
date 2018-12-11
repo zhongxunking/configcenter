@@ -8,11 +8,15 @@
  */
 package org.antframework.configcenter.dal.dao;
 
+import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.dal.entity.Release;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.Collection;
 
 /**
  * 发布dao
@@ -28,4 +32,6 @@ public interface ReleaseDao {
     Release findLockByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
 
     Release findFirstByAppIdAndProfileIdOrderByVersionDesc(String appId, String profileId);
+
+    Page<Release> query(Collection<QueryParam> queryParams, Pageable pageable);
 }
