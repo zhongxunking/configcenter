@@ -11,8 +11,9 @@ package org.antframework.configcenter.test.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
+import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
-import org.antframework.configcenter.facade.order.SetPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
@@ -29,55 +30,36 @@ public class PropertyValueServiceTest extends AbstractTest {
     private PropertyValueService propertyValueService;
 
     @Test
-    public void testSetPropertyValue() {
-        // 设置offline环境value
+    public void testAddOrModifyPropertyValue() {
+        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
+        String[] profileIds = new String[]{"offline", "dev"};
+        for (String appId : appIds) {
+            for (String profileId : profileIds) {
+                for (Scope scope : Scope.values()) {
+                    AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
+                    order.setAppId(appId);
+                    order.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
+                    order.setProfileId(profileId);
+                    order.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), profileId));
+                    order.setScope(scope);
+
+                    EmptyResult result = propertyValueService.addOrModifyPropertyValue(order);
+                    checkResult(result, Status.SUCCESS);
+                }
+            }
+        }
+    }
+
+    @Test
+    public void testDeletePropertyValue() {
         String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
         for (String appId : appIds) {
-            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
+            DeletePropertyValueOrder order = new DeletePropertyValueOrder();
             order.setAppId(appId);
-            order.setProfileId("offline");
-
-            for (Scope scope : Scope.values()) {
-                SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
-                keyValue.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
-                keyValue.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), "offline"));
-                order.addKeyValue(keyValue);
-            }
-
-            EmptyResult result = propertyValueService.setPropertyValues(order);
-            checkResult(result, Status.SUCCESS);
-        }
-        // 删除value
-        for (String appId : appIds) {
-            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
-            order.setAppId(appId);
-            order.setProfileId("offline");
-
-            SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
-            keyValue.setKey(String.format("%s-%s-key1", appId, "public"));
-            keyValue.setValue(null);
-            order.addKeyValue(keyValue);
-
-            EmptyResult result = propertyValueService.setPropertyValues(order);
-            checkResult(result, Status.SUCCESS);
-        }
-        // 设置dev环境value
-        for (String appId : appIds) {
-            SetPropertyValuesOrder order = new SetPropertyValuesOrder();
-            order.setAppId(appId);
+            order.setKey(String.format("%s-%s-key1", appId, Scope.PRIVATE.name().toLowerCase()));
             order.setProfileId("dev");
 
-            for (Scope scope : Scope.values()) {
-                if (scope == Scope.PRIVATE) {
-                    continue;
-                }
-                SetPropertyValuesOrder.KeyValue keyValue = new SetPropertyValuesOrder.KeyValue();
-                keyValue.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
-                keyValue.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), "dev"));
-                order.addKeyValue(keyValue);
-            }
-
-            EmptyResult result = propertyValueService.setPropertyValues(order);
+            EmptyResult result = propertyValueService.deletePropertyValue(order);
             checkResult(result, Status.SUCCESS);
         }
     }
@@ -87,6 +69,7 @@ public class PropertyValueServiceTest extends AbstractTest {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId("customer");
         order.setProfileId("dev");
+        order.setMinScope(Scope.PRIVATE);
 
         FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
         checkResult(result, Status.SUCCESS);
