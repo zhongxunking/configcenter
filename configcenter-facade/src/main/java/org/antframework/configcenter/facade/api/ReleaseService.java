@@ -9,12 +9,10 @@
 package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.AddReleaseOrder;
-import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
-import org.antframework.configcenter.facade.order.QueryReleasesOrder;
-import org.antframework.configcenter.facade.order.RevertReleaseOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
+import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 
 /**
@@ -35,6 +33,11 @@ public interface ReleaseService {
      * 查找当前发布
      */
     FindCurrentReleaseResult findCurrentRelease(FindCurrentReleaseOrder order);
+
+    /**
+     * 查找发布
+     */
+    FindReleaseResult findRelease(FindReleaseOrder order);
 
     /**
      * 查询发布

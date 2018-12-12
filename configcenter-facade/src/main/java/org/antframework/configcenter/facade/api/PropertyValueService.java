@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 
 /**
@@ -27,6 +28,11 @@ public interface PropertyValueService {
      * 删除配置value
      */
     EmptyResult deletePropertyValue(DeletePropertyValueOrder order);
+
+    /**
+     * 回滚配置value
+     */
+    EmptyResult revertPropertyValues(RevertPropertyValuesOrder order);
 
     /**
      * 查找应用在指定环境的所有配置value

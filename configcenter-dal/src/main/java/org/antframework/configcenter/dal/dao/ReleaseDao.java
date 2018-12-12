@@ -33,5 +33,7 @@ public interface ReleaseDao {
 
     Release findFirstByAppIdAndProfileIdOrderByVersionDesc(String appId, String profileId);
 
+    Release findByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
+
     Page<Release> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

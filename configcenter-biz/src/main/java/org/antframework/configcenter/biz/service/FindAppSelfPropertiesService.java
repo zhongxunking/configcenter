@@ -8,20 +8,16 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.ProfileUtils;
-import org.antframework.configcenter.facade.api.ReleaseService;
+import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
-import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
-import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 
@@ -30,8 +26,6 @@ import java.util.ArrayList;
  */
 @Service
 public class FindAppSelfPropertiesService {
-    @Autowired
-    private ReleaseService releaseService;
 
     @ServiceExecute
     public void execute(ServiceContext<FindAppSelfPropertiesOrder, FindAppSelfPropertiesResult> context) {
@@ -50,14 +44,7 @@ public class FindAppSelfPropertiesService {
 
     // 查找当前发布
     private ReleaseInfo findCurrentRelease(String appId, String profileId) {
-        FindCurrentReleaseOrder order = new FindCurrentReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-
-        FindCurrentReleaseResult result = releaseService.findCurrentRelease(order);
-        FacadeUtils.assertSuccess(result);
-
-        ReleaseInfo release = result.getRelease();
+        ReleaseInfo release = ReleaseUtils.findCurrentRelease(appId, profileId);
         if (release == null) {
             release = new ReleaseInfo();
             release.setAppId(appId);

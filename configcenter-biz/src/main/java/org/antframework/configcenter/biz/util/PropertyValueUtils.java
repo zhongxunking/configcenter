@@ -54,7 +54,7 @@ public final class PropertyValueUtils {
      * @param profileId 环境id
      */
     public static void deleteAppProfilePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
+        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
             DeletePropertyValueOrder order = new DeletePropertyValueOrder();
             BeanUtils.copyProperties(propertyValue, order);
 
