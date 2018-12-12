@@ -11,12 +11,10 @@ package org.antframework.configcenter.test.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ReleaseService;
-import org.antframework.configcenter.facade.order.AddReleaseOrder;
-import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
-import org.antframework.configcenter.facade.order.QueryReleasesOrder;
-import org.antframework.configcenter.facade.order.RevertReleaseOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
+import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.antframework.configcenter.test.AbstractTest;
@@ -30,15 +28,16 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 @Ignore
 public class ReleaseServiceTest extends AbstractTest {
+    private static final String[] APP_IDS = new String[]{"common", "core-domain", "account", "customer"};
+    private static final String[] PROFILE_IDS = new String[]{"offline", "dev"};
+
     @Autowired
     private ReleaseService releaseService;
 
     @Test
     public void testAddRelease() {
-        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
-        String[] profileIds = new String[]{"offline", "dev"};
-        for (String appId : appIds) {
-            for (String profileId : profileIds) {
+        for (String appId : APP_IDS) {
+            for (String profileId : PROFILE_IDS) {
                 AddReleaseOrder order = new AddReleaseOrder();
                 order.setAppId(appId);
                 order.setProfileId(profileId);
@@ -53,10 +52,8 @@ public class ReleaseServiceTest extends AbstractTest {
 
     @Test
     public void testRevertRelease() {
-        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
-        String[] profileIds = new String[]{"offline", "dev"};
-        for (String appId : appIds) {
-            for (String profileId : profileIds) {
+        for (String appId : APP_IDS) {
+            for (String profileId : PROFILE_IDS) {
                 RevertReleaseOrder order = new RevertReleaseOrder();
                 order.setAppId(appId);
                 order.setProfileId(profileId);
@@ -70,10 +67,8 @@ public class ReleaseServiceTest extends AbstractTest {
 
     @Test
     public void testFindCurrentRelease() {
-        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
-        String[] profileIds = new String[]{"offline", "dev"};
-        for (String appId : appIds) {
-            for (String profileId : profileIds) {
+        for (String appId : APP_IDS) {
+            for (String profileId : PROFILE_IDS) {
                 FindCurrentReleaseOrder order = new FindCurrentReleaseOrder();
                 order.setAppId(appId);
                 order.setProfileId(profileId);
@@ -85,11 +80,24 @@ public class ReleaseServiceTest extends AbstractTest {
     }
 
     @Test
+    public void testFindRelease() {
+        for (String appId : APP_IDS) {
+            for (String profileId : PROFILE_IDS) {
+                FindReleaseOrder order = new FindReleaseOrder();
+                order.setAppId(appId);
+                order.setProfileId(profileId);
+                order.setVersion(0L);
+
+                FindReleaseResult result = releaseService.findRelease(order);
+                checkResult(result, Status.SUCCESS);
+            }
+        }
+    }
+
+    @Test
     public void testQueryReleases() {
-        String[] appIds = new String[]{"common", "core-domain", "account", "customer"};
-        String[] profileIds = new String[]{"offline", "dev"};
-        for (String appId : appIds) {
-            for (String profileId : profileIds) {
+        for (String appId : APP_IDS) {
+            for (String profileId : PROFILE_IDS) {
                 QueryReleasesOrder order = new QueryReleasesOrder();
                 order.setPageNo(1);
                 order.setPageSize(10);

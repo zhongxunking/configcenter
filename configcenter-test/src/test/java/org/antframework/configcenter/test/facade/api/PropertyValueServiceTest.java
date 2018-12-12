@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
@@ -62,6 +63,17 @@ public class PropertyValueServiceTest extends AbstractTest {
             EmptyResult result = propertyValueService.deletePropertyValue(order);
             checkResult(result, Status.SUCCESS);
         }
+    }
+
+    @Test
+    public void testRevertPropertyValues() {
+        RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
+        order.setAppId("customer");
+        order.setProfileId("dev");
+        order.setReleaseVersion(0L);
+
+        EmptyResult result = propertyValueService.revertPropertyValues(order);
+        checkResult(result, Status.SUCCESS);
     }
 
     @Test
