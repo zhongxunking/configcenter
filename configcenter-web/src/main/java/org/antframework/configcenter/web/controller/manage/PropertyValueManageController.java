@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
@@ -64,9 +65,9 @@ public class PropertyValueManageController {
     /**
      * 删除配置value
      *
-     * @param appId     应用id
-     * @param key       配置key
-     * @param profileId 环境id
+     * @param appId     应用id（必须）
+     * @param key       配置key（必须）
+     * @param profileId 环境id（必须）
      */
     @RequestMapping("/deletePropertyValue")
     public EmptyResult deletePropertyValue(String appId, String key, String profileId) {
@@ -82,11 +83,30 @@ public class PropertyValueManageController {
     }
 
     /**
+     * 回滚配置value
+     *
+     * @param appId          应用id（必须）
+     * @param profileId      环境id（必须）
+     * @param releaseVersion 发布版本（必须）
+     */
+    @RequestMapping("/revertPropertyValues")
+    public EmptyResult revertPropertyValues(String appId, String profileId, Long releaseVersion) {
+        ManagerApps.adminOrHaveApp(appId);
+
+        RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setReleaseVersion(releaseVersion);
+
+        return propertyValueService.revertPropertyValues(order);
+    }
+
+    /**
      * 查找应用在指定环境的所有配置value
      *
-     * @param appId     应用id
-     * @param profileId 环境id
-     * @param minScope  最小作用域
+     * @param appId     应用id（必须）
+     * @param profileId 环境id（必须）
+     * @param minScope  最小作用域（必须）
      */
     @RequestMapping("/findAppProfilePropertyValues")
     public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId, Scope minScope) {
