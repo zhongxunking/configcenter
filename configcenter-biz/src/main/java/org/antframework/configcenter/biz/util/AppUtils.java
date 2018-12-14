@@ -29,7 +29,7 @@ public final class AppUtils {
     private static final AppService APP_SERVICE = Contexts.getApplicationContext().getBean(AppService.class);
 
     /**
-     * 生产配置发布版本
+     * 生产发布版本
      *
      * @param appId 应用id
      * @return 版本
