@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -42,24 +43,24 @@ public class FindAppTreeService {
         FindAppTreeOrder order = context.getOrder();
         FindAppTreeResult result = context.getResult();
 
-        App app = null;
+        AppInfo app = null;
         if (order.getAppId() != null) {
-            app = appDao.findByAppId(order.getAppId());
+            app = AppUtils.findApp(order.getAppId());
             if (app == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
             }
         }
         result.setAppTree(getAppTree(app));
     }
 
     // 获取应用树
-    private AppTree getAppTree(App app) {
-        AppInfo appInfo = app == null ? null : INFO_CONVERTER.convert(app);
-        AppTree appTree = new AppTree(appInfo);
+    private AppTree getAppTree(AppInfo app) {
+        AppTree appTree = new AppTree(app);
 
         List<App> childrenApp = appDao.findByParent(app == null ? null : app.getAppId());
         for (App childApp : childrenApp) {
-            appTree.addChild(getAppTree(childApp));
+            AppTree childTree = getAppTree(INFO_CONVERTER.convert(childApp));
+            appTree.addChild(childTree);
         }
 
         return appTree;

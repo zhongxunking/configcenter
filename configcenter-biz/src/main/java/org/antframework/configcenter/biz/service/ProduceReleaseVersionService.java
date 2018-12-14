@@ -35,7 +35,7 @@ public class ProduceReleaseVersionService {
 
         App app = appDao.findLockByAppId(order.getAppId());
         if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在应用[%s]", order.getAppId()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
         long version = app.getReleaseVersion() + 1;
         app.setReleaseVersion(version);
