@@ -22,6 +22,7 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -61,8 +62,7 @@ public class DeleteAppService {
     // 删除配置key
     private void deletePropertyKey(PropertyKeyInfo propertyKey) {
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
-        order.setAppId(propertyKey.getAppId());
-        order.setKey(propertyKey.getKey());
+        BeanUtils.copyProperties(propertyKey, order);
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         FacadeUtils.assertSuccess(result);
