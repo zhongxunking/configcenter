@@ -44,15 +44,15 @@ public class RevertReleaseService {
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
         // 校验入参
-        App app = appDao.findLockByAppId(order.getAppId());
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
-        }
-        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
-        }
         if (order.getVersion() > ReleaseConstant.ORIGIN_VERSION) {
+            App app = appDao.findLockByAppId(order.getAppId());
+            if (app == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
+            }
+            Profile profile = profileDao.findLockByProfileId(order.getProfileId());
+            if (profile == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
+            }
             Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
             if (release == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getVersion()));

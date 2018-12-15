@@ -26,7 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 /**
  * 回滚配置value服务
  */
-@Service(enableTx = true)
+@Service
 public class RevertPropertyValuesService {
     @Autowired
     private PropertyValueService propertyValueService;
