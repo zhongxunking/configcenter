@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
@@ -42,24 +43,24 @@ public class FindProfileTreeService {
         FindProfileTreeOrder order = context.getOrder();
         FindProfileTreeResult result = context.getResult();
 
-        Profile profile = null;
+        ProfileInfo profile = null;
         if (order.getProfileId() != null) {
-            profile = profileDao.findByProfileId(order.getProfileId());
+            profile = ProfileUtils.findProfile(order.getProfileId());
             if (profile == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", order.getProfileId()));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
             }
         }
         result.setProfileTree(getProfileTree(profile));
     }
 
     // 获取环境树
-    private ProfileTree getProfileTree(Profile profile) {
-        ProfileInfo profileInfo = profile == null ? null : INFO_CONVERTER.convert(profile);
-        ProfileTree profileTree = new ProfileTree(profileInfo);
+    private ProfileTree getProfileTree(ProfileInfo profile) {
+        ProfileTree profileTree = new ProfileTree(profile);
 
         List<Profile> childrenProfile = profileDao.findByParent(profile == null ? null : profile.getProfileId());
         for (Profile childProfile : childrenProfile) {
-            profileTree.addChild(getProfileTree(childProfile));
+            ProfileTree childTree = getProfileTree(INFO_CONVERTER.convert(childProfile));
+            profileTree.addChild(childTree);
         }
 
         return profileTree;

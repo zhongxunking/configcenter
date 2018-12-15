@@ -22,4 +22,7 @@ public class QueryProfilesOrder extends AbstractQueryOrder {
     // 环境id
     @QueryLike
     private String profileId;
+    // 父环境id
+    @QueryLike
+    private String parent;
 }

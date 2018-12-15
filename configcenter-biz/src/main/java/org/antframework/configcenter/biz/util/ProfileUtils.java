@@ -16,9 +16,11 @@ import org.antframework.configcenter.facade.info.ProfileTree;
 import org.antframework.configcenter.facade.order.FindInheritedProfilesOrder;
 import org.antframework.configcenter.facade.order.FindProfileOrder;
 import org.antframework.configcenter.facade.order.FindProfileTreeOrder;
+import org.antframework.configcenter.facade.order.QueryProfilesOrder;
 import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
 import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.FindProfileTreeResult;
+import org.antframework.configcenter.facade.result.QueryProfilesResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +29,8 @@ import java.util.List;
  * 环境工具类
  */
 public final class ProfileUtils {
+    // 分页查询环境使用的每页大小
+    private static final int QUERY_PAGE_SIZE = 100;
     // 环境服务
     private static final ProfileService PROFILE_SERVICE = Contexts.getApplicationContext().getBean(ProfileService.class);
 
@@ -82,17 +86,26 @@ public final class ProfileUtils {
      */
     public static List<ProfileInfo> findAllProfiles() {
         List<ProfileInfo> profiles = new ArrayList<>();
-        extractProfiles(findProfileTree(null), profiles);
+
+        int pageNo = 1;
+        QueryProfilesResult result;
+        do {
+            result = PROFILE_SERVICE.queryProfiles(buildQueryProfilesOrder(pageNo++));
+            FacadeUtils.assertSuccess(result);
+            profiles.addAll(result.getInfos());
+        } while (pageNo <= FacadeUtils.calcTotalPage(result.getTotalCount(), QUERY_PAGE_SIZE));
+
         return profiles;
     }
 
-    // 提取环境树中的环境
-    private static void extractProfiles(ProfileTree profileTree, List<ProfileInfo> target) {
-        if (profileTree.getProfile() != null) {
-            target.add(profileTree.getProfile());
-        }
-        for (ProfileTree child : profileTree.getChildren()) {
-            extractProfiles(child, target);
-        }
+    // 构建查询环境的order
+    private static QueryProfilesOrder buildQueryProfilesOrder(int pageNo) {
+        QueryProfilesOrder order = new QueryProfilesOrder();
+        order.setPageNo(pageNo);
+        order.setPageSize(QUERY_PAGE_SIZE);
+        order.setProfileId(null);
+        order.setParent(null);
+
+        return order;
     }
 }

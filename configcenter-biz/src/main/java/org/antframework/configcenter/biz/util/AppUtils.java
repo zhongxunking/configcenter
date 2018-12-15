@@ -24,7 +24,7 @@ import java.util.List;
  */
 public final class AppUtils {
     // 分页查询应用使用的每页大小
-    private static final int QUERY_APPS_PAGE_SIZE = 100;
+    private static final int QUERY_PAGE_SIZE = 100;
     // 应用服务
     private static final AppService APP_SERVICE = Contexts.getApplicationContext().getBean(AppService.class);
 
@@ -102,7 +102,7 @@ public final class AppUtils {
             result = APP_SERVICE.queryApps(buildQueryAppsOrder(pageNo++));
             FacadeUtils.assertSuccess(result);
             apps.addAll(result.getInfos());
-        } while (pageNo <= FacadeUtils.calcTotalPage(result.getTotalCount(), QUERY_APPS_PAGE_SIZE));
+        } while (pageNo <= FacadeUtils.calcTotalPage(result.getTotalCount(), QUERY_PAGE_SIZE));
 
         return apps;
     }
@@ -111,7 +111,7 @@ public final class AppUtils {
     private static QueryAppsOrder buildQueryAppsOrder(int pageNo) {
         QueryAppsOrder order = new QueryAppsOrder();
         order.setPageNo(pageNo);
-        order.setPageSize(QUERY_APPS_PAGE_SIZE);
+        order.setPageSize(QUERY_PAGE_SIZE);
         order.setAppId(null);
         order.setParent(null);
 

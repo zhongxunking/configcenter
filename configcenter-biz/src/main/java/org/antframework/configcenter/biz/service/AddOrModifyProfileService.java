@@ -57,7 +57,7 @@ public class AddOrModifyProfileService {
             }
             Profile ancestor = profileDao.findLockByProfileId(ancestorId);
             if (ancestor == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("不存在环境[%s]", ancestorId));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", ancestorId));
             }
             ancestorId = ancestor.getParent();
         }
