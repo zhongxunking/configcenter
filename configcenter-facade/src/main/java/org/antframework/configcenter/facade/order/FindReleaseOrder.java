@@ -11,8 +11,10 @@ package org.antframework.configcenter.facade.order;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 
 /**
@@ -28,6 +30,7 @@ public class FindReleaseOrder extends AbstractOrder {
     @NotBlank
     private String profileId;
     // 版本
+    @Min(ReleaseConstant.ORIGIN_VERSION + 1)
     @NotNull
     private Long version;
 }

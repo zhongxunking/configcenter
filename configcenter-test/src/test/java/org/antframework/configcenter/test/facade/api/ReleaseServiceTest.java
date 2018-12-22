@@ -86,7 +86,7 @@ public class ReleaseServiceTest extends AbstractTest {
                 FindReleaseOrder order = new FindReleaseOrder();
                 order.setAppId(appId);
                 order.setProfileId(profileId);
-                order.setVersion(0L);
+                order.setVersion(3L);
 
                 FindReleaseResult result = releaseService.findRelease(order);
                 checkResult(result, Status.SUCCESS);
