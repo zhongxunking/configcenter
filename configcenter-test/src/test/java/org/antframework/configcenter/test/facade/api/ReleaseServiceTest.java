@@ -57,7 +57,7 @@ public class ReleaseServiceTest extends AbstractTest {
                 RevertReleaseOrder order = new RevertReleaseOrder();
                 order.setAppId(appId);
                 order.setProfileId(profileId);
-                order.setVersion(ReleaseConstant.ORIGIN_VERSION);
+                order.setTargetVersion(ReleaseConstant.ORIGIN_VERSION);
 
                 EmptyResult result = releaseService.revertRelease(order);
                 checkResult(result, Status.SUCCESS);

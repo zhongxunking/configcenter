@@ -44,7 +44,7 @@ public class RevertReleaseService {
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
         // 校验入参
-        if (order.getVersion() > ReleaseConstant.ORIGIN_VERSION) {
+        if (order.getTargetVersion() > ReleaseConstant.ORIGIN_VERSION) {
             App app = appDao.findLockByAppId(order.getAppId());
             if (app == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
@@ -53,20 +53,20 @@ public class RevertReleaseService {
             if (profile == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
             }
-            Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
+            Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getTargetVersion());
             if (release == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getVersion()));
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getTargetVersion()));
             }
         }
         // 回滚发布
-        releaseDao.deleteByAppIdAndProfileIdAndVersionGreaterThan(order.getAppId(), order.getProfileId(), order.getVersion());
+        releaseDao.deleteByAppIdAndProfileIdAndVersionGreaterThan(order.getAppId(), order.getProfileId(), order.getTargetVersion());
     }
 
     @ServiceAfter
     public void after(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
         // 回滚配置value
-        revertPropertyValues(order.getAppId(), order.getProfileId(), order.getVersion());
+        revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
         // 刷新客户端
         RefreshUtils.refreshClients(order.getAppId(), order.getProfileId());
     }

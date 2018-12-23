@@ -32,5 +32,5 @@ public class RevertReleaseOrder extends AbstractOrder {
     // 回滚到的目标版本（传入ReleaseConstant.ORIGIN_VERSION表示删除所有发布）
     @Min(ReleaseConstant.ORIGIN_VERSION)
     @NotNull
-    private Long version;
+    private Long targetVersion;
 }
