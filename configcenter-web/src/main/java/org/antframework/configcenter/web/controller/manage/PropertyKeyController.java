@@ -41,7 +41,7 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
-public class PropertyKeyManageController {
+public class PropertyKeyController {
     @Autowired
     private PropertyKeyService propertyKeyService;
 

@@ -32,7 +32,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/manage/propertyValue")
-public class PropertyValueManageController {
+public class PropertyValueController {
     // 掩码后的配置value
     private static final String MASKED_VALUE = "******";
     @Autowired

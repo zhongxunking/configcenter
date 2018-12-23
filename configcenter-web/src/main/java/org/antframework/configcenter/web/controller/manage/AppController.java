@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/app")
-public class AppManageController {
+public class AppController {
     @Autowired
     private AppService appService;
 

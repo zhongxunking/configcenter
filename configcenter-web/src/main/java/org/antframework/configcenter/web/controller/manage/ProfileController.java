@@ -25,7 +25,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/profile")
-public class ProfileManageController {
+public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
