@@ -38,7 +38,7 @@ public class FindAppSelfPropertiesService {
             // 移除作用域不合要求的配置
             release.getProperties().removeIf(property -> property.getScope().compareTo(order.getMinScope()) < 0);
 
-            result.addRelease(release);
+            result.addInheritedRelease(release);
         }
     }
 

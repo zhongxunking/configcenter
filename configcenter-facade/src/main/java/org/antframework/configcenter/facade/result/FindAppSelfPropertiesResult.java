@@ -21,9 +21,9 @@ import java.util.List;
 @Getter
 public class FindAppSelfPropertiesResult extends AbstractResult {
     // 由近及远继承的所用环境中的配置
-    private List<ReleaseInfo> releases = new ArrayList<>();
+    private List<ReleaseInfo> inheritedReleases = new ArrayList<>();
 
-    public void addRelease(ReleaseInfo release) {
-        releases.add(release);
+    public void addInheritedRelease(ReleaseInfo release) {
+        inheritedReleases.add(release);
     }
 }

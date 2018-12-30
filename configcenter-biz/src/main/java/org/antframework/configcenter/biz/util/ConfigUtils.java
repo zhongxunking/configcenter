@@ -41,6 +41,6 @@ public final class ConfigUtils {
 
         FindAppSelfPropertiesResult result = CONFIG_SERVICE.findAppSelfProperties(order);
         FacadeUtils.assertSuccess(result);
-        return result.getReleases();
+        return result.getInheritedReleases();
     }
 }
