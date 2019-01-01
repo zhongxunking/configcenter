@@ -20,6 +20,8 @@ import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 
+import java.util.ArrayList;
+
 /**
  * 发布工具类
  */
@@ -77,5 +79,23 @@ public final class ReleaseUtils {
 
         EmptyResult result = RELEASE_SERVICE.revertRelease(order);
         FacadeUtils.assertSuccess(result);
+    }
+
+    /**
+     * 构建空发布
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @return 空发布
+     */
+    public static ReleaseInfo buildEmptyRelease(String appId, String profileId) {
+        ReleaseInfo release = new ReleaseInfo();
+        release.setAppId(appId);
+        release.setProfileId(profileId);
+        release.setVersion(ReleaseConstant.ORIGIN_VERSION);
+        release.setMemo(null);
+        release.setProperties(new ArrayList<>());
+
+        return release;
     }
 }

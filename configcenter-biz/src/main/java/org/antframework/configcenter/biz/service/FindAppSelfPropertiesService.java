@@ -14,12 +14,9 @@ import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
-import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-
-import java.util.ArrayList;
 
 /**
  * 查找应用自己的在指定环境中的配置服务
@@ -46,12 +43,7 @@ public class FindAppSelfPropertiesService {
     private ReleaseInfo findCurrentRelease(String appId, String profileId) {
         ReleaseInfo release = ReleaseUtils.findCurrentRelease(appId, profileId);
         if (release == null) {
-            release = new ReleaseInfo();
-            release.setAppId(appId);
-            release.setProfileId(profileId);
-            release.setVersion(ReleaseConstant.ORIGIN_VERSION);
-            release.setMemo(null);
-            release.setProperties(new ArrayList<>());
+            release = ReleaseUtils.buildEmptyRelease(appId, profileId);
         }
         return release;
     }
