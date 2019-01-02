@@ -31,20 +31,11 @@ public class FindAppSelfPropertiesService {
         // 获取每个继承的环境中的配置
         for (ProfileInfo profile : ProfileUtils.findInheritedProfiles(order.getProfileId())) {
             // 获取当前发布
-            ReleaseInfo release = findCurrentRelease(order.getAppId(), profile.getProfileId());
+            ReleaseInfo release = ReleaseUtils.findCurrentRelease(order.getAppId(), profile.getProfileId());
             // 移除作用域不合要求的配置
             release.getProperties().removeIf(property -> property.getScope().compareTo(order.getMinScope()) < 0);
 
             result.addInheritedRelease(release);
         }
-    }
-
-    // 查找当前发布
-    private ReleaseInfo findCurrentRelease(String appId, String profileId) {
-        ReleaseInfo release = ReleaseUtils.findCurrentRelease(appId, profileId);
-        if (release == null) {
-            release = ReleaseUtils.buildEmptyRelease(appId, profileId);
-        }
-        return release;
     }
 }

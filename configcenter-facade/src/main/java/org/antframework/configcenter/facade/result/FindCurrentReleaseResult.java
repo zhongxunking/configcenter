@@ -19,6 +19,6 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 @Getter
 @Setter
 public class FindCurrentReleaseResult extends AbstractResult {
-    // 发布（null表示无任何发布）
+    // 发布（如果无任何发布，则会返回一个原始空发布）
     private ReleaseInfo release;
 }

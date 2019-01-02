@@ -21,12 +21,15 @@ import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
 import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
+
+import java.util.ArrayList;
 
 /**
  * 查找当前发布服务
@@ -61,6 +64,20 @@ public class FindCurrentReleaseService {
         Release release = releaseDao.findFirstByAppIdAndProfileIdOrderByVersionDesc(order.getAppId(), order.getProfileId());
         if (release != null) {
             result.setRelease(INFO_CONVERTER.convert(release));
+        } else {
+            result.setRelease(buildOriginRelease(order.getAppId(), order.getProfileId()));
         }
+    }
+
+    // 构建原始发布
+    private static ReleaseInfo buildOriginRelease(String appId, String profileId) {
+        ReleaseInfo release = new ReleaseInfo();
+        release.setAppId(appId);
+        release.setProfileId(profileId);
+        release.setVersion(ReleaseConstant.ORIGIN_VERSION);
+        release.setMemo(null);
+        release.setProperties(new ArrayList<>());
+
+        return release;
     }
 }
