@@ -153,8 +153,8 @@ public class ReleaseController {
 
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             Scope scope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<ReleaseInfo> inheritedReleases = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, scope);
-            result.addInheritedAppRelease(new FindInheritedReleasesResult.AppRelease(app, inheritedReleases));
+            List<ReleaseInfo> inheritedProfileReleases = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, scope);
+            result.addInheritedAppRelease(new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases));
         }
 
         return result;
@@ -181,7 +181,7 @@ public class ReleaseController {
             // 应用
             private final AppInfo app;
             // 由近及远继承的所用环境中的发布
-            private final List<ReleaseInfo> inheritedReleases;
+            private final List<ReleaseInfo> inheritedProfileReleases;
         }
     }
 }
