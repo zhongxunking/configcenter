@@ -24,6 +24,7 @@ import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.Managers;
 import org.antframework.manager.web.Relations;
 
+import java.io.Serializable;
 import java.util.*;
 
 /**
@@ -107,7 +108,7 @@ public final class KeyPrivileges {
      */
     @AllArgsConstructor
     @Getter
-    public static final class AppPrivilege {
+    public static final class AppPrivilege implements Serializable {
         // 应用
         private final AppInfo app;
         // 每个配置key对应的权限

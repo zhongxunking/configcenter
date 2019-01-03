@@ -177,56 +177,57 @@
                 findAppPropertyKeys: function () {
                     const theThis = this;
                     this.selfPropertyKeysLoading = true;
-                    axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+
+                    axios.get('../manage/propertyKey/findInheritedPrivileges', {
                         params: {
                             appId: this.appId
                         }
                     }).then(function (result) {
-                        theThis.selfPropertyKeysLoading = false;
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.appPropertyKeys = result.appPropertyKeys;
-                        theThis.appPropertyKeys.forEach(function (appPropertyKey) {
-                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                Vue.set(propertyKey, 'editing', false);
-                                Vue.set(propertyKey, 'editingScope', null);
-                                Vue.set(propertyKey, 'editingMemo', null);
-                                Vue.set(propertyKey, 'privilege', 'NONE');
-                                Vue.set(propertyKey, 'editingPrivilege', null);
-                                Vue.set(propertyKey, 'savePopoverShowing', false);
-                            });
+                        const appKeyPrivileges = {};
+                        result.appPrivileges.forEach(function (appPrivilege) {
+                            appKeyPrivileges[appPrivilege.app.appId] = appPrivilege.keyPrivileges;
+                        });
 
-                            Vue.set(appPropertyKey, 'app', null);
-                            axios.get('../manage/app/findApp', {
-                                params: {
-                                    appId: appPropertyKey.appId
-                                }
-                            }).then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                appPropertyKey.app = result.app;
-                            });
-
-                            axios.get('../manage/propertyKey/findKeyPrivileges', {
-                                params: {
-                                    appId: appPropertyKey.appId
-                                }
-                            }).then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                const keyPrivileges = result.keyPrivileges;
+                        axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                            params: {
+                                appId: theThis.appId
+                            }
+                        }).then(function (result) {
+                            theThis.selfPropertyKeysLoading = false;
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            theThis.appPropertyKeys = result.appPropertyKeys;
+                            theThis.appPropertyKeys.forEach(function (appPropertyKey) {
                                 appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                    let privilege = keyPrivileges[propertyKey.key];
-                                    if (!privilege) {
-                                        privilege = 'READ_WRITE';
+                                    Vue.set(propertyKey, 'editing', false);
+                                    Vue.set(propertyKey, 'editingScope', null);
+                                    Vue.set(propertyKey, 'editingMemo', null);
+                                    Vue.set(propertyKey, 'privilege', 'NONE');
+                                    Vue.set(propertyKey, 'editingPrivilege', null);
+                                    Vue.set(propertyKey, 'savePopoverShowing', false);
+                                });
+
+                                Vue.set(appPropertyKey, 'app', null);
+                                axios.get('../manage/app/findApp', {
+                                    params: {
+                                        appId: appPropertyKey.appId
                                     }
-                                    propertyKey.privilege = privilege;
+                                }).then(function (result) {
+                                    if (!result.success) {
+                                        Vue.prototype.$message.error(result.message);
+                                        return;
+                                    }
+                                    appPropertyKey.app = result.app;
+                                });
+
+                                appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                                    propertyKey.privilege = appKeyPrivileges[appPropertyKey.appId][propertyKey.key];
                                     propertyKey.editingPrivilege = null;
                                 });
                             });

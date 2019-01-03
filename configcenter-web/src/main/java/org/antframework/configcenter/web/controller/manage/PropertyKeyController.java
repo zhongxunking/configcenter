@@ -149,7 +149,7 @@ public class PropertyKeyController {
          */
         @AllArgsConstructor
         @Getter
-        public static class AppPropertyKey implements Serializable {
+        public static final class AppPropertyKey implements Serializable {
             // 应用id
             private final String appId;
             // 配置key
