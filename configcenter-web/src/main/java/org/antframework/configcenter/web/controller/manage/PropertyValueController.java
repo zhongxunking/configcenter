@@ -167,9 +167,9 @@ public class PropertyValueController {
 
     // 对配置value进行掩码
     private void maskPropertyValue(String appId, FindAppProfileCurrentPropertyValuesResult result) {
-        Map<String, Privilege> keyPrivileges = KeyPrivileges.findPrivileges(appId);
+        List<KeyPrivileges.AppPrivilege> appPrivileges = KeyPrivileges.findInheritedPrivileges(appId);
         for (PropertyValueInfo propertyValue : result.getPropertyValues()) {
-            Privilege privilege = keyPrivileges.getOrDefault(propertyValue.getKey(), Privilege.READ_WRITE);
+            Privilege privilege = KeyPrivileges.calcPrivilege(appPrivileges, propertyValue.getKey());
             if (privilege == Privilege.NONE) {
                 propertyValue.setValue(MASKED_VALUE);
             }

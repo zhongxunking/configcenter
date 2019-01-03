@@ -141,8 +141,8 @@ public class ReleaseController {
     /**
      * 查找应用在指定环境中继承的发布
      *
-     * @param appId     应用id
-     * @param profileId 环境id
+     * @param appId     应用id（必须）
+     * @param profileId 环境id（必须）
      */
     @RequestMapping("/findInheritedReleases")
     public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {

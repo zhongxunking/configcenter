@@ -25,7 +25,6 @@ import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.Privilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -33,7 +32,6 @@ import org.springframework.web.bind.annotation.RestController;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -118,18 +116,18 @@ public class PropertyKeyController {
     }
 
     /**
-     * 查找指定应用所有的配置key的权限
+     * 查找应用继承的配置权限
      *
      * @param appId 应用id（必须）
-     * @return 配置key的权限
+     * @return 继承的配置权限
      */
-    @RequestMapping("/findKeyPrivileges")
-    public FindKeyPrivilegesResult findKeyPrivileges(String appId) {
-        FindKeyPrivilegesResult result = new FindKeyPrivilegesResult();
+    @RequestMapping("/findInheritedPrivileges")
+    public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
+        FindInheritedPrivilegesResult result = new FindInheritedPrivilegesResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        result.setKeyPrivileges(KeyPrivileges.findPrivileges(appId));
+        result.setAppPrivileges(KeyPrivileges.findInheritedPrivileges(appId));
 
         return result;
     }
@@ -160,12 +158,12 @@ public class PropertyKeyController {
     }
 
     /**
-     * 查找指定应用所有的配置key的权限result
+     * 查找继承的配置权限result
      */
     @Getter
     @Setter
-    public static class FindKeyPrivilegesResult extends AbstractResult {
-        // key对应的权限
-        private Map<String, Privilege> keyPrivileges;
+    public static class FindInheritedPrivilegesResult extends AbstractResult {
+        // 由近及远应用继承的配置权限（该应用本身在第一位）
+        private List<KeyPrivileges.AppPrivilege> appPrivileges;
     }
 }

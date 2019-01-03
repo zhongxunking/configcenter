@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.web.common;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
@@ -22,9 +24,7 @@ import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.Managers;
 import org.antframework.manager.web.Relations;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * 配置key的权限工具类
@@ -34,41 +34,62 @@ public final class KeyPrivileges {
     private static final String RELATION_TYPE = "app-key-privilege";
 
     /**
-     * 查找权限
+     * 断言当前管理员为超级管理员或指定配置key的权限是读写权限
      *
      * @param appId 应用id
      * @param key   配置key
-     * @return 配置key的权限
      */
-    public static Privilege findPrivilege(String appId, String key) {
-        Map<String, Privilege> keyPrivileges = findPrivileges(appId);
-        return keyPrivileges.getOrDefault(key, Privilege.READ_WRITE);
+    public static void adminOrReadWrite(String appId, String key) {
+        ManagerInfo manager = Managers.currentManager();
+        if (manager.getType() == ManagerType.ADMIN) {
+            return;
+        }
+        Privilege privilege = calcPrivilege(findInheritedPrivileges(appId), key);
+        if (privilege != Privilege.READ_WRITE) {
+            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("无权限操作敏感配置key[%s]", key));
+        }
     }
 
     /**
-     * 查找应用及其继承的所有的配置key的权限
+     * 计算权限
      *
-     * @param appId 应用id
+     * @param appPrivileges 应用继承的配置权限
+     * @param key           配置key
      * @return 配置key的权限
      */
-    public static Map<String, Privilege> findPrivileges(String appId) {
-        Map<String, Privilege> keyPrivileges = new HashMap<>();
+    public static Privilege calcPrivilege(List<AppPrivilege> appPrivileges, String key) {
+        for (AppPrivilege appPrivilege : appPrivileges) {
+            Privilege privilege = appPrivilege.getKeyPrivileges().get(key);
+            if (privilege != null) {
+                return privilege;
+            }
+        }
+        return Privilege.READ_WRITE;
+    }
+
+    /**
+     * 查找应用继承的配置权限
+     *
+     * @param appId 应用id
+     * @return 由近及远应用继承的配置权限（该应用本身在第一位）
+     */
+    public static List<AppPrivilege> findInheritedPrivileges(String appId) {
+        List<AppPrivilege> appPrivileges = new ArrayList<>();
 
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            Map<String, Privilege> temp = new HashMap<>();
+            Map<String, Privilege> keyPrivileges = new HashMap<>();
             for (RelationInfo relation : Relations.findAllSourceRelations(RELATION_TYPE, app.getAppId())) {
-                temp.put(relation.getTarget(), Privilege.valueOf(relation.getValue()));
+                keyPrivileges.put(relation.getTarget(), Privilege.valueOf(relation.getValue()));
             }
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope)) {
-                temp.putIfAbsent(propertyKey.getKey(), Privilege.READ_WRITE);
+                keyPrivileges.putIfAbsent(propertyKey.getKey(), Privilege.READ_WRITE);
             }
 
-            temp.putAll(keyPrivileges);
-            keyPrivileges = temp;
+            appPrivileges.add(new AppPrivilege(app, keyPrivileges));
         }
 
-        return keyPrivileges;
+        return appPrivileges;
     }
 
     /**
@@ -82,18 +103,14 @@ public final class KeyPrivileges {
     }
 
     /**
-     * 断言当前管理员为超级管理员或指定配置key的权限是读写权限
-     *
-     * @param appId 应用id
-     * @param key   配置key
+     * 应用内的配置权限
      */
-    public static void adminOrReadWrite(String appId, String key) {
-        ManagerInfo manager = Managers.currentManager();
-        if (manager.getType() == ManagerType.ADMIN) {
-            return;
-        }
-        if (findPrivilege(appId, key) != Privilege.READ_WRITE) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("无权限操作敏感配置key[%s]", key));
-        }
+    @AllArgsConstructor
+    @Getter
+    public static final class AppPrivilege {
+        // 应用
+        private final AppInfo app;
+        // 每个配置key对应的权限
+        private final Map<String, Privilege> keyPrivileges;
     }
 }
