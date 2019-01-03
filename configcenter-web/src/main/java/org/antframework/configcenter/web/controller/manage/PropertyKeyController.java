@@ -100,20 +100,12 @@ public class PropertyKeyController {
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
-            result.addAppPropertyKey(getAppPropertyKey(app.getAppId(), appId));
+            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
+            List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope);
+            result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }
 
         return result;
-    }
-
-    // 获取应用的配置key
-    private FindInheritedPropertyKeysResult.AppPropertyKey getAppPropertyKey(String appId, String mainAppId) {
-        Scope minScope = Scope.PRIVATE;
-        if (!Objects.equals(appId, mainAppId)) {
-            minScope = Scope.PROTECTED;
-        }
-
-        return new FindInheritedPropertyKeysResult.AppPropertyKey(appId, PropertyKeyUtils.findAppPropertyKeys(appId, minScope));
     }
 
     /**
@@ -151,9 +143,9 @@ public class PropertyKeyController {
         @AllArgsConstructor
         @Getter
         public static final class AppPropertyKey implements Serializable {
-            // 应用id
-            private final String appId;
-            // 配置key
+            // 应用
+            private final AppInfo app;
+            // 所有的配置key
             private final List<PropertyKeyInfo> propertyKeys;
 
             @Override

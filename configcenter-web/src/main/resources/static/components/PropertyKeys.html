@@ -21,7 +21,7 @@
         </el-col>
     </el-row>
     <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 50px">
-        <el-row v-if="appPropertyKey.appId === appId" style="margin-bottom: 10px">
+        <el-row v-if="appPropertyKey.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
@@ -34,7 +34,7 @@
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.app.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.app.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.app.appId === appId ? '100%' : 'calc(100% - 130px)'}">
             <el-table-column prop="key" label="配置key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -70,7 +70,7 @@
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="130px">
+            <el-table-column v-if="appPropertyKey.app.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col :span="16" style="text-align: center">
@@ -213,21 +213,8 @@
                                     Vue.set(propertyKey, 'savePopoverShowing', false);
                                 });
 
-                                Vue.set(appPropertyKey, 'app', null);
-                                axios.get('../manage/app/findApp', {
-                                    params: {
-                                        appId: appPropertyKey.appId
-                                    }
-                                }).then(function (result) {
-                                    if (!result.success) {
-                                        Vue.prototype.$message.error(result.message);
-                                        return;
-                                    }
-                                    appPropertyKey.app = result.app;
-                                });
-
                                 appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                    propertyKey.privilege = appKeyPrivileges[appPropertyKey.appId][propertyKey.key];
+                                    propertyKey.privilege = appKeyPrivileges[appPropertyKey.app.appId][propertyKey.key];
                                     propertyKey.editingPrivilege = null;
                                 });
                             });
