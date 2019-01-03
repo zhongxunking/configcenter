@@ -71,7 +71,7 @@ public class AppController {
         EmptyResult result = appService.deleteApp(order);
         if (result.isSuccess()) {
             // 删除应用的所有配置key的权限
-            KeyPrivileges.deletePrivilege(appId, null);
+            KeyPrivileges.deletePrivileges(appId, null);
         }
         return result;
     }

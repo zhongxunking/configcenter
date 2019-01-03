@@ -11,10 +11,7 @@ package org.antframework.configcenter.web.controller.manage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
@@ -26,6 +23,7 @@ import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.Privilege;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -81,7 +79,7 @@ public class PropertyKeyController {
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         if (result.isSuccess()) {
-            KeyPrivileges.deletePrivilege(appId, key);
+            KeyPrivileges.deletePrivileges(appId, key);
         }
         return result;
     }
@@ -116,6 +114,8 @@ public class PropertyKeyController {
      */
     @RequestMapping("/findInheritedPrivileges")
     public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
+        ManagerApps.adminOrHaveApp(appId);
+
         FindInheritedPrivilegesResult result = new FindInheritedPrivilegesResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());
@@ -123,6 +123,38 @@ public class PropertyKeyController {
         result.setAppPrivileges(KeyPrivileges.findInheritedPrivileges(appId));
 
         return result;
+    }
+
+    /**
+     * 设置配置key的权限
+     *
+     * @param appId     应用id（必须）
+     * @param key       配置key（必须）
+     * @param privilege 权限（必须）
+     */
+    @RequestMapping("/setKeyPrivilege")
+    public EmptyResult setKeyPrivilege(String appId, String key, Privilege privilege) {
+        ManagerApps.adminOrHaveApp(appId);
+        assertExistingKey(appId, key);
+        // 设置权限
+        KeyPrivileges.setPrivilege(appId, key, privilege);
+
+        EmptyResult result = new EmptyResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        return result;
+    }
+
+    // 断言存在配置key
+    private void assertExistingKey(String appId, String key) {
+        List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(appId, Scope.PRIVATE);
+        for (PropertyKeyInfo propertyKey : propertyKeys) {
+            if (Objects.equals(propertyKey.getKey(), key)) {
+                return;
+            }
+        }
+        throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在配置key[%s]", appId, key));
     }
 
     /**

@@ -36,6 +36,31 @@ public final class KeyPrivileges {
     private static final String RELATION_TYPE = "app-key-privilege";
 
     /**
+     * 设置配置key的权限
+     *
+     * @param appId     应用id
+     * @param key       配置key
+     * @param privilege 权限
+     */
+    public static void setPrivilege(String appId, String key, Privilege privilege) {
+        if (privilege == Privilege.READ_WRITE) {
+            deletePrivileges(appId, key);
+        } else {
+            Relations.addOrModifyRelation(RELATION_TYPE, appId, key, privilege.name());
+        }
+    }
+
+    /**
+     * 删除配置key的权限
+     *
+     * @param appId 应用id
+     * @param key   配置key（null表示删除该应用的所有配置key的权限）
+     */
+    public static void deletePrivileges(String appId, String key) {
+        Relations.deleteRelations(RELATION_TYPE, appId, key);
+    }
+
+    /**
      * 断言当前管理员为超级管理员或指定配置key的权限是读写权限
      *
      * @param appId 应用id
@@ -92,16 +117,6 @@ public final class KeyPrivileges {
         }
 
         return appPrivileges;
-    }
-
-    /**
-     * 删除配置key的权限
-     *
-     * @param appId 应用id
-     * @param key   配置key
-     */
-    public static void deletePrivilege(String appId, String key) {
-        Relations.deleteRelations(RELATION_TYPE, appId, key);
     }
 
     /**

@@ -243,38 +243,20 @@
                             propertyKey.editing = false;
                             return;
                         }
-                        if (propertyKey.editingPrivilege === 'READ_WRITE') {
-                            axios.post(MANAGER_ROOT_PATH + '/manager/relation/deletes', {
-                                type: 'app-key-privilege',
-                                source: propertyKey.appId,
-                                target: propertyKey.key
-                            }).then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                Vue.prototype.$message.success(result.message);
-                                propertyKey.privilege = propertyKey.editingPrivilege;
+                        axios.post('../manage/propertyKey/setKeyPrivilege', {
+                            appId: propertyKey.appId,
+                            key: propertyKey.key,
+                            privilege: propertyKey.editingPrivilege
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            Vue.prototype.$message.success(result.message);
+                            propertyKey.privilege = propertyKey.editingPrivilege;
 
-                                propertyKey.editing = false;
-                            });
-                        } else {
-                            axios.post(MANAGER_ROOT_PATH + '/manager/relation/addOrModify', {
-                                type: 'app-key-privilege',
-                                source: propertyKey.appId,
-                                target: propertyKey.key,
-                                value: propertyKey.editingPrivilege
-                            }).then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                Vue.prototype.$message.success(result.message);
-                                propertyKey.privilege = propertyKey.editingPrivilege;
-
-                                propertyKey.editing = false;
-                            });
-                        }
+                            propertyKey.editing = false;
+                        });
                     });
                 },
                 deletePropertyKey: function (propertyKey) {
