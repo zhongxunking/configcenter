@@ -15,6 +15,7 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
@@ -154,6 +155,11 @@ public class PropertyKeyController {
             private final String appId;
             // 配置key
             private final List<PropertyKeyInfo> propertyKeys;
+
+            @Override
+            public String toString() {
+                return ToString.toString(this);
+            }
         }
     }
 

@@ -13,6 +13,7 @@ import lombok.Getter;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -113,5 +114,10 @@ public final class KeyPrivileges {
         private final AppInfo app;
         // 每个配置key对应的权限
         private final Map<String, Privilege> keyPrivileges;
+
+        @Override
+        public String toString() {
+            return ToString.toString(this);
+        }
     }
 }

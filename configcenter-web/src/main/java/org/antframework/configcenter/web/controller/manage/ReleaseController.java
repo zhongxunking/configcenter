@@ -14,6 +14,7 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
@@ -31,6 +32,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -177,11 +179,16 @@ public class ReleaseController {
          */
         @AllArgsConstructor
         @Getter
-        public static class AppRelease {
+        public static final class AppRelease implements Serializable {
             // 应用
             private final AppInfo app;
             // 由近及远继承的所用环境中的发布
             private final List<ReleaseInfo> inheritedProfileReleases;
+
+            @Override
+            public String toString() {
+                return ToString.toString(this);
+            }
         }
     }
 }
