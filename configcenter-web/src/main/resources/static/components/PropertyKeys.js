@@ -13,7 +13,7 @@ const PropertyKeysTemplate = `
         </el-col>
     </el-row>
     <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 50px">
-        <el-row v-if="appPropertyKey.appId === appId" style="margin-bottom: 10px">
+        <el-row v-if="appPropertyKey.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
@@ -26,7 +26,7 @@ const PropertyKeysTemplate = `
                 <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.appId === appId ? '100%' : 'calc(100% - 130px)'}">
+        <el-table :data="appPropertyKey.propertyKeys" v-loading="appPropertyKey.app.appId === appId ? selfPropertyKeysLoading : false" :key="appPropertyKey.app.appId" :default-sort="{prop: 'key'}" border stripe :style="{width: appPropertyKey.app.appId === appId ? '100%' : 'calc(100% - 130px)'}">
             <el-table-column prop="key" label="配置key" sortable></el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
@@ -62,7 +62,7 @@ const PropertyKeysTemplate = `
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPropertyKey.appId === appId" label="操作" header-align="center" width="130px">
+            <el-table-column v-if="appPropertyKey.app.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col :span="16" style="text-align: center">
@@ -171,56 +171,44 @@ const PropertyKeys = {
         findAppPropertyKeys: function () {
             const theThis = this;
             this.selfPropertyKeysLoading = true;
-            axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+
+            axios.get('../manage/propertyKey/findInheritedPrivileges', {
                 params: {
                     appId: this.appId
                 }
             }).then(function (result) {
-                theThis.selfPropertyKeysLoading = false;
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.appPropertyKeys = result.appPropertyKeys;
-                theThis.appPropertyKeys.forEach(function (appPropertyKey) {
-                    appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                        Vue.set(propertyKey, 'editing', false);
-                        Vue.set(propertyKey, 'editingScope', null);
-                        Vue.set(propertyKey, 'editingMemo', null);
-                        Vue.set(propertyKey, 'privilege', 'NONE');
-                        Vue.set(propertyKey, 'editingPrivilege', null);
-                        Vue.set(propertyKey, 'savePopoverShowing', false);
-                    });
+                const appKeyPrivileges = {};
+                result.appPrivileges.forEach(function (appPrivilege) {
+                    appKeyPrivileges[appPrivilege.app.appId] = appPrivilege.keyPrivileges;
+                });
 
-                    Vue.set(appPropertyKey, 'app', null);
-                    axios.get('../manage/app/findApp', {
-                        params: {
-                            appId: appPropertyKey.appId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        appPropertyKey.app = result.app;
-                    });
-
-                    axios.get('../manage/propertyKey/findKeyPrivileges', {
-                        params: {
-                            appId: appPropertyKey.appId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        const keyPrivileges = result.keyPrivileges;
+                axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                    params: {
+                        appId: theThis.appId
+                    }
+                }).then(function (result) {
+                    theThis.selfPropertyKeysLoading = false;
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.appPropertyKeys = result.appPropertyKeys;
+                    theThis.appPropertyKeys.forEach(function (appPropertyKey) {
                         appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                            let privilege = keyPrivileges[propertyKey.key];
-                            if (!privilege) {
-                                privilege = 'READ_WRITE';
-                            }
-                            propertyKey.privilege = privilege;
+                            Vue.set(propertyKey, 'editing', false);
+                            Vue.set(propertyKey, 'editingScope', null);
+                            Vue.set(propertyKey, 'editingMemo', null);
+                            Vue.set(propertyKey, 'privilege', 'NONE');
+                            Vue.set(propertyKey, 'editingPrivilege', null);
+                            Vue.set(propertyKey, 'savePopoverShowing', false);
+                        });
+
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            propertyKey.privilege = appKeyPrivileges[appPropertyKey.app.appId][propertyKey.key];
                             propertyKey.editingPrivilege = null;
                         });
                     });
@@ -249,38 +237,20 @@ const PropertyKeys = {
                     propertyKey.editing = false;
                     return;
                 }
-                if (propertyKey.editingPrivilege === 'READ_WRITE') {
-                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/deletes', {
-                        type: 'app-key-privilege',
-                        source: propertyKey.appId,
-                        target: propertyKey.key
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        Vue.prototype.$message.success(result.message);
-                        propertyKey.privilege = propertyKey.editingPrivilege;
+                axios.post('../manage/propertyKey/setKeyPrivilege', {
+                    appId: propertyKey.appId,
+                    key: propertyKey.key,
+                    privilege: propertyKey.editingPrivilege
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    propertyKey.privilege = propertyKey.editingPrivilege;
 
-                        propertyKey.editing = false;
-                    });
-                } else {
-                    axios.post(MANAGER_ROOT_PATH + '/manager/relation/addOrModify', {
-                        type: 'app-key-privilege',
-                        source: propertyKey.appId,
-                        target: propertyKey.key,
-                        value: propertyKey.editingPrivilege
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        Vue.prototype.$message.success(result.message);
-                        propertyKey.privilege = propertyKey.editingPrivilege;
-
-                        propertyKey.editing = false;
-                    });
-                }
+                    propertyKey.editing = false;
+                });
             });
         },
         deletePropertyKey: function (propertyKey) {
