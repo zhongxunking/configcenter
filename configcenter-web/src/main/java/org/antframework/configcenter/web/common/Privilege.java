@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -13,15 +13,15 @@ package org.antframework.configcenter.web.common;
  */
 public enum Privilege {
     /**
-     * 读写
+     * 无
      */
-    READ_WRITE,
+    NONE,
     /**
      * 只读
      */
     READ,
     /**
-     * 无
+     * 读写
      */
-    NONE
+    READ_WRITE
 }
