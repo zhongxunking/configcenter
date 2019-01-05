@@ -24,14 +24,14 @@
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
-                <el-button icon="el-icon-close" size="small" :disabled="!edited">取消修改</el-button>
+                <el-button icon="el-icon-close" size="small" :disabled="!edited">恢复</el-button>
                 <el-popover placement="top" v-model="submitPopoverShowing">
                     <p>提交后应用的配置将被修改，确定提交？</p>
                     <div style="text-align: right; margin: 0">
                         <el-button type="text" size="mini" @click="submitPopoverShowing = false">取消</el-button>
-                        <el-button type="primary" size="mini" @click="submitEdited">确定</el-button>
+                        <el-button type="primary" size="mini" @click="addRelease">确定</el-button>
                     </div>
-                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">提交修改</el-button>
+                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">发布</el-button>
                 </el-popover>
             </el-col>
         </el-row>
@@ -47,7 +47,6 @@
                   :show-header="profileProperty.profileId === profileId"
                   :key="appProperty.app.appId + ':' + profileProperty.profileId"
                   :default-sort="{prop: 'key'}"
-                  :style="{width: appProperty.app.appId === appId ? '100%' : 'calc(100% - 90px)'}"
                   border stripe>
             <el-table-column label="环境" :resizable="false" width="200px">
                 <template slot-scope="{ row }">
@@ -64,33 +63,38 @@
                 <template slot-scope="{ row }">
                     <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入配置value"></el-input>
                     <div v-else>
-                        <div v-if="row.modifiedType !== 'modifiedValue'">
-                            <el-tag v-if="row.value === null">无效</el-tag>
-                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                            <span v-else>{{ row.value }}</span>
-                        </div>
-                        <div v-else style="margin-top: 10px; margin-right: 30px">
+                        <div v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.modifiedValues.indexOf(row.key) >= 0">
                             <el-badge value="已修改">
                                 <el-tag v-if="row.value === null">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
                                 <span v-else>{{ row.value }}</span>
                             </el-badge>
                         </div>
+                        <div v-else style="margin-top: 10px; margin-right: 30px">
+                            <el-tag v-if="row.value === null">无效</el-tag>
+                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                            <span v-else>{{ row.value }}</span>
+                        </div>
                     </div>
                 </template>
             </el-table-column>
             <el-table-column prop="scope" label="作用域" :resizable="false" width="100px">
                 <template slot-scope="{ row }">
-                    <div>
+                    <el-select v-if="row.editing" v-model="row.editingScope" size="small" placeholder="请选择作用域" style="width: 90%">
+                        <el-option value="PRIVATE" label="私有"></el-option>
+                        <el-option value="PROTECTED" label="可继承"></el-option>
+                        <el-option value="PUBLIC" label="公开"></el-option>
+                    </el-select>
+                    <div v-else>
                         <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
                         <el-tag v-else-if="row.scope === 'PROTECTED'" type="success">可继承</el-tag>
                         <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning">公开</el-tag>
                     </div>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appProperty.app.appId === appId" label="操作" header-align="center" align="center" :resizable="false" width="90px">
+            <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="90px">
                 <template slot-scope="{ row }">
-                    <template v-if="profileProperty.profileId === profileId">
+                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
                         <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
                             <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
                         </el-tooltip>
@@ -103,7 +107,7 @@
                             </el-tooltip>
                         </el-button-group>
                     </template>
-                    <template v-else-if="showOverride(row.key)">
+                    <template v-else-if="showOverride(appProperty.app.appId, profileProperty.profileId, row.key)">
                         <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
                             <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-download" size="small" circle></el-button>
                         </el-tooltip>
@@ -124,6 +128,7 @@
                 manager: manager,
                 allProfiles: [],
                 selfPropertiesLoading: false,
+                appProperties: [],
                 currentPropertyValues: {
                     propertyValues: [],
                     addedValues: [],
@@ -142,8 +147,37 @@
                         || this.currentPropertyValues.modifiedValues.length > 0
                         || this.currentPropertyValues.modifiedScopes.length > 0
                         || this.currentPropertyValues.removedValues.length > 0;
+                }
+            },
+            watch: {
+                '$route': function () {
+                    this.refreshData();
                 },
-                appProperties: function () {
+                currentPropertyValues: function () {
+                    this.refreshAppProperties();
+                },
+                inheritedAppReleases: function () {
+                    this.refreshAppProperties();
+                },
+                inheritedAppPropertyKeys: function () {
+                    this.refreshAppProperties();
+                },
+                inheritedAppPrivileges: function () {
+                    this.refreshAppProperties();
+                }
+            },
+            created: function () {
+                this.refreshData();
+            },
+            methods: {
+                refreshData: function () {
+                    this.findAllProfiles();
+                    this.findCurrentPropertyValues();
+                    this.findInheritedAppReleases();
+                    this.findInheritedAppPropertyKeys();
+                    this.findInheritedAppPrivileges();
+                },
+                refreshAppProperties: function () {
                     const theThis = this;
 
                     let appProperties = [];
@@ -166,7 +200,7 @@
                                         privilege: theThis.calcPrivilege(release.appId, propertyValue.key),
                                         editing: false,
                                         editingValue: null,
-                                        modifiedType: theThis.calcModifiedType(propertyValue.key)
+                                        editingScope: null
                                     });
                                 });
                             } else {
@@ -177,38 +211,14 @@
                                         scope: property.scope,
                                         privilege: theThis.calcPrivilege(release.appId, property.key),
                                         editing: false,
-                                        editingValue: null
+                                        editingValue: null,
+                                        editingScope: null
                                     });
                                 });
                             }
                             appProperty.profileProperties.push(profileProperty);
                         });
-
-                        let propertyKeyMap = {};
-                        theThis.inheritedAppPropertyKeys.forEach(function (appPropertyKey) {
-                            if (appPropertyKey.app.appId === appProperty.app.appId) {
-                                appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                    propertyKeyMap[propertyKey.key] = propertyKey;
-                                });
-                            }
-                        });
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            profileProperty.properties.forEach(function (property) {
-                                delete propertyKeyMap[property.key];
-                            });
-                        });
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (profileProperty.profileId === theThis.profileId) {
-                                for (let key in propertyKeyMap) {
-                                    let propertyKey = propertyKeyMap[key];
-                                    profileProperty.properties.push({
-                                        key: propertyKey.key,
-                                        value: null,
-                                        scope: propertyKey.scope
-                                    });
-                                }
-                            }
-                        });
+                        theThis.fillCurrentProfileProperties(appProperty);
                         appProperty.profileProperties.forEach(function (profileProperty) {
                             profileProperty.properties.forEach(function (property) {
                                 property.propertiesSize = profileProperty.properties.length;
@@ -218,26 +228,8 @@
                         appProperties.push(appProperty);
                     });
 
-                    return appProperties;
-                }
-            },
-            watch: {
-                '$route': function () {
-                    this.findAllProfiles();
-                    this.findCurrentPropertyValues();
-                    this.findInheritedAppReleases();
-                    this.findInheritedAppPropertyKeys();
-                    this.findInheritedAppPrivileges();
-                }
-            },
-            created: function () {
-                this.findAllProfiles();
-                this.findCurrentPropertyValues();
-                this.findInheritedAppReleases();
-                this.findInheritedAppPropertyKeys();
-                this.findInheritedAppPrivileges();
-            },
-            methods: {
+                    this.appProperties = appProperties;
+                },
                 findAllProfiles: function () {
                     const theThis = this;
                     axios.get('../manage/profile/findProfileTree', {
@@ -287,18 +279,6 @@
                         };
                     });
                 },
-                calcModifiedType: function (key) {
-                    if (this.currentPropertyValues.addedValues.indexOf(key) >= 0) {
-                        return 'added';
-                    } else if (this.currentPropertyValues.modifiedValues.indexOf(key) >= 0) {
-                        return 'modifiedValue';
-                    } else if (this.currentPropertyValues.modifiedScopes.indexOf(key) >= 0) {
-                        return 'modifiedScope';
-                    } else if (this.currentPropertyValues.removedValues.indexOf(key) >= 0) {
-                        return 'removed';
-                    }
-                    return 'none';
-                },
                 findInheritedAppReleases: function () {
                     const theThis = this;
                     this.selfPropertiesLoading = true;
@@ -328,6 +308,38 @@
                             return;
                         }
                         theThis.inheritedAppPropertyKeys = result.appPropertyKeys;
+                    });
+                },
+                fillCurrentProfileProperties: function (appProperty) {
+                    const theThis = this;
+
+                    let propertyKeyMap = {};
+                    this.inheritedAppPropertyKeys.forEach(function (appPropertyKey) {
+                        if (appPropertyKey.app.appId === appProperty.app.appId) {
+                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                                propertyKeyMap[propertyKey.key] = propertyKey;
+                            });
+                        }
+                    });
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        profileProperty.properties.forEach(function (property) {
+                            delete propertyKeyMap[property.key];
+                        });
+                    });
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        if (profileProperty.profileId === theThis.profileId) {
+                            for (let key in propertyKeyMap) {
+                                let propertyKey = propertyKeyMap[key];
+                                profileProperty.properties.push({
+                                    key: propertyKey.key,
+                                    value: null,
+                                    scope: propertyKey.scope,
+                                    privilege: theThis.calcPrivilege(propertyKey.appId, propertyKey.key),
+                                    editing: false,
+                                    editingValue: null
+                                });
+                            }
+                        }
                     });
                 },
                 findInheritedAppPrivileges: function () {
@@ -373,24 +385,6 @@
                         processProfile(result.profile);
                     });
                 },
-                showOverride: function (key) {
-                    const theThis = this;
-
-                    let show = true;
-                    this.appProperties.forEach(function (appProperty) {
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (profileProperty.profileId !== theThis.profileId) {
-                                return;
-                            }
-                            profileProperty.properties.forEach(function (property) {
-                                if (property.key === key) {
-                                    show = false;
-                                }
-                            });
-                        });
-                    });
-                    return show;
-                },
                 profilePropertySpanMethod: function ({row, column, rowIndex, columnIndex}) {
                     if (columnIndex === 0) {
                         if (rowIndex === 0) {
@@ -407,11 +401,102 @@
                         }
                     }
                 },
+                showOverride: function (appId, profileId, key) {
+                    for (let i = 0; i < this.appProperties.length; i++) {
+                        let appProperty = this.appProperties[i];
+                        for (let j = 0; j < appProperty.profileProperties.length; j++) {
+                            let profileProperty = appProperty.profileProperties[j];
+                            for (let k = 0; k < profileProperty.properties.length; k++) {
+                                let property = profileProperty.properties[k];
+                                if (property.key === key) {
+                                    return appProperty.app.appId === appId && profileProperty.profileId === profileId;
+                                }
+                            }
+                        }
+                    }
+                    return true;
+                },
+                startEditing: function (property) {
+                    property.editing = true;
+                    property.editingValue = property.value;
+                    property.editingScope = property.scope;
+                },
+                cancelEditing: function (property) {
+                    property.editing = false;
+                    property.editingValue = null;
+                    property.editingScope = null;
+                    if (property.temporary) {
+                        const theThis = this;
+                        this.appProperties.forEach(function (appProperty) {
+                            if (appProperty.app.appId !== theThis.appId) {
+                                return;
+                            }
+                            appProperty.profileProperties.forEach(function (profileProperty) {
+                                if (profileProperty.profileId !== theThis.profileId) {
+                                    return;
+                                }
+                                for (let i = 0; i < profileProperty.properties.length; i++) {
+                                    let temp = profileProperty.properties[i];
+                                    if (temp.key === property.key) {
+                                        profileProperty.properties.splice(i, 1);
+                                    }
+                                }
+                                profileProperty.properties.forEach(function (property) {
+                                    Vue.set(property, 'propertiesSize', profileProperty.properties.length);
+                                });
+                            });
+                        });
+                    }
+                },
+                saveEditing: function (property) {
+                    if (property.editingValue) {
+                        property.editingValue = property.editingValue.trim();
+                    }
+                    if (!property.editingValue) {
+                        Vue.prototype.$message.error('配置value不能为空');
+                        return;
+                    }
+                    this.addOrModifyPropertyValue(property);
+                },
+                addOrModifyPropertyValue: function (property) {
+                    const theThis = this;
+                    axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
+                        params: {
+                            appId: this.appId,
+                            key: property.key,
+                            profileId: this.profileId,
+                            value: property.editingValue,
+                            scope: property.editingScope
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.refreshData();
+                    });
+                },
+                deletePropertyValue: function (property) {
+                    const theThis = this;
+                    axios.get('../manage/propertyValue/deletePropertyValue', {
+                        params: {
+                            appId: this.appId,
+                            key: property.key,
+                            profileId: this.profileId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.refreshData();
+                    });
+                },
                 overrideProperty: function (property) {
                     const theThis = this;
 
                     this.appProperties.forEach(function (appProperty) {
-                        if (appProperty.appId !== theThis.appId) {
+                        if (appProperty.app.appId !== theThis.appId) {
                             return;
                         }
                         appProperty.profileProperties.forEach(function (profileProperty) {
@@ -424,127 +509,38 @@
                                 }
                             }
 
-                            let newSize = profileProperty.properties.length + 1;
                             let temp = {
-                                propertiesSize: newSize,
                                 key: property.key,
                                 value: null,
                                 scope: property.scope,
+                                privilege: theThis.calcPrivilege(appProperty.app.appId, property.key),
                                 editing: false,
                                 editingValue: null,
-                                editedValue: null
+                                editingScope: null,
+                                temporary: true
                             };
                             profileProperty.properties.push(temp);
                             profileProperty.properties.forEach(function (property) {
-                                Vue.set(property, 'propertiesSize', newSize);
+                                Vue.set(property, 'propertiesSize', profileProperty.properties.length);
                             });
                             theThis.startEditing(temp);
                         });
                     });
                 },
-                startEditing: function (property) {
-                    property.editing = true;
-                    property.editingValue = property.editedValue;
-                },
-                cancelEditing: function (property) {
-                    property.editing = false;
-                    property.editingValue = null;
-
-                    this.removeIfNecessary(property);
-                },
-                saveEditing: function (property) {
-                    property.editing = false;
-                    property.editedValue = property.editingValue;
-                    if (property.editedValue !== null) {
-                        property.editedValue = property.editedValue.trim();
-                    }
-                    if (!property.editedValue) {
-                        property.editedValue = null;
-                    }
-                    property.editingValue = null;
-
-                    if (this.removeIfNecessary(property)) {
-                        Vue.prototype.$message.error("无效的覆盖");
-                    }
-                },
-                removeIfNecessary: function (property) {
-                    if (property.value !== null || property.editedValue !== null) {
-                        return false;
-                    }
-
+                addRelease: function () {
                     const theThis = this;
-
-                    let remove = false;
-                    this.appProperties.forEach(function (appProperty) {
-                        if (appProperty.appId !== theThis.appId) {
-                            return;
+                    axios.get('../manage/release/addRelease', {
+                        params: {
+                            appId: this.appId,
+                            profileId: this.profileId,
+                            memo: null
                         }
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (remove || profileProperty.profileId === theThis.profileId) {
-                                return;
-                            }
-                            profileProperty.properties.forEach(function (tempProperty) {
-                                remove = remove || tempProperty.key === property.key;
-                            });
-                        });
-                    });
-                    if (!remove) {
-                        return false;
-                    }
-                    this.appProperties.forEach(function (appProperty) {
-                        if (appProperty.appId !== theThis.appId) {
-                            return;
-                        }
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (profileProperty.profileId !== theThis.profileId) {
-                                return;
-                            }
-                            for (let i = 0; i < profileProperty.properties.length; i++) {
-                                if (profileProperty.properties[i].key === property.key) {
-                                    profileProperty.properties.splice(i, 1);
-                                    break;
-                                }
-                            }
-                        });
-                    });
-                    return true;
-                },
-                submitEdited: function () {
-                    this.submitPopoverShowing = false;
-
-                    const theThis = this;
-                    let keys = [], values = [];
-                    this.appProperties.forEach(function (appProperty) {
-                        if (appProperty.appId !== theThis.appId) {
-                            return;
-                        }
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (profileProperty.profileId !== theThis.profileId) {
-                                return;
-                            }
-                            profileProperty.properties.forEach(function (property) {
-                                if (property.editedValue !== property.value) {
-                                    keys.push(property.key);
-                                    values.push(property.editedValue);
-                                }
-                            })
-                        })
-                    });
-
-                    this.selfPropertiesLoading = true;
-                    axios.post('../manage/propertyValue/setPropertyValues', {
-                        appId: this.appId,
-                        profileId: this.profileId,
-                        keys: JSON.stringify(keys),
-                        values: JSON.stringify(values)
                     }).then(function (result) {
-                        theThis.selfPropertiesLoading = false;
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        Vue.prototype.$message.success(result.message);
-                        theThis.findAppProperties();
+                        theThis.refreshAppProperties();
                     });
                 },
                 toShowingProfile: function (profile) {
