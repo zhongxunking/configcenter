@@ -388,17 +388,19 @@
                                             break;
                                         }
                                     }
-                                    profileProperty.properties.push({
-                                        appId: release.appId,
-                                        profileId: release.profileId,
-                                        key: property.key,
-                                        value: property.value,
-                                        scope: property.scope,
-                                        privilege: theThis.calcPrivilege(release.appId, property.key),
-                                        editing: false,
-                                        editingValue: null,
-                                        editingScope: null
-                                    });
+                                    if (property) {
+                                        profileProperty.properties.push({
+                                            appId: release.appId,
+                                            profileId: release.profileId,
+                                            key: property.key,
+                                            value: property.value,
+                                            scope: property.scope,
+                                            privilege: theThis.calcPrivilege(release.appId, property.key),
+                                            editing: false,
+                                            editingValue: null,
+                                            editingScope: null
+                                        });
+                                    }
                                 });
                             } else {
                                 release.properties.forEach(function (property) {
@@ -530,6 +532,8 @@
                             for (let key in propertyKeyMap) {
                                 let propertyKey = propertyKeyMap[key];
                                 profileProperty.properties.push({
+                                    appId: appProperty.app.appId,
+                                    profileId: profileProperty.profileId,
                                     key: propertyKey.key,
                                     value: null,
                                     scope: propertyKey.scope,
@@ -604,7 +608,7 @@
                     }
                 },
                 tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
-                    if (columnIndex > 0 && !this.isValidKey(row.appId, row.profileId, row.key)) {
+                    if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || row.value === null)) {
                         return 'info-row';
                     }
                     return '';
@@ -627,6 +631,13 @@
                     return keyMap[key];
                 },
                 calcKeyValidity: function (appId, profileId, key) {
+                    const theThis = this;
+                    const removed = function (appId, profileId, key) {
+                        return appId === theThis.appId
+                            && profileId === theThis.profileId
+                            && theThis.currentPropertyValues.removedValues.indexOf(key) >= 0;
+                    };
+
                     for (let i = 0; i < this.appProperties.length; i++) {
                         let appProperty = this.appProperties[i];
                         for (let j = 0; j < appProperty.profileProperties.length; j++) {
@@ -634,13 +645,12 @@
                             for (let k = 0; k < profileProperty.properties.length; k++) {
                                 let property = profileProperty.properties[k];
                                 if (property.key === key) {
-                                    if (appProperty.app.appId === this.appId && profileProperty.profileId === this.profileId
-                                        && this.currentPropertyValues.removedValues.indexOf(key) >= 0) {
-                                        if (appId === this.appId && profileId === this.profileId) {
+                                    if (appProperty.app.appId === appId && profileProperty.profileId === profileId) {
+                                        return !removed(appId, profileId, key);
+                                    } else {
+                                        if (!removed(appId, profileId, key)) {
                                             return false;
                                         }
-                                    } else {
-                                        return appProperty.app.appId === appId && profileProperty.profileId === profileId;
                                     }
                                 }
                             }
