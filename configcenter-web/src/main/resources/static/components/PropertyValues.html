@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <title>配置value</title>
     <script src="../common/import.js"></script>
+    <style>
+        .badge-style {
+            margin-top: 10px;
+            margin-right: 40px;
+        }
+    </style>
 </head>
 <body>
 <div id="propertyValuesApp">
@@ -18,20 +24,20 @@
             </el-select>
         </el-col>
     </el-row>
-    <div v-for="appProperty in appProperties" style="margin-bottom: 50px">
+    <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
         <el-row v-if="appProperty.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="6" :span="12" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
-                <el-button icon="el-icon-close" size="small" :disabled="!edited">恢复</el-button>
+                <el-button icon="el-icon-close" size="small" :disabled="!edited" @click="revertPropertyValues">恢复修改</el-button>
                 <el-popover placement="top" v-model="submitPopoverShowing">
-                    <p>提交后应用的配置将被修改，确定提交？</p>
+                    <p>发布后应用的配置将被修改，确定发布？</p>
                     <div style="text-align: right; margin: 0">
                         <el-button type="text" size="mini" @click="submitPopoverShowing = false">取消</el-button>
                         <el-button type="primary" size="mini" @click="addRelease">确定</el-button>
                     </div>
-                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">发布</el-button>
+                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">发布修改</el-button>
                 </el-popover>
             </el-col>
         </el-row>
@@ -47,69 +53,104 @@
                   :show-header="profileProperty.profileId === profileId"
                   :key="appProperty.app.appId + ':' + profileProperty.profileId"
                   :default-sort="{prop: 'key'}"
+                  :cell-style="{padding: '5px 0px'}"
                   border stripe>
-            <el-table-column label="环境" :resizable="false" width="200px">
+            <el-table-column label="环境" :resizable="false" width="150px">
                 <template slot-scope="{ row }">
-                    <span>{{ profileProperty.profileId }}</span>
+                    <span style="font-size: larger">{{ profileProperty.profileId }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="key" label="配置key" :resizable="false" :align="profileProperty.properties.length !== 0 ? 'left' : 'center'">
                 <template slot-scope="{ row }">
                     <span v-if="row.empty" class="el-table__empty-text">暂无数据</span>
-                    <span v-else>{{ row.key }}</span>
+                    <template v-else>
+                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
+                            <el-badge v-if="currentPropertyValues.addedValues.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                <span>{{ row.key }}</span>
+                            </el-badge>
+                            <el-badge v-else-if="currentPropertyValues.removedValues.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                <span>{{ row.key }}</span>
+                            </el-badge>
+                            <span v-else>{{ row.key }}</span>
+                        </template>
+                        <span v-else>{{ row.key }}</span>
+                    </template>
                 </template>
             </el-table-column>
             <el-table-column prop="value" label="配置value" :resizable="false">
                 <template slot-scope="{ row }">
                     <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入配置value"></el-input>
-                    <div v-else>
-                        <div v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.modifiedValues.indexOf(row.key) >= 0">
-                            <el-badge value="已修改">
+                    <template v-else>
+                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.modifiedValues.indexOf(row.key) >= 0">
+                            <el-badge type="warning" value="改" class="badge-style">
                                 <el-tag v-if="row.value === null">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
                                 <span v-else>{{ row.value }}</span>
                             </el-badge>
-                        </div>
-                        <div v-else style="margin-top: 10px; margin-right: 30px">
+                        </template>
+                        <div v-else>
                             <el-tag v-if="row.value === null">无效</el-tag>
                             <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
                             <span v-else>{{ row.value }}</span>
                         </div>
-                    </div>
+                    </template>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" :resizable="false" width="100px">
+            <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
                 <template slot-scope="{ row }">
-                    <el-select v-if="row.editing" v-model="row.editingScope" size="small" placeholder="请选择作用域" style="width: 90%">
+                    <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
                         <el-option value="PRIVATE" label="私有"></el-option>
                         <el-option value="PROTECTED" label="可继承"></el-option>
                         <el-option value="PUBLIC" label="公开"></el-option>
                     </el-select>
-                    <div v-else>
-                        <el-tag v-if="row.scope === 'PRIVATE'">私有</el-tag>
-                        <el-tag v-else-if="row.scope === 'PROTECTED'" type="success">可继承</el-tag>
-                        <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning">公开</el-tag>
-                    </div>
+                    <template v-else>
+                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.modifiedScopes.indexOf(row.key) >= 0">
+                            <el-badge type="warning" value="改" class="badge-style">
+                                <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                            </el-badge>
+                        </template>
+                        <div v-else>
+                            <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                            <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                            <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                        </div>
+                    </template>
                 </template>
             </el-table-column>
-            <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="90px">
+            <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                 <template slot-scope="{ row }">
                     <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="small" circle></el-button>
-                        </el-tooltip>
-                        <el-button-group v-else>
-                            <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="small" circle></el-button>
+                        <template v-if="currentPropertyValues.removedValues.indexOf(row.key) >= 0">
+                            <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
+                                <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
                             </el-tooltip>
-                            <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
-                            </el-tooltip>
-                        </el-button-group>
+                        </template>
+                        <el-row v-else>
+                            <el-col :span="12" style="text-align: center">
+                                <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                </el-tooltip>
+                                <el-button-group v-else>
+                                    <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
+                                    </el-tooltip>
+                                    <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
+                                    </el-tooltip>
+                                </el-button-group>
+                            </el-col>
+                            <el-col :span="12" style="text-align: center">
+                                <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="deletePropertyValue(row)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
+                                </el-tooltip>
+                            </el-col>
+                        </el-row>
                     </template>
                     <template v-else-if="showOverride(appProperty.app.appId, profileProperty.profileId, row.key)">
                         <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-download" size="small" circle></el-button>
+                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-download" size="mini" circle></el-button>
                         </el-tooltip>
                     </template>
                 </template>
@@ -198,6 +239,24 @@
                                         value: propertyValue.value,
                                         scope: propertyValue.scope,
                                         privilege: theThis.calcPrivilege(release.appId, propertyValue.key),
+                                        editing: false,
+                                        editingValue: null,
+                                        editingScope: null
+                                    });
+                                });
+                                theThis.currentPropertyValues.removedValues.forEach(function (key) {
+                                    let property;
+                                    for (let i = 0; i < release.properties.length; i++) {
+                                        if (release.properties[i].key === key) {
+                                            property = release.properties[i];
+                                            break;
+                                        }
+                                    }
+                                    profileProperty.properties.push({
+                                        key: property.key,
+                                        value: property.value,
+                                        scope: property.scope,
+                                        privilege: theThis.calcPrivilege(release.appId, property.key),
                                         editing: false,
                                         editingValue: null,
                                         editingScope: null
@@ -456,17 +515,17 @@
                         Vue.prototype.$message.error('配置value不能为空');
                         return;
                     }
-                    this.addOrModifyPropertyValue(property);
+                    this.addOrModifyPropertyValue(property.key, property.editingValue, property.editingScope);
                 },
-                addOrModifyPropertyValue: function (property) {
+                addOrModifyPropertyValue: function (key, value, scope) {
                     const theThis = this;
                     axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                         params: {
                             appId: this.appId,
-                            key: property.key,
+                            key: key,
                             profileId: this.profileId,
-                            value: property.editingValue,
-                            scope: property.editingScope
+                            value: value,
+                            scope: scope
                         }
                     }).then(function (result) {
                         if (!result.success) {
@@ -527,6 +586,34 @@
                         });
                     });
                 },
+                revertPropertyValues: function () {
+                    const theThis = this;
+
+                    axios.get('../manage/release/findCurrentRelease', {
+                        params: {
+                            appId: this.appId,
+                            profileId: this.profileId
+                        }
+                    }).then(function (findCurrentReleaseResult) {
+                        if (!findCurrentReleaseResult.success) {
+                            Vue.prototype.$message.error(findCurrentReleaseResult.message);
+                            return;
+                        }
+                        axios.get('../manage/propertyValue/revertPropertyValues', {
+                            params: {
+                                appId: theThis.appId,
+                                profileId: theThis.profileId,
+                                releaseVersion: findCurrentReleaseResult.release.version
+                            }
+                        }).then(function (revertPropertyValuesResult) {
+                            if (!revertPropertyValuesResult.success) {
+                                Vue.prototype.$message.error(revertPropertyValuesResult.message);
+                                return;
+                            }
+                            theThis.refreshData();
+                        });
+                    });
+                },
                 addRelease: function () {
                     const theThis = this;
                     axios.get('../manage/release/addRelease', {
@@ -540,7 +627,9 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.refreshAppProperties();
+                        theThis.submitPopoverShowing = false;
+                        Vue.prototype.$message.success(result.message);
+                        theThis.refreshData();
                     });
                 },
                 toShowingProfile: function (profile) {
