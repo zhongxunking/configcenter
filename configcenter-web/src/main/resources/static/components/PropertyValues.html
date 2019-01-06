@@ -35,14 +35,7 @@
             </el-col>
             <el-col :span="6" style="text-align: end">
                 <el-button icon="el-icon-close" size="small" :disabled="!edited" @click="revertPropertyValues">还原修改</el-button>
-                <el-popover placement="top" v-model="submitPopoverShowing">
-                    <p>发布后应用的配置将被修改，确定发布？</p>
-                    <div style="text-align: right; margin: 0">
-                        <el-button type="text" size="mini" @click="submitPopoverShowing = false">取消</el-button>
-                        <el-button type="primary" size="mini" @click="addRelease">确定</el-button>
-                    </div>
-                    <el-button slot="reference" type="primary" icon="el-icon-upload" @click="submitPopoverShowing = true" :disabled="!edited" size="small">发布修改</el-button>
-                </el-popover>
+                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showAddReleaseDialog">发布修改</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -65,9 +58,11 @@
                     <span style="font-size: larger">{{ profileProperty.profileId }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="key" label="配置key" :resizable="false" :align="profileProperty.properties.length !== 0 ? 'left' : 'center'">
+            <el-table-column prop="key" label="配置key" :resizable="false">
                 <template slot-scope="{ row }">
-                    <span v-if="row.empty" class="el-table__empty-text">暂无数据</span>
+                    <div v-if="row.empty" style="text-align: center">
+                        <span class="el-table__empty-text">暂无数据</span>
+                    </div>
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
                             <el-badge v-if="currentPropertyValues.addedValues.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
@@ -162,6 +157,69 @@
             </el-table-column>
         </el-table>
     </div>
+    <el-dialog :visible.sync="addReleaseDialogVisible" :before-close="closeAddReleaseDialog" title="新增发布" width="70%" center>
+        <el-row>
+            <el-col :span="3" style="text-align: right;">
+                <span style="margin-right: 12px">变更的配置</span>
+            </el-col>
+            <el-col :span="21">
+                <el-table :data="modifiedProperties" :default-sort="{prop: 'key'}" border>
+                    <el-table-column prop="key" label="配置key">
+                        <template slot-scope="{ row }">
+                            <el-badge v-if="currentPropertyValues.addedValues.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            </el-badge>
+                            <el-badge v-else-if="currentPropertyValues.removedValues.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            </el-badge>
+                            <span v-else>{{ row.key }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="value" label="配置value">
+                        <template slot-scope="{ row }">
+                            <template v-if="currentPropertyValues.modifiedValues.indexOf(row.key) >= 0">
+                                <el-badge type="warning" value="改" class="badge-style">
+                                    <el-tag v-if="row.value === null">无效</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                    <span v-else style="margin-right: 10px">{{ row.value }}</span>
+                                </el-badge>
+                            </template>
+                            <div v-else>
+                                <el-tag v-if="row.value === null">无效</el-tag>
+                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                <span v-else>{{ row.value }}</span>
+                            </div>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
+                        <template slot-scope="{ row }">
+                            <template v-if="currentPropertyValues.modifiedScopes.indexOf(row.key) >= 0">
+                                <el-badge type="warning" value="改" class="badge-style">
+                                    <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                </el-badge>
+                            </template>
+                            <div v-else>
+                                <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                            </div>
+                        </template>
+                    </el-table-column>
+                </el-table>
+            </el-col>
+        </el-row>
+        <el-form ref="addReleaseForm" :model="addReleaseForm" label-width="12.5%">
+            <el-form-item label="备注" prop="memo" :rules="[{required:false, message:'请输入备注', trigger:'blur'}]">
+                <el-input v-model="addReleaseForm.memo" type="textarea" autosize clearable placeholder="请输入备注"></el-input>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddReleaseDialog">取消</el-button>
+            <el-button type="primary" @click="addRelease">提交</el-button>
+        </div>
+    </el-dialog>
 </div>
 <script>
     GET_CURRENT_MANAGER(function (manager) {
@@ -185,7 +243,10 @@
                 inheritedAppReleases: [],
                 inheritedAppPropertyKeys: [],
                 inheritedAppPrivileges: [],
-                submitPopoverShowing: false
+                addReleaseDialogVisible: false,
+                addReleaseForm: {
+                    memo: null
+                }
             },
             computed: {
                 edited: function () {
@@ -211,6 +272,44 @@
                         appMap[appProperty.app.appId] = profileMap;
                     }
                     return appMap;
+                },
+                modifiedProperties: function () {
+                    const theThis = this;
+
+                    let properties = [];
+                    this.currentPropertyValues.propertyValues.forEach(function (propertyValue) {
+                        if (theThis.currentPropertyValues.addedValues.indexOf(propertyValue.key) >= 0
+                            || theThis.currentPropertyValues.modifiedValues.indexOf(propertyValue.key) >= 0
+                            || theThis.currentPropertyValues.modifiedScopes.indexOf(propertyValue.key) >= 0) {
+                            properties.push({
+                                key: propertyValue.key,
+                                value: propertyValue.value,
+                                scope: propertyValue.scope
+                            });
+                        }
+                    });
+
+                    this.inheritedAppReleases.forEach(function (appRelease) {
+                        if (appRelease.app.appId !== theThis.appId) {
+                            return;
+                        }
+                        appRelease.inheritedProfileReleases.forEach(function (release) {
+                            if (release.profileId !== theThis.profileId) {
+                                return;
+                            }
+                            release.properties.forEach(function (property) {
+                                if (theThis.currentPropertyValues.removedValues.indexOf(property.key) >= 0) {
+                                    properties.push({
+                                        key: property.key,
+                                        value: property.value,
+                                        scope: property.scope
+                                    });
+                                }
+                            });
+                        });
+                    });
+
+                    return properties;
                 }
             },
             watch: {
@@ -673,21 +772,29 @@
                         });
                     });
                 },
+                showAddReleaseDialog: function () {
+                    this.refreshData();
+                    this.addReleaseDialogVisible = true;
+                },
+                closeAddReleaseDialog: function () {
+                    this.addReleaseDialogVisible = false;
+                    this.addReleaseForm.memo = null;
+                },
                 addRelease: function () {
                     const theThis = this;
                     axios.get('../manage/release/addRelease', {
                         params: {
                             appId: this.appId,
                             profileId: this.profileId,
-                            memo: null
+                            memo: this.addReleaseForm.memo
                         }
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.submitPopoverShowing = false;
                         Vue.prototype.$message.success(result.message);
+                        theThis.closeAddReleaseDialog();
                         theThis.refreshData();
                     });
                 },
