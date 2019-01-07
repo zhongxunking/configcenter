@@ -40,7 +40,7 @@
                         <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
                         <el-button type="primary" size="mini" @click="revertPropertyValues">确定</el-button>
                     </div>
-                    <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="revertPopoverShowing = true">还原修改</el-button>
+                    <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="showRevertPopover">还原修改</el-button>
                 </el-popover>
                 <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showAddReleaseDialog">发布修改</el-button>
             </el-col>
@@ -164,7 +164,7 @@
                             </el-col>
                             <el-col :span="12" style="text-align: center">
                                 <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="deletePropertyValue(row)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
+                                    <el-button @click="deletePropertyValue(row)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
                                 </el-tooltip>
                             </el-col>
                         </el-row>
@@ -782,6 +782,15 @@
                         });
                     });
                 },
+                showRevertPopover: function () {
+                    let keys = this.haveNotPrivilegeModifiedPropertyKeys();
+                    if (keys.length > 0) {
+                        Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行还原");
+                        this.refreshData();
+                        return;
+                    }
+                    this.revertPopoverShowing = true
+                },
                 revertPropertyValues: function () {
                     const theThis = this;
 
@@ -812,6 +821,12 @@
                     });
                 },
                 showAddReleaseDialog: function () {
+                    let keys = this.haveNotPrivilegeModifiedPropertyKeys();
+                    if (keys.length > 0) {
+                        Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
+                        this.refreshData();
+                        return;
+                    }
                     this.refreshData();
                     this.addReleaseDialogVisible = true;
                 },
@@ -836,6 +851,20 @@
                         theThis.closeAddReleaseDialog();
                         theThis.refreshData();
                     });
+                },
+                haveNotPrivilegeModifiedPropertyKeys: function () {
+                    if (this.manager.type !== 'NORMAL') {
+                        return [];
+                    }
+                    let keys = [];
+                    for (let i = 0; i < this.modifiedProperties.length; i++) {
+                        let property = this.modifiedProperties[i];
+                        let privilege = this.calcPrivilege(this.appId, property.key);
+                        if (privilege !== 'READ_WRITE') {
+                            keys.push(property.key);
+                        }
+                    }
+                    return keys;
                 },
                 toShowingProfile: function (profile) {
                     if (!profile) {
