@@ -135,6 +135,19 @@
                                 <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
                             </el-tooltip>
                         </template>
+                        <template v-else-if="row.value === null || row.temporary">
+                            <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                            </el-tooltip>
+                            <el-button-group v-else>
+                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
+                                </el-tooltip>
+                                <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
+                                </el-tooltip>
+                            </el-button-group>
+                        </template>
                         <el-row v-else>
                             <el-col :span="12" style="text-align: center">
                                 <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
@@ -632,10 +645,8 @@
                 },
                 calcKeyValidity: function (appId, profileId, key) {
                     const theThis = this;
-                    const removed = function (appId, profileId, key) {
-                        return appId === theThis.appId
-                            && profileId === theThis.profileId
-                            && theThis.currentPropertyValues.removedValues.indexOf(key) >= 0;
+                    const removed = function (property) {
+                        return property.appId === theThis.appId && property.profileId === theThis.profileId && theThis.currentPropertyValues.removedValues.indexOf(property.key) >= 0;
                     };
 
                     for (let i = 0; i < this.appProperties.length; i++) {
@@ -645,10 +656,10 @@
                             for (let k = 0; k < profileProperty.properties.length; k++) {
                                 let property = profileProperty.properties[k];
                                 if (property.key === key) {
-                                    if (appProperty.app.appId === appId && profileProperty.profileId === profileId) {
-                                        return !removed(appId, profileId, key);
+                                    if (property.appId === appId && property.profileId === profileId) {
+                                        return !removed(property);
                                     } else {
-                                        if (!removed(appId, profileId, key)) {
+                                        if (!removed(property)) {
                                             return false;
                                         }
                                     }
