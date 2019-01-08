@@ -87,18 +87,18 @@
             </el-table-column>
             <el-table-column prop="value" label="配置value" :resizable="false">
                 <template slot-scope="{ row }">
-                    <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="small" clearable placeholder="请输入配置value"></el-input>
+                    <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="mini" clearable placeholder="请输入配置value"></el-input>
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.modifiedValues.indexOf(row.key) >= 0">
                             <el-badge type="warning" value="改" class="badge-style">
-                                <el-tag v-if="row.value === null">无效</el-tag>
-                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                <el-tag v-if="row.value === null" size="medium">无效</el-tag>
+                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                 <span v-else style="margin-right: 10px">{{ row.value }}</span>
                             </el-badge>
                         </template>
                         <div v-else>
-                            <el-tag v-if="row.value === null">无效</el-tag>
-                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                            <el-tag v-if="row.value === null" size="medium">无效</el-tag>
+                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
                             <span v-else>{{ row.value }}</span>
                         </div>
                     </template>
