@@ -26,7 +26,10 @@ import org.antframework.manager.web.Managers;
 import org.antframework.manager.web.Relations;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 配置key的权限工具类
@@ -108,8 +111,7 @@ public final class KeyPrivileges {
             for (RelationInfo relation : Relations.findAllSourceRelations(RELATION_TYPE, app.getAppId())) {
                 keyPrivileges.put(relation.getTarget(), Privilege.valueOf(relation.getValue()));
             }
-            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), minScope)) {
+            for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE)) {
                 keyPrivileges.putIfAbsent(propertyKey.getKey(), Privilege.READ_WRITE);
             }
 
