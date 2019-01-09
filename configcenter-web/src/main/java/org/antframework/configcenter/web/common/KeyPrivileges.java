@@ -83,12 +83,12 @@ public final class KeyPrivileges {
     /**
      * 计算权限
      *
-     * @param appPrivileges 应用继承的配置权限
-     * @param key           配置key
+     * @param inheritedAppPrivileges 应用继承的配置权限
+     * @param key                    配置key
      * @return 配置key的权限
      */
-    public static Privilege calcPrivilege(List<AppPrivilege> appPrivileges, String key) {
-        for (AppPrivilege appPrivilege : appPrivileges) {
+    public static Privilege calcPrivilege(List<AppPrivilege> inheritedAppPrivileges, String key) {
+        for (AppPrivilege appPrivilege : inheritedAppPrivileges) {
             Privilege privilege = appPrivilege.getKeyPrivileges().get(key);
             if (privilege != null) {
                 return privilege;

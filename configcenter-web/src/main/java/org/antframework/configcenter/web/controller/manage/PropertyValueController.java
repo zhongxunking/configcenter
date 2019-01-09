@@ -26,6 +26,9 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.manager.facade.enums.ManagerType;
+import org.antframework.manager.facade.info.ManagerInfo;
+import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -126,7 +129,7 @@ public class PropertyValueController {
         result.getPropertyValues().addAll(propertyValues);
         // 分析被修改的配置value
         analyseChanges(propertyValues, release.getProperties(), result);
-        // 对配置value进行掩码
+        // 掩码
         maskPropertyValue(appId, result);
 
         return result;
@@ -165,8 +168,12 @@ public class PropertyValueController {
         }
     }
 
-    // 对配置value进行掩码
+    // 对敏感配置进行掩码
     private void maskPropertyValue(String appId, FindAppProfileCurrentPropertyValuesResult result) {
+        ManagerInfo manager = Managers.currentManager();
+        if (manager.getType() == ManagerType.ADMIN) {
+            return;
+        }
         List<KeyPrivileges.AppPrivilege> appPrivileges = KeyPrivileges.findInheritedPrivileges(appId);
         for (PropertyValueInfo propertyValue : result.getPropertyValues()) {
             Privilege privilege = KeyPrivileges.calcPrivilege(appPrivileges, propertyValue.getKey());
