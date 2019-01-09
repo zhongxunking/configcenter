@@ -34,7 +34,7 @@
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
-                <el-popover placement="top" v-model="revertPopoverShowing">
+                <el-popover placement="top" v-model="revertPopoverShowing" trigger="manual">
                     <p>所有修改都会被还原，确定还原？</p>
                     <div style="text-align: right; margin: 0">
                         <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
