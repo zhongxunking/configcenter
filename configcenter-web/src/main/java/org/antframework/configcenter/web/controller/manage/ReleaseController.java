@@ -14,8 +14,11 @@ import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
+import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
@@ -27,6 +30,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.util.PropertyAnalyzer;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -60,6 +64,15 @@ public class ReleaseController {
     @RequestMapping("/addRelease")
     public AddReleaseResult addRelease(String appId, String profileId, String memo) {
         ManagerApps.adminOrHaveApp(appId);
+        ManagerInfo manager = Managers.currentManager();
+        if (manager.getType() != ManagerType.ADMIN) {
+            // 校验是否有敏感配置被修改
+            List<Property> source = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
+            List<PropertyValueInfo> target = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+            PropertyAnalyzer.ChangedProperties changedProperties = PropertyAnalyzer.analyzeChangedPropretyValues(source, target);
+            PropertyAnalyzer.onlyHaveReadWritePrivilege(appId, changedProperties);
+        }
+
         AddReleaseOrder order = new AddReleaseOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -81,6 +94,19 @@ public class ReleaseController {
     @RequestMapping("/revertRelease")
     public EmptyResult revertRelease(String appId, String profileId, Long targetVersion) {
         ManagerApps.adminOrHaveApp(appId);
+        ManagerInfo manager = Managers.currentManager();
+        if (manager.getType() != ManagerType.ADMIN) {
+            // 校验是否有敏感配置被修改
+            List<Property> source = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
+            ReleaseInfo targetRelease = ReleaseUtils.findRelease(appId, profileId, targetVersion);
+            if (targetRelease == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", appId, profileId, targetVersion));
+            }
+            List<Property> target = targetRelease.getProperties();
+            PropertyAnalyzer.ChangedProperties changedProperties = PropertyAnalyzer.analyzeChangedProperties(source, target);
+            PropertyAnalyzer.onlyHaveReadWritePrivilege(appId, changedProperties);
+        }
+
         RevertReleaseOrder order = new RevertReleaseOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);

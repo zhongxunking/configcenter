@@ -9,6 +9,7 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -21,11 +22,11 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
-import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.util.PropertyAnalyzer;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -33,7 +34,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 配置value管理controller
@@ -127,45 +129,11 @@ public class PropertyValueController {
         result.setCode(CommonResultCode.SUCCESS.getCode());
         result.setMessage(CommonResultCode.SUCCESS.getMessage());
         result.getPropertyValues().addAll(propertyValues);
-        // 分析被修改的配置value
-        analyseChanges(propertyValues, release.getProperties(), result);
+        result.setChangedProperties(PropertyAnalyzer.analyzeChangedPropretyValues(release.getProperties(), propertyValues));
         // 掩码
         maskPropertyValue(appId, result);
 
         return result;
-    }
-
-    // 分析被修改的配置value
-    private void analyseChanges(List<PropertyValueInfo> propertyValues, List<Property> properties, FindAppProfileCurrentPropertyValuesResult result) {
-        // 分析新增和修改的配置value
-        Map<String, Property> propertyMap = new HashMap<>(properties.size());
-        for (Property property : properties) {
-            propertyMap.put(property.getKey(), property);
-        }
-        for (PropertyValueInfo propertyValue : propertyValues) {
-            Property property = propertyMap.get(propertyValue.getKey());
-            if (property == null) {
-                result.addAddedValue(propertyValue.getKey());
-            } else {
-                if (!Objects.equals(propertyValue.getValue(), property.getValue())) {
-                    result.addModifiedValue(propertyValue.getKey());
-                }
-                if (propertyValue.getScope() != property.getScope()) {
-                    result.addModifiedScope(propertyValue.getKey());
-                }
-            }
-        }
-        // 分析删除的配置value
-        Map<String, PropertyValueInfo> propertyValueMap = new HashMap<>(propertyValues.size());
-        for (PropertyValueInfo propertyValue : propertyValues) {
-            propertyValueMap.put(propertyValue.getKey(), propertyValue);
-        }
-        for (Property property : properties) {
-            PropertyValueInfo propertyValue = propertyValueMap.get(property.getKey());
-            if (propertyValue == null) {
-                result.addRemovedValues(property.getKey());
-            }
-        }
     }
 
     // 对敏感配置进行掩码
@@ -187,36 +155,11 @@ public class PropertyValueController {
      * 查找应用在指定环境下的配置value
      */
     @Getter
+    @Setter
     public static class FindAppProfileCurrentPropertyValuesResult extends AbstractResult {
         // 配置value
         private List<PropertyValueInfo> propertyValues = new ArrayList<>();
-        // 新增的配置value
-        private Set<String> addedValues = new HashSet<>();
-        // 修改的配置value
-        private Set<String> modifiedValues = new HashSet<>();
-        // 修改的scope
-        private Set<String> modifiedScopes = new HashSet<>();
-        // 删除的配置value
-        private Set<String> removedValues = new HashSet<>();
-
-        public void addPropertyValue(PropertyValueInfo propertyValue) {
-            propertyValues.add(propertyValue);
-        }
-
-        public void addAddedValue(String key) {
-            addedValues.add(key);
-        }
-
-        public void addModifiedValue(String key) {
-            modifiedValues.add(key);
-        }
-
-        public void addModifiedScope(String key) {
-            modifiedScopes.add(key);
-        }
-
-        public void addRemovedValues(String key) {
-            removedValues.add(key);
-        }
+        // 被修改的配置
+        private PropertyAnalyzer.ChangedProperties changedProperties;
     }
 }
