@@ -6,7 +6,7 @@
  * 修订记录:
  * @author 钟勋 2019-01-10 20:42 创建
  */
-package org.antframework.configcenter.web.util;
+package org.antframework.configcenter.web.common;
 
 import lombok.Getter;
 import org.antframework.common.util.facade.BizException;
@@ -15,8 +15,6 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.vo.Property;
-import org.antframework.configcenter.web.common.KeyPrivileges;
-import org.antframework.configcenter.web.common.Privilege;
 
 import java.io.Serializable;
 import java.util.*;

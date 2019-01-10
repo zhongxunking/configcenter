@@ -30,7 +30,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
-import org.antframework.configcenter.web.util.PropertyAnalyzer;
+import org.antframework.configcenter.web.common.PropertyAnalyzer;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
