@@ -166,6 +166,7 @@ public class ReleaseController {
      */
     @RequestMapping("/findInheritedReleases")
     public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
+        ManagerApps.adminOrHaveApp(appId);
         FindInheritedReleasesResult result = new FindInheritedReleasesResult();
         result.setStatus(Status.SUCCESS);
         result.setCode(CommonResultCode.SUCCESS.getCode());

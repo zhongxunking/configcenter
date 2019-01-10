@@ -24,6 +24,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.manager.web.Managers;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -133,7 +134,7 @@ public class PropertyKeyController {
      */
     @RequestMapping("/setKeyPrivilege")
     public EmptyResult setKeyPrivilege(String appId, String key, Privilege privilege) {
-        ManagerApps.adminOrHaveApp(appId);
+        Managers.admin();
         assertExistingKey(appId, key);
         // 设置权限
         KeyPrivileges.setPrivilege(appId, key, privilege);
