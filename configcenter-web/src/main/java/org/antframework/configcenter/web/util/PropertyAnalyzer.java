@@ -134,7 +134,7 @@ public final class PropertyAnalyzer {
         }
 
         if (!notReadWriteKeys.isEmpty()) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置[%s]被修改", ToString.toString(notReadWriteKeys)));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
         }
     }
 

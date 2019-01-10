@@ -34,7 +34,14 @@
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
-                <el-button icon="el-icon-close" size="small" :disabled="!edited" @click="revertPropertyValues">还原修改</el-button>
+                <el-popover placement="top" v-model="revertPopoverShowing" trigger="manual">
+                    <p>所有修改都会被还原，确定还原？</p>
+                    <div style="text-align: right; margin: 0">
+                        <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
+                        <el-button type="primary" size="mini" @click="revertPropertyValues">确定</el-button>
+                    </div>
+                    <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="revertPopoverShowing = true">还原修改</el-button>
+                </el-popover>
                 <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showAddReleaseDialog">发布修改</el-button>
             </el-col>
         </el-row>
@@ -262,6 +269,7 @@
                 inheritedAppReleases: [],
                 inheritedAppPropertyKeys: [],
                 inheritedAppPrivileges: [],
+                revertPopoverShowing: false,
                 addReleaseDialogVisible: false,
                 addReleaseForm: {
                     memo: null
@@ -303,7 +311,8 @@
                             properties.push({
                                 key: propertyValue.key,
                                 value: propertyValue.value,
-                                scope: propertyValue.scope
+                                scope: propertyValue.scope,
+                                privilege: theThis.calcPrivilege(theThis.appId, propertyValue.key)
                             });
                         }
                     });
@@ -321,7 +330,8 @@
                                     properties.push({
                                         key: property.key,
                                         value: property.value,
-                                        scope: property.scope
+                                        scope: property.scope,
+                                        privilege: theThis.calcPrivilege(theThis.appId, property.key)
                                     });
                                 }
                             });
@@ -797,6 +807,7 @@
                                 Vue.prototype.$message.error(revertPropertyValuesResult.message);
                                 return;
                             }
+                            theThis.revertPopoverShowing = false;
                             theThis.refreshData();
                         });
                     });
