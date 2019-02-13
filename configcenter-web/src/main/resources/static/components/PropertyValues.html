@@ -30,7 +30,10 @@
     </el-row>
     <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
         <el-row v-if="appProperty.app.appId === appId" style="margin-bottom: 10px">
-            <el-col :offset="6" :span="12" style="text-align: center;">
+            <el-col :span="6">
+                <el-button type="primary" icon="el-icon-plus" size="small" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
+            </el-col>
+            <el-col :span="12" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
@@ -178,6 +181,27 @@
             </el-table-column>
         </el-table>
     </div>
+    <el-dialog :visible.sync="addPropertyValueDialogShowing" :before-close="closeAddPropertyValueDialog" title="新增配置项" width="50%">
+        <el-form ref="addPropertyValueForm" :model="addPropertyValueForm" label-width="20%">
+            <el-form-item label="配置key" prop="key" :rules="[{required:true, message:'请输入配置key', trigger:'blur'}]">
+                <el-input v-model="addPropertyValueForm.key" clearable placeholder="请输入配置key" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="配置value" prop="value" :rules="[{required:true, message:'请输入配置value', trigger:'blur'}]">
+                <el-input v-model="addPropertyValueForm.value" type="textarea" autosize clearable placeholder="请输入配置value" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="作用域" prop="scope" :rules="[{required:true, message:'请选择作用域', trigger:'blur'}]">
+                <el-select v-model="addPropertyValueForm.scope" placeholder="请选择作用域" style="width: 90%">
+                    <el-option value="PRIVATE" label="私有"></el-option>
+                    <el-option value="PROTECTED" label="可继承"></el-option>
+                    <el-option value="PUBLIC" label="公开"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddPropertyValueDialog">取消</el-button>
+            <el-button type="primary" @click="addPropertyValue">提交</el-button>
+        </div>
+    </el-dialog>
     <el-dialog :visible.sync="addReleaseDialogVisible" :before-close="closeAddReleaseDialog" title="新增发布" width="70%" center>
         <el-row>
             <el-col :span="3" style="text-align: right;">
@@ -269,6 +293,12 @@
                 inheritedAppReleases: [],
                 inheritedAppPropertyKeys: [],
                 inheritedAppPrivileges: [],
+                addPropertyValueDialogShowing: false,
+                addPropertyValueForm: {
+                    key: null,
+                    value: null,
+                    scope: null
+                },
                 revertPopoverShowing: false,
                 addReleaseDialogVisible: false,
                 addReleaseForm: {
@@ -712,7 +742,7 @@
                     }
                     this.addOrModifyPropertyValue(property.key, property.editingValue, property.editingScope);
                 },
-                addOrModifyPropertyValue: function (key, value, scope) {
+                addOrModifyPropertyValue: function (key, value, scope, callback) {
                     const theThis = this;
                     axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                         params: {
@@ -728,6 +758,9 @@
                             return;
                         }
                         theThis.refreshData();
+                        if (callback) {
+                            callback();
+                        }
                     });
                 },
                 deletePropertyValue: function (property) {
@@ -812,6 +845,25 @@
                         });
                     });
                 },
+                closeAddPropertyValueDialog: function () {
+                    this.addPropertyValueDialogShowing = false;
+                    this.$refs['addPropertyValueForm'].resetFields();
+                },
+                addPropertyValue: function () {
+                    const theThis = this;
+                    this.$refs.addPropertyValueForm.validate(function (valid) {
+                        if (!valid) {
+                            return;
+                        }
+                        theThis.addOrModifyPropertyValue(
+                            theThis.addPropertyValueForm.key,
+                            theThis.addPropertyValueForm.value,
+                            theThis.addPropertyValueForm.scope,
+                            function () {
+                                theThis.closeAddPropertyValueDialog();
+                            });
+                    });
+                },
                 showAddReleaseDialog: function () {
                     let keys = this.haveNotPrivilegeModifiedPropertyKeys();
                     if (keys.length > 0) {
@@ -824,7 +876,7 @@
                 },
                 closeAddReleaseDialog: function () {
                     this.addReleaseDialogVisible = false;
-                    this.addReleaseForm.memo = null;
+                    this.$refs['addReleaseForm'].resetFields();
                 },
                 addRelease: function () {
                     const theThis = this;
