@@ -18,7 +18,7 @@
 <body>
 <div id="propertyValuesApp">
     <el-row style="margin-bottom: 10px">
-        <el-col>
+        <el-col :span="12">
             <span style="font-size: large;color: #409EFF;">环境：</span>
             <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
                 <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId">
@@ -26,6 +26,9 @@
                     <span>{{ toShowingProfile(profile) }}</span>
                 </el-option>
             </el-select>
+        </el-col>
+        <el-col :span="12" style="text-align: right;">
+            <el-button type="text">发布历史</el-button>
         </el-col>
     </el-row>
     <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
