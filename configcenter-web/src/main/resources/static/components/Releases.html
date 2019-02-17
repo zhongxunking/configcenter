@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>发布历史</title>
+    <script src="../common/import.js"></script>
+    <style>
+        .el-tabs--border-card > .el-tabs__content {
+            padding: 2px;
+        }
+    </style>
+</head>
+<body>
+<div id="releasesApp">
+    <el-container style="position:relative; left:0; top:0; width:100%;height:100%;padding: 10px">
+        <el-header height="40px">
+            <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
+            <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
+        </el-header>
+        <el-container>
+            <el-aside width="400px">
+                <el-table :data="releases" @current-change="changeShowingRelease" border highlight-current-row>
+                    <el-table-column property="version" label="版本"></el-table-column>
+                    <el-table-column label="发布时间"></el-table-column>
+                    <el-table-column property="memo" label="备注"></el-table-column>
+                </el-table>
+                <el-row style="margin-top: 10px">
+                    <el-col style="text-align: end">
+                        <el-pagination :total="totalReleasesCount" :current-page.sync="queryReleasesForm.pageNo" :page-size.sync="queryReleasesForm.pageSize" @current-change="queryReleases" layout="total,prev,pager,next" small background></el-pagination>
+                    </el-col>
+                </el-row>
+            </el-aside>
+            <el-main style="padding: 0 0 0 2px">
+                <el-tabs type="border-card" stretch>
+                    <el-tab-pane label="变更的配置">变更的配置</el-tab-pane>
+                    <el-tab-pane label="所有配置">
+                        <el-table :data="showingRelease ? showingRelease.properties : []" border :cell-style="{padding: '5px 0px'}">
+                            <el-table-column property="key" label="配置key"></el-table-column>
+                            <el-table-column property="value" label="配置value">
+                                <template slot-scope="{ row }">
+                                    <el-tag v-if="row.value === null">无效</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                    <span v-else>{{ row.value }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column property="scope" label="作用域" :resizable="false" width="80px">
+                                <template slot-scope="{ row }">
+                                    <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
+                </el-tabs>
+            </el-main>
+        </el-container>
+    </el-container>
+</div>
+<script>
+    GET_CURRENT_MANAGER(function (manager) {
+        const releasesApp = new Vue({
+            el: '#releasesApp',
+            data: {
+                appId: 'customer',
+                profileId: 'dev',
+                manager: manager,
+                app: {},
+                profile: {},
+                queryReleasesForm: {
+                    pageNo: 1,
+                    pageSize: 10
+                },
+                totalReleasesCount: 0,
+                releases: [],
+                showingRelease: {},
+                inheritedAppPrivileges: [],
+            },
+            created: function () {
+                this.findApp(this.appId);
+                this.findProfile(this.profileId);
+                this.findInheritedAppPrivileges();
+                this.queryReleases();
+            },
+            methods: {
+                queryReleases: function () {
+                    const theThis = this;
+                    axios.get('../manage/release/queryReleases', {
+                        params: {
+                            pageNo: this.queryReleasesForm.pageNo,
+                            pageSize: this.queryReleasesForm.pageSize,
+                            appId: this.appId,
+                            profileId: this.profileId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                        }
+                        theThis.totalReleasesCount = result.totalCount;
+                        theThis.releases = result.infos;
+                        theThis.releases.forEach(function (release) {
+                            release.properties.forEach(function (property) {
+                                Vue.set(property, 'privilege', theThis.calcPrivilege(release.appId, property.key));
+                            });
+                        });
+                    });
+                },
+                findApp: function (appId) {
+                    const theThis = this;
+                    axios.get('../manage/app/findApp', {
+                        params: {
+                            appId: appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.app = result.app;
+                    });
+                },
+                toShowingApp: function (app) {
+                    if (!app) {
+                        return '';
+                    }
+                    let text = app.appId;
+                    if (app.appName) {
+                        text += '（' + app.appName + '）';
+                    }
+                    return text;
+                },
+                findProfile: function (profileId) {
+                    const theThis = this;
+                    axios.get('../manage/profile/findProfile', {
+                        params: {
+                            profileId: profileId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.profile = result.profile;
+                    });
+                },
+                toShowingProfile: function (profile) {
+                    if (!profile) {
+                        return '';
+                    }
+                    let text = profile.profileId;
+                    if (profile.profileName) {
+                        text += '（' + profile.profileName + '）';
+                    }
+                    return text;
+                },
+                changeShowingRelease: function (row) {
+                    this.showingRelease = row;
+                },
+                findInheritedAppPrivileges: function () {
+                    const theThis = this;
+                    axios.get('../manage/propertyKey/findInheritedPrivileges', {
+                        params: {
+                            appId: this.appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.inheritedAppPrivileges = result.appPrivileges;
+                    });
+                },
+                calcPrivilege: function (appId, key) {
+                    let started = false;
+                    for (let i = 0; i < this.inheritedAppPrivileges.length; i++) {
+                        let appPrivilege = this.inheritedAppPrivileges[i];
+                        if (appPrivilege.app.appId === appId) {
+                            started = true;
+                        }
+                        if (started) {
+                            let privilege = appPrivilege.keyPrivileges[key];
+                            if (privilege) {
+                                return privilege;
+                            }
+                        }
+                    }
+                    return 'READ_WRITE';
+                }
+            }
+        });
+    });
+</script>
+</body>
+</html>
