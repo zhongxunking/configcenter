@@ -18,8 +18,8 @@
             <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
         </el-header>
         <el-container>
-            <el-aside width="400px">
-                <el-table :data="releases" @current-change="changeShowingRelease" border highlight-current-row>
+            <el-aside width="500px">
+                <el-table :data="releases" @current-change="changeShowingRelease" border highlight-current-row max-height="550">
                     <el-table-column property="version" label="版本"></el-table-column>
                     <el-table-column label="发布时间"></el-table-column>
                     <el-table-column property="memo" label="备注"></el-table-column>
@@ -34,7 +34,11 @@
                 <el-tabs type="border-card" stretch>
                     <el-tab-pane label="变更的配置">变更的配置</el-tab-pane>
                     <el-tab-pane label="所有配置">
-                        <el-table :data="showingRelease ? showingRelease.properties : []" border :cell-style="{padding: '5px 0px'}">
+                        <el-table :data="showingRelease ? showingRelease.properties : []"
+                                  border
+                                  height="500"
+                                  :header-cell-style="{padding: '8px 0'}"
+                                  :cell-style="{padding: '5px 0'}">
                             <el-table-column property="key" label="配置key"></el-table-column>
                             <el-table-column property="value" label="配置value">
                                 <template slot-scope="{ row }">
@@ -85,25 +89,92 @@
             methods: {
                 queryReleases: function () {
                     const theThis = this;
+                    this.doQueryReleases(
+                        this.queryReleasesForm.pageNo,
+                        this.queryReleasesForm.pageSize,
+                        this.appId,
+                        this.profileId,
+                        function (totalCount, releases) {
+                            theThis.totalReleasesCount = totalCount;
+                            releases.forEach(function (release) {
+                                release.properties.forEach(function (property) {
+                                    property.privilege = theThis.calcPrivilege(release.appId, property.key);
+                                });
+                            });
+                            for (let i = 0; i < releases.length - 1; i++) {
+                                let release = releases[i];
+                                release.changedProperties = theThis.analyseChangedProperties(releases[i + 1].properties, release.properties);
+                            }
+                            if (releases.length > 0) {
+                                let release = releases[releases.length - 1];
+                                theThis.doQueryReleases(
+                                    theThis.queryReleasesForm.pageNo + 1,
+                                    theThis.queryReleasesForm.pageSize,
+                                    theThis.appId,
+                                    theThis.profileId,
+                                    function (nextTotalCount, nextReleases) {
+                                        let previousProperties = [];
+                                        if (nextReleases.length > 0) {
+                                            previousProperties = nextReleases[0].properties;
+                                        }
+                                        release.changedProperties = theThis.analyseChangedProperties(previousProperties, release.properties);
+                                    }
+                                );
+                            }
+
+                            theThis.releases = releases;
+                        }
+                    );
+                },
+                doQueryReleases: function (pageNo, pageSize, appId, profileId, callback) {
                     axios.get('../manage/release/queryReleases', {
                         params: {
-                            pageNo: this.queryReleasesForm.pageNo,
-                            pageSize: this.queryReleasesForm.pageSize,
-                            appId: this.appId,
-                            profileId: this.profileId
+                            pageNo: pageNo,
+                            pageSize: pageSize,
+                            appId: appId,
+                            profileId: profileId
                         }
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                         }
-                        theThis.totalReleasesCount = result.totalCount;
-                        theThis.releases = result.infos;
-                        theThis.releases.forEach(function (release) {
-                            release.properties.forEach(function (property) {
-                                Vue.set(property, 'privilege', theThis.calcPrivilege(release.appId, property.key));
-                            });
-                        });
+                        callback(result.totalCount, result.infos);
                     });
+                },
+                analyseChangedProperties: function (sources, targets) {
+                    let changedProperties = [];
+
+                    let sourcesMap = {};
+                    sources.forEach(function (property) {
+                        sourcesMap[property.key] = property;
+                    });
+                    let targetsMap = {};
+                    targets.forEach(function (property) {
+                        targetsMap[property.key] = property;
+                    });
+
+                    for (let key in targetsMap) {
+                        let target = targetsMap[key];
+                        let source = sourcesMap[key];
+                        if (!source || source.value !== target.value || source.scope !== target.scope) {
+                            changedProperties.push({
+                                current: target,
+                                previous: source
+                            });
+                        }
+                    }
+                    for (let key in sourcesMap) {
+                        let source = sourcesMap[key];
+                        let target = targetsMap[key];
+                        if (!target) {
+                            changedProperties.push({
+                                current: null,
+                                previous: source
+                            });
+                        }
+                    }
+
+                    return changedProperties;
                 },
                 findApp: function (appId) {
                     const theThis = this;
