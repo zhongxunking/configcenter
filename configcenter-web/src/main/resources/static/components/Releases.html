@@ -8,6 +8,11 @@
         .el-tabs--border-card > .el-tabs__content {
             padding: 2px;
         }
+
+        .badge-style {
+            margin-top: 10px;
+            margin-right: 40px;
+        }
     </style>
 </head>
 <body>
@@ -32,7 +37,67 @@
             </el-aside>
             <el-main style="padding: 0 0 0 2px">
                 <el-tabs type="border-card" stretch>
-                    <el-tab-pane label="变更的配置">变更的配置</el-tab-pane>
+                    <el-tab-pane label="变更的配置">
+                        <el-table :data="showingRelease ? showingRelease.changes : []"
+                                  border
+                                  height="500"
+                                  :header-cell-style="{padding: '8px 0'}"
+                                  :cell-style="{padding: '5px 0'}">
+                            <el-table-column property="key" label="配置key">
+                                <template slot-scope="{ row }">
+                                    <el-badge v-if="!row.previous" type="success" value="新" class="badge-style">
+                                        <span style="margin-right: 10px">{{ row.key }}</span>
+                                    </el-badge>
+                                    <el-badge v-else-if="!row.current" type="danger" value="删" class="badge-style">
+                                        <span style="margin-right: 10px">{{ row.key }}</span>
+                                    </el-badge>
+                                    <span v-else>{{ row.key }}</span>
+                                </template>
+                            </el-table-column>
+                            <el-table-column property="value" label="配置value">
+                                <template slot-scope="{ row }">
+                                    <template v-if="row.current && row.previous && row.current.value !== row.previous.value">
+                                        <el-badge type="warning" value="改" class="badge-style">
+                                            <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
+                                            <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                            <span v-else style="margin-right: 10px">{{ row.current.value }}</span>
+                                        </el-badge>
+                                    </template>
+                                    <div v-else-if="row.current">
+                                        <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <span v-else>{{ row.current.value }}</span>
+                                    </div>
+                                    <div v-else>
+                                        <el-tag v-if="row.previous.value === null" size="medium">无效</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.previous.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <span v-else>{{ row.previous.value }}</span>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                            <el-table-column property="scope" label="作用域" :resizable="false" width="120px">
+                                <template slot-scope="{ row }">
+                                    <template v-if="row.current && row.previous && row.current.scope !== row.previous.scope">
+                                        <el-badge type="warning" value="改" class="badge-style">
+                                            <el-tag v-if="row.current.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                            <el-tag v-else-if="row.current.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                            <el-tag v-else-if="row.current.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                        </el-badge>
+                                    </template>
+                                    <div v-else-if="row.current">
+                                        <el-tag v-if="row.current.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                        <el-tag v-else-if="row.current.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                        <el-tag v-else-if="row.current.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                    </div>
+                                    <div v-else>
+                                        <el-tag v-if="row.previous.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                        <el-tag v-else-if="row.previous.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                        <el-tag v-else-if="row.previous.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                    </div>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </el-tab-pane>
                     <el-tab-pane label="所有配置">
                         <el-table :data="showingRelease ? showingRelease.properties : []"
                                   border
@@ -103,7 +168,7 @@
                             });
                             for (let i = 0; i < releases.length - 1; i++) {
                                 let release = releases[i];
-                                release.changedProperties = theThis.analyseChangedProperties(releases[i + 1].properties, release.properties);
+                                release.changes = theThis.analyseChanges(releases[i + 1].properties, release.properties);
                             }
                             if (releases.length > 0) {
                                 let release = releases[releases.length - 1];
@@ -117,7 +182,12 @@
                                         if (nextReleases.length > 0) {
                                             previousProperties = nextReleases[0].properties;
                                         }
-                                        release.changedProperties = theThis.analyseChangedProperties(previousProperties, release.properties);
+                                        release.changes = theThis.analyseChanges(previousProperties, release.properties);
+                                        release.changes.forEach(function (change) {
+                                            if (change.previous) {
+                                                change.previous.privilege = theThis.calcPrivilege(release.appId, change.previous.key);
+                                            }
+                                        });
                                     }
                                 );
                             }
@@ -141,8 +211,8 @@
                         callback(result.totalCount, result.infos);
                     });
                 },
-                analyseChangedProperties: function (sources, targets) {
-                    let changedProperties = [];
+                analyseChanges: function (sources, targets) {
+                    let changes = [];
 
                     let sourcesMap = {};
                     sources.forEach(function (property) {
@@ -157,7 +227,8 @@
                         let target = targetsMap[key];
                         let source = sourcesMap[key];
                         if (!source || source.value !== target.value || source.scope !== target.scope) {
-                            changedProperties.push({
+                            changes.push({
+                                key: key,
                                 current: target,
                                 previous: source
                             });
@@ -167,14 +238,15 @@
                         let source = sourcesMap[key];
                         let target = targetsMap[key];
                         if (!target) {
-                            changedProperties.push({
+                            changes.push({
+                                key: key,
                                 current: null,
                                 previous: source
                             });
                         }
                     }
 
-                    return changedProperties;
+                    return changes;
                 },
                 findApp: function (appId) {
                     const theThis = this;
