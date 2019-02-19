@@ -9,6 +9,10 @@
             padding: 2px;
         }
 
+        .el-table__expanded-cell[class*=cell] {
+            padding: 0;
+        }
+
         .badge-style {
             margin-top: 10px;
             margin-right: 40px;
@@ -24,10 +28,26 @@
         </el-header>
         <el-container>
             <el-aside width="500px">
-                <el-table :data="releases" @current-change="changeShowingRelease" border highlight-current-row max-height="550">
+                <el-table :data="releases"
+                          @current-change="changeShowingRelease"
+                          border
+                          highlight-current-row
+                          max-height="550"
+                          :cell-style="{padding: '8px 0'}">
                     <el-table-column property="version" label="版本"></el-table-column>
                     <el-table-column label="发布时间"></el-table-column>
                     <el-table-column property="memo" label="备注"></el-table-column>
+                    <el-table-column label="操作" header-align="center" width="70px">
+                        <template slot-scope="{ row }">
+                            <el-row>
+                                <el-col :span="24" style="text-align: center">
+                                    <el-tooltip content="回滚到此版本" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="revertRelease(row)" type="danger" icon="el-icon-arrow-left" size="mini" circle></el-button>
+                                    </el-tooltip>
+                                </el-col>
+                            </el-row>
+                        </template>
+                    </el-table-column>
                 </el-table>
                 <el-row style="margin-top: 10px">
                     <el-col style="text-align: end">
@@ -39,10 +59,36 @@
                 <el-tabs type="border-card" stretch>
                     <el-tab-pane label="变更的配置">
                         <el-table :data="showingRelease ? showingRelease.changes : []"
+                                  :default-sort="{prop: 'key'}"
                                   border
-                                  height="500"
+                                  height="450"
                                   :header-cell-style="{padding: '8px 0'}"
-                                  :cell-style="{padding: '5px 0'}">
+                                  :cell-style="{padding: '2px 0'}">
+                            <el-table-column type="expand">
+                                <template slot-scope="props">
+                                    <template v-if="props.row.current && props.row.previous">
+                                        <el-table :data="[props.row.previous]"
+                                                  :show-header="false"
+                                                  :row-style="{background: '#f6f9ff'}"
+                                                  :cell-style="{padding: '8px 0'}">
+                                            <el-table-column width="48px">
+                                                <template slot-scope="{ row }">
+                                                    <span style="font-size: xx-small;color: #E6A23C">旧值</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column property="key" label="配置key"></el-table-column>
+                                            <el-table-column property="value" label="配置value"></el-table-column>
+                                            <el-table-column property="scope" label="作用域" width="119px">
+                                                <template slot-scope="{ row }">
+                                                    <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                                    <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                                    <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                                </template>
+                                            </el-table-column>
+                                        </el-table>
+                                    </template>
+                                </template>
+                            </el-table-column>
                             <el-table-column property="key" label="配置key">
                                 <template slot-scope="{ row }">
                                     <el-badge v-if="!row.previous" type="success" value="新" class="badge-style">
@@ -54,7 +100,7 @@
                                     <span v-else>{{ row.key }}</span>
                                 </template>
                             </el-table-column>
-                            <el-table-column property="value" label="配置value">
+                            <el-table-column label="配置value">
                                 <template slot-scope="{ row }">
                                     <template v-if="row.current && row.previous && row.current.value !== row.previous.value">
                                         <el-badge type="warning" value="改" class="badge-style">
@@ -75,7 +121,7 @@
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column property="scope" label="作用域" :resizable="false" width="120px">
+                            <el-table-column label="作用域" :resizable="false" width="120px">
                                 <template slot-scope="{ row }">
                                     <template v-if="row.current && row.previous && row.current.scope !== row.previous.scope">
                                         <el-badge type="warning" value="改" class="badge-style">
@@ -100,8 +146,9 @@
                     </el-tab-pane>
                     <el-tab-pane label="所有配置">
                         <el-table :data="showingRelease ? showingRelease.properties : []"
+                                  :default-sort="{prop: 'key'}"
                                   border
-                                  height="500"
+                                  height="450"
                                   :header-cell-style="{padding: '8px 0'}"
                                   :cell-style="{padding: '5px 0'}">
                             <el-table-column property="key" label="配置key"></el-table-column>
@@ -298,6 +345,25 @@
                 },
                 changeShowingRelease: function (row) {
                     this.showingRelease = row;
+                },
+                revertRelease: function (release) {
+                    const theThis = this;
+                    Vue.prototype.$confirm('回滚后，大于此版本的发布将会被删除，确定回滚？', '警告', {type: 'warning'})
+                        .then(function () {
+                            axios.post('../manage/release/revertRelease', {
+                                appId: release.appId,
+                                profileId: release.profileId,
+                                targetVersion: release.version
+                            }).then(function (result) {
+                                if (!result.success) {
+                                    Vue.prototype.$message.error(result.message);
+                                    return;
+                                }
+                                Vue.prototype.$message.success(result.message);
+                                theThis.queryReleasesForm.pageNo = 1;
+                                theThis.queryReleases();
+                            });
+                        });
                 },
                 findInheritedAppPrivileges: function () {
                     const theThis = this;
