@@ -348,7 +348,7 @@
                 },
                 revertRelease: function (release) {
                     const theThis = this;
-                    Vue.prototype.$confirm('回滚后，大于此版本的发布将会被删除，确定回滚？', '警告', {type: 'warning'})
+                    Vue.prototype.$confirm('回滚后，应用的配置将会采用此版本，且大于此版本的发布将会被删除。确定回滚？', '警告', {type: 'warning'})
                         .then(function () {
                             axios.post('../manage/release/revertRelease', {
                                 appId: release.appId,
