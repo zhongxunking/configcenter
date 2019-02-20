@@ -66,7 +66,7 @@
                                   :cell-style="{padding: '2px 0'}">
                             <el-table-column type="expand">
                                 <template slot-scope="props">
-                                    <template v-if="props.row.current && props.row.previous">
+                                    <template v-if="showingRelease.difference.modifiedValueKeys.indexOf(props.row.key) >= 0 || showingRelease.difference.modifiedScopeKeys.indexOf(props.row.key) >= 0">
                                         <el-table :data="[props.row.previous]"
                                                   :show-header="false"
                                                   :row-style="{background: '#f6f9ff'}"
@@ -91,10 +91,10 @@
                             </el-table-column>
                             <el-table-column property="key" label="配置key">
                                 <template slot-scope="{ row }">
-                                    <el-badge v-if="!row.previous" type="success" value="新" class="badge-style">
+                                    <el-badge v-if="showingRelease.difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
                                         <span style="margin-right: 10px">{{ row.key }}</span>
                                     </el-badge>
-                                    <el-badge v-else-if="!row.current" type="danger" value="删" class="badge-style">
+                                    <el-badge v-else-if="showingRelease.difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
                                         <span style="margin-right: 10px">{{ row.key }}</span>
                                     </el-badge>
                                     <span v-else>{{ row.key }}</span>
@@ -102,7 +102,7 @@
                             </el-table-column>
                             <el-table-column label="配置value">
                                 <template slot-scope="{ row }">
-                                    <template v-if="row.current && row.previous && row.current.value !== row.previous.value">
+                                    <template v-if="showingRelease.difference.modifiedValueKeys.indexOf(row.key) >= 0">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
                                             <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
@@ -123,7 +123,7 @@
                             </el-table-column>
                             <el-table-column label="作用域" :resizable="false" width="120px">
                                 <template slot-scope="{ row }">
-                                    <template v-if="row.current && row.previous && row.current.scope !== row.previous.scope">
+                                    <template v-if="showingRelease.difference.modifiedScopeKeys.indexOf(row.key) >= 0">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.current.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                             <el-tag v-else-if="row.current.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -214,27 +214,52 @@
                                 });
                             });
                             for (let i = 0; i < releases.length - 1; i++) {
-                                let release = releases[i];
-                                release.changes = theThis.analyseChanges(releases[i + 1].properties, release.properties);
+                                let current = releases[i];
+                                let previous = releases[i + 1];
+                                theThis.compareReleases(
+                                    theThis.appId,
+                                    theThis.profileId,
+                                    current.version,
+                                    previous.version,
+                                    function (difference) {
+                                        current.difference = difference;
+                                        current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
+                                    });
                             }
                             if (releases.length > 0) {
-                                let release = releases[releases.length - 1];
+                                let current = releases[releases.length - 1];
                                 theThis.doQueryReleases(
                                     theThis.queryReleasesForm.pageNo + 1,
                                     theThis.queryReleasesForm.pageSize,
                                     theThis.appId,
                                     theThis.profileId,
                                     function (nextTotalCount, nextReleases) {
-                                        let previousProperties = [];
-                                        if (nextReleases.length > 0) {
-                                            previousProperties = nextReleases[0].properties;
+                                        if (nextReleases.length <= 0) {
+                                            current.difference = {
+                                                addedKeys: [],
+                                                modifiedValueKeys: [],
+                                                modifiedScopeKeys: [],
+                                                removedKeys: []
+                                            };
+                                            current.properties.forEach(function (property) {
+                                                current.difference.addedKeys.push(property.key);
+                                            });
+                                            current.changes = [];
+                                        } else {
+                                            let previous = nextReleases[0];
+                                            previous.properties.forEach(function (property) {
+                                                property.privilege = theThis.calcPrivilege(previous.appId, property.key);
+                                            });
+                                            theThis.compareReleases(
+                                                theThis.appId,
+                                                theThis.profileId,
+                                                current.version,
+                                                previous.version,
+                                                function (difference) {
+                                                    current.difference = difference;
+                                                    current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
+                                                });
                                         }
-                                        release.changes = theThis.analyseChanges(previousProperties, release.properties);
-                                        release.changes.forEach(function (change) {
-                                            if (change.previous) {
-                                                change.previous.privilege = theThis.calcPrivilege(release.appId, change.previous.key);
-                                            }
-                                        });
                                     }
                                 );
                             }
@@ -258,40 +283,50 @@
                         callback(result.totalCount, result.infos);
                     });
                 },
-                analyseChanges: function (sources, targets) {
+                compareReleases: function (appId, profileId, leftVersion, rightVersion, callback) {
+                    axios.get('../manage/release/compareReleases', {
+                        params: {
+                            appId: appId,
+                            profileId: profileId,
+                            leftVersion: leftVersion,
+                            rightVersion: rightVersion
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                        }
+                        callback(result.difference);
+                    });
+                },
+                extractChanges: function (leftProperties, rightProperties, difference) {
+                    let leftMap = {};
+                    leftProperties.forEach(function (property) {
+                        leftMap[property.key] = property;
+                    });
+                    let rightMap = {};
+                    rightProperties.forEach(function (property) {
+                        rightMap[property.key] = property;
+                    });
+
+                    let keys = [];
+                    let temp = difference.addedKeys.concat(
+                        difference.modifiedValueKeys,
+                        difference.modifiedScopeKeys,
+                        difference.removedKeys);
+                    temp.forEach(function (key) {
+                        if (keys.indexOf(key) < 0) {
+                            keys.push(key);
+                        }
+                    });
+
                     let changes = [];
-
-                    let sourcesMap = {};
-                    sources.forEach(function (property) {
-                        sourcesMap[property.key] = property;
+                    keys.forEach(function (key) {
+                        changes.push({
+                            key: key,
+                            current: leftMap[key],
+                            previous: rightMap[key]
+                        });
                     });
-                    let targetsMap = {};
-                    targets.forEach(function (property) {
-                        targetsMap[property.key] = property;
-                    });
-
-                    for (let key in targetsMap) {
-                        let target = targetsMap[key];
-                        let source = sourcesMap[key];
-                        if (!source || source.value !== target.value || source.scope !== target.scope) {
-                            changes.push({
-                                key: key,
-                                current: target,
-                                previous: source
-                            });
-                        }
-                    }
-                    for (let key in sourcesMap) {
-                        let source = sourcesMap[key];
-                        let target = targetsMap[key];
-                        if (!target) {
-                            changes.push({
-                                key: key,
-                                current: null,
-                                previous: source
-                            });
-                        }
-                    }
 
                     return changes;
                 },

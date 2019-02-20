@@ -42,7 +42,7 @@ public final class Properties {
             if (right == null) {
                 difference.addAddedKeys(left.getKey());
             } else {
-                if (Objects.equals(right.getValue(), left.getValue())) {
+                if (!Objects.equals(right.getValue(), left.getValue())) {
                     difference.addModifiedValueKey(left.getKey());
                 }
                 if (right.getScope() != left.getScope()) {
