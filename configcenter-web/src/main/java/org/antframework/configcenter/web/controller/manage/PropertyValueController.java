@@ -8,7 +8,14 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import lombok.Getter;
+import lombok.Setter;
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
@@ -16,10 +23,12 @@ import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -28,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 配置value管理controller
@@ -139,5 +149,40 @@ public class PropertyValueController {
                 propertyValue.setValue(MASKED_VALUE);
             }
         }
+    }
+
+    /**
+     * 比较配置value与发布的差异
+     *
+     * @param appId          应用id（必须）
+     * @param profileId      环境id（必须）
+     * @param releaseVersion 发布版本（必须）
+     */
+    @RequestMapping("/comparePropertyValuesWithRelease")
+    public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, Long releaseVersion) {
+        ManagerApps.adminOrHaveApp(appId);
+
+        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+        List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
+        List<Property> right = ReleaseUtils.findRelease(appId, profileId, releaseVersion).getProperties();
+        Properties.Difference difference = Properties.compare(left, right);
+
+        ComparePropertyValuesWithReleaseResult result = new ComparePropertyValuesWithReleaseResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        result.setDifference(difference);
+
+        return result;
+    }
+
+    /**
+     * 比较配置value与发布的差异--result
+     */
+    @Getter
+    @Setter
+    public static class ComparePropertyValuesWithReleaseResult extends AbstractResult {
+        // 差异
+        private Properties.Difference difference;
     }
 }

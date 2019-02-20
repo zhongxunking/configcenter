@@ -10,6 +10,7 @@ package org.antframework.configcenter.web.controller.manage;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.AppUtils;
@@ -188,6 +189,31 @@ public class ReleaseController {
     }
 
     /**
+     * 比较两个发布的配置差异
+     *
+     * @param appId        应用id（必须）
+     * @param profileId    环境id（必须）
+     * @param leftVersion  待比较的发布版本
+     * @param rightVersion 待比较的发布版本
+     */
+    @RequestMapping("/compareReleases")
+    public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
+        ManagerApps.adminOrHaveApp(appId);
+
+        List<Property> left = ReleaseUtils.findRelease(appId, profileId, leftVersion).getProperties();
+        List<Property> right = ReleaseUtils.findRelease(appId, profileId, rightVersion).getProperties();
+        Properties.Difference difference = Properties.compare(left, right);
+
+        CompareReleasesResult result = new CompareReleasesResult();
+        result.setStatus(Status.SUCCESS);
+        result.setCode(CommonResultCode.SUCCESS.getCode());
+        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        result.setDifference(difference);
+
+        return result;
+    }
+
+    /**
      * 查找应用在指定环境中继承的发布
      *
      * @param appId     应用id（必须）
@@ -252,7 +278,17 @@ public class ReleaseController {
     }
 
     /**
-     * 查找应用在指定环境中继承的发布-result
+     * 比较两个发布的配置差异--result
+     */
+    @Getter
+    @Setter
+    public static class CompareReleasesResult extends AbstractResult {
+        // 差异
+        private Properties.Difference difference;
+    }
+
+    /**
+     * 查找应用在指定环境中继承的发布--result
      */
     @Getter
     public static class FindInheritedReleasesResult extends AbstractResult {
