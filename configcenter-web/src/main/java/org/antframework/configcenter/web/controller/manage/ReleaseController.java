@@ -30,7 +30,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
-import org.antframework.configcenter.web.common.PropertyAnalyzer;
+import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -42,6 +42,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 /**
  * 发布controller
@@ -67,10 +68,12 @@ public class ReleaseController {
         ManagerInfo manager = Managers.currentManager();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            List<Property> source = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
-            List<PropertyValueInfo> target = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
-            PropertyAnalyzer.ChangedProperties changedProperties = PropertyAnalyzer.analyzeChangedPropretyValues(source, target);
-            PropertyAnalyzer.onlyHaveReadWritePrivilege(appId, changedProperties);
+            List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+            List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
+            List<Property> right = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
+
+            Properties.Difference difference = Properties.compare(left, right);
+            Properties.onlyReadWrite(appId, difference);
         }
 
         AddReleaseOrder order = new AddReleaseOrder();
@@ -97,14 +100,14 @@ public class ReleaseController {
         ManagerInfo manager = Managers.currentManager();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            List<Property> source = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
             ReleaseInfo targetRelease = ReleaseUtils.findRelease(appId, profileId, targetVersion);
             if (targetRelease == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", appId, profileId, targetVersion));
             }
-            List<Property> target = targetRelease.getProperties();
-            PropertyAnalyzer.ChangedProperties changedProperties = PropertyAnalyzer.analyzeChangedProperties(source, target);
-            PropertyAnalyzer.onlyHaveReadWritePrivilege(appId, changedProperties);
+            ReleaseInfo currentRelease = ReleaseUtils.findCurrentRelease(appId, profileId);
+
+            Properties.Difference difference = Properties.compare(targetRelease.getProperties(), currentRelease.getProperties());
+            Properties.onlyReadWrite(appId, difference);
         }
 
         RevertReleaseOrder order = new RevertReleaseOrder();

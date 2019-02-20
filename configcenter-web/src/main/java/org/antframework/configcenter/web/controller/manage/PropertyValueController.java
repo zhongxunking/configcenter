@@ -8,25 +8,18 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import lombok.Getter;
-import lombok.Setter;
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
-import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
+import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
+import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
-import org.antframework.configcenter.web.common.PropertyAnalyzer;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -34,7 +27,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -116,50 +108,36 @@ public class PropertyValueController {
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
+     * @param minScope  最小作用域（必须）
      */
-    @RequestMapping("/findAppProfileCurrentPropertyValues")
-    public FindAppProfileCurrentPropertyValuesResult findAppProfileCurrentPropertyValues(String appId, String profileId) {
+    @RequestMapping("/findAppProfilePropertyValues")
+    public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId, Scope minScope) {
         ManagerApps.adminOrHaveApp(appId);
 
-        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
-        ReleaseInfo release = ReleaseUtils.findCurrentRelease(appId, profileId);
+        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setMinScope(minScope);
 
-        FindAppProfileCurrentPropertyValuesResult result = new FindAppProfileCurrentPropertyValuesResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        result.getPropertyValues().addAll(propertyValues);
-        result.setChangedProperties(PropertyAnalyzer.analyzeChangedPropretyValues(release.getProperties(), propertyValues));
-        // 掩码
-        maskPropertyValue(appId, result);
-
+        FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
+        if (result.isSuccess()) {
+            mask(appId, result.getPropertyValues());
+        }
         return result;
     }
 
     // 对敏感配置进行掩码
-    private void maskPropertyValue(String appId, FindAppProfileCurrentPropertyValuesResult result) {
+    private void mask(String appId, List<PropertyValueInfo> propertyValues) {
         ManagerInfo manager = Managers.currentManager();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
         List<KeyPrivileges.AppPrivilege> appPrivileges = KeyPrivileges.findInheritedPrivileges(appId);
-        for (PropertyValueInfo propertyValue : result.getPropertyValues()) {
+        for (PropertyValueInfo propertyValue : propertyValues) {
             Privilege privilege = KeyPrivileges.calcPrivilege(appPrivileges, propertyValue.getKey());
             if (privilege == Privilege.NONE) {
                 propertyValue.setValue(MASKED_VALUE);
             }
         }
-    }
-
-    /**
-     * 查找应用在指定环境下的配置value
-     */
-    @Getter
-    @Setter
-    public static class FindAppProfileCurrentPropertyValuesResult extends AbstractResult {
-        // 配置value
-        private List<PropertyValueInfo> propertyValues = new ArrayList<>();
-        // 被修改的配置
-        private PropertyAnalyzer.ChangedProperties changedProperties;
     }
 }
