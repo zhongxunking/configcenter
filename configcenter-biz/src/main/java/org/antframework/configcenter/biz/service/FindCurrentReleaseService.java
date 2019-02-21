@@ -30,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 /**
  * 查找当前发布服务
@@ -75,6 +76,7 @@ public class FindCurrentReleaseService {
         release.setAppId(appId);
         release.setProfileId(profileId);
         release.setVersion(ReleaseConstant.ORIGIN_VERSION);
+        release.setReleaseTime(new Date());
         release.setMemo(null);
         release.setProperties(new ArrayList<>());
 

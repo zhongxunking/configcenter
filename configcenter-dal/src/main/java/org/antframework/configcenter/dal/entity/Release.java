@@ -15,14 +15,14 @@ import org.antframework.boot.jpa.AbstractEntity;
 import org.antframework.configcenter.facade.vo.Property;
 
 import javax.persistence.*;
+import java.util.Date;
 import java.util.List;
 
 /**
  * 发布
  */
 @Entity
-@Table(name = "`Release`",
-        uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}))
+@Table(name = "`Release`", uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}))
 @Getter
 @Setter
 public class Release extends AbstractEntity {
@@ -37,6 +37,10 @@ public class Release extends AbstractEntity {
     // 版本
     @Column
     private Long version;
+
+    // 发布时间
+    @Column
+    private Date releaseTime;
 
     // 备注
     @Column

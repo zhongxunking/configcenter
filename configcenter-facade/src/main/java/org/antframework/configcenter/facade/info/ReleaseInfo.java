@@ -13,6 +13,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.facade.vo.Property;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,6 +28,8 @@ public class ReleaseInfo extends AbstractInfo {
     private String profileId;
     // 版本
     private Long version;
+    // 发布时间
+    private Date releaseTime;
     // 备注
     private String memo;
     // 配置项集合

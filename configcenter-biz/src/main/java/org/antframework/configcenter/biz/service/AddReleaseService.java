@@ -37,6 +37,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -97,6 +98,7 @@ public class AddReleaseService {
         Release release = new Release();
         BeanUtils.copyProperties(order, release);
         release.setVersion(version);
+        release.setReleaseTime(new Date());
         release.setProperties(properties);
 
         return release;
