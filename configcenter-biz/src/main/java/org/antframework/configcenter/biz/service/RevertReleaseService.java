@@ -10,11 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.RefreshUtils;
-import org.antframework.configcenter.dal.dao.AppDao;
-import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
-import org.antframework.configcenter.dal.entity.App;
-import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
@@ -32,10 +28,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Service(enableTx = true)
 public class RevertReleaseService {
     @Autowired
-    private AppDao appDao;
-    @Autowired
-    private ProfileDao profileDao;
-    @Autowired
     private ReleaseDao releaseDao;
     @Autowired
     private PropertyValueService propertyValueService;
@@ -45,14 +37,6 @@ public class RevertReleaseService {
         RevertReleaseOrder order = context.getOrder();
         // 校验入参
         if (order.getTargetVersion() > ReleaseConstant.ORIGIN_VERSION) {
-            App app = appDao.findLockByAppId(order.getAppId());
-            if (app == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
-            }
-            Profile profile = profileDao.findLockByProfileId(order.getProfileId());
-            if (profile == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
-            }
             Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getTargetVersion());
             if (release == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getTargetVersion()));
