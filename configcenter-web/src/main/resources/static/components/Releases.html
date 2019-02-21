@@ -19,7 +19,7 @@
 
         .badge-style {
             margin-top: 10px;
-            margin-right: 40px;
+            margin-right: 16px;
         }
     </style>
 </head>
@@ -86,12 +86,20 @@
                                                   :cell-style="{padding: '8px 0'}">
                                             <el-table-column width="48px">
                                                 <template slot-scope="{ row }">
-                                                    <span style="font-size: xx-small;color: #E6A23C">旧值</span>
+                                                    <span style="font-size: small;color: #E6A23C">旧值</span>
                                                 </template>
                                             </el-table-column>
-                                            <el-table-column property="key" label="配置key"></el-table-column>
-                                            <el-table-column property="value" label="配置value"></el-table-column>
-                                            <el-table-column property="scope" label="作用域" width="119px">
+                                            <el-table-column property="key" label="配置key">
+                                                <template slot-scope="{ row }">
+                                                    <span style="font-size: xx-small">{{ row.key }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column property="value" label="配置value">
+                                                <template slot-scope="{ row }">
+                                                    <span style="font-size: xx-small">{{ row.value }}</span>
+                                                </template>
+                                            </el-table-column>
+                                            <el-table-column property="scope" label="作用域" width="94px">
                                                 <template slot-scope="{ row }">
                                                     <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                                     <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -105,12 +113,12 @@
                             <el-table-column property="key" label="配置key">
                                 <template slot-scope="{ row }">
                                     <el-badge v-if="showingRelease.difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                        <span style="margin-right: 10px">{{ row.key }}</span>
+                                        <span style="font-size: xx-small;margin-right: 8px">{{ row.key }}</span>
                                     </el-badge>
                                     <el-badge v-else-if="showingRelease.difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                        <span style="margin-right: 10px">{{ row.key }}</span>
+                                        <span style="font-size: xx-small;margin-right: 8px">{{ row.key }}</span>
                                     </el-badge>
-                                    <span v-else>{{ row.key }}</span>
+                                    <span v-else style="font-size: xx-small">{{ row.key }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column label="配置value">
@@ -119,22 +127,22 @@
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
                                             <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                            <span v-else style="margin-right: 10px">{{ row.current.value }}</span>
+                                            <span v-else style="font-size: xx-small;margin-right: 8px">{{ row.current.value }}</span>
                                         </el-badge>
                                     </template>
                                     <div v-else-if="row.current">
                                         <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
                                         <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                        <span v-else>{{ row.current.value }}</span>
+                                        <span v-else style="font-size: xx-small">{{ row.current.value }}</span>
                                     </div>
                                     <div v-else>
                                         <el-tag v-if="row.previous.value === null" size="medium">无效</el-tag>
                                         <el-tag v-else-if="manager.type === 'NORMAL' && row.previous.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                        <span v-else>{{ row.previous.value }}</span>
+                                        <span v-else style="font-size: xx-small">{{ row.previous.value }}</span>
                                     </div>
                                 </template>
                             </el-table-column>
-                            <el-table-column label="作用域" :resizable="false" width="120px">
+                            <el-table-column label="作用域" :resizable="false" width="95px">
                                 <template slot-scope="{ row }">
                                     <template v-if="showingRelease.difference.modifiedScopeKeys.indexOf(row.key) >= 0">
                                         <el-badge type="warning" value="改" class="badge-style">
@@ -164,12 +172,16 @@
                                   height="450"
                                   :header-cell-style="{padding: '8px 0'}"
                                   :cell-style="{padding: '5px 0'}">
-                            <el-table-column property="key" label="配置key"></el-table-column>
+                            <el-table-column property="key" label="配置key">
+                                <template slot-scope="{ row }">
+                                    <span style="font-size: xx-small">{{ row.key }}</span>
+                                </template>
+                            </el-table-column>
                             <el-table-column property="value" label="配置value">
                                 <template slot-scope="{ row }">
                                     <el-tag v-if="row.value === null">无效</el-tag>
                                     <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                                    <span v-else>{{ row.value }}</span>
+                                    <span v-else style="font-size: xx-small">{{ row.value }}</span>
                                 </template>
                             </el-table-column>
                             <el-table-column property="scope" label="作用域" :resizable="false" width="80px">
