@@ -1,4 +1,4 @@
-// 发布记录管理组件
+// 发布历史管理组件
 const ReleasesTemplate = `
 <div>
     <el-container style="position:relative; left:0; top:0; width:100%;height:100%;padding: 10px">
