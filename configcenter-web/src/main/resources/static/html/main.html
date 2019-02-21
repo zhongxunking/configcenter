@@ -8,6 +8,7 @@
     <script src="../components/ManagerApps.js"></script>
     <script src="../components/PropertyKeys.js"></script>
     <script src="../components/PropertyValues.js"></script>
+    <script src="../components/Releases.js"></script>
     <script src="../components/Apps.js"></script>
     <script src="../components/Profiles.js"></script>
     <style>
@@ -85,10 +86,23 @@
             }, {
                 path: ':profileId',
                 props: true,
-                component: PropertyValues,
+                component: {
+                    props: ['appId', 'profileId'],
+                    template: '<router-view :appId="appId" :profileId="profileId"></router-view>'
+                },
                 meta: {
                     title: '环境'
-                }
+                },
+                children: [{
+                    path: '',
+                    component: PropertyValues
+                }, {
+                    path: 'releases',
+                    component: Releases,
+                    meta: {
+                        title: '发布记录'
+                    }
+                }]
             }]
         }]
     }];
