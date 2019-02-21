@@ -238,32 +238,31 @@ const Releases = {
                             theThis.appId,
                             theThis.profileId,
                             function (nextTotalCount, nextReleases) {
-                                if (nextReleases.length <= 0) {
-                                    current.difference = {
-                                        addedKeys: [],
-                                        modifiedValueKeys: [],
-                                        modifiedScopeKeys: [],
-                                        removedKeys: []
-                                    };
-                                    current.properties.forEach(function (property) {
-                                        current.difference.addedKeys.push(property.key);
-                                    });
-                                    current.changes = [];
+                                let previous;
+                                if (nextReleases.length > 0) {
+                                    previous = nextReleases[0];
                                 } else {
-                                    let previous = nextReleases[0];
-                                    previous.properties.forEach(function (property) {
-                                        property.privilege = theThis.calcPrivilege(previous.appId, property.key);
-                                    });
-                                    theThis.compareReleases(
-                                        theThis.appId,
-                                        theThis.profileId,
-                                        current.version,
-                                        previous.version,
-                                        function (difference) {
-                                            current.difference = difference;
-                                            current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
-                                        });
+                                    previous = {
+                                        appId: theThis.appId,
+                                        profileId: theThis.profileId,
+                                        version: 0,
+                                        releaseTime: new Date().getTime(),
+                                        memo: null,
+                                        properties: []
+                                    };
                                 }
+                                previous.properties.forEach(function (property) {
+                                    property.privilege = theThis.calcPrivilege(previous.appId, property.key);
+                                });
+                                theThis.compareReleases(
+                                    theThis.appId,
+                                    theThis.profileId,
+                                    current.version,
+                                    previous.version,
+                                    function (difference) {
+                                        current.difference = difference;
+                                        current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
+                                    });
                             }
                         );
                     }
