@@ -12,7 +12,9 @@ const PropertyValuesTemplate = `
             </el-select>
         </el-col>
         <el-col :span="12" style="text-align: right;">
-            <el-button type="text">发布历史</el-button>
+            <router-link :to="'/configs/' + appId + '/' + currentProfileId + '/releases'">
+                <el-button type="text">发布历史</el-button>
+            </router-link>
         </el-col>
     </el-row>
     <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
