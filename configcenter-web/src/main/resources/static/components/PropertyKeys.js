@@ -31,12 +31,16 @@ const PropertyKeysTemplate = `
                   :key="appPropertyKey.app.appId"
                   :default-sort="{prop: 'key'}"
                   :style="{width: appPropertyKey.app.appId === appId ? '100%' : 'calc(100% - 130px)'}"
-                  :cell-style="{padding: '5px 0px'}"
+                  :cell-style="{padding: '3px 0px'}"
                   border stripe>
-            <el-table-column prop="key" label="配置key" sortable></el-table-column>
+            <el-table-column prop="key" label="配置key" sortable>
+                <template slot-scope="{ row }">
+                    <span class="propertyKey-text-style">{{ row.key }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="memo" label="备注">
                 <template slot-scope="{ row }">
-                    <span v-if="!row.editing">{{ row.memo }}</span>
+                    <span v-if="!row.editing" class="propertyKey-text-style">{{ row.memo }}</span>
                     <el-input v-else v-model="row.editingMemo" size="mini" clearable placeholder="请输入备注"></el-input>
                 </template>
             </el-table-column>

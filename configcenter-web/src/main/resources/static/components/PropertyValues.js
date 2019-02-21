@@ -2,7 +2,7 @@
 const PropertyValuesTemplate = `
 <div>
     <el-row style="margin-bottom: 10px">
-        <el-col>
+        <el-col :span="12">
             <span style="font-size: large;color: #409EFF;">环境：</span>
             <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
                 <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId">
@@ -11,10 +11,16 @@ const PropertyValuesTemplate = `
                 </el-option>
             </el-select>
         </el-col>
+        <el-col :span="12" style="text-align: right;">
+            <el-button type="text">发布历史</el-button>
+        </el-col>
     </el-row>
     <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
         <el-row v-if="appProperty.app.appId === appId" style="margin-bottom: 10px">
-            <el-col :offset="6" :span="12" style="text-align: center;">
+            <el-col :span="6">
+                <el-button type="primary" icon="el-icon-plus" size="small" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
+            </el-col>
+            <el-col :span="12" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
             </el-col>
             <el-col :span="6" style="text-align: end">
@@ -43,11 +49,11 @@ const PropertyValuesTemplate = `
                   :key="appProperty.app.appId + ':' + profileProperty.profileId"
                   :row-key="calcRowKey"
                   :default-sort="{prop: 'key'}"
-                  :cell-style="{padding: '5px 0px'}"
+                  :cell-style="{padding: '3px 0px'}"
                   border>
             <el-table-column label="环境" :resizable="false" width="150px">
                 <template slot-scope="{ row }">
-                    <span style="font-size: larger">{{ profileProperty.profileId }}</span>
+                    <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="key" label="配置key" :resizable="false">
@@ -57,15 +63,15 @@ const PropertyValuesTemplate = `
                     </div>
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                            <el-badge v-if="currentPropertyValues.changedProperties.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <el-badge v-else-if="currentPropertyValues.changedProperties.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <span v-else>{{ row.key }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                         </template>
-                        <span v-else>{{ row.key }}</span>
+                        <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                     </template>
                 </template>
             </el-table-column>
@@ -73,22 +79,22 @@ const PropertyValuesTemplate = `
                 <template slot-scope="{ row }">
                     <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="mini" clearable placeholder="请输入配置value"></el-input>
                     <template v-else>
-                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.changedProperties.modifiedValueKeys.indexOf(row.key) >= 0">
+                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedValueKeys.indexOf(row.key) >= 0">
                             <el-badge type="warning" value="改" class="badge-style">
                                 <el-tag v-if="row.value === null" size="medium">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                <span v-else style="margin-right: 10px">{{ row.value }}</span>
+                                <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                             </el-badge>
                         </template>
                         <div v-else>
                             <el-tag v-if="row.value === null" size="medium">无效</el-tag>
                             <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                            <span v-else>{{ row.value }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                         </div>
                     </template>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
+            <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                 <template slot-scope="{ row }">
                     <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
                         <el-option value="PRIVATE" label="私有"></el-option>
@@ -96,7 +102,7 @@ const PropertyValuesTemplate = `
                         <el-option value="PUBLIC" label="公开"></el-option>
                     </el-select>
                     <template v-else>
-                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && currentPropertyValues.changedProperties.modifiedScopeKeys.indexOf(row.key) >= 0">
+                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedScopeKeys.indexOf(row.key) >= 0">
                             <el-badge type="warning" value="改" class="badge-style">
                                 <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                 <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -114,7 +120,7 @@ const PropertyValuesTemplate = `
             <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                 <template slot-scope="{ row }">
                     <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                        <template v-if="currentPropertyValues.changedProperties.removedKeys.indexOf(row.key) >= 0">
+                        <template v-if="difference.removedKeys.indexOf(row.key) >= 0">
                             <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
                                 <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
                             </el-tooltip>
@@ -162,6 +168,27 @@ const PropertyValuesTemplate = `
             </el-table-column>
         </el-table>
     </div>
+    <el-dialog :visible.sync="addPropertyValueDialogShowing" :before-close="closeAddPropertyValueDialog" title="新增配置项" width="50%">
+        <el-form ref="addPropertyValueForm" :model="addPropertyValueForm" label-width="20%">
+            <el-form-item label="配置key" prop="key" :rules="[{required:true, message:'请输入配置key', trigger:'blur'}]">
+                <el-input v-model="addPropertyValueForm.key" clearable placeholder="请输入配置key" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="配置value" prop="value" :rules="[{required:true, message:'请输入配置value', trigger:'blur'}]">
+                <el-input v-model="addPropertyValueForm.value" type="textarea" autosize clearable placeholder="请输入配置value" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="作用域" prop="scope" :rules="[{required:true, message:'请选择作用域', trigger:'blur'}]">
+                <el-select v-model="addPropertyValueForm.scope" placeholder="请选择作用域" style="width: 90%">
+                    <el-option value="PRIVATE" label="私有"></el-option>
+                    <el-option value="PROTECTED" label="可继承"></el-option>
+                    <el-option value="PUBLIC" label="公开"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddPropertyValueDialog">取消</el-button>
+            <el-button type="primary" @click="addPropertyValue">提交</el-button>
+        </div>
+    </el-dialog>
     <el-dialog :visible.sync="addReleaseDialogVisible" :before-close="closeAddReleaseDialog" title="新增发布" width="70%" center>
         <el-row>
             <el-col :span="3" style="text-align: right;">
@@ -174,34 +201,34 @@ const PropertyValuesTemplate = `
                           border>
                     <el-table-column prop="key" label="配置key">
                         <template slot-scope="{ row }">
-                            <el-badge v-if="currentPropertyValues.changedProperties.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <el-badge v-else-if="currentPropertyValues.changedProperties.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                            <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <span v-else>{{ row.key }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="value" label="配置value">
                         <template slot-scope="{ row }">
-                            <template v-if="currentPropertyValues.changedProperties.modifiedValueKeys.indexOf(row.key) >= 0">
+                            <template v-if="difference.modifiedValueKeys.indexOf(row.key) >= 0">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.value === null">无效</el-tag>
                                     <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                                    <span v-else style="margin-right: 10px">{{ row.value }}</span>
+                                    <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                                 </el-badge>
                             </template>
                             <div v-else>
                                 <el-tag v-if="row.value === null">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                                <span v-else>{{ row.value }}</span>
+                                <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
                         <template slot-scope="{ row }">
-                            <template v-if="currentPropertyValues.changedProperties.modifiedScopeKeys.indexOf(row.key) >= 0">
+                            <template v-if="difference.modifiedScopeKeys.indexOf(row.key) >= 0">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                     <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -241,18 +268,22 @@ const PropertyValues = {
             allProfiles: [],
             selfPropertiesLoading: false,
             appProperties: [],
-            currentPropertyValues: {
-                propertyValues: [],
-                changedProperties: {
-                    addedKeys: [],
-                    modifiedValueKeys: [],
-                    modifiedScopeKeys: [],
-                    removedKeys: []
-                }
+            propertyValues: [],
+            difference: {
+                addedKeys: [],
+                modifiedValueKeys: [],
+                modifiedScopeKeys: [],
+                removedKeys: []
             },
             inheritedAppReleases: [],
             inheritedAppPropertyKeys: [],
             inheritedAppPrivileges: [],
+            addPropertyValueDialogShowing: false,
+            addPropertyValueForm: {
+                key: null,
+                value: null,
+                scope: null
+            },
             revertPopoverShowing: false,
             addReleaseDialogVisible: false,
             addReleaseForm: {
@@ -262,10 +293,10 @@ const PropertyValues = {
     },
     computed: {
         edited: function () {
-            return this.currentPropertyValues.changedProperties.addedKeys.length > 0
-                || this.currentPropertyValues.changedProperties.modifiedValueKeys.length > 0
-                || this.currentPropertyValues.changedProperties.modifiedScopeKeys.length > 0
-                || this.currentPropertyValues.changedProperties.removedKeys.length > 0;
+            return this.difference.addedKeys.length > 0
+                || this.difference.modifiedValueKeys.length > 0
+                || this.difference.modifiedScopeKeys.length > 0
+                || this.difference.removedKeys.length > 0;
         },
         keyValidityMap: function () {
             let appMap = {};
@@ -289,10 +320,10 @@ const PropertyValues = {
             const theThis = this;
 
             let properties = [];
-            this.currentPropertyValues.propertyValues.forEach(function (propertyValue) {
-                if (theThis.currentPropertyValues.changedProperties.addedKeys.indexOf(propertyValue.key) >= 0
-                    || theThis.currentPropertyValues.changedProperties.modifiedValueKeys.indexOf(propertyValue.key) >= 0
-                    || theThis.currentPropertyValues.changedProperties.modifiedScopeKeys.indexOf(propertyValue.key) >= 0) {
+            this.propertyValues.forEach(function (propertyValue) {
+                if (theThis.difference.addedKeys.indexOf(propertyValue.key) >= 0
+                    || theThis.difference.modifiedValueKeys.indexOf(propertyValue.key) >= 0
+                    || theThis.difference.modifiedScopeKeys.indexOf(propertyValue.key) >= 0) {
                     properties.push({
                         key: propertyValue.key,
                         value: propertyValue.value,
@@ -311,7 +342,7 @@ const PropertyValues = {
                         return;
                     }
                     release.properties.forEach(function (property) {
-                        if (theThis.currentPropertyValues.changedProperties.removedKeys.indexOf(property.key) >= 0) {
+                        if (theThis.difference.removedKeys.indexOf(property.key) >= 0) {
                             properties.push({
                                 key: property.key,
                                 value: property.value,
@@ -330,7 +361,10 @@ const PropertyValues = {
         '$route': function () {
             this.refreshData();
         },
-        currentPropertyValues: function () {
+        propertyValues: function () {
+            this.refreshAppProperties();
+        },
+        difference: function () {
             this.refreshAppProperties();
         },
         inheritedAppReleases: function () {
@@ -349,7 +383,8 @@ const PropertyValues = {
     methods: {
         refreshData: function () {
             this.findAllProfiles();
-            this.findCurrentPropertyValues();
+            this.findPropertyValues();
+            this.comparePropertyValuesWithRelease();
             this.findInheritedAppReleases();
             this.findInheritedAppPropertyKeys();
             this.findInheritedAppPrivileges();
@@ -369,7 +404,7 @@ const PropertyValues = {
                         properties: []
                     };
                     if (release.appId === theThis.appId && release.profileId === theThis.profileId) {
-                        theThis.currentPropertyValues.propertyValues.forEach(function (propertyValue) {
+                        theThis.propertyValues.forEach(function (propertyValue) {
                             profileProperty.properties.push({
                                 appId: release.appId,
                                 profileId: release.profileId,
@@ -382,7 +417,7 @@ const PropertyValues = {
                                 editingScope: null
                             });
                         });
-                        theThis.currentPropertyValues.changedProperties.removedKeys.forEach(function (key) {
+                        theThis.difference.removedKeys.forEach(function (key) {
                             let property;
                             for (let i = 0; i < release.properties.length; i++) {
                                 if (release.properties[i].key === key) {
@@ -391,17 +426,27 @@ const PropertyValues = {
                                 }
                             }
                             if (property) {
-                                profileProperty.properties.push({
-                                    appId: release.appId,
-                                    profileId: release.profileId,
-                                    key: property.key,
-                                    value: property.value,
-                                    scope: property.scope,
-                                    privilege: theThis.calcPrivilege(release.appId, property.key),
-                                    editing: false,
-                                    editingValue: null,
-                                    editingScope: null
-                                });
+                                let existing = false;
+                                for (let i = 0; i < profileProperty.properties.length; i++) {
+                                    let temp = profileProperty.properties[i];
+                                    if (temp.key === property.key) {
+                                        existing = true;
+                                        break;
+                                    }
+                                }
+                                if (!existing) {
+                                    profileProperty.properties.push({
+                                        appId: release.appId,
+                                        profileId: release.profileId,
+                                        key: property.key,
+                                        value: property.value,
+                                        scope: property.scope,
+                                        privilege: theThis.calcPrivilege(release.appId, property.key),
+                                        editing: false,
+                                        editingValue: null,
+                                        editingScope: null
+                                    });
+                                }
                             }
                         });
                     } else {
@@ -461,22 +506,38 @@ const PropertyValues = {
         switchProfile: function (profileId) {
             this.$router.replace('/configs/' + this.appId + '/' + profileId);
         },
-        findCurrentPropertyValues: function () {
+        findPropertyValues: function () {
             const theThis = this;
-            axios.get('../manage/propertyValue/findAppProfileCurrentPropertyValues', {
+            axios.get('../manage/propertyValue/findAppProfilePropertyValues', {
                 params: {
                     appId: this.appId,
-                    profileId: this.profileId
+                    profileId: this.profileId,
+                    minScope: 'PRIVATE'
                 }
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.currentPropertyValues = {
-                    propertyValues: result.propertyValues,
-                    changedProperties: result.changedProperties
-                };
+                theThis.propertyValues = result.propertyValues;
+            });
+        },
+        comparePropertyValuesWithRelease: function () {
+            const theThis = this;
+            this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
+                axios.get('../manage/propertyValue/comparePropertyValuesWithRelease', {
+                    params: {
+                        appId: theThis.appId,
+                        profileId: theThis.profileId,
+                        releaseVersion: release.version
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.difference = result.difference;
+                });
             });
         },
         findInheritedAppReleases: function () {
@@ -608,13 +669,13 @@ const PropertyValues = {
         },
         tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
             if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || row.value === null)) {
-                return 'info-row';
+                return 'invalid-property';
             }
             return '';
         },
         showOverrideButton: function (row) {
             if (this.isValidKey(row.appId, row.profileId, row.key)) {
-                return this.currentPropertyValues.changedProperties.removedKeys.indexOf(row.key) < 0;
+                return this.difference.removedKeys.indexOf(row.key) < 0;
             }
             return false;
         },
@@ -632,7 +693,7 @@ const PropertyValues = {
         calcKeyValidity: function (appId, profileId, key) {
             const theThis = this;
             const removed = function (property) {
-                return property.appId === theThis.appId && property.profileId === theThis.profileId && theThis.currentPropertyValues.changedProperties.removedKeys.indexOf(property.key) >= 0;
+                return property.appId === theThis.appId && property.profileId === theThis.profileId && theThis.difference.removedKeys.indexOf(property.key) >= 0;
             };
 
             for (let i = 0; i < this.appProperties.length; i++) {
@@ -697,7 +758,7 @@ const PropertyValues = {
             }
             this.addOrModifyPropertyValue(property.key, property.editingValue, property.editingScope);
         },
-        addOrModifyPropertyValue: function (key, value, scope) {
+        addOrModifyPropertyValue: function (key, value, scope, callback) {
             const theThis = this;
             axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                 params: {
@@ -713,6 +774,9 @@ const PropertyValues = {
                     return;
                 }
                 theThis.refreshData();
+                if (callback) {
+                    callback();
+                }
             });
         },
         deletePropertyValue: function (property) {
@@ -771,21 +835,12 @@ const PropertyValues = {
         revertPropertyValues: function () {
             const theThis = this;
 
-            axios.get('../manage/release/findCurrentRelease', {
-                params: {
-                    appId: this.appId,
-                    profileId: this.profileId
-                }
-            }).then(function (findCurrentReleaseResult) {
-                if (!findCurrentReleaseResult.success) {
-                    Vue.prototype.$message.error(findCurrentReleaseResult.message);
-                    return;
-                }
+            this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
                 axios.get('../manage/propertyValue/revertPropertyValues', {
                     params: {
                         appId: theThis.appId,
                         profileId: theThis.profileId,
-                        releaseVersion: findCurrentReleaseResult.release.version
+                        releaseVersion: release.version
                     }
                 }).then(function (revertPropertyValuesResult) {
                     if (!revertPropertyValuesResult.success) {
@@ -795,6 +850,41 @@ const PropertyValues = {
                     theThis.revertPopoverShowing = false;
                     theThis.refreshData();
                 });
+            });
+        },
+        closeAddPropertyValueDialog: function () {
+            this.addPropertyValueDialogShowing = false;
+            this.$refs['addPropertyValueForm'].resetFields();
+        },
+        doFindCurrentRelease: function (appId, profileId, callback) {
+            const theThis = this;
+
+            axios.get('../manage/release/findCurrentRelease', {
+                params: {
+                    appId: appId,
+                    profileId: profileId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                callback(result.release);
+            });
+        },
+        addPropertyValue: function () {
+            const theThis = this;
+            this.$refs.addPropertyValueForm.validate(function (valid) {
+                if (!valid) {
+                    return;
+                }
+                theThis.addOrModifyPropertyValue(
+                    theThis.addPropertyValueForm.key,
+                    theThis.addPropertyValueForm.value,
+                    theThis.addPropertyValueForm.scope,
+                    function () {
+                        theThis.closeAddPropertyValueDialog();
+                    });
             });
         },
         showAddReleaseDialog: function () {
@@ -809,7 +899,7 @@ const PropertyValues = {
         },
         closeAddReleaseDialog: function () {
             this.addReleaseDialogVisible = false;
-            this.addReleaseForm.memo = null;
+            this.$refs['addReleaseForm'].resetFields();
         },
         addRelease: function () {
             const theThis = this;
