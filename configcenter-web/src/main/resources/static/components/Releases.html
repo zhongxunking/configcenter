@@ -39,10 +39,18 @@
                           max-height="550"
                           :row-class-name="currentReleaseClassName"
                           :cell-style="{padding: '8px 0'}">
-                    <el-table-column property="version" label="版本"></el-table-column>
-                    <el-table-column label="发布时间"></el-table-column>
-                    <el-table-column property="memo" label="备注"></el-table-column>
-                    <el-table-column label="操作" header-align="center" width="70px">
+                    <el-table-column property="version" label="版本" width="70px"></el-table-column>
+                    <el-table-column property="releaseTime" label="发布时间" width="140px">
+                        <template slot-scope="{ row }">
+                            <span style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column property="memo" label="备注">
+                        <template slot-scope="{ row }">
+                            <span style="font-size: xx-small">{{ row.memo }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" header-align="center" width="55px">
                         <template slot-scope="{ row }">
                             <el-row>
                                 <el-col :span="24" style="text-align: center">
