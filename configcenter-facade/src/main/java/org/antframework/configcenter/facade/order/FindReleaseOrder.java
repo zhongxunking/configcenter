@@ -30,7 +30,7 @@ public class FindReleaseOrder extends AbstractOrder {
     @NotBlank
     private String profileId;
     // 版本
-    @Min(ReleaseConstant.ORIGIN_VERSION + 1)
+    @Min(ReleaseConstant.ORIGIN_VERSION)
     @NotNull
     private Long version;
 }
