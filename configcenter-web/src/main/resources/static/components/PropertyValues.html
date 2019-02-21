@@ -7,11 +7,19 @@
     <style>
         .badge-style {
             margin-top: 10px;
-            margin-right: 40px;
+            margin-right: 16px;
         }
 
-        .el-table .info-row {
-            background: #f6f9ff;
+        .badged-text-style {
+            margin-right: 8px;
+        }
+
+        .propertyValue-text-style {
+            font-size: small;
+        }
+
+        .el-table .invalid-property {
+            background: rgba(255, 179, 68, 0.07);
         }
     </style>
 </head>
@@ -65,11 +73,11 @@
                   :key="appProperty.app.appId + ':' + profileProperty.profileId"
                   :row-key="calcRowKey"
                   :default-sort="{prop: 'key'}"
-                  :cell-style="{padding: '5px 0px'}"
+                  :cell-style="{padding: '3px 0px'}"
                   border>
             <el-table-column label="环境" :resizable="false" width="150px">
                 <template slot-scope="{ row }">
-                    <span style="font-size: larger">{{ profileProperty.profileId }}</span>
+                    <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="key" label="配置key" :resizable="false">
@@ -80,14 +88,14 @@
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
                             <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
                             <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <span v-else>{{ row.key }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                         </template>
-                        <span v-else>{{ row.key }}</span>
+                        <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                     </template>
                 </template>
             </el-table-column>
@@ -99,18 +107,18 @@
                             <el-badge type="warning" value="改" class="badge-style">
                                 <el-tag v-if="row.value === null" size="medium">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                <span v-else style="margin-right: 10px">{{ row.value }}</span>
+                                <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                             </el-badge>
                         </template>
                         <div v-else>
                             <el-tag v-if="row.value === null" size="medium">无效</el-tag>
                             <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                            <span v-else>{{ row.value }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                         </div>
                     </template>
                 </template>
             </el-table-column>
-            <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
+            <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                 <template slot-scope="{ row }">
                     <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
                         <el-option value="PRIVATE" label="私有"></el-option>
@@ -218,12 +226,12 @@
                     <el-table-column prop="key" label="配置key">
                         <template slot-scope="{ row }">
                             <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
                             <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                <span style="margin-right: 10px">{{ row.key }}</span>
+                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <span v-else>{{ row.key }}</span>
+                            <span v-else class="propertyValue-text-style">{{ row.key }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column prop="value" label="配置value">
@@ -232,13 +240,13 @@
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.value === null">无效</el-tag>
                                     <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                                    <span v-else style="margin-right: 10px">{{ row.value }}</span>
+                                    <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                                 </el-badge>
                             </template>
                             <div v-else>
                                 <el-tag v-if="row.value === null">无效</el-tag>
                                 <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
-                                <span v-else>{{ row.value }}</span>
+                                <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                             </div>
                         </template>
                     </el-table-column>
@@ -695,7 +703,7 @@
                 },
                 tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
                     if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || row.value === null)) {
-                        return 'info-row';
+                        return 'invalid-property';
                     }
                     return '';
                 },
