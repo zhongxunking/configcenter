@@ -1,8 +1,8 @@
 // 发布历史管理组件
 const ReleasesTemplate = `
 <div>
-    <el-container style="position:relative; left:0; top:0; width:100%;height:100%;padding: 10px">
-        <el-header height="40px">
+    <el-container>
+        <el-header height="30px" style="padding: 0">
             <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
             <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
         </el-header>
@@ -12,11 +12,10 @@ const ReleasesTemplate = `
                           @current-change="changeShowingRelease"
                           border
                           highlight-current-row
-                          max-height="550"
                           :row-class-name="currentReleaseClassName"
-                          :cell-style="{padding: '8px 0'}">
+                          :cell-style="{padding: '7px 0'}">
                     <el-table-column property="version" label="版本" width="70px"></el-table-column>
-                    <el-table-column property="releaseTime" label="发布时间" width="140px">
+                    <el-table-column property="releaseTime" label="发布时间" width="150px">
                         <template slot-scope="{ row }">
                             <span style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
                         </template>
@@ -50,7 +49,7 @@ const ReleasesTemplate = `
                         <el-table :data="showingRelease ? showingRelease.changes : []"
                                   :default-sort="{prop: 'key'}"
                                   border
-                                  height="450"
+                                  height="565"
                                   :header-cell-style="{padding: '8px 0'}"
                                   :cell-style="{padding: '2px 0'}">
                             <el-table-column type="expand">
@@ -145,9 +144,9 @@ const ReleasesTemplate = `
                         <el-table :data="showingRelease ? showingRelease.properties : []"
                                   :default-sort="{prop: 'key'}"
                                   border
-                                  height="450"
+                                  height="565"
                                   :header-cell-style="{padding: '8px 0'}"
-                                  :cell-style="{padding: '5px 0'}">
+                                  :cell-style="{padding: '2px 0'}">
                             <el-table-column property="key" label="配置key">
                                 <template slot-scope="{ row }">
                                     <span class="release-property-text-style">{{ row.key }}</span>
@@ -247,7 +246,7 @@ const Releases = {
                                         profileId: theThis.profileId,
                                         version: 0,
                                         releaseTime: new Date().getTime(),
-                                        memo: null,
+                                        memo: '原始发布',
                                         properties: []
                                     };
                                 }
