@@ -12,7 +12,7 @@ const PropertyKeysTemplate = `
             </router-link>
         </el-col>
     </el-row>
-    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 50px">
+    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 30px">
         <el-row v-if="appPropertyKey.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>

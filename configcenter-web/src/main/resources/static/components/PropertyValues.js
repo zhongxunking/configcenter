@@ -17,7 +17,7 @@ const PropertyValuesTemplate = `
             </router-link>
         </el-col>
     </el-row>
-    <div v-for="appProperty in appProperties" style="margin-bottom: 50px;">
+    <div v-for="appProperty in appProperties" style="margin-bottom: 30px;">
         <el-row v-if="appProperty.app.appId === appId" style="margin-bottom: 10px">
             <el-col :span="6">
                 <el-button type="primary" icon="el-icon-plus" size="small" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
