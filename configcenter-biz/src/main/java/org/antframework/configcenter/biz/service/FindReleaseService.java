@@ -22,6 +22,7 @@ import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -62,7 +63,7 @@ public class FindReleaseService {
         Release release = releaseDao.findByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
         if (release != null) {
             result.setRelease(INFO_CONVERTER.convert(release));
-        } else {
+        } else if (order.getVersion() == ReleaseConstant.ORIGIN_VERSION) {
             result.setRelease(ReleaseUtils.buildOriginRelease(order.getAppId(), order.getProfileId()));
         }
     }

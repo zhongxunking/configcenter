@@ -95,7 +95,7 @@ public final class ReleaseUtils {
         release.setProfileId(profileId);
         release.setVersion(ReleaseConstant.ORIGIN_VERSION);
         release.setReleaseTime(new Date());
-        release.setMemo(null);
+        release.setMemo("原始发布");
         release.setProperties(new ArrayList<>());
 
         return release;
