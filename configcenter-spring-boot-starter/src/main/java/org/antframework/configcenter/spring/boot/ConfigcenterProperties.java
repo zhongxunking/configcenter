@@ -40,10 +40,10 @@ public class ConfigcenterProperties {
     @NotBlank
     private String serverUrl;
     /**
-     * 选填：缓存目录（默认为：/var/apps/config）
+     * 选填：缓存目录（默认为：/var/apps/configcenter）
      */
     @NotBlank
-    private String cacheDirPath = "/var/apps/config";
+    private String cacheDirPath = "/var/apps/configcenter";
     /**
      * 选填：配置刷新周期（单位：秒。默认为5分钟刷新一次）
      */
