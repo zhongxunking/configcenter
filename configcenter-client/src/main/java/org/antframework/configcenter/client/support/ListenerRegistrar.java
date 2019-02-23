@@ -24,7 +24,7 @@ public class ListenerRegistrar {
     private static final Logger logger = LoggerFactory.getLogger(ListenerRegistrar.class);
 
     // 监听器
-    private List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
+    private final List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
 
     /**
      * 注册监听器

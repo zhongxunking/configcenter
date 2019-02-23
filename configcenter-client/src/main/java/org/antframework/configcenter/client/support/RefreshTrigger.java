@@ -38,15 +38,15 @@ public class RefreshTrigger {
     private static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
 
     // 监听器缓存
-    private Cache<String, NodeCache> listenersCache = new Cache<>(this::listenApp);
+    private final Cache<String, NodeCache> listenersCache = new Cache<>(this::listenApp);
     // 环境id
-    private String profileId;
+    private final String profileId;
     // 元数据请求器
-    private ServerRequester.MetaRequester metaRequester;
+    private final ServerRequester.MetaRequester metaRequester;
     // 刷新器
-    private Refresher refresher;
+    private final Refresher refresher;
     // 缓存文件
-    private MapFile cacheFile;
+    private final MapFile cacheFile;
     // zookeeper操作类
     private ZkTemplate zkTemplate;
 
@@ -111,14 +111,11 @@ public class RefreshTrigger {
 
     // 监听应用
     private NodeCache listenApp(String appId) {
-        ZkTemplate.NodeListener listener = new ZkTemplate.NodeListener() {
-            @Override
-            public void nodeChanged() throws Exception {
-                try {
-                    refresher.refresh(appId);
-                } catch (Throwable e) {
-                    logger.error("触发刷新配置出错：", e);
-                }
+        ZkTemplate.NodeListener listener = () -> {
+            try {
+                refresher.refresh(appId);
+            } catch (Throwable e) {
+                logger.error("触发刷新配置出错：", e);
             }
         };
         return zkTemplate.listenNode(ZkTemplate.buildPath(profileId, appId), false, listener);

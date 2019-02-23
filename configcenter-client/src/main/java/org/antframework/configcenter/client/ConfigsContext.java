@@ -26,27 +26,40 @@ public class ConfigsContext {
     // config缓存
     private final Cache<String, Config> configsCache = new Cache<>(new Function<String, Config>() {
         @Override
-        public Config apply(String key) {
-            Config config = new Config(key, serverRequester, initParams.calcCacheDir());
+        public Config apply(String appId) {
+            Config config = new Config(appId, serverRequester, cacheDirPath);
             if (refreshTrigger != null) {
-                refreshTrigger.addApp(key);
+                refreshTrigger.addApp(appId);
             }
             return config;
         }
     });
     // 任务执行器
     private final TaskExecutor taskExecutor = new TaskExecutor();
-    // 初始化参数
-    private final InitParams initParams;
     // 服务端请求器
     private final ServerRequester serverRequester;
+    // 环境id
+    private final String profileId;
+    // 缓存文件夹路径（null表示不使用缓存文件功能）
+    private final String cacheDirPath;
     // 刷新触发器
     private RefreshTrigger refreshTrigger;
 
-    public ConfigsContext(InitParams initParams) {
-        initParams.check();
-        this.initParams = initParams;
-        serverRequester = new ServerRequester(initParams.serverUrl, initParams.mainAppId, initParams.profileId);
+    /**
+     * 构造配置上下文
+     *
+     * @param serverUrl    服务端地址
+     * @param mainAppId    主体应用id
+     * @param profileId    环境id
+     * @param cacheDirPath 缓存文件夹路径（null表示不使用缓存文件功能（既不读取缓存文件中的配置，也不写配置到缓存文件））
+     */
+    public ConfigsContext(String serverUrl, String mainAppId, String profileId, String cacheDirPath) {
+        if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
+            throw new IllegalArgumentException(String.format("初始化配置中客户端的参数不合法：serverUrl=%s,mainAppId=%s,profileId=%s,cacheDirPath=%s", serverUrl, mainAppId, profileId, cacheDirPath));
+        }
+        serverRequester = new ServerRequester(serverUrl, mainAppId, profileId);
+        this.profileId = profileId;
+        this.cacheDirPath = cacheDirPath == null ? null : cacheDirPath + File.separator + mainAppId + File.separator + profileId;
     }
 
     /**
@@ -66,13 +79,7 @@ public class ConfigsContext {
         if (refreshTrigger != null) {
             return;
         }
-        RefreshTrigger.Refresher refresher = new RefreshTrigger.Refresher() {
-            @Override
-            public void refresh(String appId) {
-                refreshConfig(appId);
-            }
-        };
-        refreshTrigger = new RefreshTrigger(initParams.profileId, serverRequester, refresher, initParams.calcCacheDir());
+        refreshTrigger = new RefreshTrigger(profileId, serverRequester, this::refreshConfig, cacheDirPath);
         for (String appId : getAppIds()) {
             refreshTrigger.addApp(appId);
         }
@@ -99,7 +106,7 @@ public class ConfigsContext {
     }
 
     /**
-     * 获取所有已查找配置的应用id
+     * 获取查找过配置的应用id
      */
     public Set<String> getAppIds() {
         return Collections.unmodifiableSet(configsCache.getAllKeys());
@@ -123,73 +130,5 @@ public class ConfigsContext {
                 target.refresh();
             }
         });
-    }
-
-    /**
-     * 客户端初始化参数
-     */
-    public static class InitParams {
-        // 缓存文件夹附加路径
-        private static final String CACHE_DIR_APPENDING = "configcenter";
-
-        // 必填：服务端地址
-        private String serverUrl;
-        // 必填：主体应用id
-        private String mainAppId;
-        // 必填：环境id
-        private String profileId;
-        // 选填：缓存文件夹路径（不填表示：不使用缓存文件功能，既不读取缓存文件中的配置，也不写配置到缓存文件）
-        private String cacheDir;
-
-        public String getServerUrl() {
-            return serverUrl;
-        }
-
-        public void setServerUrl(String serverUrl) {
-            this.serverUrl = serverUrl;
-        }
-
-        public String getMainAppId() {
-            return mainAppId;
-        }
-
-        public void setMainAppId(String mainAppId) {
-            this.mainAppId = mainAppId;
-        }
-
-        public String getProfileId() {
-            return profileId;
-        }
-
-        public void setProfileId(String profileId) {
-            this.profileId = profileId;
-        }
-
-        public String getCacheDir() {
-            return cacheDir;
-        }
-
-        public void setCacheDir(String cacheDir) {
-            this.cacheDir = cacheDir;
-        }
-
-        // 校验参数
-        void check() {
-            if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
-                throw new IllegalArgumentException("服务端地址、主体应用id、环境id为必传项");
-            }
-        }
-
-        // 计算真正使用的缓存文件夹路径
-        String calcCacheDir() {
-            String cacheDirToUse = cacheDir;
-            if (cacheDirToUse != null) {
-                if (!cacheDirToUse.endsWith(File.separator)) {
-                    cacheDirToUse += File.separator;
-                }
-                cacheDirToUse += CACHE_DIR_APPENDING + File.separator + mainAppId + File.separator + profileId;
-            }
-            return cacheDirToUse;
-        }
     }
 }

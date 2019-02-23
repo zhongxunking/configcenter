@@ -9,6 +9,8 @@
 package org.antframework.configcenter.client.support;
 
 import com.alibaba.fastjson.JSON;
+import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.tostring.format.HideDetail;
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -106,18 +108,12 @@ public class ServerRequester {
     }
 
     // 查找应用在指定环境中的配置result
+    @Getter
+    @Setter
     private static class FindPropertiesResult extends AbstractResult {
         // 配置
         @HideDetail
         private Map<String, String> properties;
-
-        public Map<String, String> getProperties() {
-            return properties;
-        }
-
-        public void setProperties(Map<String, String> properties) {
-            this.properties = properties;
-        }
     }
 
     /**
@@ -159,16 +155,10 @@ public class ServerRequester {
     }
 
     // 元数据result
+    @Getter
+    @Setter
     private static class MetaResult extends AbstractResult {
         // 配置中心使用的zookeeper地址
         private String[] zkUrls;
-
-        public String[] getZkUrls() {
-            return zkUrls;
-        }
-
-        public void setZkUrls(String[] zkUrls) {
-            this.zkUrls = zkUrls;
-        }
     }
 }

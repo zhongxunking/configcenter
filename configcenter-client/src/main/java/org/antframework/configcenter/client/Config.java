@@ -23,13 +23,13 @@ import java.io.File;
  */
 public class Config {
     // 配置项集合
-    private ConfigurableConfigProperties properties = new DefaultConfigProperties();
+    private final ConfigurableConfigProperties properties = new DefaultConfigProperties();
     // 监听器注册器
-    private ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
+    private final ListenerRegistrar listenerRegistrar = new ListenerRegistrar();
     // 应用id
-    private String appId;
+    private final String appId;
     // 配置刷新器
-    private ConfigRefresher configRefresher;
+    private final ConfigRefresher configRefresher;
 
     public Config(String appId, ServerRequester serverRequester, String cacheDir) {
         this.appId = appId;

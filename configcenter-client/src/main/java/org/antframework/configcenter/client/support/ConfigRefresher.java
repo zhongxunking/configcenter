@@ -24,13 +24,13 @@ public class ConfigRefresher {
     private static final Logger logger = LoggerFactory.getLogger(ConfigRefresher.class);
 
     // 配置项集合
-    private ConfigurableConfigProperties properties;
+    private final ConfigurableConfigProperties properties;
     // 监听器注册器
-    private ListenerRegistrar listenerRegistrar;
+    private final ListenerRegistrar listenerRegistrar;
     // 配置请求器
-    private ServerRequester.ConfigRequester configRequester;
+    private final ServerRequester.ConfigRequester configRequester;
     // 缓存文件
-    private MapFile cacheFile;
+    private final MapFile cacheFile;
 
     public ConfigRefresher(ConfigurableConfigProperties properties,
                            ListenerRegistrar listenerRegistrar,

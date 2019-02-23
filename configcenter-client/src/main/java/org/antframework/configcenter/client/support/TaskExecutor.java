@@ -22,7 +22,7 @@ public class TaskExecutor {
     private static final Logger logger = LoggerFactory.getLogger(TaskExecutor.class);
 
     // 执行任务的线程池
-    private ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
+    private final ThreadPoolExecutor threadPool = new ThreadPoolExecutor(
             0,
             1,
             5,
