@@ -64,6 +64,7 @@ public class ConfigRefresher {
         }
         if (fromServer && cacheFile != null) {
             cacheFile.replace(newProperties);
+            logger.debug("配置缓存到：{}", cacheFile.getFilePath());
         }
         properties.replaceProperties(newProperties);
     }
@@ -75,6 +76,7 @@ public class ConfigRefresher {
         Map<String, String> newProperties = configRequester.findConfig();
         if (cacheFile != null) {
             cacheFile.replace(newProperties);
+            logger.debug("配置缓存到：{}", cacheFile.getFilePath());
         }
         List<ChangedProperty> changedProperties = properties.replaceProperties(newProperties);
         listenerRegistrar.onChange(changedProperties);
