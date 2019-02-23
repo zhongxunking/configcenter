@@ -38,13 +38,11 @@ public class ConfigsContextTest {
     }
 
     private void testConfigsContext(String cacheDir) {
-        ConfigsContext.InitParams initParams = new ConfigsContext.InitParams();
-        initParams.setServerUrl("http://localhost:6220");
-        initParams.setMainAppId("customer");
-        initParams.setProfileId("dev");
-        initParams.setCacheDir(cacheDir);
-
-        ConfigsContext configsContext = new ConfigsContext(initParams);
+        ConfigsContext configsContext = new ConfigsContext(
+                "http://localhost:6220",
+                "customer",
+                "dev",
+                cacheDir);
         Config customerConfig = configsContext.getConfig("customer");
         customerConfig.getListenerRegistrar().register(new ConfigListener() {
             @Override
@@ -63,7 +61,7 @@ public class ConfigsContextTest {
                 }
             }
         });
-        configsContext.listenConfigChanged();
+        configsContext.listenConfigs();
         configsContext.refresh();
         try {
             Thread.sleep(200000);
