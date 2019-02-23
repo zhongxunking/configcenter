@@ -73,9 +73,9 @@ public class ConfigsContext {
     }
 
     /**
-     * 开始监听配置是否被修改
+     * 开始监听配置变更事件
      */
-    public synchronized void listenConfigChanged() {
+    public synchronized void listenConfigs() {
         if (refreshTrigger != null) {
             return;
         }
