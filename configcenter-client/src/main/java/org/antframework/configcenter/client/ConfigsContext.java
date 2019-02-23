@@ -17,15 +17,16 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.File;
 import java.util.Collections;
 import java.util.Set;
+import java.util.function.Function;
 
 /**
  * 配置上下文
  */
 public class ConfigsContext {
     // config缓存
-    private final Cache<String, Config> configsCache = new Cache<>(new Cache.Supplier<String, Config>() {
+    private final Cache<String, Config> configsCache = new Cache<>(new Function<String, Config>() {
         @Override
-        public Config get(String key) {
+        public Config apply(String key) {
             Config config = new Config(key, serverRequester, initParams.calcCacheDir());
             if (refreshTrigger != null) {
                 refreshTrigger.addApp(key);

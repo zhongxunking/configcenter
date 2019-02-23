@@ -38,12 +38,7 @@ public class RefreshTrigger {
     private static final String ZK_CONFIG_NAMESPACE = "configcenter/config";
 
     // 监听器缓存
-    private Cache<String, NodeCache> listenersCache = new Cache<>(new Cache.Supplier<String, NodeCache>() {
-        @Override
-        public NodeCache get(String key) {
-            return listenApp(key);
-        }
-    });
+    private Cache<String, NodeCache> listenersCache = new Cache<>(this::listenApp);
     // 环境id
     private String profileId;
     // 元数据请求器
