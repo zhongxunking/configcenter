@@ -30,9 +30,9 @@ public class DefaultConfigListener implements ConfigListener {
     private static final char KEY_SEPARATOR = '.';
 
     // 应用id
-    private String appId;
+    private final String appId;
     // 事件发布器
-    private EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;
 
     public DefaultConfigListener(String appId, EventPublisher eventPublisher) {
         this.appId = appId;
@@ -54,11 +54,7 @@ public class DefaultConfigListener implements ConfigListener {
             }
             String prefix = getPrefix(cp.getKey());
             ChangedProperty nextCp = new ChangedProperty(cp.getType(), getSuffix(cp.getKey()), cp.getOldValue(), cp.getNewValue());
-            List<ChangedProperty> nextCps = dispatchedCps.get(prefix);
-            if (nextCps == null) {
-                nextCps = new ArrayList<>();
-                dispatchedCps.put(prefix, nextCps);
-            }
+            List<ChangedProperty> nextCps = dispatchedCps.computeIfAbsent(prefix, key -> new ArrayList<>());
             nextCps.add(nextCp);
         }
         // 将分拣过的配置通过递归继续分拣

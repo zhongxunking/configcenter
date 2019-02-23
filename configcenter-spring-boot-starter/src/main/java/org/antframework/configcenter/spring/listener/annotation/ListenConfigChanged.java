@@ -21,7 +21,6 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Listen(resolver = ListenConfigChangedResolver.class)
 public @interface ListenConfigChanged {
-
     /**
      * 被监听的配置key前缀
      */

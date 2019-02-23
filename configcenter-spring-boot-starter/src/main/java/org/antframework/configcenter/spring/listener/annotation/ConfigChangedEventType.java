@@ -13,11 +13,11 @@ import java.util.Objects;
 /**
  * 配置被修改事件类型
  */
-public class ConfigChangedEventType {
+public final class ConfigChangedEventType {
     // 应用id
-    private String appId;
+    private final String appId;
     // 被修改的配置key前缀
-    private String prefix;
+    private final String prefix;
 
     public ConfigChangedEventType(String appId, String prefix) {
         this.appId = appId;
