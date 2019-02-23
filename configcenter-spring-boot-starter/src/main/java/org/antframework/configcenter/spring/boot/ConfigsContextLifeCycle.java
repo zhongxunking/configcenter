@@ -76,11 +76,11 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             Config config = configsContext.getConfig(appId);
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
-        // 判断是否监听配置被修改事件
-        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_ENABLE_PROPERTY_NAME, Boolean.class, Boolean.TRUE);
+        // 判断是否开启监听配置变更事件
+        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
         if (enable) {
-            // 开始监听配置是否被修改
-            configsContext.listenConfigChanged();
+            // 开始监听配置变更事件
+            configsContext.listenConfigs();
         }
     }
 

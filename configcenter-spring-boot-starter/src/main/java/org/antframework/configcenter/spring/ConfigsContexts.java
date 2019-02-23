@@ -18,18 +18,11 @@ import org.antframework.configcenter.spring.context.Contexts;
  */
 public final class ConfigsContexts {
     // 配置上下文
-    private static final ConfigsContext CONFIGS_CONTEXT;
-
-    static {
-        // 创建配置上下文
-        ConfigsContext.InitParams initParams = new ConfigsContext.InitParams();
-        initParams.setServerUrl(ConfigcenterProperties.INSTANCE.getServerUrl());
-        initParams.setMainAppId(Contexts.getAppId());
-        initParams.setProfileId(Contexts.getProfile());
-        initParams.setCacheDir(ConfigcenterProperties.INSTANCE.getCacheDir());
-
-        CONFIGS_CONTEXT = new ConfigsContext(initParams);
-    }
+    private static final ConfigsContext CONFIGS_CONTEXT = new ConfigsContext(
+            ConfigcenterProperties.INSTANCE.getServerUrl(),
+            Contexts.getAppId(),
+            Contexts.getProfile(),
+            ConfigcenterProperties.INSTANCE.getCacheDir());
 
     /**
      * 获取配置上下文
