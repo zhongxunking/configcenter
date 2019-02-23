@@ -31,19 +31,19 @@ public class Config {
     // 配置刷新器
     private final ConfigRefresher configRefresher;
 
-    public Config(String appId, ServerRequester serverRequester, String cacheDir) {
+    public Config(String appId, ServerRequester serverRequester, String cacheDirPath) {
         this.appId = appId;
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester.createConfigRequester(appId), buildCacheFile(cacheDir));
+        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester.createConfigRequester(appId), buildCacheFile(cacheDirPath));
         configRefresher.initConfig();
     }
 
     // 构建缓存文件
-    private MapFile buildCacheFile(String cacheDir) {
-        if (cacheDir == null) {
+    private MapFile buildCacheFile(String cacheDirPath) {
+        if (cacheDirPath == null) {
             return null;
         }
-        String cacheFile = cacheDir + File.separator + String.format("%s.properties", appId);
-        return new MapFile(cacheFile);
+        String cacheFilePath = cacheDirPath + File.separator + String.format("%s.properties", appId);
+        return new MapFile(cacheFilePath);
     }
 
     /**

@@ -50,21 +50,21 @@ public class RefreshTrigger {
     // zookeeper操作类
     private ZkTemplate zkTemplate;
 
-    public RefreshTrigger(String profileId, ServerRequester serverRequester, Refresher refresher, String cacheDir) {
+    public RefreshTrigger(String profileId, ServerRequester serverRequester, Refresher refresher, String cacheDirPath) {
         this.profileId = profileId;
         metaRequester = serverRequester.createMetaRequester();
         this.refresher = refresher;
-        cacheFile = buildCacheFile(cacheDir);
+        cacheFile = buildCacheFile(cacheDirPath);
         zkTemplate = buildInitZkTemplate();
     }
 
     // 构建缓存文件
-    private MapFile buildCacheFile(String cacheDir) {
-        if (cacheDir == null) {
+    private MapFile buildCacheFile(String cacheDirPath) {
+        if (cacheDirPath == null) {
             return null;
         }
-        String cacheFile = cacheDir + File.separator + META_CACHE_FILE_NAME;
-        return new MapFile(cacheFile);
+        String cacheFilePath = cacheDirPath + File.separator + META_CACHE_FILE_NAME;
+        return new MapFile(cacheFilePath);
     }
 
     // 构建初始的ZkTemplate
