@@ -22,7 +22,7 @@ public final class ConfigsContexts {
             ConfigcenterProperties.INSTANCE.getServerUrl(),
             Contexts.getAppId(),
             Contexts.getProfile(),
-            ConfigcenterProperties.INSTANCE.getCacheDir());
+            ConfigcenterProperties.INSTANCE.getCacheDirPath());
 
     /**
      * 获取配置上下文

@@ -43,7 +43,7 @@ public class ConfigcenterProperties {
      * 选填：缓存目录（默认为：/var/apps/config）
      */
     @NotBlank
-    private String cacheDir = "/var/apps/config";
+    private String cacheDirPath = "/var/apps/config";
     /**
      * 选填：配置刷新周期（单位：秒。默认为5分钟刷新一次）
      */
@@ -62,12 +62,12 @@ public class ConfigcenterProperties {
         this.serverUrl = serverUrl;
     }
 
-    public String getCacheDir() {
-        return cacheDir;
+    public String getCacheDirPath() {
+        return cacheDirPath;
     }
 
-    public void setCacheDir(String cacheDir) {
-        this.cacheDir = cacheDir;
+    public void setCacheDirPath(String cacheDirPath) {
+        this.cacheDirPath = cacheDirPath;
     }
 
     public int getRefreshPeriod() {
