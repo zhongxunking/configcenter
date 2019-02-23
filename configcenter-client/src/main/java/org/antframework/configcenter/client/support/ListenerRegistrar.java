@@ -47,7 +47,7 @@ public class ListenerRegistrar {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
-        logger.info("配置变更：{}", ToString.toString(changedProperties));
+        logger.info("监测到配置中心的配置已变更：{}", ToString.toString(changedProperties));
         for (ConfigListener listener : listeners) {
             try {
                 listener.onChange(changedProperties);
