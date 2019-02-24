@@ -22,7 +22,7 @@ import javax.validation.constraints.Min;
 @Validated
 public class ConfigcenterProperties {
     /**
-     * 应用id的占位符匹配模式
+     * 应用id（默认为spring.application.name对应的配置）
      */
     public static final String APP_ID_PATTERN = "${configcenter.app-id:${spring.application.name}}";
     /**
