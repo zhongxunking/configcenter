@@ -38,7 +38,8 @@ public class PropertyValue extends AbstractEntity {
     private String profileId;
 
     // value
-    @Column(length = 2048)
+    @Column
+    @Lob
     @Mask(allMask = true)
     private String value;
 
