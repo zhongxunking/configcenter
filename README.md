@@ -57,7 +57,7 @@
 - 无：普通管理员既不能查看该配置项，也不能修改该配置项。
 
 ## 2. 部署服务端
-[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.3.0.RELEASE/configcenter-assemble-1.4.0.RELEASE-exec.jar)。以下是集群部署架构图：<br/>
+[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.4.0.RELEASE/configcenter-assemble-1.4.0.RELEASE-exec.jar)。以下是集群部署架构图：<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBc68603367698b77744c82c6c92750a05?method=download&shareKey=84a80b0f98dd664989715565dfc2853e" width=600 />
 
 <span style="font-size: large">说明：</span>
@@ -93,7 +93,7 @@ java -jar configcenter-assemble-1.4.0.RELEASE-exec.jar --spring.profiles.active=
 <dependency>
   <groupId>org.antframework.configcenter</groupId>
   <artifactId>configcenter-client</artifactId>
-  <version>1.3.0.RELEASE</version>
+  <version>1.4.0.RELEASE</version>
 </dependency>
 ```
 #### 3.1.2 使用客户端
@@ -142,7 +142,7 @@ starter本质上还是依赖于上面介绍的客户端的能力，只不过根�
 <dependency>
   <groupId>org.antframework.configcenter</groupId>
   <artifactId>configcenter-spring-boot-starter</artifactId>
-  <version>1.3.0.RELEASE</version>
+  <version>1.4.0.RELEASE</version>
 </dependency>
 ```
 
