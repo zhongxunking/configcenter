@@ -57,7 +57,7 @@
 - 无：普通管理员既不能查看该配置项，也不能修改该配置项。
 
 ## 2. 部署服务端
-[下载服务端](https://repo.maven.apache.org/maven2/org/antframework/configcenter/configcenter-assemble/1.4.0.RELEASE/configcenter-assemble-1.4.0.RELEASE-exec.jar)。以下是集群部署架构图：<br/>
+[下载服务端](https://github.com/zhongxunking/configcenter/releases)。以下是集群部署架构图：<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBc68603367698b77744c82c6c92750a05?method=download&shareKey=84a80b0f98dd664989715565dfc2853e" width=600 />
 
 <span style="font-size: large">说明：</span>
@@ -71,11 +71,11 @@
 
 启动服务端命令模板：
 ```shell
-java -jar configcenter-assemble-1.4.0.RELEASE-exec.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址(IP:端口),如果存在多个zookeeper以英文逗号分隔"
+java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址(IP:端口),如果存在多个zookeeper以英文逗号分隔"
 ```
 比如我本地测试时启动命令：
 ```shell
-java -jar configcenter-assemble-1.4.0.RELEASE-exec.jar --spring.profiles.active="offline" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --meta.zk-urls="localhost:2181"
+java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="offline" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --meta.zk-urls="localhost:2181"
 ```
 
 ## 3. 集成客户端
