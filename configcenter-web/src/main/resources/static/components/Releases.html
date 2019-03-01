@@ -103,7 +103,9 @@
                                             </el-table-column>
                                             <el-table-column property="value" label="配置value">
                                                 <template slot-scope="{ row }">
-                                                    <span class="release-property-text-style">{{ row.value }}</span>
+                                                    <el-tag v-if="row.value === null" size="medium">无效</el-tag>
+                                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                                    <span v-else class="release-property-text-style">{{ row.value }}</span>
                                                 </template>
                                             </el-table-column>
                                             <el-table-column property="scope" label="作用域" width="94px">
