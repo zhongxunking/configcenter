@@ -21,6 +21,7 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 
 import java.util.*;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 查找应用在指定环境中的配置服务
@@ -40,14 +41,20 @@ public class FindPropertiesService {
         } else {
             mainAppIds = new HashSet<>(getInheritedAppIds(order.getMainAppId()));
         }
-        // 获取应用的配置
+        // 获取应用的配置和版本
+        AtomicLong version = new AtomicLong(0);
         Map<String, String> properties = new HashMap<>();
         for (String queriedAppId : queriedAppIds) {
-            Map<String, String> temp = getAppSelfProperties(queriedAppId, order.getProfileId(), calcMinScope(queriedAppId, order.getMainAppId(), mainAppIds));
+            Map<String, String> temp = getAppSelfProperties(
+                    queriedAppId,
+                    order.getProfileId(),
+                    calcMinScope(queriedAppId, order.getMainAppId(), mainAppIds),
+                    version);
             temp.putAll(properties);
             properties = temp;
         }
 
+        result.setVersion(version.get());
         result.setProperties(properties);
     }
 
@@ -61,9 +68,10 @@ public class FindPropertiesService {
     }
 
     // 获取应用自己的配置
-    private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope) {
+    private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope, AtomicLong version) {
         Map<String, String> properties = new HashMap<>();
         for (ReleaseInfo release : ConfigUtils.findAppSelfProperties(appId, profileId, minScope)) {
+            version.addAndGet(release.getVersion());
             Map<String, String> temp = new HashMap<>();
             for (Property property : release.getProperties()) {
                 temp.put(property.getKey(), property.getValue());
