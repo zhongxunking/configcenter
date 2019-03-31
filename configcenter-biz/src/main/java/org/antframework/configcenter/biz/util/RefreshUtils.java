@@ -9,7 +9,8 @@
 package org.antframework.configcenter.biz.util;
 
 import org.antframework.boot.core.Contexts;
-import org.antframework.common.util.facade.EmptyOrder;
+import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 
@@ -19,13 +20,6 @@ import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 public final class RefreshUtils {
     // 刷新服务
     private static final RefreshService REFRESH_SERVICE = Contexts.getApplicationContext().getBean(RefreshService.class);
-
-    /**
-     * 刷新zookeeper
-     */
-    public static void refreshZk() {
-        REFRESH_SERVICE.refreshZk(new EmptyOrder());
-    }
 
     /**
      * 刷新客户端
@@ -38,6 +32,7 @@ public final class RefreshUtils {
         order.setRootAppId(rootAppId);
         order.setRootProfileId(rootProfileId);
 
-        REFRESH_SERVICE.refreshClients(order);
+        EmptyResult result = REFRESH_SERVICE.refreshClients(order);
+        FacadeUtils.assertSuccess(result);
     }
 }

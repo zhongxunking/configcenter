@@ -8,48 +8,48 @@
  */
 package org.antframework.configcenter.biz;
 
-import org.antframework.common.util.zookeeper.ZkTemplate;
-import org.antframework.configcenter.biz.util.RefreshUtils;
-import org.antframework.configcenter.facade.vo.ZkConstant;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.antframework.configcenter.facade.vo.RedisConstant;
+import org.antframework.configcenter.facade.vo.RefreshClientsEvent;
+import org.bekit.event.EventPublisher;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.Timer;
-import java.util.TimerTask;
+import org.springframework.data.redis.connection.Message;
+import org.springframework.data.redis.connection.MessageListener;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.listener.ChannelTopic;
+import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 
 /**
  * biz层配置
  */
 @Configuration
-@EnableConfigurationProperties(MetaProperties.class)
+@AllArgsConstructor
+@Slf4j
 public class BizConfiguration {
-    // 刷新zookeeper任务的执行周期（单位：毫秒）
-    private static final long REFRESH_ZK_TASK_PERIOD = 5 * 60 * 1000;
+    // redis操作类
+    private final RedisTemplate<Object, Object> redisTemplate;
+    // 事件发布器
+    private final EventPublisher eventPublisher;
 
-    @Autowired
-    private MetaProperties metaProperties;
-
-    // zookeeper操作类
+    // 配置redis消息监听器容器
     @Bean
-    public ZkTemplate zkTemplate() {
-        return ZkTemplate.create(metaProperties.getZkUrls().toArray(new String[0]), ZkConstant.ZK_CONFIG_NAMESPACE);
+    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+        RedisMessageListenerContainer container = new RedisMessageListenerContainer();
+        container.setConnectionFactory(redisConnectionFactory);
+        container.addMessageListener(new RefreshClientsMessageListener(), new ChannelTopic(RedisConstant.REFRESH_CLIENTS_CHANNEL));
+        return container;
     }
 
-    // 刷新zookeeper的定时器
-    @Bean(destroyMethod = "cancel")
-    public Timer refreshZkTimer() {
-        TimerTask task = new TimerTask() {
-            @Override
-            public void run() {
-                RefreshUtils.refreshZk();
-            }
-        };
-
-        Timer timer = new Timer("Timer-refreshZk", true);
-        timer.schedule(task, REFRESH_ZK_TASK_PERIOD, REFRESH_ZK_TASK_PERIOD);
-
-        return timer;
+    // 刷新客户端消息监听器
+    private class RefreshClientsMessageListener implements MessageListener {
+        @Override
+        public void onMessage(Message message, byte[] pattern) {
+            RefreshClientsEvent event = (RefreshClientsEvent) redisTemplate.getValueSerializer().deserialize(message.getBody());
+            log.debug("从Redis接收到刷新客户端消息：{}", event);
+            eventPublisher.publish(event);
+        }
     }
 }

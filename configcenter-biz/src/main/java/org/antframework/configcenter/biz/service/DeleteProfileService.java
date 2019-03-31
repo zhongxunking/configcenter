@@ -14,14 +14,12 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
-import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -52,11 +50,5 @@ public class DeleteProfileService {
         }
         // 删除环境
         profileDao.delete(profile);
-    }
-
-    @ServiceAfter
-    public void after(ServiceContext<DeleteProfileOrder, EmptyResult> context) {
-        // 刷新zookeeper
-        RefreshUtils.refreshZk();
     }
 }

@@ -68,8 +68,6 @@ public class AddOrModifyAppService {
     @ServiceAfter
     public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
-        // 刷新zookeeper
-        RefreshUtils.refreshZk();
         // 刷新客户端
         RefreshUtils.refreshClients(order.getAppId(), null);
     }

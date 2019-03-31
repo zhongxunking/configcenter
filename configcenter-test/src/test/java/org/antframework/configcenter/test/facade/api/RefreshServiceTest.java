@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.test.facade.api;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.RefreshService;
@@ -25,12 +24,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class RefreshServiceTest extends AbstractTest {
     @Autowired
     private RefreshService refreshService;
-
-    @Test
-    public void testRefreshZk() {
-        EmptyResult result = refreshService.refreshZk(new EmptyOrder());
-        checkResult(result, Status.SUCCESS);
-    }
 
     @Test
     public void testRefreshClients() {

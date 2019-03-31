@@ -9,7 +9,10 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.*;
+import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
@@ -19,7 +22,6 @@ import org.antframework.configcenter.facade.order.DeleteAppOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
-import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -66,11 +68,5 @@ public class DeleteAppService {
 
         EmptyResult result = propertyKeyService.deletePropertyKey(order);
         FacadeUtils.assertSuccess(result);
-    }
-
-    @ServiceAfter
-    public void after(ServiceContext<DeleteAppOrder, EmptyResult> context) {
-        // 刷新zookeeper
-        RefreshUtils.refreshZk();
     }
 }

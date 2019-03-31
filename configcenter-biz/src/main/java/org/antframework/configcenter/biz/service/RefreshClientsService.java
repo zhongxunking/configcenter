@@ -8,69 +8,73 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.zookeeper.ZkTemplate;
 import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ProfileUtils;
-import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.AppTree;
-import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ProfileTree;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
-import org.apache.commons.lang3.time.DateFormatUtils;
+import org.antframework.configcenter.facade.vo.ConfigTopic;
+import org.antframework.configcenter.facade.vo.RedisConstant;
+import org.antframework.configcenter.facade.vo.RefreshClientsEvent;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
-import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 刷新客户端服务
  */
 @Service
+@AllArgsConstructor
 public class RefreshClientsService {
-    @Autowired
-    private ZkTemplate zkTemplate;
+    // redis操作类
+    private final RedisTemplate<Object, Object> redisTemplate;
 
     @ServiceExecute
     public void execute(ServiceContext<RefreshClientsOrder, EmptyResult> context) {
         RefreshClientsOrder order = context.getOrder();
         // 获取需要刷新的应用
-        List<AppInfo> apps = new ArrayList<>();
-        extractApps(AppUtils.findAppTree(order.getRootAppId()), apps);
+        List<String> appIds = new ArrayList<>();
+        extractAppIds(AppUtils.findAppTree(order.getRootAppId()), appIds);
         // 获取需要刷新的环境
-        List<ProfileInfo> profiles = new ArrayList<>();
-        extractProfiles(ProfileUtils.findProfileTree(order.getRootProfileId()), profiles);
-        // 刷新zookeeper
-        byte[] data = DateFormatUtils.format(new Date(), "yyyy-MM-dd HH:mm:ss.SSS").getBytes(Charset.forName("utf-8"));
-        for (ProfileInfo profile : profiles) {
-            for (AppInfo app : apps) {
-                zkTemplate.setData(ZkTemplate.buildPath(profile.getProfileId(), app.getAppId()), data);
+        List<String> profileIds = new ArrayList<>();
+        extractProfileIds(ProfileUtils.findProfileTree(order.getRootProfileId()), profileIds);
+        // 构建刷新客户端事件
+        Set<ConfigTopic> topics = new HashSet<>(appIds.size() * profileIds.size());
+        for (String appId : appIds) {
+            for (String profileId : profileIds) {
+                topics.add(new ConfigTopic(appId, profileId));
             }
         }
+        RefreshClientsEvent event = new RefreshClientsEvent(topics);
+        // 发送事件
+        redisTemplate.convertAndSend(RedisConstant.REFRESH_CLIENTS_CHANNEL, event);
     }
 
-    // 提取出应用
-    private void extractApps(AppTree appTree, List<AppInfo> target) {
+    // 提取出应用id
+    private void extractAppIds(AppTree appTree, List<String> appIds) {
         if (appTree.getApp() != null) {
-            target.add(appTree.getApp());
+            appIds.add(appTree.getApp().getAppId());
         }
         for (AppTree child : appTree.getChildren()) {
-            extractApps(child, target);
+            extractAppIds(child, appIds);
         }
     }
 
-    // 提取出环境
-    private void extractProfiles(ProfileTree profileTree, List<ProfileInfo> target) {
+    // 提取出环境id
+    private void extractProfileIds(ProfileTree profileTree, List<String> profileIds) {
         if (profileTree.getProfile() != null) {
-            target.add(profileTree.getProfile());
+            profileIds.add(profileTree.getProfile().getProfileId());
         }
         for (ProfileTree child : profileTree.getChildren()) {
-            extractProfiles(child, target);
+            extractProfileIds(child, profileIds);
         }
     }
 }

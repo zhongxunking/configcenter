@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.biz.provider;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
@@ -23,11 +22,6 @@ import org.springframework.stereotype.Service;
 public class RefreshServiceProvider implements RefreshService {
     @Autowired
     private ServiceEngine serviceEngine;
-
-    @Override
-    public EmptyResult refreshZk(EmptyOrder order) {
-        return serviceEngine.execute("refreshZkService", order);
-    }
 
     @Override
     public EmptyResult refreshClients(RefreshClientsOrder order) {

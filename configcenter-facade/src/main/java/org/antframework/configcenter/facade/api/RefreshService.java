@@ -8,7 +8,6 @@
  */
 package org.antframework.configcenter.facade.api;
 
-import org.antframework.common.util.facade.EmptyOrder;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 
@@ -16,12 +15,6 @@ import org.antframework.configcenter.facade.order.RefreshClientsOrder;
  * 刷新服务
  */
 public interface RefreshService {
-
-    /**
-     * 刷新zookeeper
-     */
-    EmptyResult refreshZk(EmptyOrder order);
-
     /**
      * 刷新客户端
      */
