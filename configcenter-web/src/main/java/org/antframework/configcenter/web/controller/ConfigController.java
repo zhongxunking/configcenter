@@ -32,6 +32,9 @@ import java.util.stream.Collectors;
 @RequestMapping("/config")
 @AllArgsConstructor
 public class ConfigController {
+    // 监听配置变更事件的客户端的超时事件
+    private static final long LISTENING_CLIENT_TIMEOUT = 90000;
+
     // 配置服务
     private final ConfigService configService;
     // 监听刷新事件的客户端的容器
@@ -71,7 +74,7 @@ public class ConfigController {
             }
         }
         // 构建异步返回结果
-        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(90000L, new ListeningClientsContainer.ListenResult());
+        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(LISTENING_CLIENT_TIMEOUT, new ListeningClientsContainer.ListenResult());
         if (listenMetas.isEmpty() || !listenResult.getTopics().isEmpty()) {
             // 直接设置返回结果
             deferredResult.setResult(listenResult);
