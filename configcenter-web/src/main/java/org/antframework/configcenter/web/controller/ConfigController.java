@@ -75,7 +75,7 @@ public class ConfigController {
             }
         }
         // 构建异步返回结果
-        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(LISTENING_CLIENT_TIMEOUT, new ListeningClientsContainer.ListenResult());
+        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(LISTENING_CLIENT_TIMEOUT, FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class));
         if (listenMetas.isEmpty() || !listenResult.getTopics().isEmpty()) {
             // 直接设置返回结果
             deferredResult.setResult(listenResult);
