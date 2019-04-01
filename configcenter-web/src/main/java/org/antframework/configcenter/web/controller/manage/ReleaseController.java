@@ -204,12 +204,8 @@ public class ReleaseController {
         List<Property> right = ReleaseUtils.findRelease(appId, profileId, rightVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
 
-        CompareReleasesResult result = new CompareReleasesResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);
         result.setDifference(difference);
-
         return result;
     }
 
@@ -222,11 +218,8 @@ public class ReleaseController {
     @RequestMapping("/findInheritedReleases")
     public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
         ManagerApps.adminOrHaveApp(appId);
-        FindInheritedReleasesResult result = new FindInheritedReleasesResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
 
+        FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             // 获取应用在各环境的发布
             Scope scope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
@@ -237,7 +230,6 @@ public class ReleaseController {
 
             result.addInheritedAppRelease(appRelease);
         }
-
         return result;
     }
 

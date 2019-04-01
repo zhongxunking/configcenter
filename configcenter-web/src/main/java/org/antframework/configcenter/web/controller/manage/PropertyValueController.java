@@ -11,9 +11,8 @@ package org.antframework.configcenter.web.controller.manage;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
@@ -167,12 +166,8 @@ public class PropertyValueController {
         List<Property> right = ReleaseUtils.findRelease(appId, profileId, releaseVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
 
-        ComparePropertyValuesWithReleaseResult result = new ComparePropertyValuesWithReleaseResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        ComparePropertyValuesWithReleaseResult result = FacadeUtils.buildSuccess(ComparePropertyValuesWithReleaseResult.class);
         result.setDifference(difference);
-
         return result;
     }
 

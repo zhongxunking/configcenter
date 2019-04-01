@@ -94,15 +94,11 @@ public class PropertyKeyController {
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
         ManagerApps.adminOrHaveApp(appId);
 
-        FindInheritedPropertyKeysResult result = new FindInheritedPropertyKeysResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE);
             result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }
-
         return result;
     }
 
@@ -116,12 +112,8 @@ public class PropertyKeyController {
     public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
         ManagerApps.adminOrHaveApp(appId);
 
-        FindInheritedPrivilegesResult result = new FindInheritedPrivilegesResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
+        FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
         result.setAppPrivileges(KeyPrivileges.findInheritedPrivileges(appId));
-
         return result;
     }
 
@@ -139,11 +131,7 @@ public class PropertyKeyController {
         // 设置权限
         KeyPrivileges.setPrivilege(appId, key, privilege);
 
-        EmptyResult result = new EmptyResult();
-        result.setStatus(Status.SUCCESS);
-        result.setCode(CommonResultCode.SUCCESS.getCode());
-        result.setMessage(CommonResultCode.SUCCESS.getMessage());
-        return result;
+        return FacadeUtils.buildSuccess(EmptyResult.class);
     }
 
     // 断言存在配置key
