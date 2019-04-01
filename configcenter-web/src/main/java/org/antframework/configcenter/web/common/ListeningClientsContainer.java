@@ -11,6 +11,7 @@ package org.antframework.configcenter.web.common;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.facade.vo.RefreshClientsEvent;
 import org.bekit.event.annotation.BizListener;
@@ -79,7 +80,7 @@ public class ListeningClientsContainer {
             }
         }
         for (ListeningClient client : clients) {
-            ListenResult listenResult = new ListenResult();
+            ListenResult listenResult = FacadeUtils.buildSuccess(ListenResult.class);
             for (ConfigTopic topic : event.getTopics()) {
                 if (client.getTopics().contains(topic)) {
                     listenResult.addTopic(topic);

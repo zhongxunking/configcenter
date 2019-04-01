@@ -18,6 +18,7 @@ import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.web.common.ListeningClientsContainer;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -63,9 +64,9 @@ public class ConfigController {
      * @param listenMetas 监听元数据（必须）
      */
     @RequestMapping("/listen")
-    public DeferredResult<ListeningClientsContainer.ListenResult> listen(Set<ListenMeta> listenMetas) {
+    public DeferredResult<ListeningClientsContainer.ListenResult> listen(@RequestParam Set<ListenMeta> listenMetas) {
         // 查找需要立即刷新的配置主题
-        ListeningClientsContainer.ListenResult listenResult = new ListeningClientsContainer.ListenResult();
+        ListeningClientsContainer.ListenResult listenResult = FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class);
         for (ListenMeta listenMeta : listenMetas) {
             FindPropertiesResult findPropertiesResult = findProperties(listenMeta.getTopic().getAppId(), listenMeta.getTopic().getAppId(), listenMeta.getTopic().getProfileId());
             FacadeUtils.assertSuccess(findPropertiesResult);
