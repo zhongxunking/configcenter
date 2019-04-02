@@ -223,7 +223,7 @@ public class ReleaseController {
         for (AppInfo app : AppUtils.findInheritedApps(appId)) {
             // 获取应用在各环境的发布
             Scope scope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<ReleaseInfo> inheritedProfileReleases = ConfigUtils.findAppSelfProperties(app.getAppId(), profileId, scope);
+            List<ReleaseInfo> inheritedProfileReleases = ConfigUtils.findAppSelfConfig(app.getAppId(), profileId, scope);
             FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
             // 掩码
             maskAppRelease(appRelease);

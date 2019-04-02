@@ -10,9 +10,9 @@ package org.antframework.configcenter.test.facade.api;
 
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
+import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
@@ -47,15 +47,16 @@ public class ConfigServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppSelfProperties() {
+    public void testFindAppSelfConfig() {
         String[] profileIds = new String[]{"offline", "dev"};
         for (String profileId : profileIds) {
             for (Scope scope : Scope.values()) {
-                FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
+                FindAppSelfConfigOrder order = new FindAppSelfConfigOrder();
                 order.setAppId("customer");
                 order.setProfileId(profileId);
                 order.setMinScope(scope);
-                FindAppSelfPropertiesResult result = configService.findAppSelfProperties(order);
+
+                FindAppSelfConfigResult result = configService.findAppSelfConfig(order);
                 checkResult(result, Status.SUCCESS);
             }
         }

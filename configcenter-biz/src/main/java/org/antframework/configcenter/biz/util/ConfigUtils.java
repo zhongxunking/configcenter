@@ -12,8 +12,8 @@ import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
-import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
+import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
+import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
 import org.antframework.configcenter.facade.vo.Scope;
 
 import java.util.List;
@@ -33,13 +33,13 @@ public final class ConfigUtils {
      * @param minScope  最小作用域
      * @return 由近及远继承的所用环境中的配置
      */
-    public static List<ReleaseInfo> findAppSelfProperties(String appId, String profileId, Scope minScope) {
-        FindAppSelfPropertiesOrder order = new FindAppSelfPropertiesOrder();
+    public static List<ReleaseInfo> findAppSelfConfig(String appId, String profileId, Scope minScope) {
+        FindAppSelfConfigOrder order = new FindAppSelfConfigOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setMinScope(minScope);
 
-        FindAppSelfPropertiesResult result = CONFIG_SERVICE.findAppSelfProperties(order);
+        FindAppSelfConfigResult result = CONFIG_SERVICE.findAppSelfConfig(order);
         FacadeUtils.assertSuccess(result);
         return result.getInheritedReleases();
     }

@@ -19,7 +19,7 @@ import java.util.List;
  * 查找应用自己的在指定环境中的配置result
  */
 @Getter
-public class FindAppSelfPropertiesResult extends AbstractResult {
+public class FindAppSelfConfigResult extends AbstractResult {
     // 由近及远继承的所用环境中的配置
     private List<ReleaseInfo> inheritedReleases = new ArrayList<>();
 

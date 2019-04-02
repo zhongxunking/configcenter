@@ -21,7 +21,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public class FindAppSelfPropertiesOrder extends AbstractOrder {
+public class FindAppSelfConfigOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;

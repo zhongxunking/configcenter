@@ -70,7 +70,7 @@ public class FindPropertiesService {
     // 获取应用自己的配置
     private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope, AtomicLong version) {
         Map<String, String> properties = new HashMap<>();
-        for (ReleaseInfo release : ConfigUtils.findAppSelfProperties(appId, profileId, minScope)) {
+        for (ReleaseInfo release : ConfigUtils.findAppSelfConfig(appId, profileId, minScope)) {
             version.addAndGet(release.getVersion());
             Map<String, String> temp = new HashMap<>();
             for (Property property : release.getProperties()) {

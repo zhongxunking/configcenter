@@ -8,9 +8,9 @@
  */
 package org.antframework.configcenter.facade.api;
 
-import org.antframework.configcenter.facade.order.FindAppSelfPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfPropertiesResult;
+import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
 import org.antframework.configcenter.facade.result.FindPropertiesResult;
 
 /**
@@ -26,5 +26,5 @@ public interface ConfigService {
     /**
      * 查找应用自己的在指定环境中的配置
      */
-    FindAppSelfPropertiesResult findAppSelfProperties(FindAppSelfPropertiesOrder order);
+    FindAppSelfConfigResult findAppSelfConfig(FindAppSelfConfigOrder order);
 }
