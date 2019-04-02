@@ -13,8 +13,8 @@ import lombok.Getter;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindPropertiesResult;
+import org.antframework.configcenter.facade.order.FindConfigOrder;
+import org.antframework.configcenter.facade.result.FindConfigResult;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.web.common.ListeningClientsContainer;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -48,14 +48,14 @@ public class ConfigController {
      * @param queriedAppId 被查询配置的应用id（必须）
      * @param profileId    环境id（必须）
      */
-    @RequestMapping("/findProperties")
-    public FindPropertiesResult findProperties(String mainAppId, String queriedAppId, String profileId) {
-        FindPropertiesOrder order = new FindPropertiesOrder();
+    @RequestMapping("/findConfig")
+    public FindConfigResult findConfig(String mainAppId, String queriedAppId, String profileId) {
+        FindConfigOrder order = new FindConfigOrder();
         order.setMainAppId(mainAppId);
         order.setQueriedAppId(queriedAppId);
         order.setProfileId(profileId);
 
-        return configService.findProperties(order);
+        return configService.findConfig(order);
     }
 
     /**
@@ -68,9 +68,9 @@ public class ConfigController {
         // 查找需要立即刷新的配置主题
         ListeningClientsContainer.ListenResult listenResult = FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class);
         for (ListenMeta listenMeta : listenMetas) {
-            FindPropertiesResult findPropertiesResult = findProperties(listenMeta.getTopic().getAppId(), listenMeta.getTopic().getAppId(), listenMeta.getTopic().getProfileId());
-            FacadeUtils.assertSuccess(findPropertiesResult);
-            if (!Objects.equals(listenMeta.getConfigVersion(), findPropertiesResult.getVersion())) {
+            FindConfigResult findConfigResult = findConfig(listenMeta.getTopic().getAppId(), listenMeta.getTopic().getAppId(), listenMeta.getTopic().getProfileId());
+            FacadeUtils.assertSuccess(findConfigResult);
+            if (!Objects.equals(listenMeta.getConfigVersion(), findConfigResult.getVersion())) {
                 listenResult.addTopic(listenMeta.getTopic());
             }
         }

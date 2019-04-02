@@ -12,8 +12,8 @@ import org.antframework.configcenter.biz.util.AppUtils;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
-import org.antframework.configcenter.facade.order.FindPropertiesOrder;
-import org.antframework.configcenter.facade.result.FindPropertiesResult;
+import org.antframework.configcenter.facade.order.FindConfigOrder;
+import org.antframework.configcenter.facade.result.FindConfigResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
@@ -27,12 +27,12 @@ import java.util.concurrent.atomic.AtomicLong;
  * 查找应用在指定环境中的配置服务
  */
 @Service
-public class FindPropertiesService {
+public class FindConfigService {
 
     @ServiceExecute
-    public void execute(ServiceContext<FindPropertiesOrder, FindPropertiesResult> context) {
-        FindPropertiesOrder order = context.getOrder();
-        FindPropertiesResult result = context.getResult();
+    public void execute(ServiceContext<FindConfigOrder, FindConfigResult> context) {
+        FindConfigOrder order = context.getOrder();
+        FindConfigResult result = context.getResult();
         // 获取被查询配置的应用和主体应用继承的所有应用
         List<String> queriedAppIds = getInheritedAppIds(order.getQueriedAppId());
         Set<String> mainAppIds;
@@ -45,7 +45,7 @@ public class FindPropertiesService {
         AtomicLong version = new AtomicLong(0);
         Map<String, String> properties = new HashMap<>();
         for (String queriedAppId : queriedAppIds) {
-            Map<String, String> temp = getAppSelfProperties(
+            Map<String, String> temp = getAppSelfConfig(
                     queriedAppId,
                     order.getProfileId(),
                     calcMinScope(queriedAppId, order.getMainAppId(), mainAppIds),
@@ -68,7 +68,7 @@ public class FindPropertiesService {
     }
 
     // 获取应用自己的配置
-    private Map<String, String> getAppSelfProperties(String appId, String profileId, Scope minScope, AtomicLong version) {
+    private Map<String, String> getAppSelfConfig(String appId, String profileId, Scope minScope, AtomicLong version) {
         Map<String, String> properties = new HashMap<>();
         for (ReleaseInfo release : ConfigUtils.findAppSelfConfig(appId, profileId, minScope)) {
             version.addAndGet(release.getVersion());

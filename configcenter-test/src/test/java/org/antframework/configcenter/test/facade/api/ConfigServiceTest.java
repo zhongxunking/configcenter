@@ -11,9 +11,9 @@ package org.antframework.configcenter.test.facade.api;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
-import org.antframework.configcenter.facade.order.FindPropertiesOrder;
+import org.antframework.configcenter.facade.order.FindConfigOrder;
 import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
-import org.antframework.configcenter.facade.result.FindPropertiesResult;
+import org.antframework.configcenter.facade.result.FindConfigResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -29,18 +29,18 @@ public class ConfigServiceTest extends AbstractTest {
     private ConfigService configService;
 
     @Test
-    public void testFindProperties() {
+    public void testFindConfig() {
         String[] queriedAppIds = new String[]{"customer", "account"};
         String[] profileIds = new String[]{"offline", "dev"};
 
         for (String queriedId : queriedAppIds) {
             for (String profileId : profileIds) {
-                FindPropertiesOrder order = new FindPropertiesOrder();
+                FindConfigOrder order = new FindConfigOrder();
                 order.setMainAppId("customer");
                 order.setQueriedAppId(queriedId);
                 order.setProfileId(profileId);
 
-                FindPropertiesResult result = configService.findProperties(order);
+                FindConfigResult result = configService.findConfig(order);
                 checkResult(result, Status.SUCCESS);
             }
         }

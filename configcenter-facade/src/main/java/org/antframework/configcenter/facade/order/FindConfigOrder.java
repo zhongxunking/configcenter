@@ -18,7 +18,7 @@ import org.hibernate.validator.constraints.NotBlank;
  */
 @Getter
 @Setter
-public class FindPropertiesOrder extends AbstractOrder {
+public class FindConfigOrder extends AbstractOrder {
     // 主体应用id
     @NotBlank
     private String mainAppId;
