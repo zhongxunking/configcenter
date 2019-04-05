@@ -16,7 +16,7 @@ import javax.persistence.LockModeType;
 import java.util.List;
 
 /**
- * 配置value实体dao
+ * 配置value dao
  */
 @RepositoryDefinition(domainClass = PropertyValue.class, idClass = Long.class)
 public interface PropertyValueDao {

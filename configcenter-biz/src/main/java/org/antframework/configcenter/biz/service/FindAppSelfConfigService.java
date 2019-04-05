@@ -23,7 +23,6 @@ import org.bekit.service.engine.ServiceContext;
  */
 @Service
 public class FindAppSelfConfigService {
-
     @ServiceExecute
     public void execute(ServiceContext<FindAppSelfConfigOrder, FindAppSelfConfigResult> context) {
         FindAppSelfConfigOrder order = context.getOrder();

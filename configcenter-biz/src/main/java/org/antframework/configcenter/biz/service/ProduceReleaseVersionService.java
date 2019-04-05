@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
@@ -18,15 +19,15 @@ import org.antframework.configcenter.facade.result.ProduceReleaseVersionResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 生产发布版本-服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class ProduceReleaseVersionService {
-    @Autowired
-    private AppDao appDao;
+    // 应用dao
+    private final AppDao appDao;
 
     @ServiceExecute
     public void execute(ServiceContext<ProduceReleaseVersionOrder, ProduceReleaseVersionResult> context) {

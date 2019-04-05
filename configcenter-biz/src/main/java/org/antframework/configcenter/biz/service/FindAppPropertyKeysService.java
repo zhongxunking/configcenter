@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
@@ -23,7 +24,6 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.List;
@@ -32,12 +32,13 @@ import java.util.List;
  * 查找应用的配置key服务
  */
 @Service
+@AllArgsConstructor
 public class FindAppPropertyKeysService {
     // info转换器
     private static final Converter<PropertyKey, PropertyKeyInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
 
-    @Autowired
-    private PropertyKeyDao propertyKeyDao;
+    // 配置key dao
+    private final PropertyKeyDao propertyKeyDao;
 
     @ServiceBefore
     public void before(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {

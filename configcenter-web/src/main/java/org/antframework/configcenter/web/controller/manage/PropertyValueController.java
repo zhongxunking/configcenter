@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
@@ -31,7 +32,6 @@ import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -43,11 +43,13 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/manage/propertyValue")
+@AllArgsConstructor
 public class PropertyValueController {
     // 掩码后的配置value
     private static final String MASKED_VALUE = "******";
-    @Autowired
-    private PropertyValueService propertyValueService;
+
+    // 配置value服务
+    private final PropertyValueService propertyValueService;
 
     /**
      * 新增或修改配置value

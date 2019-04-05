@@ -24,7 +24,6 @@ import org.bekit.service.engine.ServiceContext;
  */
 @Service
 public class FindInheritedAppsService {
-
     @ServiceExecute
     public void execute(ServiceContext<FindInheritedAppsOrder, FindInheritedAppsResult> context) {
         FindInheritedAppsOrder order = context.getOrder();

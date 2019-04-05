@@ -28,7 +28,6 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 @Service
 public class FindConfigService {
-
     @ServiceExecute
     public void execute(ServiceContext<FindConfigOrder, FindConfigResult> context) {
         FindConfigOrder order = context.getOrder();

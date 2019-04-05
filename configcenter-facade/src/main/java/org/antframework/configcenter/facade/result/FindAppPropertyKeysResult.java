@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class FindAppPropertyKeysResult extends AbstractResult {
     // 应用的配置key
-    private List<PropertyKeyInfo> propertyKeys = new ArrayList<>();
+    private final List<PropertyKeyInfo> propertyKeys = new ArrayList<>();
 
     public void addPropertyKey(PropertyKeyInfo propertyKey) {
         propertyKeys.add(propertyKey);

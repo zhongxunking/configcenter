@@ -35,7 +35,6 @@ import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -50,11 +49,13 @@ import java.util.stream.Collectors;
  */
 @RestController
 @RequestMapping("/manage/release")
+@AllArgsConstructor
 public class ReleaseController {
     // 掩码后的配置value
     private static final String MASKED_VALUE = "******";
-    @Autowired
-    private ReleaseService releaseService;
+
+    // 发布服务
+    private final ReleaseService releaseService;
 
     /**
      * 新增发布
@@ -285,7 +286,7 @@ public class ReleaseController {
     @Getter
     public static class FindInheritedReleasesResult extends AbstractResult {
         // 由近及远继承的所用应用的发布
-        private List<AppRelease> inheritedAppReleases = new ArrayList<>();
+        private final List<AppRelease> inheritedAppReleases = new ArrayList<>();
 
         public void addInheritedAppRelease(AppRelease appRelease) {
             inheritedAppReleases.add(appRelease);

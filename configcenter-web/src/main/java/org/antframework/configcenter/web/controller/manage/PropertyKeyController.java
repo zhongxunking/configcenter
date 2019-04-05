@@ -25,7 +25,6 @@ import org.antframework.configcenter.web.common.KeyPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.Privilege;
 import org.antframework.manager.web.Managers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,9 +38,10 @@ import java.util.Objects;
  */
 @RestController
 @RequestMapping("/manage/propertyKey")
+@AllArgsConstructor
 public class PropertyKeyController {
-    @Autowired
-    private PropertyKeyService propertyKeyService;
+    // 配置key服务
+    private final PropertyKeyService propertyKeyService;
 
     /**
      * 新增或修改配置key

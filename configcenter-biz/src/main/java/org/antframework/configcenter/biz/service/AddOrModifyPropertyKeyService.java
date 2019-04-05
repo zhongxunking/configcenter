@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -21,17 +22,17 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 添加或修改配置key服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class AddOrModifyPropertyKeyService {
-    @Autowired
-    private AppDao appDao;
-    @Autowired
-    private PropertyKeyDao propertyKeyDao;
+    // 应用dao
+    private final AppDao appDao;
+    // 配置key dao
+    private final PropertyKeyDao propertyKeyDao;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyPropertyKeyOrder, EmptyResult> context) {

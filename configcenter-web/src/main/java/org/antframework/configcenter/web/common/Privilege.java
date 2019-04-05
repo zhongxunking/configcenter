@@ -16,10 +16,12 @@ public enum Privilege {
      * 无
      */
     NONE,
+
     /**
      * 只读
      */
     READ,
+
     /**
      * 读写
      */

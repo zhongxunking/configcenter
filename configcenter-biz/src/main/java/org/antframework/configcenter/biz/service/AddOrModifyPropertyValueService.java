@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -23,19 +24,19 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 新增或删除配置value服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class AddOrModifyPropertyValueService {
-    @Autowired
-    private AppDao appDao;
-    @Autowired
-    private ProfileDao profileDao;
-    @Autowired
-    private PropertyValueDao propertyValueDao;
+    // 应用dao
+    private final AppDao appDao;
+    // 环境dao
+    private final ProfileDao profileDao;
+    // 配置value dao
+    private final PropertyValueDao propertyValueDao;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyPropertyValueOrder, EmptyResult> context) {

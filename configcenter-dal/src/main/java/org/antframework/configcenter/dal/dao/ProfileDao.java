@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 环境实体dao
+ * 环境dao
  */
 @RepositoryDefinition(domainClass = Profile.class, idClass = Long.class)
 public interface ProfileDao {

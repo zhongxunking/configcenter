@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import lombok.AllArgsConstructor;
 import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
@@ -18,7 +19,6 @@ import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.bekit.service.ServiceEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -29,9 +29,10 @@ import java.util.Map;
  * 发布服务提供者
  */
 @Service
+@AllArgsConstructor
 public class ReleaseServiceProvider implements ReleaseService {
-    @Autowired
-    private ServiceEngine serviceEngine;
+    // 服务引擎
+    private final ServiceEngine serviceEngine;
 
     @Override
     public AddReleaseResult addRelease(AddReleaseOrder order) {

@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class FindInheritedProfilesResult extends AbstractResult {
     // 由近及远继承的所用环境（该环境本身在第一位）
-    private List<ProfileInfo> inheritedProfiles = new ArrayList<>();
+    private final List<ProfileInfo> inheritedProfiles = new ArrayList<>();
 
     public void addInheritedProfile(ProfileInfo inheritedProfile) {
         inheritedProfiles.add(inheritedProfile);

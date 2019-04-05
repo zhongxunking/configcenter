@@ -24,7 +24,6 @@ import org.bekit.service.engine.ServiceContext;
  */
 @Service
 public class FindInheritedProfilesService {
-
     @ServiceExecute
     public void execute(ServiceContext<FindInheritedProfilesOrder, FindInheritedProfilesResult> context) {
         FindInheritedProfilesOrder order = context.getOrder();

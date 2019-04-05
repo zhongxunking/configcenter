@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
@@ -25,17 +26,17 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 删除应用服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class DeleteAppService {
-    @Autowired
-    private AppDao appDao;
-    @Autowired
-    private PropertyKeyService propertyKeyService;
+    // 应用dao
+    private final AppDao appDao;
+    // 配置key服务
+    private final PropertyKeyService propertyKeyService;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {

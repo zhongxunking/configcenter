@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
@@ -33,7 +34,6 @@ import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 import java.util.ArrayList;
@@ -44,18 +44,19 @@ import java.util.List;
  * 新增发布服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class AddReleaseService {
     // 配置版本在附件中的key
     private static final String VERSION_KEY = "version";
     // info转换器
     private static final Converter<Release, ReleaseInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
 
-    @Autowired
-    private AppDao appDao;
-    @Autowired
-    private ProfileDao profileDao;
-    @Autowired
-    private ReleaseDao releaseDao;
+    // 应用dao
+    private final AppDao appDao;
+    // 环境dao
+    private final ProfileDao profileDao;
+    // 发布dao
+    private final ReleaseDao releaseDao;
 
     @ServiceBefore
     public void before(ServiceContext<AddReleaseOrder, AddReleaseResult> context) {

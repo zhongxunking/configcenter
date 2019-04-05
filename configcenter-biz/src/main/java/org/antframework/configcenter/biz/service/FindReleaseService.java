@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
@@ -27,19 +28,19 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceBefore;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  * 查找发布服务
  */
 @Service
+@AllArgsConstructor
 public class FindReleaseService {
     // info转换器
     private static final Converter<Release, ReleaseInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
 
-    @Autowired
-    private ReleaseDao releaseDao;
+    // 发布dao
+    private final ReleaseDao releaseDao;
 
     @ServiceBefore
     public void before(ServiceContext<FindReleaseOrder, FindReleaseResult> context) {

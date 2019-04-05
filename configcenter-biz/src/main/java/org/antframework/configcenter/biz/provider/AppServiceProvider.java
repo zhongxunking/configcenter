@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import lombok.AllArgsConstructor;
 import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
@@ -16,16 +17,16 @@ import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.*;
 import org.bekit.service.ServiceEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  * 应用服务提供者
  */
 @Service
+@AllArgsConstructor
 public class AppServiceProvider implements AppService {
-    @Autowired
-    private ServiceEngine serviceEngine;
+    // 服务引擎
+    private final ServiceEngine serviceEngine;
 
     @Override
     public EmptyResult addOrModifyApp(AddOrModifyAppOrder order) {

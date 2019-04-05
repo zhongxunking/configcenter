@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.ProfileService;
 import org.antframework.configcenter.facade.order.*;
@@ -16,7 +17,6 @@ import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.antframework.manager.web.Managers;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -25,9 +25,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/profile")
+@AllArgsConstructor
 public class ProfileController {
-    @Autowired
-    private ProfileService profileService;
+    // 环境服务
+    private final ProfileService profileService;
 
     /**
      * 新增或修改环境

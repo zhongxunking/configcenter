@@ -24,7 +24,6 @@ import java.util.stream.Collectors;
  * 配置工具类
  */
 public final class Properties {
-
     /**
      * 比较配置
      *

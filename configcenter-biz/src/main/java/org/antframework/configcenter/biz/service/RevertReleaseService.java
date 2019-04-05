@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
@@ -20,17 +21,17 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 回滚发布服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class RevertReleaseService {
-    @Autowired
-    private ReleaseDao releaseDao;
-    @Autowired
-    private PropertyValueService propertyValueService;
+    // 发布dao
+    private final ReleaseDao releaseDao;
+    // 配置value服务
+    private final PropertyValueService propertyValueService;
 
     @ServiceExecute
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {

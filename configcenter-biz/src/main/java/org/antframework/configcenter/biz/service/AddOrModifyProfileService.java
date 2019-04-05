@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -21,7 +22,6 @@ import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Objects;
 
@@ -29,9 +29,10 @@ import java.util.Objects;
  * 添加或修改环境服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class AddOrModifyProfileService {
-    @Autowired
-    private ProfileDao profileDao;
+    // 环境dao
+    private final ProfileDao profileDao;
 
     @ServiceExecute
     public void execute(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {

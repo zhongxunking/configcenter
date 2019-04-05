@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
@@ -24,7 +25,6 @@ import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -33,9 +33,10 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/manage/app")
+@AllArgsConstructor
 public class AppController {
-    @Autowired
-    private AppService appService;
+    // 应用服务
+    private final AppService appService;
 
     /**
      * 添加或修改应用

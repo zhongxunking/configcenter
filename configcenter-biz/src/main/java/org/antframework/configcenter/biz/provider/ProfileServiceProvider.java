@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.provider;
 
+import lombok.AllArgsConstructor;
 import org.antframework.boot.bekit.CommonQueries;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
@@ -19,16 +20,16 @@ import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
 import org.bekit.service.ServiceEngine;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
  * 环境服务提供者
  */
 @Service
+@AllArgsConstructor
 public class ProfileServiceProvider implements ProfileService {
-    @Autowired
-    private ServiceEngine serviceEngine;
+    // 服务引擎
+    private final ServiceEngine serviceEngine;
 
     @Override
     public EmptyResult addOrModifyProfile(AddOrModifyProfileOrder order) {

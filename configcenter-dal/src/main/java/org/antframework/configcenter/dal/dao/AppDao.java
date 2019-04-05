@@ -20,7 +20,7 @@ import java.util.Collection;
 import java.util.List;
 
 /**
- * 应用实体dao
+ * 应用dao
  */
 @RepositoryDefinition(domainClass = App.class, idClass = Long.class)
 public interface AppDao {

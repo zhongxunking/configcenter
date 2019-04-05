@@ -12,7 +12,6 @@ package org.antframework.configcenter.facade.vo;
  * 发布静态常量
  */
 public final class ReleaseConstant {
-
     /**
      * 原始版本（未发布）
      */

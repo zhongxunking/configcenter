@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
@@ -17,19 +18,19 @@ import org.antframework.configcenter.facade.result.FindAppResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.convert.converter.Converter;
 
 /**
  * 查找应用服务
  */
 @Service
+@AllArgsConstructor
 public class FindAppService {
     // info转换器
     private static final Converter<App, AppInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(AppInfo.class);
 
-    @Autowired
-    private AppDao appDao;
+    // 应用dao
+    private final AppDao appDao;
 
     @ServiceExecute
     public void execute(ServiceContext<FindAppOrder, FindAppResult> context) {

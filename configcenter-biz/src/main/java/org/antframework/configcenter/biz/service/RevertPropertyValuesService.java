@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
@@ -20,15 +21,15 @@ import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 回滚配置value服务
  */
 @Service
+@AllArgsConstructor
 public class RevertPropertyValuesService {
-    @Autowired
-    private PropertyValueService propertyValueService;
+    // 配置value服务
+    private final PropertyValueService propertyValueService;
 
     @ServiceExecute
     public void execute(ServiceContext<RevertPropertyValuesOrder, EmptyResult> context) {

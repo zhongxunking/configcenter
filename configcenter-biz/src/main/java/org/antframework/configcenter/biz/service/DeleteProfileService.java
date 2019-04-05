@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
+import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
@@ -22,15 +23,15 @@ import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * 删除环境服务
  */
 @Service(enableTx = true)
+@AllArgsConstructor
 public class DeleteProfileService {
-    @Autowired
-    private ProfileDao profileDao;
+    // 环境dao
+    private final ProfileDao profileDao;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteProfileOrder, EmptyResult> context) {

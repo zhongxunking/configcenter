@@ -21,7 +21,7 @@ import java.util.List;
 @Getter
 public class FindAppProfilePropertyValuesResult extends AbstractResult {
     // 配置value
-    private List<PropertyValueInfo> propertyValues = new ArrayList<>();
+    private final List<PropertyValueInfo> propertyValues = new ArrayList<>();
 
     public void addPropertyValue(PropertyValueInfo propertyValue) {
         propertyValues.add(propertyValue);

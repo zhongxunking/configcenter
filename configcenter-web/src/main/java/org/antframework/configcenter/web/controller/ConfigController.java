@@ -96,9 +96,9 @@ public class ConfigController {
     @Getter
     public final static class ListenMeta {
         // 监听的配置主题
-        private ConfigTopic topic;
+        private final ConfigTopic topic;
         // 配置的版本
-        private Long configVersion;
+        private final Long configVersion;
 
         @Override
         public int hashCode() {
