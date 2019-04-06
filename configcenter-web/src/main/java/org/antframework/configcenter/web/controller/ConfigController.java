@@ -94,7 +94,7 @@ public class ConfigController {
      */
     @AllArgsConstructor
     @Getter
-    public final static class ListenMeta {
+    public static final class ListenMeta {
         // 监听的配置主题
         private final ConfigTopic topic;
         // 配置的版本
