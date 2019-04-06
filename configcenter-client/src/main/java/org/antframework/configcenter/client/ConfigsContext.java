@@ -32,32 +32,32 @@ public class ConfigsContext {
     });
     // 任务执行器
     private final TaskExecutor taskExecutor = new TaskExecutor();
+    // 配置监听器
+    private ConfigsListener configsListener = null;
     // 主体应用id
     private final String mainAppId;
     // 环境id
     private final String profileId;
-    // 缓存文件夹路径（null表示不使用缓存文件功能）
-    private final String cacheDirPath;
     // 服务端请求器
     private final ServerRequester serverRequester;
-    // 配置监听器
-    private ConfigsListener configsListener;
+    // 缓存文件夹路径（null表示不使用缓存文件功能）
+    private final String cacheDirPath;
 
     /**
      * 构造配置上下文
      *
-     * @param serverUrl    服务端地址
      * @param mainAppId    主体应用id
      * @param profileId    环境id
+     * @param serverUrl    服务端地址
      * @param cacheDirPath 缓存文件夹路径（null表示不使用缓存文件功能（既不读取缓存文件中的配置，也不写配置到缓存文件））
      */
     public ConfigsContext(String mainAppId, String profileId, String serverUrl, String cacheDirPath) {
-        if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
-            throw new IllegalArgumentException(String.format("初始化配置中客户端的参数不合法：serverUrl=%s,mainAppId=%s,profileId=%s,cacheDirPath=%s", serverUrl, mainAppId, profileId, cacheDirPath));
+        if (StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId) || StringUtils.isBlank(serverUrl)) {
+            throw new IllegalArgumentException(String.format("初始化配置中客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,cacheDirPath=%s", mainAppId, profileId, serverUrl, cacheDirPath));
         }
         this.mainAppId = mainAppId;
         this.profileId = profileId;
-        serverRequester = new ServerRequester(mainAppId, profileId, serverUrl);
+        this.serverRequester = new ServerRequester(mainAppId, profileId, serverUrl);
         this.cacheDirPath = cacheDirPath == null ? null : cacheDirPath + File.separator + mainAppId + File.separator + profileId;
     }
 

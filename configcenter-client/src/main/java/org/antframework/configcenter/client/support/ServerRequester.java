@@ -157,7 +157,7 @@ public class ServerRequester {
 
         // 构建请求
         private HttpUriRequest buildRequest(List<String> appIds, List<Long> configVersions) {
-            List<ListenMeta> listenMetas = new ArrayList<>(appIds.size());
+            Set<ListenMeta> listenMetas = new HashSet<>(appIds.size());
             for (int i = 0; i < appIds.size(); i++) {
                 String appId = appIds.get(i);
                 long configVersion = configVersions.get(i);
