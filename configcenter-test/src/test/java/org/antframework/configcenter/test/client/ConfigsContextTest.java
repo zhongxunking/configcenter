@@ -39,9 +39,9 @@ public class ConfigsContextTest {
 
     private void testConfigsContext(String cacheDir) {
         ConfigsContext configsContext = new ConfigsContext(
-                "http://localhost:6220",
                 "customer",
                 "dev",
+                "http://localhost:6220",
                 cacheDir);
         Config customerConfig = configsContext.getConfig("customer");
         customerConfig.getListenerRegistrar().register(new ConfigListener() {
