@@ -8,11 +8,10 @@
  */
 package org.antframework.configcenter.client.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.client.ConfigListener;
 import org.antframework.configcenter.client.core.ChangedProperty;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -20,9 +19,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * 监听器注册器
  */
+@Slf4j
 public class ListenerRegistrar {
-    private static final Logger logger = LoggerFactory.getLogger(ListenerRegistrar.class);
-
     // 监听器
     private final List<ConfigListener> listeners = new CopyOnWriteArrayList<>();
 
@@ -47,12 +45,12 @@ public class ListenerRegistrar {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
-        logger.info("检测到配置中心的配置已变更：{}", ToString.toString(changedProperties));
+        log.info("检测到配置中心的配置已变更：{}", ToString.toString(changedProperties));
         for (ConfigListener listener : listeners) {
             try {
                 listener.onChange(changedProperties);
             } catch (Throwable e) {
-                logger.error("配置变更调用配置监听器出错：", e);
+                log.error("配置变更调用配置监听器出错：", e);
             }
         }
     }
