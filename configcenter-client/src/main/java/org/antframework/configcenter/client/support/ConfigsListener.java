@@ -74,7 +74,7 @@ public class ConfigsListener {
                     try {
                         refresh(listen());
                     } catch (Throwable e) {
-                        log.error("监听配置出错", e);
+                        log.error("监听配置出错：{}", e.getMessage());
                         sleep();
                     }
                 }
