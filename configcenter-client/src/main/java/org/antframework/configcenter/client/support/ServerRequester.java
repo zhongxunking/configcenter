@@ -111,7 +111,7 @@ public class ServerRequester {
     // 查找应用在指定环境中的配置result
     @Getter
     @Setter
-    private static class FindConfigResult extends AbstractResult {
+    public static class FindConfigResult extends AbstractResult {
         // 版本
         private Long version;
         // 配置
@@ -179,7 +179,7 @@ public class ServerRequester {
      */
     @AllArgsConstructor
     @Getter
-    private static final class ListenMeta {
+    public static final class ListenMeta {
         // 监听的配置主题
         private final ConfigTopic topic;
         // 配置的版本
@@ -209,7 +209,7 @@ public class ServerRequester {
      * 监听结果
      */
     @Getter
-    private static class ListenResult extends AbstractResult {
+    public static class ListenResult extends AbstractResult {
         // 需客户端刷新的配置主题
         private final Set<ConfigTopic> topics = new HashSet<>();
 
@@ -223,7 +223,7 @@ public class ServerRequester {
      */
     @AllArgsConstructor
     @Getter
-    private static final class ConfigTopic implements Serializable {
+    public static final class ConfigTopic implements Serializable {
         // 应用id
         private final String appId;
         // 环境id
