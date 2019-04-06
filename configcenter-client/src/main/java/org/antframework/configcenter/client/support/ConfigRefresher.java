@@ -8,21 +8,25 @@
  */
 package org.antframework.configcenter.client.support;
 
+import lombok.extern.slf4j.Slf4j;
 import org.antframework.common.util.file.MapFile;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 配置刷新器
  */
+@Slf4j
 public class ConfigRefresher {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigRefresher.class);
+    // 配置版本的key
+    private static final String VERSION_KEY = ConfigRefresher.class.getName() + "#configVersion";
 
+    // 版本
+    private final AtomicLong version;
     // 配置项集合
     private final ConfigurableConfigProperties properties;
     // 监听器注册器
@@ -32,13 +36,16 @@ public class ConfigRefresher {
     // 缓存文件
     private final MapFile cacheFile;
 
-    public ConfigRefresher(ConfigurableConfigProperties properties,
+    public ConfigRefresher(String appId,
+                           AtomicLong version,
+                           ConfigurableConfigProperties properties,
                            ListenerRegistrar listenerRegistrar,
-                           ServerRequester.ConfigRequester configRequester,
+                           ServerRequester serverRequester,
                            MapFile cacheFile) {
+        this.version = version;
         this.properties = properties;
         this.listenerRegistrar = listenerRegistrar;
-        this.configRequester = configRequester;
+        this.configRequester = serverRequester.createConfigRequester(appId, VERSION_KEY);
         this.cacheFile = cacheFile;
     }
 
@@ -46,39 +53,43 @@ public class ConfigRefresher {
      * 初始化配置（先从服务端读取配置，如果失败则尝试从本地缓存文件读取配置）
      */
     public synchronized void initConfig() {
-        Map<String, String> newProperties;
+        Map<String, String> config;
         boolean fromServer = true;
         try {
-            newProperties = configRequester.findConfig();
+            config = configRequester.findConfig();
         } catch (Throwable e) {
-            logger.error("从配置中心读取配置失败：{}", e.getMessage());
+            log.error("从配置中心读取配置失败：{}", e.getMessage());
             if (cacheFile == null) {
                 throw e;
             }
-            logger.warn("尝试从缓存文件[{}]读取配置", cacheFile.getFilePath());
+            log.warn("尝试从缓存文件[{}]读取配置", cacheFile.getFilePath());
             if (!cacheFile.exists()) {
                 throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
             }
-            newProperties = cacheFile.readAll();
+            config = cacheFile.readAll();
             fromServer = false;
         }
         if (fromServer && cacheFile != null) {
-            cacheFile.replace(newProperties);
-            logger.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
+            cacheFile.replace(config);
+            log.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
         }
-        properties.replaceProperties(newProperties);
+        version.set(Long.parseLong(config.get(VERSION_KEY)));
+        config.remove(VERSION_KEY);
+        properties.replaceProperties(config);
     }
 
     /**
      * 刷新配置
      */
     public synchronized void refresh() {
-        Map<String, String> newProperties = configRequester.findConfig();
+        Map<String, String> config = configRequester.findConfig();
         if (cacheFile != null) {
-            cacheFile.replace(newProperties);
-            logger.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
+            cacheFile.replace(config);
+            log.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
         }
-        List<ChangedProperty> changedProperties = properties.replaceProperties(newProperties);
+        version.set(Long.parseLong(config.get(VERSION_KEY)));
+        config.remove(VERSION_KEY);
+        List<ChangedProperty> changedProperties = properties.replaceProperties(config);
         listenerRegistrar.onChange(changedProperties);
     }
 }

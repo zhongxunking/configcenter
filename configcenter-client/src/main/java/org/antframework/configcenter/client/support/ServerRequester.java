@@ -9,15 +9,16 @@
 package org.antframework.configcenter.client.support;
 
 import com.alibaba.fastjson.JSON;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.HideDetail;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.impl.client.BasicResponseHandler;
@@ -25,83 +26,83 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * 服务端请求器
  */
+@AllArgsConstructor
 public class ServerRequester {
     // 发送http请求的客户端
     private static final HttpClient HTTP_CLIENT = HttpClients.createDefault();
-    // 查询配置的url
-    private static final String QUERY_CONFIG_URL_SUFFIX = "/config/findProperties";
-    // 查询元数据的url
-    private static final String QUERY_META_URL_SUFFIX = "/config/meta";
+    // 查找配置的uri
+    private static final String FIND_CONFIG_URI = "/config/findConfig";
+    // 监听配置的uri
+    private static final String LISTEN_URI = "/config/listen";
 
-    // 服务端地址
-    private final String serverUrl;
     // 主应用id
     private final String mainAppId;
     // 环境id
     private final String profileId;
-
-    public ServerRequester(String serverUrl, String mainAppId, String profileId) {
-        this.serverUrl = serverUrl;
-        this.mainAppId = mainAppId;
-        this.profileId = profileId;
-    }
+    // 服务端地址
+    private final String serverUrl;
 
     /**
      * 创建配置请求器
      *
      * @param queriedAppId 被查询配置的应用id
+     * @param versionKey   配置版本的key
      * @return 配置请求器
      */
-    public ConfigRequester createConfigRequester(String queriedAppId) {
-        return new ConfigRequester(queriedAppId);
+    public ConfigRequester createConfigRequester(String queriedAppId, String versionKey) {
+        return new ConfigRequester(queriedAppId, versionKey);
     }
 
     /**
      * 配置请求器
      */
+    @AllArgsConstructor
     public class ConfigRequester {
         // 被查询配置的应用id
         private final String queriedAppId;
-
-        public ConfigRequester(String queriedAppId) {
-            this.queriedAppId = queriedAppId;
-        }
+        // 配置版本的key
+        private final String versionKey;
 
         /**
          * 查找配置
          */
         public Map<String, String> findConfig() {
             try {
-                String resultStr = HTTP_CLIENT.execute(buildConfigRequest(), new BasicResponseHandler());
-                FindPropertiesResult result = JSON.parseObject(resultStr, FindPropertiesResult.class);
+                String resultStr = HTTP_CLIENT.execute(buildRequest(), new BasicResponseHandler());
+                FindConfigResult result = JSON.parseObject(resultStr, FindConfigResult.class);
                 if (result == null) {
                     throw new RuntimeException("请求配置中心失败");
                 }
                 if (!result.isSuccess()) {
                     throw new RuntimeException("从配置中心读取配置失败：" + result.getMessage());
                 }
-                return result.getProperties();
+                if (result.getProperties().containsKey(versionKey)) {
+                    throw new RuntimeException("配置中心的配置不能包含：" + versionKey);
+                }
+                Map<String, String> config = new HashMap<>(result.getProperties());
+                config.put(versionKey, result.getVersion().toString());
+                return config;
             } catch (IOException e) {
                 return ExceptionUtils.rethrow(e);
             }
         }
 
-        // 构建配置请求
-        private HttpUriRequest buildConfigRequest() {
+        // 构建请求
+        private HttpUriRequest buildRequest() {
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("mainAppId", mainAppId));
             params.add(new BasicNameValuePair("queriedAppId", queriedAppId));
             params.add(new BasicNameValuePair("profileId", profileId));
 
-            HttpPost httpPost = new HttpPost(serverUrl + QUERY_CONFIG_URL_SUFFIX);
+            HttpPost httpPost = new HttpPost(serverUrl + FIND_CONFIG_URI);
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
             return httpPost;
         }
@@ -110,55 +111,141 @@ public class ServerRequester {
     // 查找应用在指定环境中的配置result
     @Getter
     @Setter
-    private static class FindPropertiesResult extends AbstractResult {
+    private static class FindConfigResult extends AbstractResult {
+        // 版本
+        private Long version;
         // 配置
         @HideDetail
         private Map<String, String> properties;
     }
 
     /**
-     * 创建元数据请求器
+     * 创建监听请求器
      *
-     * @return 元数据请求器
+     * @return 监听请求器
      */
-    public MetaRequester createMetaRequester() {
-        return new MetaRequester();
+    public ListenRequester createListenRequester() {
+        return new ListenRequester();
     }
 
     /**
-     * 元数据请求器
+     * 监听请求器
      */
-    public class MetaRequester {
+    public class ListenRequester {
         /**
-         * 获取配置中心使用的zookeeper地址
+         * 监听配置
+         *
+         * @param appIds         被监听的应用id
+         * @param configVersions 当前的配置版本
+         * @return 配置有变更的应用id
          */
-        public String[] getZkUrls() {
+        public Set<String> listen(List<String> appIds, List<Long> configVersions) {
             try {
-                String resultStr = HTTP_CLIENT.execute(buildMetaRequest(), new BasicResponseHandler());
-                MetaResult result = JSON.parseObject(resultStr, MetaResult.class);
+                String resultStr = HTTP_CLIENT.execute(buildRequest(appIds, configVersions), new BasicResponseHandler());
+                ListenResult result = JSON.parseObject(resultStr, ListenResult.class);
                 if (result == null) {
                     throw new RuntimeException("请求配置中心失败");
                 }
                 if (!result.isSuccess()) {
-                    throw new RuntimeException("从配置中心获取zookeeper地址失败：" + result.getMessage());
+                    throw new RuntimeException("监听配置中心的配置失败：" + result.getMessage());
                 }
-                return result.getZkUrls();
+                return result.getTopics().stream().map(ConfigTopic::getAppId).collect(Collectors.toSet());
             } catch (IOException e) {
                 return ExceptionUtils.rethrow(e);
             }
         }
 
-        // 构建元数据请求
-        private HttpUriRequest buildMetaRequest() {
-            return new HttpGet(serverUrl + QUERY_META_URL_SUFFIX);
+        // 构建请求
+        private HttpUriRequest buildRequest(List<String> appIds, List<Long> configVersions) {
+            List<ListenMeta> listenMetas = new ArrayList<>(appIds.size());
+            for (int i = 0; i < appIds.size(); i++) {
+                String appId = appIds.get(i);
+                long configVersion = configVersions.get(i);
+                ListenMeta listenMeta = new ListenMeta(new ConfigTopic(appId, profileId), configVersion);
+                listenMetas.add(listenMeta);
+            }
+
+            List<NameValuePair> params = new ArrayList<>();
+            params.add(new BasicNameValuePair("listenMetas", JSON.toJSONString(listenMetas)));
+
+            HttpPost httpPost = new HttpPost(serverUrl + LISTEN_URI);
+            httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            return httpPost;
         }
     }
 
-    // 元数据result
+    /**
+     * 监听元数据
+     */
+    @AllArgsConstructor
     @Getter
-    @Setter
-    private static class MetaResult extends AbstractResult {
-        // 配置中心使用的zookeeper地址
-        private String[] zkUrls;
+    private static final class ListenMeta {
+        // 监听的配置主题
+        private final ConfigTopic topic;
+        // 配置的版本
+        private final Long configVersion;
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(topic, configVersion);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof ListenMeta)) {
+                return false;
+            }
+            ListenMeta other = (ListenMeta) obj;
+            return Objects.equals(topic, other.topic) && Objects.equals(configVersion, other.configVersion);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.toString(this);
+        }
+    }
+
+    /**
+     * 监听结果
+     */
+    @Getter
+    private static class ListenResult extends AbstractResult {
+        // 需客户端刷新的配置主题
+        private final Set<ConfigTopic> topics = new HashSet<>();
+
+        public void addTopic(ConfigTopic topic) {
+            topics.add(topic);
+        }
+    }
+
+    /**
+     * 配置主题
+     */
+    @AllArgsConstructor
+    @Getter
+    private static final class ConfigTopic implements Serializable {
+        // 应用id
+        private final String appId;
+        // 环境id
+        private final String profileId;
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(appId, profileId);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof ConfigTopic)) {
+                return false;
+            }
+            ConfigTopic other = (ConfigTopic) obj;
+            return Objects.equals(appId, other.appId) && Objects.equals(profileId, other.profileId);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.toString(this);
+        }
     }
 }

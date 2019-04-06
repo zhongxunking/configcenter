@@ -9,7 +9,7 @@
 package org.antframework.configcenter.client;
 
 import org.antframework.common.util.other.Cache;
-import org.antframework.configcenter.client.support.RefreshTrigger;
+import org.antframework.configcenter.client.support.ConfigsListener;
 import org.antframework.configcenter.client.support.ServerRequester;
 import org.antframework.configcenter.client.support.TaskExecutor;
 import org.apache.commons.lang3.StringUtils;
@@ -27,23 +27,21 @@ public class ConfigsContext {
     private final Cache<String, Config> configsCache = new Cache<>(new Function<String, Config>() {
         @Override
         public Config apply(String appId) {
-            Config config = new Config(appId, serverRequester, cacheDirPath);
-            if (refreshTrigger != null) {
-                refreshTrigger.addApp(appId);
-            }
-            return config;
+            return new Config(appId, serverRequester, cacheDirPath);
         }
     });
     // 任务执行器
     private final TaskExecutor taskExecutor = new TaskExecutor();
-    // 服务端请求器
-    private final ServerRequester serverRequester;
+    // 主体应用id
+    private final String mainAppId;
     // 环境id
     private final String profileId;
     // 缓存文件夹路径（null表示不使用缓存文件功能）
     private final String cacheDirPath;
-    // 刷新触发器
-    private RefreshTrigger refreshTrigger;
+    // 服务端请求器
+    private final ServerRequester serverRequester;
+    // 配置监听器
+    private ConfigsListener configsListener;
 
     /**
      * 构造配置上下文
@@ -53,13 +51,35 @@ public class ConfigsContext {
      * @param profileId    环境id
      * @param cacheDirPath 缓存文件夹路径（null表示不使用缓存文件功能（既不读取缓存文件中的配置，也不写配置到缓存文件））
      */
-    public ConfigsContext(String serverUrl, String mainAppId, String profileId, String cacheDirPath) {
+    public ConfigsContext(String mainAppId, String profileId, String serverUrl, String cacheDirPath) {
         if (StringUtils.isBlank(serverUrl) || StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId)) {
             throw new IllegalArgumentException(String.format("初始化配置中客户端的参数不合法：serverUrl=%s,mainAppId=%s,profileId=%s,cacheDirPath=%s", serverUrl, mainAppId, profileId, cacheDirPath));
         }
-        serverRequester = new ServerRequester(serverUrl, mainAppId, profileId);
+        this.mainAppId = mainAppId;
         this.profileId = profileId;
+        serverRequester = new ServerRequester(mainAppId, profileId, serverUrl);
         this.cacheDirPath = cacheDirPath == null ? null : cacheDirPath + File.separator + mainAppId + File.separator + profileId;
+    }
+
+    /**
+     * 主体应用id
+     */
+    public String getMainAppId() {
+        return mainAppId;
+    }
+
+    /**
+     * 环境id
+     */
+    public String getProfileId() {
+        return profileId;
+    }
+
+    /**
+     * 获取查找过配置的应用id
+     */
+    public Set<String> getAppIds() {
+        return Collections.unmodifiableSet(configsCache.getAllKeys());
     }
 
     /**
@@ -76,59 +96,33 @@ public class ConfigsContext {
      * 开始监听配置变更事件
      */
     public synchronized void listenConfigs() {
-        if (refreshTrigger != null) {
+        if (configsListener != null) {
             return;
         }
-        refreshTrigger = new RefreshTrigger(profileId, serverRequester, this::refreshConfig, cacheDirPath);
-        for (String appId : getAppIds()) {
-            refreshTrigger.addApp(appId);
-        }
+        configsListener = new ConfigsListener(configsCache, serverRequester);
     }
 
     /**
-     * 刷新配置和zookeeper链接（异步）
+     * 刷新配置（异步）
      */
     public void refresh() {
         for (String appId : getAppIds()) {
-            refreshConfig(appId);
-            if (refreshTrigger != null) {
-                refreshTrigger.addApp(appId);
-            }
-        }
-        if (refreshTrigger != null) {
-            taskExecutor.execute(new TaskExecutor.Task<RefreshTrigger>(refreshTrigger) {
+            taskExecutor.execute(new TaskExecutor.Task<Config>(getConfig(appId)) {
                 @Override
-                protected void doRun(RefreshTrigger target) {
-                    target.refreshZk();
+                protected void doRun(Config target) {
+                    target.refresh();
                 }
             });
         }
     }
 
     /**
-     * 获取查找过配置的应用id
-     */
-    public Set<String> getAppIds() {
-        return Collections.unmodifiableSet(configsCache.getAllKeys());
-    }
-
-    /**
-     * 关闭（释放相关资源）
+     * 关闭
      */
     public synchronized void close() {
-        if (refreshTrigger != null) {
-            refreshTrigger.close();
+        if (configsListener != null) {
+            configsListener.close();
         }
         taskExecutor.close();
-    }
-
-    // 刷新配置
-    private void refreshConfig(String appId) {
-        taskExecutor.execute(new TaskExecutor.Task<Config>(configsCache.get(appId)) {
-            @Override
-            protected void doRun(Config target) {
-                target.refresh();
-            }
-        });
     }
 }

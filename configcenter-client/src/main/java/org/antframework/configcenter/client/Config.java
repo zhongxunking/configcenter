@@ -17,11 +17,14 @@ import org.antframework.configcenter.client.support.ListenerRegistrar;
 import org.antframework.configcenter.client.support.ServerRequester;
 
 import java.io.File;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * 配置
  */
 public class Config {
+    // 版本
+    private final AtomicLong version = new AtomicLong(0);
     // 配置项集合
     private final ConfigurableConfigProperties properties = new DefaultConfigProperties();
     // 监听器注册器
@@ -33,7 +36,13 @@ public class Config {
 
     public Config(String appId, ServerRequester serverRequester, String cacheDirPath) {
         this.appId = appId;
-        configRefresher = new ConfigRefresher(properties, listenerRegistrar, serverRequester.createConfigRequester(appId), buildCacheFile(cacheDirPath));
+        configRefresher = new ConfigRefresher(
+                appId,
+                version,
+                properties,
+                listenerRegistrar,
+                serverRequester,
+                buildCacheFile(cacheDirPath));
         configRefresher.initConfig();
     }
 
@@ -44,6 +53,13 @@ public class Config {
         }
         String cacheFilePath = cacheDirPath + File.separator + String.format("%s.properties", appId);
         return new MapFile(cacheFilePath);
+    }
+
+    /**
+     * 获取配置版本
+     */
+    public long getVersion() {
+        return version.get();
     }
 
     /**
@@ -58,6 +74,13 @@ public class Config {
      */
     public ListenerRegistrar getListenerRegistrar() {
         return listenerRegistrar;
+    }
+
+    /**
+     * 获取应用id
+     */
+    public String getAppId() {
+        return appId;
     }
 
     /**
