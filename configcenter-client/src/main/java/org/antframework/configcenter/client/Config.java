@@ -45,12 +45,12 @@ public class Config {
                 properties,
                 listenerRegistrar,
                 serverRequester,
-                buildCacheFile(cacheDirPath));
+                buildCacheFile(cacheDirPath, appId));
         configRefresher.initConfig();
     }
 
     // 构建缓存文件
-    private MapFile buildCacheFile(String cacheDirPath) {
+    private MapFile buildCacheFile(String cacheDirPath, String appId) {
         if (cacheDirPath == null) {
             return null;
         }
