@@ -29,7 +29,6 @@ import org.springframework.core.env.PropertySource;
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
 public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
-
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         // 创建配置资源

@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.spring.context;
 
+import lombok.AllArgsConstructor;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.boot.bind.PropertiesConfigurationFactory;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -23,6 +24,7 @@ import org.springframework.validation.beanvalidation.OptionalValidatorFactoryBea
 /**
  * 属性绑定器
  */
+@AllArgsConstructor
 public class PropertiesBinder {
     // 校验器
     private static final Validator VALIDATOR = new OptionalValidatorFactoryBean() {{
@@ -32,11 +34,7 @@ public class PropertiesBinder {
     private static final ConversionService CONVERSION_SERVICE = new DefaultConversionService();
 
     // 属性资源
-    private PropertySources propertySources;
-
-    public PropertiesBinder(PropertySources propertySources) {
-        this.propertySources = propertySources;
-    }
+    private final PropertySources propertySources;
 
     /**
      * 构建属性对象

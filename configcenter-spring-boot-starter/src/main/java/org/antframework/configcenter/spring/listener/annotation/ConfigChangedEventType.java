@@ -8,29 +8,21 @@
  */
 package org.antframework.configcenter.spring.listener.annotation;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
 import java.util.Objects;
 
 /**
  * 配置被修改事件类型
  */
+@AllArgsConstructor
+@Getter
 public final class ConfigChangedEventType {
     // 应用id
     private final String appId;
     // 被修改的配置key前缀
     private final String prefix;
-
-    public ConfigChangedEventType(String appId, String prefix) {
-        this.appId = appId;
-        this.prefix = prefix;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
 
     @Override
     public int hashCode() {

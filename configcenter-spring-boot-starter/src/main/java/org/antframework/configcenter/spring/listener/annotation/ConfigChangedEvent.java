@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.spring.listener.annotation;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.configcenter.client.core.ChangedProperty;
 
 import java.util.List;
@@ -15,6 +17,8 @@ import java.util.List;
 /**
  * 配置被修改事件
  */
+@AllArgsConstructor
+@Getter
 public final class ConfigChangedEvent {
     // 应用id
     private final String appId;
@@ -22,22 +26,4 @@ public final class ConfigChangedEvent {
     private final String prefix;
     // 被修改的配置
     private final List<ChangedProperty> changedProperties;
-
-    public ConfigChangedEvent(String appId, String prefix, List<ChangedProperty> changedProperties) {
-        this.appId = appId;
-        this.prefix = prefix;
-        this.changedProperties = changedProperties;
-    }
-
-    public String getAppId() {
-        return appId;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public List<ChangedProperty> getChangedProperties() {
-        return changedProperties;
-    }
 }
