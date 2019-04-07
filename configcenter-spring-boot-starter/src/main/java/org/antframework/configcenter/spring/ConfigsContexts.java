@@ -19,9 +19,9 @@ import org.antframework.configcenter.spring.context.Contexts;
 public final class ConfigsContexts {
     // 配置上下文
     private static final ConfigsContext CONFIGS_CONTEXT = new ConfigsContext(
-            ConfigcenterProperties.INSTANCE.getServerUrl(),
             Contexts.getAppId(),
             Contexts.getProfile(),
+            ConfigcenterProperties.INSTANCE.getServerUrl(),
             ConfigcenterProperties.INSTANCE.getCacheDirPath());
 
     /**

@@ -35,7 +35,7 @@ import java.util.TimerTask;
  */
 public class ConfigsContextLifeCycle implements GenericApplicationListener {
     // 刷新定时器
-    private Timer refreshTimer;
+    private Timer refreshTimer = null;
 
     @Override
     public boolean supportsEventType(ResolvableType eventType) {
@@ -54,7 +54,6 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
     public void onApplicationEvent(ApplicationEvent event) {
         if (event instanceof ApplicationReadyEvent) {
             readyConfigsContext();
-            initTimer();
         } else {
             close();
         }
@@ -76,11 +75,13 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             Config config = configsContext.getConfig(appId);
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
-        // 判断是否开启监听配置变更事件
-        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.LISTEN_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
+        // 判断是否开启刷新配置
+        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.REFRESH_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
         if (enable) {
             // 开始监听配置变更事件
             configsContext.listenConfigs();
+            // 定时刷新
+            initTimer();
         }
     }
 
