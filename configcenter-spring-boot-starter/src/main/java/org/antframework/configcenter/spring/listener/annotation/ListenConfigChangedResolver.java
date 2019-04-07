@@ -61,7 +61,11 @@ public class ListenConfigChangedResolver implements ListenResolver {
         }
         // 设置事件类型
         ListenConfigChanged listenConfigChangedAnnotation = AnnotatedElementUtils.findMergedAnnotation(listenMethod, ListenConfigChanged.class);
-        eventType = new ConfigChangedEventType(appId, listenConfigChangedAnnotation.prefix());
+        String prefix = listenConfigChangedAnnotation.prefix();
+        if (StringUtils.isEmpty(prefix)) {
+            prefix = null;
+        }
+        eventType = new ConfigChangedEventType(appId, prefix);
     }
 
     @Override

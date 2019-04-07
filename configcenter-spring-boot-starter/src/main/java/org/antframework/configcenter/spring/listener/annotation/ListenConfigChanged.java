@@ -22,9 +22,9 @@ import java.lang.annotation.*;
 @Listen(resolver = ListenConfigChangedResolver.class)
 public @interface ListenConfigChanged {
     /**
-     * 被监听的配置key前缀
+     * 被监听的配置key前缀（默认监听所有配置key）
      */
-    String prefix();
+    String prefix() default "";
 
     /**
      * 是否按照优先级升序
