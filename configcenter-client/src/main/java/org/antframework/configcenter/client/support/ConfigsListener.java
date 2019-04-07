@@ -85,7 +85,7 @@ public class ConfigsListener {
         private void sleep() {
             try {
                 Thread.sleep(5000);
-            } catch (InterruptedException e1) {
+            } catch (InterruptedException e) {
                 // 忽略
             }
         }

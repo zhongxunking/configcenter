@@ -18,6 +18,7 @@ import org.antframework.common.util.tostring.format.HideDetail;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpUriRequest;
@@ -97,12 +98,19 @@ public class ServerRequester {
 
         // 构建请求
         private HttpUriRequest buildRequest() {
+            RequestConfig config = RequestConfig.custom()
+                    .setConnectTimeout(5000)
+                    .setConnectionRequestTimeout(2000)
+                    .setSocketTimeout(30000)
+                    .build();
+
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("mainAppId", mainAppId));
             params.add(new BasicNameValuePair("queriedAppId", queriedAppId));
             params.add(new BasicNameValuePair("profileId", profileId));
 
             HttpPost httpPost = new HttpPost(serverUrl + FIND_CONFIG_URI);
+            httpPost.setConfig(config);
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
             return httpPost;
         }
@@ -157,6 +165,12 @@ public class ServerRequester {
 
         // 构建请求
         private HttpUriRequest buildRequest(List<String> appIds, List<Long> configVersions) {
+            RequestConfig config = RequestConfig.custom()
+                    .setConnectTimeout(5000)
+                    .setConnectionRequestTimeout(2000)
+                    .setSocketTimeout(90000)
+                    .build();
+
             Set<ListenMeta> listenMetas = new HashSet<>(appIds.size());
             for (int i = 0; i < appIds.size(); i++) {
                 String appId = appIds.get(i);
@@ -164,11 +178,11 @@ public class ServerRequester {
                 ListenMeta listenMeta = new ListenMeta(new ConfigTopic(appId, profileId), configVersion);
                 listenMetas.add(listenMeta);
             }
-
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("listenMetas", JSON.toJSONString(listenMetas)));
 
             HttpPost httpPost = new HttpPost(serverUrl + LISTEN_URI);
+            httpPost.setConfig(config);
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
             return httpPost;
         }
