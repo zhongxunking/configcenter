@@ -23,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.Objects;
+import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -33,8 +34,12 @@ import java.util.stream.Collectors;
 @RequestMapping("/config")
 @AllArgsConstructor
 public class ConfigController {
-    // 监听配置变更事件的客户端的超时事件
-    private static final long LISTENING_CLIENT_TIMEOUT = 90000;
+    // 监听配置的最小超时时间
+    private static final int LISTEN_MIN_TIMEOUT = 60000;
+    // 监听配置的最大超时时间
+    private static final int LISTEN_MAX_TIMEOUT = 90000;
+    // 随机数
+    private static final Random RANDOM = new Random();
 
     // 配置服务
     private final ConfigService configService;
@@ -75,7 +80,9 @@ public class ConfigController {
             }
         }
         // 构建异步返回结果
-        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(LISTENING_CLIENT_TIMEOUT, FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class));
+        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(
+                (long) LISTEN_MIN_TIMEOUT + RANDOM.nextInt(LISTEN_MAX_TIMEOUT - LISTEN_MIN_TIMEOUT),
+                FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class));
         if (listenMetas.isEmpty() || !listenResult.getTopics().isEmpty()) {
             // 直接设置返回结果
             deferredResult.setResult(listenResult);

@@ -168,7 +168,7 @@ public class ServerRequester {
             RequestConfig config = RequestConfig.custom()
                     .setConnectTimeout(5000)
                     .setConnectionRequestTimeout(2000)
-                    .setSocketTimeout(90000)
+                    .setSocketTimeout(120000)
                     .build();
 
             Set<ListenMeta> listenMetas = new HashSet<>(appIds.size());
