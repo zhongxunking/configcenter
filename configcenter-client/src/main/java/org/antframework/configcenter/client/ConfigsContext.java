@@ -114,7 +114,7 @@ public class ConfigsContext {
                     try {
                         target.refresh();
                     } catch (Throwable e) {
-                        log.error("刷新配置[mainAppId={},queriedAppId={},profileId={}]失败：{}", mainAppId, target.getAppId(), profileId, e.getMessage());
+                        log.error("刷新configcenter配置[mainAppId={},queriedAppId={},profileId={}]失败：{}", mainAppId, target.getAppId(), profileId, e.getMessage());
                     }
                 }
             });
