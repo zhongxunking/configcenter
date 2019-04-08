@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client;
 
+import lombok.extern.slf4j.Slf4j;
 import org.antframework.common.util.other.Cache;
 import org.antframework.configcenter.client.support.ConfigsListener;
 import org.antframework.configcenter.client.support.ServerRequester;
@@ -22,6 +23,7 @@ import java.util.function.Function;
 /**
  * 配置上下文
  */
+@Slf4j
 public class ConfigsContext {
     // config缓存
     private final Cache<String, Config> configsCache = new Cache<>(new Function<String, Config>() {
@@ -53,7 +55,7 @@ public class ConfigsContext {
      */
     public ConfigsContext(String mainAppId, String profileId, String serverUrl, String cacheDirPath) {
         if (StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId) || StringUtils.isBlank(serverUrl)) {
-            throw new IllegalArgumentException(String.format("初始化配置中客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,cacheDirPath=%s", mainAppId, profileId, serverUrl, cacheDirPath));
+            throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,cacheDirPath=%s", mainAppId, profileId, serverUrl, cacheDirPath));
         }
         this.mainAppId = mainAppId;
         this.profileId = profileId;
@@ -96,10 +98,9 @@ public class ConfigsContext {
      * 开始监听配置变更事件
      */
     public synchronized void listenConfigs() {
-        if (configsListener != null) {
-            return;
+        if (configsListener == null) {
+            configsListener = new ConfigsListener(configsCache, serverRequester);
         }
-        configsListener = new ConfigsListener(configsCache, serverRequester);
     }
 
     /**
@@ -109,8 +110,12 @@ public class ConfigsContext {
         for (String appId : getAppIds()) {
             taskExecutor.execute(new TaskExecutor.Task<Config>(getConfig(appId)) {
                 @Override
-                protected void doRun(Config target) {
-                    target.refresh();
+                public void run() {
+                    try {
+                        target.refresh();
+                    } catch (Throwable e) {
+                        log.error("刷新配置[mainAppId={},queriedAppId={},profileId={}]失败：{}", mainAppId, target.getAppId(), profileId, e.getMessage());
+                    }
                 }
             });
         }

@@ -45,12 +45,12 @@ public class ListenerRegistrar {
         if (changedProperties == null || changedProperties.size() <= 0) {
             return;
         }
-        log.info("检测到配置中心的配置已变更：{}", ToString.toString(changedProperties));
+        log.info("检测到configcenter配置已变更：{}", ToString.toString(changedProperties));
         for (ConfigListener listener : listeners) {
             try {
                 listener.onChange(changedProperties);
             } catch (Throwable e) {
-                log.error("配置变更调用配置监听器出错：", e);
+                log.error("configcenter配置变更调用配置监听器出错", e);
             }
         }
     }

@@ -80,13 +80,10 @@ public class ServerRequester {
                 String resultStr = HTTP_CLIENT.execute(buildRequest(), new BasicResponseHandler());
                 FindConfigResult result = JSON.parseObject(resultStr, FindConfigResult.class);
                 if (result == null) {
-                    throw new RuntimeException("请求配置中心失败");
+                    throw new RuntimeException("请求configcenter失败");
                 }
                 if (!result.isSuccess()) {
-                    throw new RuntimeException("从配置中心读取配置失败：" + result.getMessage());
-                }
-                if (result.getProperties().containsKey(versionKey)) {
-                    throw new RuntimeException("配置中心的配置不能包含：" + versionKey);
+                    throw new RuntimeException("从configcenter读取配置失败：" + result.getMessage());
                 }
                 Map<String, String> config = new HashMap<>(result.getProperties());
                 config.put(versionKey, result.getVersion().toString());
@@ -152,10 +149,10 @@ public class ServerRequester {
                 String resultStr = HTTP_CLIENT.execute(buildRequest(appIds, configVersions), new BasicResponseHandler());
                 ListenResult result = JSON.parseObject(resultStr, ListenResult.class);
                 if (result == null) {
-                    throw new RuntimeException("请求配置中心失败");
+                    throw new RuntimeException("请求configcenter失败");
                 }
                 if (!result.isSuccess()) {
-                    throw new RuntimeException("监听配置中心的配置失败：" + result.getMessage());
+                    throw new RuntimeException("监听configcenter配置失败：" + result.getMessage());
                 }
                 return result.getTopics().stream().map(ConfigTopic::getAppId).collect(Collectors.toSet());
             } catch (IOException e) {

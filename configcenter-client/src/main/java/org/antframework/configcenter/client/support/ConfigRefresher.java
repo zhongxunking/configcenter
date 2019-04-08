@@ -58,7 +58,7 @@ public class ConfigRefresher {
         try {
             config = configRequester.findConfig();
         } catch (Throwable e) {
-            log.error("从配置中心读取配置失败：{}", e.getMessage());
+            log.error("从configcenter读取配置失败：{}", e.getMessage());
             if (cacheFile == null) {
                 throw e;
             }
@@ -71,7 +71,7 @@ public class ConfigRefresher {
         }
         if (fromServer && cacheFile != null) {
             cacheFile.replace(config);
-            log.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
+            log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
         }
         version.set(Long.parseLong(config.get(VERSION_KEY)));
         config.remove(VERSION_KEY);
@@ -85,7 +85,7 @@ public class ConfigRefresher {
         Map<String, String> config = configRequester.findConfig();
         if (cacheFile != null) {
             cacheFile.replace(config);
-            log.debug("配置中心的配置已缓存到：{}", cacheFile.getFilePath());
+            log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
         }
         version.set(Long.parseLong(config.get(VERSION_KEY)));
         config.remove(VERSION_KEY);

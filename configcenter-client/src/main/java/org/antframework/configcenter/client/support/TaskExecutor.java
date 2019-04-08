@@ -10,6 +10,7 @@ package org.antframework.configcenter.client.support;
 
 import lombok.extern.slf4j.Slf4j;
 
+import java.util.Objects;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -59,22 +60,11 @@ public class TaskExecutor {
      */
     public static abstract class Task<T> implements Runnable {
         // 目标对象
-        private T target;
+        protected T target;
 
         public Task(T target) {
             this.target = target;
         }
-
-        @Override
-        public void run() {
-            try {
-                doRun(target);
-            } catch (Throwable e) {
-                log.error("执行任务失败：{}", e.getMessage());
-            }
-        }
-
-        protected abstract void doRun(T target);
 
         @Override
         public int hashCode() {
@@ -87,7 +77,7 @@ public class TaskExecutor {
                 return false;
             }
             Task other = (Task) obj;
-            return target.equals(other.target);
+            return Objects.equals(target, other.target);
         }
     }
 }
