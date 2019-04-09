@@ -26,6 +26,7 @@ import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.GenericApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.Assert;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -94,6 +95,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             }
         };
         long period = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_PERIOD_KEY, Long.class, 5 * 60 * 1000L);
+        Assert.isTrue(period > 0, String.format("自动刷新configcenter配置的周期[%s]必须大于0，当前值=%d", ConfigcenterProperties.AUTO_REFRESH_CONFIGS_PERIOD_KEY, period));
 
         refreshTimer = new Timer("Timer-refreshConfigsContext", true);
         // 应用启动期间配置有可能被修改，在此立即触发一次刷新
