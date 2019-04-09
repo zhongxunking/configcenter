@@ -2,16 +2,23 @@
   "properties": [
     {
       "sourceType": "org.antframework.configcenter.spring.boot.ConfigcenterProperties",
-      "name": "configcenter.app-id",
+      "name": "configcenter.appId",
       "description": "选填：应用id（默认为spring.application.name对应的配置）",
       "type": "java.lang.String"
     },
     {
       "sourceType": "org.antframework.configcenter.spring.boot.ConfigcenterProperties",
-      "name": "configcenter.listen-configs.enable",
-      "description": "选填：是否开启监听配置变更事件（默认为开启）",
+      "name": "configcenter.autoRefreshConfigs.enable",
+      "description": "选填：是否开启自动刷新configcenter配置（默认为开启）",
       "type": "java.lang.Boolean",
       "defaultValue": true
+    },
+    {
+      "sourceType": "org.antframework.configcenter.spring.boot.ConfigcenterProperties",
+      "name": "configcenter.autoRefreshConfigs.period",
+      "description": "选填：自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）",
+      "type": "java.lang.Long",
+      "defaultValue": 300000
     }
   ]
 }

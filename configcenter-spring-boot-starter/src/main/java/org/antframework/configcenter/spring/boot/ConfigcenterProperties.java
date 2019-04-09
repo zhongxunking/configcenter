@@ -13,8 +13,6 @@ import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.validation.annotation.Validated;
 
-import javax.validation.constraints.Min;
-
 /**
  * configcenter属性
  */
@@ -24,11 +22,15 @@ public class ConfigcenterProperties {
     /**
      * 应用id（默认为spring.application.name对应的配置）
      */
-    public static final String APP_ID_PATTERN = "${configcenter.app-id:${spring.application.name}}";
+    public static final String APP_ID_PATTERN = "${configcenter.appId:${spring.application.name}}";
     /**
-     * 是否开启刷新配置（默认为开启）
+     * 是否开启自动刷新configcenter配置（默认为开启）
      */
-    public static final String REFRESH_CONFIGS_ENABLE_KEY = "configcenter.refreshConfigs.enable";
+    public static final String AUTO_REFRESH_CONFIGS_ENABLE_KEY = "configcenter.autoRefreshConfigs.enable";
+    /**
+     * 自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）
+     */
+    public static final String AUTO_REFRESH_CONFIGS_PERIOD_KEY = "configcenter.autoRefreshConfigs.period";
     /**
      * 实例
      */
@@ -44,11 +46,6 @@ public class ConfigcenterProperties {
      */
     @NotBlank
     private String cacheDirPath = "/var/apps/configcenter";
-    /**
-     * 选填：配置刷新周期（单位：秒。默认为5分钟刷新一次）
-     */
-    @Min(1)
-    private int refreshPeriod = 5 * 60;
     /**
      * 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
      */
@@ -68,14 +65,6 @@ public class ConfigcenterProperties {
 
     public void setCacheDirPath(String cacheDirPath) {
         this.cacheDirPath = cacheDirPath;
-    }
-
-    public int getRefreshPeriod() {
-        return refreshPeriod;
-    }
-
-    public void setRefreshPeriod(int refreshPeriod) {
-        this.refreshPeriod = refreshPeriod;
     }
 
     public String getPriorTo() {

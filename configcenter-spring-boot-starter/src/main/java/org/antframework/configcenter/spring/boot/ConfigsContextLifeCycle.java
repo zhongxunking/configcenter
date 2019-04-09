@@ -75,8 +75,8 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             Config config = configsContext.getConfig(appId);
             config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
         }
-        // 判断是否开启刷新配置
-        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.REFRESH_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
+        // 判断是否开启自动刷新配置
+        boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
         if (enable) {
             // 开始监听配置变更事件
             configsContext.listenConfigs();
@@ -93,10 +93,11 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
                 ConfigsContexts.getContext().refresh();
             }
         };
+        long period = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_PERIOD_KEY, Long.class, 5 * 60 * 1000L);
 
         refreshTimer = new Timer("Timer-refreshConfigsContext", true);
         // 应用启动期间配置有可能被修改，在此立即触发一次刷新
-        refreshTimer.schedule(task, 0, ConfigcenterProperties.INSTANCE.getRefreshPeriod() * 1000);
+        refreshTimer.schedule(task, 0, period);
     }
 
     // 关闭配置上下文和刷新定时器
