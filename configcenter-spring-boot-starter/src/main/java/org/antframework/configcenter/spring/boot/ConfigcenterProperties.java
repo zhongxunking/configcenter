@@ -16,7 +16,7 @@ import org.springframework.validation.annotation.Validated;
 import javax.validation.constraints.Min;
 
 /**
- * 配置中心属性
+ * configcenter属性
  */
 @ConfigurationProperties("configcenter")
 @Validated
@@ -35,7 +35,7 @@ public class ConfigcenterProperties {
     public static final ConfigcenterProperties INSTANCE = Contexts.buildProperties(ConfigcenterProperties.class);
 
     /**
-     * 必填：配置中心服务端地址（比如：http://192.168.0.1:6220）
+     * 必填：configcenter服务端地址（比如：http://192.168.0.1:6220）
      */
     @NotBlank
     private String serverUrl;
@@ -50,7 +50,7 @@ public class ConfigcenterProperties {
     @Min(1)
     private int refreshPeriod = 5 * 60;
     /**
-     * 选填：配置中心的配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
+     * 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
      */
     private String priorTo = null;
 

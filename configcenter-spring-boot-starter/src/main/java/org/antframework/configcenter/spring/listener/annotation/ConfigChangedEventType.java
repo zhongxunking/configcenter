@@ -35,7 +35,6 @@ public final class ConfigChangedEventType {
             return false;
         }
         ConfigChangedEventType other = (ConfigChangedEventType) obj;
-        return Objects.equals(appId, other.appId)
-                && Objects.equals(prefix, other.prefix);
+        return Objects.equals(appId, other.appId) && Objects.equals(prefix, other.prefix);
     }
 }

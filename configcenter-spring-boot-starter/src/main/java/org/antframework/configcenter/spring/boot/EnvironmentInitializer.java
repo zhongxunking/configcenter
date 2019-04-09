@@ -20,12 +20,12 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 
 /**
- * environment初始化器（将配置中心的配置加入到environment）
+ * environment初始化器（将configcenter配置加入到environment）
  * <p>
- * 日志初始化后再初始化配置中心的配置。原因：
- * 1、比日志先初始化的好处：在配置中心的日志相关配置会生效；坏处：初始化配置中心的配置报错时，日志打印不出来。
- * 2、比日志后初始化的好处：初始化配置中心的配置报错时，能打印日志；坏处：在配置中心的日志相关配置不会生效。
- * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为日志初始化后再初始化配置中心的配置。
+ * 先初始化日志，再初始化configcenter配置。原因：
+ * 1、先初始化日志的好处：在configcenter中的日志相关配置会生效；坏处：初始化configcenter配置报错时，无法打印日志。
+ * 2、先初始化configcenter配置的好处：初始化configcenter配置报错时，能打印日志；坏处：在configcenter中的日志相关配置不会生效。
+ * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为先初始化日志再初始化configcenter配置（日志级别logging.level相关配置依然生效）。
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
 public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
@@ -43,7 +43,7 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
     }
 
     /**
-     * 配置中心配置资源
+     * configcenter配置资源
      */
     public static class ConfigcenterPropertySource extends EnumerablePropertySource<Config> {
         /**
