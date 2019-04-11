@@ -98,8 +98,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
         Assert.isTrue(period > 0, String.format("自动刷新configcenter配置的周期[%s]必须大于0，当前值=%d", ConfigcenterProperties.AUTO_REFRESH_CONFIGS_PERIOD_KEY, period));
 
         refreshTimer = new Timer("Timer-refreshConfigsContext", true);
-        // 应用启动期间配置有可能被修改，在此立即触发一次刷新
-        refreshTimer.schedule(task, 0, period);
+        refreshTimer.schedule(task, period, period);
     }
 
     // 关闭配置上下文和刷新定时器
