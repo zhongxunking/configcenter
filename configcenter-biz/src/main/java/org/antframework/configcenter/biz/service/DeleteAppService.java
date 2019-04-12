@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
@@ -54,7 +54,7 @@ public class DeleteAppService {
             deletePropertyKey(propertyKey);
         }
         // 删除该应用的在所有环境的配置value和发布
-        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
+        for (ProfileInfo profile : Profiles.findAllProfiles()) {
             PropertyValueUtils.deleteAppProfilePropertyValues(order.getAppId(), profile.getProfileId());
             ReleaseUtils.deleteAppProfileReleases(order.getAppId(), profile.getProfileId());
         }

@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.facade.api.PropertyValueService;
@@ -42,7 +42,7 @@ public class DeletePropertyKeyService {
             return;
         }
         // 删除该key在所有环境的value
-        for (ProfileInfo profile : ProfileUtils.findAllProfiles()) {
+        for (ProfileInfo profile : Profiles.findAllProfiles()) {
             deletePropertyValue(order.getAppId(), order.getKey(), profile.getProfileId());
         }
         // 删除key

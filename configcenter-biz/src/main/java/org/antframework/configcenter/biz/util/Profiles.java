@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 环境工具类
+ * 环境操作类
  */
-public final class ProfileUtils {
+public final class Profiles {
     // 分页查询环境使用的每页大小
     private static final int QUERY_PAGE_SIZE = 100;
     // 环境服务

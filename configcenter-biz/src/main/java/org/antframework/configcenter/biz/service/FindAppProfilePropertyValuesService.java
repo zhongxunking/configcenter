@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -50,7 +50,7 @@ public class FindAppProfilePropertyValuesService {
         if (app == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }
-        ProfileInfo profile = ProfileUtils.findProfile(order.getProfileId());
+        ProfileInfo profile = Profiles.findProfile(order.getProfileId());
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
         }

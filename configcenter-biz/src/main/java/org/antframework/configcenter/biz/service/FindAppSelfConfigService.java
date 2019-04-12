@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
@@ -28,7 +28,7 @@ public class FindAppSelfConfigService {
         FindAppSelfConfigOrder order = context.getOrder();
         FindAppSelfConfigResult result = context.getResult();
         // 获取每个继承的环境中的配置
-        for (ProfileInfo profile : ProfileUtils.findInheritedProfiles(order.getProfileId())) {
+        for (ProfileInfo profile : Profiles.findInheritedProfiles(order.getProfileId())) {
             // 获取当前发布
             ReleaseInfo release = ReleaseUtils.findCurrentRelease(order.getAppId(), profile.getProfileId());
             // 移除作用域不合要求的配置

@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.ProfileInfo;
@@ -46,7 +46,7 @@ public class FindProfileTreeService {
 
         ProfileInfo profile = null;
         if (order.getProfileId() != null) {
-            profile = ProfileUtils.findProfile(order.getProfileId());
+            profile = Profiles.findProfile(order.getProfileId());
             if (profile == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
             }

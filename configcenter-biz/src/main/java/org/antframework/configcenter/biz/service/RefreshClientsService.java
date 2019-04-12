@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.ProfileUtils;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.facade.info.AppTree;
 import org.antframework.configcenter.facade.info.ProfileTree;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
@@ -45,7 +45,7 @@ public class RefreshClientsService {
         extractAppIds(Apps.findAppTree(order.getRootAppId()), appIds);
         // 获取需要刷新的环境
         List<String> profileIds = new ArrayList<>();
-        extractProfileIds(ProfileUtils.findProfileTree(order.getRootProfileId()), profileIds);
+        extractProfileIds(Profiles.findProfileTree(order.getRootProfileId()), profileIds);
         // 构建刷新客户端事件
         Set<ConfigTopic> topics = new HashSet<>(appIds.size() * profileIds.size());
         for (String appId : appIds) {
