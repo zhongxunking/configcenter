@@ -15,7 +15,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -47,7 +47,7 @@ public class DeleteProfileService {
         // 删除所有应用在该环境下的配置value和发布
         for (AppInfo app : Apps.findAllApps()) {
             PropertyValues.deleteAppProfilePropertyValues(app.getAppId(), order.getProfileId());
-            ReleaseUtils.deleteAppProfileReleases(app.getAppId(), order.getProfileId());
+            Releases.deleteAppProfileReleases(app.getAppId(), order.getProfileId());
         }
         // 删除环境
         profileDao.delete(profile);

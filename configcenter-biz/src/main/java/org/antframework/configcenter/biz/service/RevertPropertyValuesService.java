@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
@@ -35,7 +35,7 @@ public class RevertPropertyValuesService {
     public void execute(ServiceContext<RevertPropertyValuesOrder, EmptyResult> context) {
         RevertPropertyValuesOrder order = context.getOrder();
         // 校验入参
-        ReleaseInfo release = ReleaseUtils.findRelease(order.getAppId(), order.getProfileId(), order.getReleaseVersion());
+        ReleaseInfo release = Releases.findRelease(order.getAppId(), order.getProfileId(), order.getReleaseVersion());
         if (release == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getReleaseVersion()));
         }

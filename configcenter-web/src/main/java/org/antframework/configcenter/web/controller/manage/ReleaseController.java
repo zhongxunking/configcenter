@@ -16,7 +16,7 @@ import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Configs;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
@@ -72,7 +72,7 @@ public class ReleaseController {
             // 校验是否有敏感配置被修改
             List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
             List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
-            List<Property> right = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
+            List<Property> right = Releases.findCurrentRelease(appId, profileId).getProperties();
 
             Properties.Difference difference = Properties.compare(left, right);
             Properties.onlyReadWrite(appId, difference);
@@ -102,11 +102,11 @@ public class ReleaseController {
         ManagerInfo manager = Managers.currentManager();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            ReleaseInfo targetRelease = ReleaseUtils.findRelease(appId, profileId, targetVersion);
+            ReleaseInfo targetRelease = Releases.findRelease(appId, profileId, targetVersion);
             if (targetRelease == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", appId, profileId, targetVersion));
             }
-            ReleaseInfo currentRelease = ReleaseUtils.findCurrentRelease(appId, profileId);
+            ReleaseInfo currentRelease = Releases.findCurrentRelease(appId, profileId);
 
             Properties.Difference difference = Properties.compare(targetRelease.getProperties(), currentRelease.getProperties());
             Properties.onlyReadWrite(appId, difference);
@@ -201,8 +201,8 @@ public class ReleaseController {
     public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
         ManagerApps.adminOrHaveApp(appId);
 
-        List<Property> left = ReleaseUtils.findRelease(appId, profileId, leftVersion).getProperties();
-        List<Property> right = ReleaseUtils.findRelease(appId, profileId, rightVersion).getProperties();
+        List<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
+        List<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
 
         CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);

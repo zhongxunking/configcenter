@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.biz.util.PropertyKeys;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
@@ -56,7 +56,7 @@ public class DeleteAppService {
         // 删除该应用的在所有环境的配置value和发布
         for (ProfileInfo profile : Profiles.findAllProfiles()) {
             PropertyValues.deleteAppProfilePropertyValues(order.getAppId(), profile.getProfileId());
-            ReleaseUtils.deleteAppProfileReleases(order.getAppId(), profile.getProfileId());
+            Releases.deleteAppProfileReleases(order.getAppId(), profile.getProfileId());
         }
         // 删除应用
         appDao.delete(app);

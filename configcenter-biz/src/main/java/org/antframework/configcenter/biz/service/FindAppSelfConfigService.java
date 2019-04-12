@@ -9,7 +9,7 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.configcenter.biz.util.Profiles;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
@@ -30,7 +30,7 @@ public class FindAppSelfConfigService {
         // 获取每个继承的环境中的配置
         for (ProfileInfo profile : Profiles.findInheritedProfiles(order.getProfileId())) {
             // 获取当前发布
-            ReleaseInfo release = ReleaseUtils.findCurrentRelease(order.getAppId(), profile.getProfileId());
+            ReleaseInfo release = Releases.findCurrentRelease(order.getAppId(), profile.getProfileId());
             // 移除作用域不合要求的配置
             release.getProperties().removeIf(property -> property.getScope().compareTo(order.getMinScope()) < 0);
 

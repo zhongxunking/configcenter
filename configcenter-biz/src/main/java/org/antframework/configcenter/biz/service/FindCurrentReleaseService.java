@@ -15,7 +15,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Profiles;
-import org.antframework.configcenter.biz.util.ReleaseUtils;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -64,7 +64,7 @@ public class FindCurrentReleaseService {
         if (release != null) {
             result.setRelease(INFO_CONVERTER.convert(release));
         } else {
-            result.setRelease(ReleaseUtils.buildOriginRelease(order.getAppId(), order.getProfileId()));
+            result.setRelease(Releases.buildOriginRelease(order.getAppId(), order.getProfileId()));
         }
     }
 }

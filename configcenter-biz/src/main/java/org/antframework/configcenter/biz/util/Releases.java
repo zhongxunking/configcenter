@@ -24,9 +24,9 @@ import java.util.ArrayList;
 import java.util.Date;
 
 /**
- * 发布工具类
+ * 发布操作类
  */
-public final class ReleaseUtils {
+public final class Releases {
     // 发布服务
     private static final ReleaseService RELEASE_SERVICE = Contexts.getApplicationContext().getBean(ReleaseService.class);
 
