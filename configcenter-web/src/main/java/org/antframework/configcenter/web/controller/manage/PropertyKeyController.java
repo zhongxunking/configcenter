@@ -14,7 +14,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.biz.util.PropertyKeys;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
@@ -96,7 +96,7 @@ public class PropertyKeyController {
 
         FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {
-            List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE);
+            List<PropertyKeyInfo> propertyKeys = PropertyKeys.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE);
             result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }
         return result;
@@ -136,7 +136,7 @@ public class PropertyKeyController {
 
     // 断言存在配置key
     private void assertExistingKey(String appId, String key) {
-        List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(appId, Scope.PRIVATE);
+        List<PropertyKeyInfo> propertyKeys = PropertyKeys.findAppPropertyKeys(appId, Scope.PRIVATE);
         for (PropertyKeyInfo propertyKey : propertyKeys) {
             if (Objects.equals(propertyKey.getKey(), key)) {
                 return;

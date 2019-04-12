@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
 import org.antframework.configcenter.biz.util.Profiles;
-import org.antframework.configcenter.biz.util.PropertyKeyUtils;
+import org.antframework.configcenter.biz.util.PropertyKeys;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
@@ -50,7 +50,7 @@ public class DeleteAppService {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]存在子应用，不能删除", order.getAppId()));
         }
         // 删除该应用的所有配置key
-        for (PropertyKeyInfo propertyKey : PropertyKeyUtils.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
+        for (PropertyKeyInfo propertyKey : PropertyKeys.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
             deletePropertyKey(propertyKey);
         }
         // 删除该应用的在所有环境的配置value和发布

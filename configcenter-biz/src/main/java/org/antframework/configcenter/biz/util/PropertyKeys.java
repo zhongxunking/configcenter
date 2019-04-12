@@ -19,9 +19,9 @@ import org.antframework.configcenter.facade.vo.Scope;
 import java.util.List;
 
 /**
- * 配置key服务工具类
+ * 配置key操作类
  */
-public final class PropertyKeyUtils {
+public final class PropertyKeys {
     // 配置key服务
     private static final PropertyKeyService PROPERTY_KEY_SERVICE = Contexts.getApplicationContext().getBean(PropertyKeyService.class);
 
