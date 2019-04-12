@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
@@ -109,7 +109,7 @@ public class AddReleaseService {
     private List<Property> buildProperties(AddReleaseOrder order) {
         List<Property> properties = new ArrayList<>();
 
-        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(order.getAppId(), order.getProfileId(), Scope.PRIVATE);
+        List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(order.getAppId(), order.getProfileId(), Scope.PRIVATE);
         for (PropertyValueInfo propertyValue : propertyValues) {
             properties.add(new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope()));
         }

@@ -15,7 +15,7 @@ import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Configs;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -70,7 +70,7 @@ public class ReleaseController {
         ManagerInfo manager = Managers.currentManager();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+            List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
             List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
             List<Property> right = ReleaseUtils.findCurrentRelease(appId, profileId).getProperties();
 

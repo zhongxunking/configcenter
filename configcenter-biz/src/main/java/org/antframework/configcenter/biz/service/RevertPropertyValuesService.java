@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
@@ -40,7 +40,7 @@ public class RevertPropertyValuesService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getReleaseVersion()));
         }
         // 删除现有配置value
-        PropertyValueUtils.deleteAppProfilePropertyValues(order.getAppId(), order.getProfileId());
+        PropertyValues.deleteAppProfilePropertyValues(order.getAppId(), order.getProfileId());
         // 使用发布重建配置value
         for (Property property : release.getProperties()) {
             addPropertyValue(order.getAppId(), order.getProfileId(), property);

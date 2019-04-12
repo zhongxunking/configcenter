@@ -14,7 +14,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.configcenter.biz.util.PropertyValueUtils;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
@@ -163,7 +163,7 @@ public class PropertyValueController {
     public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, Long releaseVersion) {
         ManagerApps.adminOrHaveApp(appId);
 
-        List<PropertyValueInfo> propertyValues = PropertyValueUtils.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+        List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
         List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
         List<Property> right = ReleaseUtils.findRelease(appId, profileId, releaseVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
