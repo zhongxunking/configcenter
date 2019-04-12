@@ -11,7 +11,7 @@ package org.antframework.configcenter.biz.service;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.FindInheritedAppsOrder;
 import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
@@ -31,7 +31,7 @@ public class FindInheritedAppsService {
 
         String appId = order.getAppId();
         while (appId != null) {
-            AppInfo app = AppUtils.findApp(appId);
+            AppInfo app = Apps.findApp(appId);
             if (app == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", appId));
             }

@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -44,7 +44,7 @@ public class FindAppPropertyKeysService {
     public void before(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
         FindAppPropertyKeysOrder order = context.getOrder();
 
-        AppInfo app = AppUtils.findApp(order.getAppId());
+        AppInfo app = Apps.findApp(order.getAppId());
         if (app == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
         }

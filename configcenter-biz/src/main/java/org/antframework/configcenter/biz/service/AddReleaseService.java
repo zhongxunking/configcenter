@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.RefreshUtils;
 import org.antframework.configcenter.dal.dao.AppDao;
@@ -62,7 +62,7 @@ public class AddReleaseService {
     public void before(ServiceContext<AddReleaseOrder, AddReleaseResult> context) {
         AddReleaseOrder order = context.getOrder();
         // 生成版本
-        long version = AppUtils.produceReleaseVersion(order.getAppId());
+        long version = Apps.produceReleaseVersion(order.getAppId());
         context.setAttachmentAttr(VERSION_KEY, version);
     }
 

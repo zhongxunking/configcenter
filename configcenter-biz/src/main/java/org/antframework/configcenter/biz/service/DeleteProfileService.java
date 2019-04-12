@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.dal.dao.ProfileDao;
@@ -45,7 +45,7 @@ public class DeleteProfileService {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("环境[%s]存在子环境，不能删除", order.getProfileId()));
         }
         // 删除所有应用在该环境下的配置value和发布
-        for (AppInfo app : AppUtils.findAllApps()) {
+        for (AppInfo app : Apps.findAllApps()) {
             PropertyValueUtils.deleteAppProfilePropertyValues(app.getAppId(), order.getProfileId());
             ReleaseUtils.deleteAppProfileReleases(app.getAppId(), order.getProfileId());
         }

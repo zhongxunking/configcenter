@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.service;
 
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
@@ -60,7 +60,7 @@ public class FindConfigService {
     // 获取继承的所有应用
     private List<String> getInheritedAppIds(String appId) {
         List<String> appIds = new ArrayList<>();
-        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+        for (AppInfo app : Apps.findInheritedApps(appId)) {
             appIds.add(app.getAppId());
         }
         return appIds;

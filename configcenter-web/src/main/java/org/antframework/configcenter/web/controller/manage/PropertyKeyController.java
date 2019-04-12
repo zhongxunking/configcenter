@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyKeyUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -95,7 +95,7 @@ public class PropertyKeyController {
         ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
-        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+        for (AppInfo app : Apps.findInheritedApps(appId)) {
             List<PropertyKeyInfo> propertyKeys = PropertyKeyUtils.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE);
             result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }

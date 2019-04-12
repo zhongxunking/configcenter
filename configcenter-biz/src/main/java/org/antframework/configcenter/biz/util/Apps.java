@@ -20,9 +20,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 应用工具类
+ * 应用操作类
  */
-public final class AppUtils {
+public final class Apps {
     // 分页查询应用使用的每页大小
     private static final int QUERY_PAGE_SIZE = 100;
     // 应用服务

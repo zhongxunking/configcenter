@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.ProfileUtils;
 import org.antframework.configcenter.facade.info.AppTree;
 import org.antframework.configcenter.facade.info.ProfileTree;
@@ -42,7 +42,7 @@ public class RefreshClientsService {
         RefreshClientsOrder order = context.getOrder();
         // 获取需要刷新的应用
         List<String> appIds = new ArrayList<>();
-        extractAppIds(AppUtils.findAppTree(order.getRootAppId()), appIds);
+        extractAppIds(Apps.findAppTree(order.getRootAppId()), appIds);
         // 获取需要刷新的环境
         List<String> profileIds = new ArrayList<>();
         extractProfileIds(ProfileUtils.findProfileTree(order.getRootProfileId()), profileIds);

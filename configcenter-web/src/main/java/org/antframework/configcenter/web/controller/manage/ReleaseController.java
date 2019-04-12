@@ -13,7 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.biz.util.AppUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.ConfigUtils;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
@@ -221,7 +221,7 @@ public class ReleaseController {
         ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
-        for (AppInfo app : AppUtils.findInheritedApps(appId)) {
+        for (AppInfo app : Apps.findInheritedApps(appId)) {
             // 获取应用在各环境的发布
             Scope scope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             List<ReleaseInfo> inheritedProfileReleases = ConfigUtils.findAppSelfConfig(app.getAppId(), profileId, scope);
