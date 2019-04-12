@@ -19,9 +19,9 @@ import org.antframework.configcenter.facade.vo.Scope;
 import java.util.List;
 
 /**
- * 配置工具类
+ * 配置操作类
  */
-public final class ConfigUtils {
+public final class Configs {
     // 配置服务
     private static final ConfigService CONFIG_SERVICE = Contexts.getApplicationContext().getBean(ConfigService.class);
 

@@ -14,7 +14,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.ConfigUtils;
+import org.antframework.configcenter.biz.util.Configs;
 import org.antframework.configcenter.biz.util.PropertyValueUtils;
 import org.antframework.configcenter.biz.util.ReleaseUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
@@ -224,7 +224,7 @@ public class ReleaseController {
         for (AppInfo app : Apps.findInheritedApps(appId)) {
             // 获取应用在各环境的发布
             Scope scope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<ReleaseInfo> inheritedProfileReleases = ConfigUtils.findAppSelfConfig(app.getAppId(), profileId, scope);
+            List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, scope);
             FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
             // 掩码
             maskAppRelease(appRelease);

@@ -9,7 +9,7 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.ConfigUtils;
+import org.antframework.configcenter.biz.util.Configs;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
@@ -69,7 +69,7 @@ public class FindConfigService {
     // 获取应用自己的配置
     private Map<String, String> getAppSelfConfig(String appId, String profileId, Scope minScope, AtomicLong version) {
         Map<String, String> properties = new HashMap<>();
-        for (ReleaseInfo release : ConfigUtils.findAppSelfConfig(appId, profileId, minScope)) {
+        for (ReleaseInfo release : Configs.findAppSelfConfig(appId, profileId, minScope)) {
             version.addAndGet(release.getVersion());
             Map<String, String> temp = new HashMap<>();
             for (Property property : release.getProperties()) {
