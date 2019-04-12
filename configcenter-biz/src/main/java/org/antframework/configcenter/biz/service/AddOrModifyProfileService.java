@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.RefreshUtils;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
@@ -68,6 +68,6 @@ public class AddOrModifyProfileService {
     public void after(ServiceContext<AddOrModifyProfileOrder, EmptyResult> context) {
         AddOrModifyProfileOrder order = context.getOrder();
         // 刷新客户端
-        RefreshUtils.refreshClients(null, order.getProfileId());
+        Refreshes.refreshClients(null, order.getProfileId());
     }
 }

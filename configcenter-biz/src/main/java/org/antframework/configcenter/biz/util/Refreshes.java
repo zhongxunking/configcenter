@@ -15,9 +15,9 @@ import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 
 /**
- * 刷新工具类
+ * 刷新操作类
  */
-public final class RefreshUtils {
+public final class Refreshes {
     // 刷新服务
     private static final RefreshService REFRESH_SERVICE = Contexts.getApplicationContext().getBean(RefreshService.class);
 

@@ -15,7 +15,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.RefreshUtils;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
@@ -91,7 +91,7 @@ public class AddReleaseService {
     public void after(ServiceContext<AddReleaseOrder, AddReleaseResult> context) {
         AddReleaseOrder order = context.getOrder();
         // 刷新客户端
-        RefreshUtils.refreshClients(order.getAppId(), order.getProfileId());
+        Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
 
     // 构建发布

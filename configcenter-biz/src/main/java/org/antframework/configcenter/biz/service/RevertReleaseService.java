@@ -10,7 +10,7 @@ package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.*;
-import org.antframework.configcenter.biz.util.RefreshUtils;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.api.PropertyValueService;
@@ -53,7 +53,7 @@ public class RevertReleaseService {
         // 回滚配置value
         revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
         // 刷新客户端
-        RefreshUtils.refreshClients(order.getAppId(), order.getProfileId());
+        Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
 
     // 回滚配置value

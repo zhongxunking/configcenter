@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.RefreshUtils;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
@@ -70,6 +70,6 @@ public class AddOrModifyAppService {
     public void after(ServiceContext<AddOrModifyAppOrder, EmptyResult> context) {
         AddOrModifyAppOrder order = context.getOrder();
         // 刷新客户端
-        RefreshUtils.refreshClients(order.getAppId(), null);
+        Refreshes.refreshClients(order.getAppId(), null);
     }
 }
