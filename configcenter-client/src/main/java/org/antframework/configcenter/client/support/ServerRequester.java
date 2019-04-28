@@ -152,7 +152,7 @@ public class ServerRequester {
                     throw new RuntimeException("请求configcenter失败");
                 }
                 if (!result.isSuccess()) {
-                    throw new RuntimeException("监听configcenter配置失败：" + result.getMessage());
+                    throw new RuntimeException("监听configcenter服务端的配置失败：" + result.getMessage());
                 }
                 return result.getTopics().stream().map(ConfigTopic::getAppId).collect(Collectors.toSet());
             } catch (IOException e) {

@@ -58,7 +58,7 @@ public class ConfigRefresher {
         try {
             config = configRequester.findConfig();
         } catch (Throwable e) {
-            log.error("从configcenter读取配置失败：{}", e.getMessage());
+            log.error("从configcenter读取配置失败：{}", e.toString());
             if (cacheFile == null) {
                 throw e;
             }
