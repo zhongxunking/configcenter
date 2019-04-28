@@ -18,8 +18,8 @@ import org.antframework.configcenter.spring.boot.ConfigcenterProperties;
 public final class ConfigsContexts {
     // 配置上下文
     private static final ConfigsContext CONFIGS_CONTEXT = new ConfigsContext(
-            ConfigcenterProperties.INSTANCE.getAppId(),
-            ConfigcenterProperties.INSTANCE.getProfileId(),
+            ConfigcenterProperties.INSTANCE.getRequiredAppId(),
+            ConfigcenterProperties.INSTANCE.getRequiredProfileId(),
             ConfigcenterProperties.INSTANCE.getServerUrl(),
             ConfigcenterProperties.INSTANCE.getHome());
 

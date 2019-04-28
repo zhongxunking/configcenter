@@ -9,7 +9,10 @@
 package org.antframework.configcenter.spring.boot;
 
 import org.antframework.boot.core.Contexts;
+import org.antframework.common.util.tostring.ToString;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.env.AbstractEnvironment;
+import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
@@ -56,8 +59,29 @@ public class ConfigcenterProperties {
      */
     private String priorTo = null;
 
-    public String getAppId() {
+    public String getRequiredAppId() {
+        String appId = this.appId;
+        if (appId == null) {
+            appId = Contexts.getAppId();
+        }
+        Assert.notNull(appId, String.format("未设置应用id（配置key：configcenter.app-id或者%s）", Contexts.APP_ID_KEY));
+        return appId;
+    }
 
+    public String getRequiredProfileId() {
+        if (profileId != null) {
+            return profileId;
+        }
+        String[] profileIds = Contexts.getEnvironment().getActiveProfiles();
+        if (profileIds.length <= 0) {
+            throw new IllegalArgumentException(String.format("未设置环境id（配置key：configcenter.profile-id或者%s）", AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME));
+        } else if (profileIds.length > 1) {
+            throw new IllegalArgumentException(String.format("只能设置一个环境id（配置key：configcenter.profile-id或者%s），当前设置了多个环境id%s", AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, ToString.toString(profileIds)));
+        }
+        return profileIds[0];
+    }
+
+    public String getAppId() {
         return appId;
     }
 

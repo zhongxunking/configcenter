@@ -70,7 +70,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
         // 添加默认监听器
         for (String appId : context.getAppIds()) {
             Config config = context.getConfig(appId);
-            config.getListenerRegistrar().register(properties -> {
+            config.getListeners().addListener(properties -> {
                 List<ChangedProperty> changedProperties = properties.stream().map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue())).collect(Collectors.toList());
                 Envs.getConfigListeners().onChange(appId, changedProperties);
             });
@@ -78,8 +78,8 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
         // 判断是否开启自动刷新配置
         boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
         if (enable) {
-            // 开始监听配置变更事件
-            context.listenConfigs();
+            // 开始监听服务端的配置
+            context.listenServer();
             // 定时刷新
             initTimer();
         }
