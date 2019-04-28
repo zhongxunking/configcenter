@@ -8,15 +8,12 @@
  */
 package org.antframework.configcenter.spring.boot;
 
+import org.antframework.boot.core.Contexts;
+import org.antframework.boot.env.Envs;
+import org.antframework.boot.env.listener.ChangedProperty;
 import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.client.ConfigsContext;
 import org.antframework.configcenter.spring.ConfigsContexts;
-import org.antframework.configcenter.spring.context.Contexts;
-import org.antframework.configcenter.spring.listener.DefaultConfigListener;
-import org.antframework.configcenter.spring.listener.annotation.ConfigListenerType;
-import org.bekit.event.EventPublisher;
-import org.bekit.event.bus.EventBusesHolder;
-import org.bekit.event.publisher.DefaultEventPublisher;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -28,8 +25,10 @@ import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.stream.Collectors;
 
 /**
  * 配置上下文的生命周期
@@ -67,20 +66,20 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
 
     // 使配置上下文准备好
     private void readyConfigsContext() {
-        ConfigsContext configsContext = ConfigsContexts.getContext();
-        // 创建事件发布器
-        EventBusesHolder eventBusesHolder = Contexts.getApplicationContext().getBean(EventBusesHolder.class);
-        EventPublisher eventPublisher = new DefaultEventPublisher(eventBusesHolder.getEventBus(ConfigListenerType.class));
+        ConfigsContext context = ConfigsContexts.getContext();
         // 添加默认监听器
-        for (String appId : configsContext.getAppIds()) {
-            Config config = configsContext.getConfig(appId);
-            config.getListenerRegistrar().register(new DefaultConfigListener(appId, eventPublisher));
+        for (String appId : context.getAppIds()) {
+            Config config = context.getConfig(appId);
+            config.getListenerRegistrar().register(properties -> {
+                List<ChangedProperty> changedProperties = properties.stream().map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue())).collect(Collectors.toList());
+                Envs.getConfigListeners().onChange(appId, changedProperties);
+            });
         }
         // 判断是否开启自动刷新配置
         boolean enable = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_ENABLE_KEY, Boolean.class, Boolean.TRUE);
         if (enable) {
             // 开始监听配置变更事件
-            configsContext.listenConfigs();
+            context.listenConfigs();
             // 定时刷新
             initTimer();
         }

@@ -10,9 +10,8 @@ package org.antframework.configcenter.spring.boot;
 
 import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.spring.ConfigsContexts;
-import org.antframework.configcenter.spring.context.Contexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.logging.LoggingApplicationListener;
+import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.EnumerablePropertySource;
@@ -27,12 +26,17 @@ import org.springframework.core.env.PropertySource;
  * 2、先初始化configcenter配置的好处：初始化configcenter配置报错时，能打印日志；坏处：在configcenter中的日志相关配置不会生效。
  * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为先初始化日志再初始化configcenter配置（日志级别logging.level相关配置依然生效）。
  */
-@Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
+@Order(EnvironmentInitializer.ORDER)
 public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
+    /**
+     * 优先级
+     */
+    public static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 10;
+
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
         // 创建配置资源
-        PropertySource propertySource = new ConfigcenterPropertySource(ConfigsContexts.getConfig(Contexts.getAppId()));
+        PropertySource propertySource = new ConfigcenterPropertySource(ConfigsContexts.getConfig(ConfigcenterProperties.INSTANCE.getAppId()));
         // 将配置资源添加到environment中
         MutablePropertySources propertySources = event.getEnvironment().getPropertySources();
         if (ConfigcenterProperties.INSTANCE.getPriorTo() == null) {
