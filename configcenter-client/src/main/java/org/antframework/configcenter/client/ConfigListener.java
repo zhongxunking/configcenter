@@ -15,7 +15,14 @@ import java.util.List;
 /**
  * 配置监听器
  */
+@FunctionalInterface
 public interface ConfigListener {
+    /**
+     * 获取优先级（值越小优先级越高）
+     */
+    default int getOrder() {
+        return 0;
+    }
 
     /**
      * 当配置被修改时调用本方法

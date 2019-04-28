@@ -29,8 +29,8 @@ public class ConfigRefresher {
     private final AtomicLong version;
     // 配置项集合
     private final ConfigurableConfigProperties properties;
-    // 监听器注册器
-    private final ListenerRegistrar listenerRegistrar;
+    // 配置监听器的管理器
+    private final ConfigListeners listeners;
     // 配置请求器
     private final ServerRequester.ConfigRequester configRequester;
     // 缓存文件
@@ -39,12 +39,12 @@ public class ConfigRefresher {
     public ConfigRefresher(String appId,
                            AtomicLong version,
                            ConfigurableConfigProperties properties,
-                           ListenerRegistrar listenerRegistrar,
+                           ConfigListeners listeners,
                            ServerRequester serverRequester,
                            MapFile cacheFile) {
         this.version = version;
         this.properties = properties;
-        this.listenerRegistrar = listenerRegistrar;
+        this.listeners = listeners;
         this.configRequester = serverRequester.createConfigRequester(appId, VERSION_KEY);
         this.cacheFile = cacheFile;
     }
@@ -90,6 +90,6 @@ public class ConfigRefresher {
         version.set(Long.parseLong(config.get(VERSION_KEY)));
         config.remove(VERSION_KEY);
         List<ChangedProperty> changedProperties = properties.replaceProperties(config);
-        listenerRegistrar.onChange(changedProperties);
+        listeners.onChange(changedProperties);
     }
 }

@@ -12,8 +12,8 @@ import org.antframework.common.util.file.MapFile;
 import org.antframework.configcenter.client.core.ConfigProperties;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 import org.antframework.configcenter.client.core.DefaultConfigProperties;
+import org.antframework.configcenter.client.support.ConfigListeners;
 import org.antframework.configcenter.client.support.ConfigRefresher;
-import org.antframework.configcenter.client.support.ListenerRegistrar;
 import org.antframework.configcenter.client.support.ServerRequester;
 
 import java.io.File;
@@ -29,8 +29,8 @@ public class Config {
     private final AtomicLong version;
     // 配置项集合
     private final ConfigurableConfigProperties properties;
-    // 监听器注册器
-    private final ListenerRegistrar listenerRegistrar;
+    // 配置监听器的管理器
+    private final ConfigListeners listeners;
     // 配置刷新器
     private final ConfigRefresher configRefresher;
 
@@ -38,12 +38,12 @@ public class Config {
         this.appId = appId;
         version = new AtomicLong(0);
         properties = new DefaultConfigProperties();
-        listenerRegistrar = new ListenerRegistrar();
+        listeners = new ConfigListeners();
         configRefresher = new ConfigRefresher(
                 appId,
                 version,
                 properties,
-                listenerRegistrar,
+                listeners,
                 serverRequester,
                 buildCacheFile(cacheDirPath, appId));
         configRefresher.initConfig();
@@ -80,10 +80,10 @@ public class Config {
     }
 
     /**
-     * 获取监听器注册器
+     * 获取配置监听器的管理器
      */
-    public ListenerRegistrar getListenerRegistrar() {
-        return listenerRegistrar;
+    public ConfigListeners getListeners() {
+        return listeners;
     }
 
     /**

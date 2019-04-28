@@ -8,6 +8,8 @@
  */
 package org.antframework.configcenter.client.core;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.Mask;
 
@@ -16,40 +18,19 @@ import java.io.Serializable;
 /**
  * 被修改的配置项
  */
+@AllArgsConstructor
+@Getter
 public class ChangedProperty implements Serializable {
     // 修改类型
-    private ChangeType type;
+    private final ChangeType type;
     // key
-    private String key;
+    private final String key;
     // 旧值
     @Mask(allMask = true)
-    private String oldValue;
+    private final String oldValue;
     // 新值
     @Mask(allMask = true)
-    private String newValue;
-
-    public ChangedProperty(ChangeType type, String key, String oldValue, String newValue) {
-        this.type = type;
-        this.key = key;
-        this.oldValue = oldValue;
-        this.newValue = newValue;
-    }
-
-    public ChangeType getType() {
-        return type;
-    }
-
-    public String getKey() {
-        return key;
-    }
-
-    public String getOldValue() {
-        return oldValue;
-    }
-
-    public String getNewValue() {
-        return newValue;
-    }
+    private final String newValue;
 
     @Override
     public String toString() {

@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.client.support;
 
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import java.util.Objects;
@@ -58,13 +59,10 @@ public class TaskExecutor {
      *
      * @param <T> 目标类型
      */
+    @AllArgsConstructor
     public static abstract class Task<T> implements Runnable {
         // 目标对象
-        protected T target;
-
-        public Task(T target) {
-            this.target = target;
-        }
+        protected final T target;
 
         @Override
         public int hashCode() {
