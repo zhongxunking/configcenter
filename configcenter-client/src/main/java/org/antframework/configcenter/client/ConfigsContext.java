@@ -10,7 +10,7 @@ package org.antframework.configcenter.client;
 
 import lombok.extern.slf4j.Slf4j;
 import org.antframework.common.util.other.Cache;
-import org.antframework.configcenter.client.support.ConfigsListener;
+import org.antframework.configcenter.client.support.ServerListener;
 import org.antframework.configcenter.client.support.ServerRequester;
 import org.antframework.configcenter.client.support.TaskExecutor;
 import org.apache.commons.lang3.StringUtils;
@@ -34,8 +34,8 @@ public class ConfigsContext {
     });
     // 任务执行器
     private final TaskExecutor taskExecutor = new TaskExecutor();
-    // 配置监听器
-    private ConfigsListener configsListener = null;
+    // 服务端监听器
+    private ServerListener serverListener = null;
     // 主体应用id
     private final String mainAppId;
     // 环境id
@@ -95,11 +95,11 @@ public class ConfigsContext {
     }
 
     /**
-     * 开始监听配置变更事件
+     * 开始监听服务端的配置
      */
-    public synchronized void listenConfigs() {
-        if (configsListener == null) {
-            configsListener = new ConfigsListener(configsCache, serverRequester);
+    public synchronized void listenServer() {
+        if (serverListener == null) {
+            serverListener = new ServerListener(configsCache, serverRequester);
         }
     }
 
@@ -125,8 +125,8 @@ public class ConfigsContext {
      * 关闭
      */
     public synchronized void close() {
-        if (configsListener != null) {
-            configsListener.close();
+        if (serverListener != null) {
+            serverListener.close();
         }
         taskExecutor.close();
     }

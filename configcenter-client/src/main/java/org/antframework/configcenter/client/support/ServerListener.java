@@ -17,10 +17,10 @@ import java.util.List;
 import java.util.Set;
 
 /**
- * 配置监听器
+ * 服务端监听器
  */
 @Slf4j
-public class ConfigsListener {
+public class ServerListener {
     // 配置缓存
     private final Cache<String, Config> configsCache;
     // 监听请求器
@@ -28,14 +28,14 @@ public class ConfigsListener {
     // 监听任务
     private final ListenTask listenTask;
 
-    public ConfigsListener(Cache<String, Config> configsCache, ServerRequester serverRequester) {
+    public ServerListener(Cache<String, Config> configsCache, ServerRequester serverRequester) {
         this.configsCache = configsCache;
         listenRequester = serverRequester.createListenRequester();
         listenTask = new ListenTask();
         listenTask.start();
     }
 
-    // 监听配置
+    // 监听服务端的配置
     private Set<String> listen() {
         List<String> appIds = new ArrayList<>();
         List<Long> configVersions = new ArrayList<>();
@@ -74,7 +74,7 @@ public class ConfigsListener {
                     try {
                         refresh(listen());
                     } catch (Throwable e) {
-                        log.error("监听configcenter配置出错：{}", e.getMessage());
+                        log.error("监听configcenter服务端的配置出错：{}", e.toString());
                         sleep();
                     }
                 }
