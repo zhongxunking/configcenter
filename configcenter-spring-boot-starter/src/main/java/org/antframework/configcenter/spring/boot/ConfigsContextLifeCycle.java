@@ -26,6 +26,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.util.Assert;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.stream.Collectors;
@@ -71,8 +72,16 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
         for (String appId : context.getAppIds()) {
             Config config = context.getConfig(appId);
             config.getListeners().addListener(properties -> {
-                List<ChangedProperty> changedProperties = properties.stream().map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue())).collect(Collectors.toList());
-                Envs.getConfigListeners().onChange(appId, changedProperties);
+                List<ChangedProperty> changedProperties = properties.stream()
+                        .filter(property -> {
+                            // 过滤掉未生效的配置
+                            String actualNewValue = Contexts.getEnvironment().getProperty(property.getKey());
+                            return Objects.equals(property.getNewValue(), actualNewValue);
+                        }).map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue()))
+                        .collect(Collectors.toList());
+                if (!changedProperties.isEmpty()) {
+                    Envs.getConfigListeners().onChange(appId, changedProperties);
+                }
             });
         }
         // 判断是否开启自动刷新配置
