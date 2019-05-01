@@ -11,7 +11,7 @@ package org.antframework.configcenter.client.core;
 import java.util.*;
 
 /**
- * 配置项集合默认实现
+ * 配置集默认实现
  */
 public class DefaultConfigProperties implements ConfigurableConfigProperties {
     // 所有配置项

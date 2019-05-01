@@ -27,7 +27,7 @@ public class ConfigRefresher {
 
     // 版本
     private final AtomicLong version;
-    // 配置项集合
+    // 配置集
     private final ConfigurableConfigProperties properties;
     // 配置监听器的管理器
     private final ConfigListeners listeners;

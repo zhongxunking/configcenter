@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 可配置的配置项集合
+ * 可配置的配置集
  */
 public interface ConfigurableConfigProperties extends ConfigProperties {
 

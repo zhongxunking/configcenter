@@ -32,6 +32,6 @@ public class ReleaseInfo extends AbstractInfo {
     private Date releaseTime;
     // 备注
     private String memo;
-    // 配置项集合
+    // 配置集
     private List<Property> properties;
 }

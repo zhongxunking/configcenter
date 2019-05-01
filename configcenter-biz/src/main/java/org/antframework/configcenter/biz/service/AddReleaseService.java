@@ -105,7 +105,7 @@ public class AddReleaseService {
         return release;
     }
 
-    // 构建配置项集合
+    // 构建配置集
     private List<Property> buildProperties(AddReleaseOrder order) {
         List<Property> properties = new ArrayList<>();
 

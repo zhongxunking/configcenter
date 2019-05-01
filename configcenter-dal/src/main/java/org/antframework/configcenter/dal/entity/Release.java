@@ -46,13 +46,13 @@ public class Release extends AbstractEntity {
     @Column
     private String memo;
 
-    // 配置项集合
+    // 配置集
     @Column(length = 1024 * 1024)
     @Convert(converter = PropertiesConverter.class)
     private List<Property> properties;
 
     /**
-     * 配置项集合的jpa转换器
+     * 配置集的jpa转换器
      */
     public static class PropertiesConverter implements AttributeConverter<List<Property>, String> {
         @Override

@@ -9,7 +9,7 @@
 package org.antframework.configcenter.client.core;
 
 /**
- * 配置项集合
+ * 配置集
  */
 public interface ConfigProperties {
     /**
