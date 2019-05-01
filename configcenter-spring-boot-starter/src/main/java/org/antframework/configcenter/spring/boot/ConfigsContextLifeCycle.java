@@ -76,7 +76,8 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
                         .filter(property -> {
                             // 过滤掉未生效的配置
                             String actualNewValue = Contexts.getEnvironment().getProperty(property.getKey());
-                            return Objects.equals(property.getNewValue(), actualNewValue);
+                            return Objects.equals(property.getNewValue(), actualNewValue)
+                                    || property.getType() == org.antframework.configcenter.client.core.ChangedProperty.ChangeType.REMOVE;
                         }).map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue()))
                         .collect(Collectors.toList());
                 if (!changedProperties.isEmpty()) {
