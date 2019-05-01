@@ -55,7 +55,7 @@ public class ConfigcenterProperties {
     @NotBlank
     private String home = Contexts.getHome() + "/configcenter";
     /**
-     * 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
+     * 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、random（随机数。比配置文件优先级高）等等
      */
     private String priorTo = null;
 
