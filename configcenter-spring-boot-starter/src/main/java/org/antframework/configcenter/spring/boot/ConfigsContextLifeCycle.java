@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.spring.boot;
 
+import lombok.extern.slf4j.Slf4j;
 import org.antframework.boot.core.Contexts;
 import org.antframework.boot.env.Envs;
 import org.antframework.boot.env.listener.ChangedProperty;
@@ -34,6 +35,7 @@ import java.util.stream.Collectors;
 /**
  * 配置上下文的生命周期
  */
+@Slf4j
 public class ConfigsContextLifeCycle implements GenericApplicationListener {
     // 刷新定时器
     private Timer refreshTimer = null;
@@ -100,7 +102,11 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
         TimerTask task = new TimerTask() {
             @Override
             public void run() {
-                ConfigsContexts.getContext().refresh();
+                try {
+                    ConfigsContexts.getContext().refresh();
+                } catch (Throwable e) {
+                    log.error("定时刷新configcenter配置出错", e);
+                }
             }
         };
         long period = Contexts.getEnvironment().getProperty(ConfigcenterProperties.AUTO_REFRESH_CONFIGS_PERIOD_KEY, Long.class, 5 * 60 * 1000L);
