@@ -8,11 +8,13 @@
  */
 package org.antframework.configcenter.dal;
 
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Configuration;
 
 /**
  * dal层配置
  */
 @Configuration
+@EnableCaching
 public class DalConfiguration {
 }
