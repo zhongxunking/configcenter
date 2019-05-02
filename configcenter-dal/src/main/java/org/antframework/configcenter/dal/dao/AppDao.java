@@ -10,6 +10,9 @@ package org.antframework.configcenter.dal.dao;
 
 import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.dal.entity.App;
+import org.antframework.configcenter.facade.vo.CacheConstant;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
@@ -25,18 +28,21 @@ import java.util.List;
 @RepositoryDefinition(domainClass = App.class, idClass = Long.class)
 public interface AppDao {
 
+    @CacheEvict(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0.appId")
     void save(App app);
+
+    @CacheEvict(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0.appId")
+    void delete(App app);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     App findLockByAppId(String appId);
 
+    @Cacheable(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0")
     App findByAppId(String appId);
 
     List<App> findByParent(String parent);
 
     boolean existsByParent(String parent);
-
-    void delete(App app);
 
     Page<App> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

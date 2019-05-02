@@ -10,6 +10,9 @@ package org.antframework.configcenter.dal.dao;
 
 import org.antframework.common.util.query.QueryParam;
 import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.facade.vo.CacheConstant;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Lock;
@@ -25,18 +28,21 @@ import java.util.List;
 @RepositoryDefinition(domainClass = Profile.class, idClass = Long.class)
 public interface ProfileDao {
 
+    @CacheEvict(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0.profileId")
     void save(Profile profile);
+
+    @CacheEvict(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0.profileId")
+    void delete(Profile profile);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Profile findLockByProfileId(String profileId);
 
+    @Cacheable(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0")
     Profile findByProfileId(String profileId);
 
-    boolean existsByParent(String parent);
-
-    void delete(Profile profile);
-
     List<Profile> findByParent(String parent);
+
+    boolean existsByParent(String parent);
 
     Page<Profile> query(Collection<QueryParam> queryParams, Pageable pageable);
 }
