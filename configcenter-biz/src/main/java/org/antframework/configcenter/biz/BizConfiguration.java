@@ -36,7 +36,7 @@ public class BizConfiguration {
 
     // 配置redis消息监听器容器
     @Bean
-    public RedisMessageListenerContainer redisMessageListenerContainer(RedisConnectionFactory redisConnectionFactory) {
+    public RedisMessageListenerContainer refreshClientsListenerContainer(RedisConnectionFactory redisConnectionFactory) {
         RedisMessageListenerContainer container = new RedisMessageListenerContainer();
         container.setConnectionFactory(redisConnectionFactory);
         container.addMessageListener(new RefreshClientsMessageListener(), new ChannelTopic(RedisConstant.REFRESH_CLIENTS_CHANNEL));
