@@ -1,13 +1,13 @@
 # 配置中心
 
 1. 简介
-> 配置中心现在基本上是大型互联网公司的标配，用于存储管理公司内部各个系统的配置，降低维护成本。本配置中心提供了：配置管理基本能力、配置发布回滚能力、配置更新推送能力、客户端配置缓存能力、对敏感配置设置访问权限能力。本配置中心的目标是让你能优雅的维护配置。
+> 配置中心现在基本上是大型互联网公司的标配，用于存储管理公司内部各个系统的配置，降低维护成本。本配置中心提供了：配置管理基本能力、配置发布回滚能力、配置更新推送能力、客户端配置缓存能力、对敏感配置设置访问权限能力。本配置中心的目标是让你能优雅的管理配置。
 
 2. 环境要求
 > - 服务端：jdk1.8
 > - 客户端：jdk1.8
-> - zookeeper
 > - MySQL
+> - Redis
 
 > 注意：本系统已经上传到[maven中央库](http://search.maven.org/#search%7Cga%7C1%7Corg.antframework.configcenter)
 
@@ -22,15 +22,19 @@
 ## 1. 整体设计
 配置就是不同应用在不同环境的一些键值对。
 整体设计图：<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=500 /><br/>
+<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 /><br/>
 
-##### 本配置中心内的角色有：服务端、客户端、zookeeper
+##### 本配置中心内的角色有：服务端、客户端、MySQL数据库、Redis、配置管理员
 
-- 服务端：管理不同应用在不同环境中的配置，配置数据落地到MySQL数据库。为客户端提供http查询应用在指定环境中的配置。当一个应用在指定环境中的配置有了变更（增删改），则服务端会通过zookeeper通知客户端。
+- 服务端：管理不同应用在不同环境中的配置，配置数据落地到MySQL数据库。为客户端提供http查询配置，为客户端提供Http Long Polling（长轮询）监听配置变更通知。当应用的配置有了变更（增删改），则会直接通知客户端。
 
-- 客户端：客户端刚启动时会通过http请求服务端读取当前应用在当前环境中的最新配置。如果从服务端读取失败，则客户端会尝试从本地缓存文件中读取配置，如果本地无缓存文件，则会抛出异常。客户端启动成功后，会监听配置变更事件。当监听到配置有变更时，客户端会再次通过http请求服务端读取最新配置，然后把最新配置保存到缓存文件，最后将最新配置和当前客户端中旧配置进行比较，将变化部分通知给应用。
+- 客户端：客户端刚启动时会通过http请求服务端读取应用的最新配置。如果从服务端读取失败，则客户端会尝试从本地缓存文件中读取配置；如果本地无缓存文件，则启动失败。客户端启动成功后，会通过Http Long Polling（长轮询）监听服务端配置变更通知。当监听到配置有变更时，客户端会再次通过http请求服务端读取最新配置，然后把最新配置保存到缓存文件，最后将最新配置和当前客户端中旧配置进行比较，将变化部分通知给应用。
 
-- zookeeper：仅仅作为通知工具，并不存储任何配置。当配置有变更，服务端会通知zookeeper，zookeeper接收到消息后会把消息分发给客户端，客户端收到消息后就会调用服务端读取最新配置。即使zookeeper宕机了，客户端也会每5分钟自动上服务端读取最新配置，对zookeeper是弱依赖。
+- MySQL：用于存储服务端管理的配置。
+
+- Redis：有三个作用：1、缓存数据库存储的配置，用于提高系统响应效率；2、存储分布式session；3、小型MQ，配置中心服务端之间使用它进行通信。
+
+- 配置管理员：管理配置
 
 ##### 配置可以从应用和环境两个纬度进行共享
 
@@ -57,25 +61,24 @@
 - 无：普通管理员既不能查看该配置项，也不能修改该配置项。
 
 ## 2. 部署服务端
-[下载服务端](https://github.com/zhongxunking/configcenter/releases)。以下是集群部署架构图：<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEBc68603367698b77744c82c6c92750a05?method=download&shareKey=84a80b0f98dd664989715565dfc2853e" width=600 />
+[下载服务端](https://github.com/zhongxunking/configcenter/releases)
 
 <span style="font-size: large">说明：</span>
-- 出于安全考虑，当外网（包括配置管理员）尝试通过http请求访问服务端/config/*路径时，nginx应该进行拦截；而客户端通过内网访问/config/*路径时，nginx应该允许访问。
+- 出于安全考虑，当外网（包括配置管理员）尝试通过http请求访问服务端/config/*下的路径时，nginx应该进行拦截；而客户端通过内网访问/config/*路径时，nginx应该允许访问。
 - 服务端使用的springboot进行开发，直接命令启动下载好的jar包即可，无需部署tomcat。
 - 有两种方式创建数据库表，根据具体情况选择其中一种方式即可：1、手动执行[建表sql](https://github.com/zhongxunking/configcenter/wiki/v1.4.0.RELEASE%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BB%BA%E8%A1%A8DDL)；2、让服务端拥有向数据库执行ddl语句权限，服务端第一次启动时会自动建表，无需手动执行sql。
 - 服务端在启动时会在"/var/apps/"下创建日志文件，请确保服务端对该目录拥有写权限。
-- 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有非线上环境配置）；二是线上环境配置中心（管理线上环境配置）。
+- 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有开发、测试等环境的配置）；二是线上环境配置中心（管理生产、预发布等环境的配置）。
 - 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）。
 - 服务端http端口为6220。
 
 启动服务端命令模板：
 ```shell
-java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库连接" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --meta.zk-urls="配置中心使用的zookeeper地址(IP:端口),如果存在多个zookeeper以英文逗号分隔"
+java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库url" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --spring.redis.host="redis的地址" --spring.redis.port="redis的端口"
 ```
 比如我本地测试时启动命令：
 ```shell
-java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="offline" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --meta.zk-urls="localhost:2181"
+java -jar configcenter-1.4.0.RELEASE.jar --spring.profiles.active="offline" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --spring.redis.host="localhost" --spring.redis.port="6379"
 ```
 
 ## 3. 集成客户端
@@ -117,7 +120,7 @@ String redisHost = customerConfig.getProperties().getProperty("redis.host");
 Config accountConfig = configsContext.getConfig("account");
 
 // 还可以注册配置变更监听器
-customerConfig.getListenerRegistrar().register(new ConfigListener() {
+customerConfig.getListeners().addListener(new org.antframework.configcenter.client.ConfigListener() {
     @Override
     public void onChange(List<ChangedProperty> changedProperties) {
         for (ChangedProperty changedProperty : changedProperties) {
@@ -125,8 +128,8 @@ customerConfig.getListenerRegistrar().register(new ConfigListener() {
         }
     }
 });
-// 开启配置变更监听功能
-configsContext.listenConfigs();
+// 开启监听服务端的配置
+configsContext.listenServer();
 
 // 系统正常运行...
 
@@ -136,8 +139,10 @@ configsContext.close();
 
 ### 3.2 通过starter进行集成
 starter本质上还是依赖于上面介绍的客户端的能力，只不过根据spring-boot场景提供了更优雅的集成方式，也提供了更方便的功能。
+> 注意：本starter既支持SpringBoot2.x，也支持SpringBoot1.x
 
 #### 3.2.1 引入starter依赖
+- SpringBoot2.x应用引入：
 ```xml
 <dependency>
   <groupId>org.antframework.configcenter</groupId>
@@ -145,25 +150,44 @@ starter本质上还是依赖于上面介绍的客户端的能力，只不过根�
   <version>1.4.0.RELEASE</version>
 </dependency>
 ```
+- SpringBoot1.x应用引入：
+```xml
+<dependency>
+    <groupId>org.antframework.configcenter</groupId>
+    <artifactId>configcenter-spring-boot-starter</artifactId>
+    <version>1.4.0.RELEASE</version>
+    <exclusions>
+        <exclusion>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+        </exclusion>
+    </exclusions>
+</dependency>
+<dependency>
+    <groupId>org.hibernate</groupId>
+    <artifactId>hibernate-validator</artifactId>
+    <version>5.3.6.Final</version>
+</dependency>
+```
 
 #### 3.2.2 配置客户端
 在应用的配置文件application.properties或application-xxx.properties中配置：
 ```properties
-# 必填：应用id（如果未设置，则采用spring.application.name对应的值）
-configcenter.app-id=customer
-# 必填：服务端地址
+# 必填：应用id（配置key：spring.application.name或者configcenter.app-id）
+spring.application.name=customer
+# 必填：环境id（配置key：spring.profiles.active或者configcenter.profile-id）
+spring.profiles.active=dev
+# 必填：配置中心服务端的地址
 configcenter.server-url=http://localhost:6220
 
-# 选填：缓存目录（默认为：/var/apps/configcenter）
-configcenter.cache-dir-path=/var/apps/configcenter
-# 选填：是否开启监听配置变更事件（默认为开启）
-configcenter.listen-configs.enable=true
-# 选填：配置刷新周期（单位：秒。默认为5分钟刷新一次）
-configcenter.refresh-period=300
-# 选填：配置中心的配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、applicationConfigurationProperties（配置文件）等等
-configcenter.prior-to=applicationConfigurationProperties
-# 选填：如果想在日志中打印缓存文件路径，可以进行以下配置
-logging.level.org.antframework.configcenter.client.support.ConfigRefresher=debug
+# 选填：缓存目录（默认为：/var/apps/${appId}/configcenter）
+configcenter.home=/tmp/configcenter
+# 选填：是否开启自动刷新configcenter配置（默认为开启）
+configcenter.auto-refresh-configs.enable=true
+# 选填：自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）
+configcenter.auto-refresh-configs.period=300000
+# 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、random（随机数。比配置文件优先级高）等等
+configcenter.prior-to=random
 ```
 
 #### 3.2.3 使用配置
@@ -192,20 +216,20 @@ public void doBiz() {
 public class MyConfigListener {
     // 监听所有配置
     @ListenConfigChanged(prefix = "")
-    public void listenAll(List<ChangedProperty> changedProperties) {
+    public void listenAll(List<org.antframework.boot.env.listener.ChangedProperty> changedProperties) {
         // TODO 具体业务代码
     }
 
     // 监听redis配置（prefix表示需要监听的配置前缀。当以“redis.”开头的配置项被修改时，
     // 被修改的配置会作为入参调用本方法。比如redis.host、redis.port等被修改时都会调用本方法）
     @ListenConfigChanged(prefix = "redis")
-    public void listenPool(List<ChangedProperty> changedProperties) {
+    public void listenRedis(List<org.antframework.boot.env.listener.ChangedProperty> changedProperties) {
         // TODO 具体业务代码
     }
     
     // 监听具体某一个配置项（注意：入参不再是List<ChangedProperty>，而是ChangedProperty）
     @ListenConfigChanged(prefix = "redis.host")
-    public void listenPool(ChangedProperty changedProperty) {
+    public void listenRedisHost(org.antframework.boot.env.listener.ChangedProperty changedProperty) {
         // TODO 具体业务代码
     }
 }
@@ -217,7 +241,7 @@ public class MyConfigListener {
 public class MyConfigListener {
     // 监听所有配置
     @ListenConfigChanged(prefix = "")
-    public void listenAll(List<ChangedProperty> changedProperties) {
+    public void listenAll(List<org.antframework.boot.env.listener.ChangedProperty> changedProperties) {
         // TODO 具体业务代码
     }
 }
