@@ -11,8 +11,8 @@ package org.antframework.configcenter.spring.boot;
 import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.spring.ConfigsContexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
@@ -31,7 +31,7 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
     /**
      * 优先级
      */
-    public static final int ORDER = LoggingApplicationListener.DEFAULT_ORDER + 10;
+    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 30;
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
