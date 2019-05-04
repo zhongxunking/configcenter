@@ -41,7 +41,7 @@ public class WebConfiguration {
     }
 
     /**
-     * String转Set<ListenMeta>转换器
+     * String转Set&lt;ListenMeta&gt;转换器
      */
     public static class StringToSetListenMetaConverter implements Converter<String, Set<ConfigController.ListenMeta>> {
         @Override
