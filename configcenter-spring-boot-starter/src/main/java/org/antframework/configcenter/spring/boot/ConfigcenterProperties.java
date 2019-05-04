@@ -10,12 +10,11 @@ package org.antframework.configcenter.spring.boot;
 
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.tostring.ToString;
+import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
-
-import javax.validation.constraints.NotBlank;
 
 /**
  * configcenter属性
