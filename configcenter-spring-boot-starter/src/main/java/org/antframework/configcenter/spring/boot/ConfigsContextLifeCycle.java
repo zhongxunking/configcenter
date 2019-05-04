@@ -76,6 +76,9 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             config.getListeners().addListener(properties -> {
                 List<ChangedProperty> changedProperties = properties.stream()
                         .filter(property -> {
+                            if (!Objects.equals(appId, ConfigcenterProperties.INSTANCE.getRequiredAppId())) {
+                                return true;
+                            }
                             // 过滤掉未生效的配置
                             String actualNewValue = Contexts.getEnvironment().getProperty(property.getKey());
                             return Objects.equals(property.getNewValue(), actualNewValue)
