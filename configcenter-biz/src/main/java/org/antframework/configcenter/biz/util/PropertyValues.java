@@ -17,7 +17,6 @@ import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.springframework.beans.BeanUtils;
 
 import java.util.List;
 
@@ -27,6 +26,35 @@ import java.util.List;
 public final class PropertyValues {
     // 配置value服务
     private static final PropertyValueService PROPERTY_VALUE_SERVICE = Contexts.getApplicationContext().getBean(PropertyValueService.class);
+
+    /**
+     * 删除应用在指定环境的所有配置value
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     */
+    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
+        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
+            deletePropertyValue(propertyValue.getAppId(), propertyValue.getKey(), propertyValue.getProfileId());
+        }
+    }
+
+    /**
+     * 删除配置value
+     *
+     * @param appId     应用id
+     * @param key       配置key
+     * @param profileId 环境id
+     */
+    public static void deletePropertyValue(String appId, String key, String profileId) {
+        DeletePropertyValueOrder order = new DeletePropertyValueOrder();
+        order.setAppId(appId);
+        order.setKey(key);
+        order.setProfileId(profileId);
+
+        EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
+        FacadeUtils.assertSuccess(result);
+    }
 
     /**
      * 查找应用在指定环境的所有配置value
@@ -45,21 +73,5 @@ public final class PropertyValues {
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
-    }
-
-    /**
-     * 删除应用在指定环境的所有配置value
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     */
-    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
-            DeletePropertyValueOrder order = new DeletePropertyValueOrder();
-            BeanUtils.copyProperties(propertyValue, order);
-
-            EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
-            FacadeUtils.assertSuccess(result);
-        }
     }
 }
