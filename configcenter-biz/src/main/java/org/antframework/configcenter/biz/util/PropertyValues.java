@@ -29,18 +29,6 @@ public final class PropertyValues {
     private static final PropertyValueService PROPERTY_VALUE_SERVICE = Contexts.getApplicationContext().getBean(PropertyValueService.class);
 
     /**
-     * 删除应用在指定环境的所有配置value
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     */
-    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
-            deletePropertyValue(propertyValue.getAppId(), propertyValue.getKey(), propertyValue.getProfileId());
-        }
-    }
-
-    /**
      * 新增或修改配置value
      *
      * @param appId     应用id
@@ -95,5 +83,17 @@ public final class PropertyValues {
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
+    }
+
+    /**
+     * 删除应用在指定环境的所有配置value
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     */
+    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
+        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
+            deletePropertyValue(propertyValue.getAppId(), propertyValue.getKey(), propertyValue.getProfileId());
+        }
     }
 }
