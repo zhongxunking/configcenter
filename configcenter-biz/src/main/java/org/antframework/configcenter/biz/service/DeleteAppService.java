@@ -9,23 +9,23 @@
 package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
-import org.antframework.common.util.facade.*;
+import org.antframework.common.util.facade.BizException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.biz.util.PropertyKeys;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
-import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.DeleteAppOrder;
-import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
-import org.springframework.beans.BeanUtils;
 
 /**
  * 删除应用服务
@@ -35,8 +35,6 @@ import org.springframework.beans.BeanUtils;
 public class DeleteAppService {
     // 应用dao
     private final AppDao appDao;
-    // 配置key服务
-    private final PropertyKeyService propertyKeyService;
 
     @ServiceExecute
     public void execute(ServiceContext<DeleteAppOrder, EmptyResult> context) {
@@ -51,7 +49,7 @@ public class DeleteAppService {
         }
         // 删除该应用的所有配置key
         for (PropertyKeyInfo propertyKey : PropertyKeys.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
-            deletePropertyKey(propertyKey);
+            PropertyKeys.deletePropertyKey(propertyKey.getAppId(), propertyKey.getKey());
         }
         // 删除该应用的在所有环境的配置value和发布
         for (ProfileInfo profile : Profiles.findAllProfiles()) {
@@ -60,14 +58,5 @@ public class DeleteAppService {
         }
         // 删除应用
         appDao.delete(app);
-    }
-
-    // 删除配置key
-    private void deletePropertyKey(PropertyKeyInfo propertyKey) {
-        DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
-        BeanUtils.copyProperties(propertyKey, order);
-
-        EmptyResult result = propertyKeyService.deletePropertyKey(order);
-        FacadeUtils.assertSuccess(result);
     }
 }
