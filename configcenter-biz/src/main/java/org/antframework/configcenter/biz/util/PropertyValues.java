@@ -13,6 +13,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
+import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
@@ -37,6 +38,27 @@ public final class PropertyValues {
         for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
             deletePropertyValue(propertyValue.getAppId(), propertyValue.getKey(), propertyValue.getProfileId());
         }
+    }
+
+    /**
+     * 新增或修改配置value
+     *
+     * @param appId     应用id
+     * @param key       key
+     * @param profileId 环境id
+     * @param value     value
+     * @param scope     作用域
+     */
+    public static void addOrModifyPropertyValue(String appId, String key, String profileId, String value, Scope scope) {
+        AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
+        order.setAppId(appId);
+        order.setKey(key);
+        order.setProfileId(profileId);
+        order.setValue(value);
+        order.setScope(scope);
+
+        EmptyResult result = PROPERTY_VALUE_SERVICE.addOrModifyPropertyValue(order);
+        FacadeUtils.assertSuccess(result);
     }
 
     /**
