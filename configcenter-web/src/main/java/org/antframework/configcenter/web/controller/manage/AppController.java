@@ -11,7 +11,7 @@ package org.antframework.configcenter.web.controller.manage;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.AbstractQueryResult;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.api.AppService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.order.*;
@@ -172,10 +172,9 @@ public class AppController {
         BeanUtils.copyProperties(appIdsResult, result, "infos");
         // 查找应用
         for (String appId : appIdsResult.getInfos()) {
-            FindAppResult findAppResult = findApp(appId);
-            FacadeUtils.assertSuccess(findAppResult);
-            if (findAppResult.getApp() != null) {
-                result.addInfo(findAppResult.getApp());
+            AppInfo app = Apps.findApp(appId);
+            if (app != null) {
+                result.addInfo(app);
             }
         }
         return result;
