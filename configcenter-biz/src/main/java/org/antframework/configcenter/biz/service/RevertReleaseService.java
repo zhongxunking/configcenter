@@ -9,12 +9,14 @@
 package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
-import org.antframework.common.util.facade.*;
+import org.antframework.common.util.facade.BizException;
+import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Release;
-import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertReleaseOrder;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
@@ -30,8 +32,6 @@ import org.bekit.service.engine.ServiceContext;
 public class RevertReleaseService {
     // 发布dao
     private final ReleaseDao releaseDao;
-    // 配置value服务
-    private final PropertyValueService propertyValueService;
 
     @ServiceExecute
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
@@ -51,19 +51,8 @@ public class RevertReleaseService {
     public void after(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
         // 回滚配置value
-        revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
+        PropertyValues.revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
         // 刷新客户端
         Refreshes.refreshClients(order.getAppId(), order.getProfileId());
-    }
-
-    // 回滚配置value
-    private void revertPropertyValues(String appId, String profileId, Long version) {
-        RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setReleaseVersion(version);
-
-        EmptyResult result = propertyValueService.revertPropertyValues(order);
-        FacadeUtils.assertSuccess(result);
     }
 }

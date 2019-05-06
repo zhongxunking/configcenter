@@ -16,6 +16,7 @@ import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 
@@ -63,6 +64,23 @@ public final class PropertyValues {
         order.setProfileId(profileId);
 
         EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
+        FacadeUtils.assertSuccess(result);
+    }
+
+    /**
+     * 回滚配置value
+     *
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param releaseVersion 回滚到的目标发布版本
+     */
+    public static void revertPropertyValues(String appId, String profileId, Long releaseVersion) {
+        RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setReleaseVersion(releaseVersion);
+
+        EmptyResult result = PROPERTY_VALUE_SERVICE.revertPropertyValues(order);
         FacadeUtils.assertSuccess(result);
     }
 
