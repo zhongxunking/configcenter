@@ -20,6 +20,7 @@ import org.springframework.web.context.request.async.DeferredResult;
 
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -72,22 +73,20 @@ public class ListeningClientsContainer {
      */
     @Listen
     public void onRefreshClients(RefreshClientsEvent event) {
-        Set<ListeningClient> clients = new HashSet<>();
-        for (ConfigTopic topic : event.getTopics()) {
-            Set<ListeningClient> existingClients = topicClients.get(topic);
-            if (existingClients != null) {
-                clients.addAll(existingClients);
-            }
-        }
-        for (ListeningClient client : clients) {
-            ListenResult listenResult = FacadeUtils.buildSuccess(ListenResult.class);
-            for (ConfigTopic topic : event.getTopics()) {
-                if (client.getTopics().contains(topic)) {
-                    listenResult.addTopic(topic);
-                }
-            }
-            client.getDeferredResult().setResult(listenResult);
-        }
+        event.getTopics().stream()
+                .map(topicClients::get)
+                .filter(Objects::nonNull)
+                .flatMap(Set::stream)
+                .distinct()
+                .forEach(client -> {
+                    ListenResult listenResult = FacadeUtils.buildSuccess(ListenResult.class);
+                    for (ConfigTopic topic : event.getTopics()) {
+                        if (client.getTopics().contains(topic)) {
+                            listenResult.addTopic(topic);
+                        }
+                    }
+                    client.getDeferredResult().setResult(listenResult);
+                });
     }
 
     /**
