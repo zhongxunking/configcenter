@@ -69,17 +69,18 @@
 - 有两种方式创建数据库表，根据具体情况选择其中一种方式即可：1、手动执行[建表sql](https://github.com/zhongxunking/configcenter/wiki/v1.4.0.RELEASE%E6%95%B0%E6%8D%AE%E5%BA%93%E5%BB%BA%E8%A1%A8DDL)；2、让服务端拥有向数据库执行ddl语句权限，服务端第一次启动时会自动建表，无需手动执行sql。
 - 服务端在启动时会在"/var/apps/"下创建日志文件，请确保服务端对该目录拥有写权限。
 - 由于配置中心本身就是用来管理各个环境中的配置，所以大部分公司只需部署两套，一是线下环境配置中心（管理所有开发、测试等环境的配置）；二是线上环境配置中心（管理生产、预发布等环境的配置）。
-- 线下环境编码：offline，线上环境编码：online（可以根据各公司自己情况自己定义，这里只是根据我个人习惯推荐的两个编码）。
 - 服务端http端口为6220。
 
 启动服务端命令模板：
 ```shell
-java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库url" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --spring.redis.host="redis的地址" --spring.redis.port="redis的端口"
+nohup java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库url" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --spring.redis.host="redis的地址" --spring.redis.port="redis的端口" &
 ```
 比如我本地测试时启动命令：
 ```shell
-java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="offline" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --spring.redis.host="localhost" --spring.redis.port="6379"
+nohup java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --spring.redis.host="localhost" --spring.redis.port="6379" &
 ```
+>  以上是最简版的启动命令脚本，真正部署时可自行进行丰富，比如限制内存大小等等。
+
 
 ## 3. 集成客户端
 > 读者也可以先看后面的“[配置管理介绍](#4-配置管理介绍)”，再来看本部分的客户端介绍。
@@ -138,7 +139,7 @@ configsContext.close();
 ```
 
 ### 3.2 通过starter进行集成
-starter本质上还是依赖于上面介绍的客户端的能力，只不过根据spring-boot场景提供了更优雅的集成方式，也提供了更方便的功能。
+starter本质上还是依赖于上面介绍的客户端的能力，只不过根据spring-boot场景提供了更优雅的集成方式，也提供了更便捷的功能（可自动刷新@Value占位符和@ConfigurationProperties配置类）。
 > 注意：本starter既支持SpringBoot2.x，也支持SpringBoot1.x
 
 #### 3.2.1 引入starter依赖
@@ -177,23 +178,30 @@ starter本质上还是依赖于上面介绍的客户端的能力，只不过根�
 spring.application.name=customer
 # 必填：环境id（配置key：spring.profiles.active或者configcenter.profile-id）
 spring.profiles.active=dev
-# 必填：配置中心服务端的地址
+# 必填：configcenter服务端的地址
 configcenter.server-url=http://localhost:6220
 
 # 选填：缓存目录（默认为：/var/apps/${appId}/configcenter）
 configcenter.home=/tmp/configcenter
-# 选填：是否开启自动刷新configcenter配置（默认为开启）
+# 选填：是否开启定期同步服务端的配置（默认为开启）
 configcenter.auto-refresh-configs.enable=true
-# 选填：自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）
+# 选填：定期同步服务端的配置的周期（单位：毫秒。默认为5分钟同步一次）
 configcenter.auto-refresh-configs.period=300000
 # 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、random（随机数。比配置文件优先级高）等等
 configcenter.prior-to=random
+
+# 选填：是否开启自动刷新@Value占位符（默认为开启）
+ant.env.refresh-placeholders.enable=true
+# 选填：是否开启自动刷新@ConfigurationProperties（默认为开启）
+ant.env.refresh-properties.enable=true
+# 选填：需自动刷新的@ConfigurationProperties配置类的全名（如果在类上已经打上@Refreshable注解，则可以不用在此配置，也会支持自动刷新）
+ant.env.refresh-properties.refreshable-classes=com.demo.AProperties,com.demo.BProperties
 ```
 
 #### 3.2.3 使用配置
 可以通过spring的@Value注解、environment.getProperty(java.lang.String)获取配置，而不用直接使用客户端。也可以通过ConfigsContexts.getConfig(java.lang.String)获取配置。
 ```java
-// 通过@Value获取配置
+// 通过@Value获取配置（配置变更后，自动刷新redisHost字段）
 @Value("redis.host")
 private String redisHost;
 @Autowired
@@ -208,7 +216,29 @@ public void doBiz() {
 }
 ```
 
-#### 3.2.4 注册配置变更监听器
+#### 3.2.4 自动刷新
+当配置变更后，可以通过environment.getProperty(java.lang.String)和ConfigsContexts.getConfig(java.lang.String)获取到最新配置。同时默认情况下，也会自动刷新对应的@Value占位符和开启了刷新功能的@ConfigurationProperties配置。
+```java
+// 配置变更后，自动刷新redisHost字段
+@Value("redis.host")
+private String redisHost;
+
+// 配置变更后，自动重新调用setPort方法
+@Value("redis.port")  
+public void setPort(int port){
+}
+```
+```java
+@ConfigurationProperties("myDemo")
+@Refreshable  // 配置变更后，自动刷新（如果没有打上@Refreshable注解，则需要通过“ant.env.refresh-properties.refreshable-classes=com.demo.AProperties”指定本配置类需要被自动刷新）
+public class AProperties {
+    private String key1;
+    private int key2;
+    // 省略getter、setter
+}
+```
+
+#### 3.2.5 注册配置变更监听器
 可以监听当前应用的配置变更事件：
 ```java
 // 监听当前应用的配置变更事件
