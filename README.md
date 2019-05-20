@@ -73,11 +73,11 @@
 
 启动服务端命令模板：
 ```shell
-nohup java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库url" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --spring.redis.host="redis的地址" --spring.redis.port="redis的端口" &
+nohup java -jar configcenter-1.5.2.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="数据库url" --spring.datasource.username="数据库用户名" --spring.datasource.password="数据库密码" --spring.redis.host="redis的地址" --spring.redis.port="redis的端口" &
 ```
 比如我本地测试时启动命令：
 ```shell
-nohup java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --spring.redis.host="localhost" --spring.redis.port="6379" &
+nohup java -jar configcenter-1.5.2.RELEASE.jar --spring.profiles.active="online" --spring.datasource.url="jdbc:mysql://localhost:3306/configcenter-dev?useUnicode=true&characterEncoding=utf-8" --spring.datasource.username="root" --spring.datasource.password="root" --spring.redis.host="localhost" --spring.redis.port="6379" &
 ```
 >  以上是最简版的启动命令脚本，真正部署时可自行进行丰富，比如限制内存大小等等。
 
@@ -97,7 +97,7 @@ nohup java -jar configcenter-1.5.1.RELEASE.jar --spring.profiles.active="online"
 <dependency>
   <groupId>org.antframework.configcenter</groupId>
   <artifactId>configcenter-client</artifactId>
-  <version>1.5.1.RELEASE</version>
+  <version>1.5.2.RELEASE</version>
 </dependency>
 ```
 #### 3.1.2 使用客户端
@@ -148,7 +148,7 @@ starter本质上还是依赖于上面介绍的客户端的能力，只不过根�
 <dependency>
   <groupId>org.antframework.configcenter</groupId>
   <artifactId>configcenter-spring-boot-starter</artifactId>
-  <version>1.5.1.RELEASE</version>
+  <version>1.5.2.RELEASE</version>
 </dependency>
 ```
 - SpringBoot1.x应用引入：
@@ -156,7 +156,7 @@ starter本质上还是依赖于上面介绍的客户端的能力，只不过根�
 <dependency>
     <groupId>org.antframework.configcenter</groupId>
     <artifactId>configcenter-spring-boot-starter</artifactId>
-    <version>1.5.1.RELEASE</version>
+    <version>1.5.2.RELEASE</version>
     <exclusions>
         <exclusion>
             <groupId>org.hibernate.validator</groupId>
