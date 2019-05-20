@@ -194,7 +194,7 @@ configcenter.prior-to=random
 ant.env.refresh-placeholders.enable=true
 # 选填：是否开启自动刷新@ConfigurationProperties配置类（默认为开启）
 ant.env.refresh-properties.enable=true
-# 选填：需自动刷新的@ConfigurationProperties配置类的全名（如果在类上已经打上@Refreshable注解，则可以不用在此配置，也会支持自动刷新）
+# 选填：指定需自动刷新的@ConfigurationProperties配置类的全名（如果在配置类上已经打上@Refreshable注解，则可以不用在此配置，也会支持自动刷新）
 ant.env.refresh-properties.refreshable-classes=com.demo.AProperties,com.demo.BProperties
 ```
 
@@ -218,6 +218,7 @@ public void doBiz() {
 
 #### 3.2.4 自动刷新
 当配置变更后，可以通过environment.getProperty(java.lang.String)和ConfigsContexts.getConfig(java.lang.String)获取到最新配置。同时默认情况下，也会自动刷新对应的@Value占位符和开启了刷新功能的@ConfigurationProperties配置类。
+- 自动刷新@Value占位符
 ```java
 // 配置变更后，自动刷新redisHost字段
 @Value("redis.host")
@@ -228,6 +229,7 @@ private String redisHost;
 public void setPort(int port){
 }
 ```
+- 自动刷新@ConfigurationProperties配置类
 ```java
 @ConfigurationProperties("myDemo")
 @Refreshable  // 配置变更后，自动刷新（如果没有打上@Refreshable注解，则需要通过“ant.env.refresh-properties.refreshable-classes=com.demo.AProperties”指定本配置类需要被自动刷新）
