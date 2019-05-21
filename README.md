@@ -105,9 +105,9 @@ nohup java -jar configcenter-1.5.2.RELEASE.jar --spring.profiles.active="online"
 ```java
 // 创建客户端
 ConfigsContext configsContext = new ConfigsContext(
-        "http://localhost:6220",    // 服务端地址
         "customer",                 // 主体应用id
         "dev",                      // 环境id
+        "http://localhost:6220",    // 服务端地址
         "/var/apps/configcenter");  // 缓存文件夹路径
 
 // 获取会员系统的配置
