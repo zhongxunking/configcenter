@@ -11,7 +11,9 @@ package org.antframework.configcenter.web.controller.manage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.antframework.common.util.facade.*;
+import org.antframework.common.util.facade.AbstractResult;
+import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.PropertyKeys;
@@ -21,17 +23,14 @@ import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyPrivileges;
+import org.antframework.configcenter.web.common.KeyRegexPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.Privilege;
-import org.antframework.manager.web.Managers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 /**
  * 配置key管理controller
@@ -54,7 +53,7 @@ public class PropertyKeyController {
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyPrivileges.adminOrReadWrite(appId, key);
+        KeyRegexPrivileges.adminOrReadWrite(appId, key);
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -73,16 +72,12 @@ public class PropertyKeyController {
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyPrivileges.adminOrReadWrite(appId, key);
+        KeyRegexPrivileges.adminOrReadWrite(appId, key);
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
 
-        EmptyResult result = propertyKeyService.deletePropertyKey(order);
-        if (result.isSuccess()) {
-            KeyPrivileges.deletePrivileges(appId, key);
-        }
-        return result;
+        return propertyKeyService.deletePropertyKey(order);
     }
 
     /**
@@ -113,36 +108,8 @@ public class PropertyKeyController {
         ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
-        result.setAppPrivileges(KeyPrivileges.findInheritedPrivileges(appId));
+        result.setAppPrivileges(KeyRegexPrivileges.findInheritedPrivileges(appId));
         return result;
-    }
-
-    /**
-     * 设置配置key的权限
-     *
-     * @param appId     应用id（必须）
-     * @param key       配置key（必须）
-     * @param privilege 权限（必须）
-     */
-    @RequestMapping("/setKeyPrivilege")
-    public EmptyResult setKeyPrivilege(String appId, String key, Privilege privilege) {
-        Managers.admin();
-        assertExistingKey(appId, key);
-        // 设置权限
-        KeyPrivileges.setPrivilege(appId, key, privilege);
-
-        return FacadeUtils.buildSuccess(EmptyResult.class);
-    }
-
-    // 断言存在配置key
-    private void assertExistingKey(String appId, String key) {
-        List<PropertyKeyInfo> propertyKeys = PropertyKeys.findAppPropertyKeys(appId, Scope.PRIVATE);
-        for (PropertyKeyInfo propertyKey : propertyKeys) {
-            if (Objects.equals(propertyKey.getKey(), key)) {
-                return;
-            }
-        }
-        throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在配置key[%s]", appId, key));
     }
 
     /**
@@ -182,6 +149,6 @@ public class PropertyKeyController {
     @Setter
     public static class FindInheritedPrivilegesResult extends AbstractResult {
         // 由近及远应用继承的配置权限（该应用本身在第一位）
-        private List<KeyPrivileges.AppPrivilege> appPrivileges;
+        private List<KeyRegexPrivileges.AppPrivilege> appPrivileges;
     }
 }
