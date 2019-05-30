@@ -10,7 +10,6 @@ package org.antframework.configcenter.web.controller.manage;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
@@ -98,21 +97,6 @@ public class PropertyKeyController {
     }
 
     /**
-     * 查找应用继承的配置权限
-     *
-     * @param appId 应用id（必须）
-     * @return 继承的配置权限
-     */
-    @RequestMapping("/findInheritedPrivileges")
-    public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
-
-        FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
-        result.setAppPrivileges(KeyRegexPrivileges.findInheritedPrivileges(appId));
-        return result;
-    }
-
-    /**
      * 查找应用继承的所有应用的配置key
      */
     @Getter
@@ -140,15 +124,5 @@ public class PropertyKeyController {
                 return ToString.toString(this);
             }
         }
-    }
-
-    /**
-     * 查找继承的配置权限result
-     */
-    @Getter
-    @Setter
-    public static class FindInheritedPrivilegesResult extends AbstractResult {
-        // 由近及远应用继承的配置权限（该应用本身在第一位）
-        private List<KeyRegexPrivileges.AppPrivilege> appPrivileges;
     }
 }
