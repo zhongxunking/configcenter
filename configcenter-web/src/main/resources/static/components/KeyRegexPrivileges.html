@@ -82,8 +82,8 @@
     </div>
     <el-dialog :visible.sync="addKeyRegexPrivilegeVisible" :before-close="closeAddKeyRegexPrivilegeDialog" title="新增权限" width="60%">
         <el-form ref="addKeyRegexPrivilegeForm" :model="addKeyRegexPrivilegeForm" label-width="30%">
-            <el-form-item label="配置key正则表达式" prop="keyRegex" :rules="[{required:true, message:'请输入配置key正则表达式', trigger:'blur'}]">
-                <el-input v-model="addKeyRegexPrivilegeForm.keyRegex" clearable placeholder="请输入配置key正则表达式" style="width: 90%"></el-input>
+            <el-form-item label="配置key正则表达式" prop="keyRegex" :rules="[{required:true, message:'请输入配置key的正则表达式', trigger:'blur'}]">
+                <el-input v-model="addKeyRegexPrivilegeForm.keyRegex" clearable placeholder="请输入配置key的正则表达式" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="权限" prop="privilege" :rules="[{required:true, message:'请选择权限', trigger:'blur'}]">
                 <el-select v-model="addKeyRegexPrivilegeForm.privilege" placeholder="请选择权限" style="width: 90%">
