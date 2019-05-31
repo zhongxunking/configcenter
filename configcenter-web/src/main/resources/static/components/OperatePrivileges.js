@@ -1,25 +1,25 @@
 // 操作权限管理组件
-const KeyRegexPrivilegesTemplate = `
+const OperatePrivilegesTemplate = `
 <div>
-    <div v-for="appPrivilege in appPrivileges" style="margin-bottom: 30px">
-        <el-row v-if="appPrivilege.app.appId === appId" style="margin-bottom: 10px">
+    <div v-for="appOperatePrivilege in appOperatePrivileges" style="margin-bottom: 30px">
+        <el-row v-if="appOperatePrivilege.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
-                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPrivilege.app) }}</span>
+                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appOperatePrivilege.app) }}</span>
             </el-col>
             <el-col :span="4" style="text-align: end;">
-                <el-button type="primary" icon="el-icon-plus" @click="addKeyRegexPrivilegeVisible = true" size="small">新增</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="addOperatePrivilegeVisible = true" size="small">新增</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center">
-                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appPrivilege.app) }}</span>
+                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appOperatePrivilege.app) }}</span>
             </el-col>
         </el-row>
-        <el-table :data="appPrivilege.showingKeyRegexPrivileges"
+        <el-table :data="appOperatePrivilege.showingKeyRegexPrivileges"
                   v-loading="loading"
-                  :key="appPrivilege.app.appId"
+                  :key="appOperatePrivilege.app.appId"
                   :default-sort="{prop: 'keyRegex'}"
-                  :style="{width: appPrivilege.app.appId === appId ? '100%' : 'calc(100% - 130px)'}"
+                  :style="{width: appOperatePrivilege.app.appId === appId ? '100%' : 'calc(100% - 130px)'}"
                   :cell-style="{padding: '3px 0px'}"
                   border stripe>
             <el-table-column prop="keyRegex" label="配置key正则表达式" sortable>
@@ -41,7 +41,7 @@ const KeyRegexPrivilegesTemplate = `
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column v-if="appPrivilege.app.appId === appId" label="操作" header-align="center" width="130px">
+            <el-table-column v-if="appOperatePrivilege.app.appId === appId" label="操作" header-align="center" width="130px">
                 <template slot-scope="{ row }">
                     <el-row>
                         <el-col :span="16" style="text-align: center">
@@ -61,7 +61,7 @@ const KeyRegexPrivilegesTemplate = `
                         </el-col>
                         <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deletePrivilege(row)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
+                                <el-button @click="deleteOperatePrivileges(row)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>
@@ -69,13 +69,13 @@ const KeyRegexPrivilegesTemplate = `
             </el-table-column>
         </el-table>
     </div>
-    <el-dialog :visible.sync="addKeyRegexPrivilegeVisible" :before-close="closeAddKeyRegexPrivilegeDialog" title="新增操作权限" width="60%">
-        <el-form ref="addKeyRegexPrivilegeForm" :model="addKeyRegexPrivilegeForm" label-width="30%">
+    <el-dialog :visible.sync="addOperatePrivilegeVisible" :before-close="closeAddOperatePrivilegeDialog" title="新增操作权限" width="60%">
+        <el-form ref="addOperatePrivilegeForm" :model="addOperatePrivilegeForm" label-width="30%">
             <el-form-item label="配置key正则表达式" prop="keyRegex" :rules="[{required:true, message:'请输入配置key的正则表达式', trigger:'blur'}]">
-                <el-input v-model="addKeyRegexPrivilegeForm.keyRegex" clearable placeholder="请输入配置key的正则表达式" style="width: 90%"></el-input>
+                <el-input v-model="addOperatePrivilegeForm.keyRegex" clearable placeholder="请输入配置key的正则表达式" style="width: 90%"></el-input>
             </el-form-item>
             <el-form-item label="操作权限" prop="privilege" :rules="[{required:true, message:'请选择操作权限', trigger:'blur'}]">
-                <el-select v-model="addKeyRegexPrivilegeForm.privilege" placeholder="请选择操作权限" style="width: 90%">
+                <el-select v-model="addOperatePrivilegeForm.privilege" placeholder="请选择操作权限" style="width: 90%">
                     <el-option value="READ_WRITE" label="读写"></el-option>
                     <el-option value="READ" label="只读"></el-option>
                     <el-option value="NONE" label="无"></el-option>
@@ -83,36 +83,36 @@ const KeyRegexPrivilegesTemplate = `
             </el-form-item>
         </el-form>
         <div slot="footer">
-            <el-button @click="closeAddKeyRegexPrivilegeDialog">取消</el-button>
-            <el-button type="primary" @click="addPrivilege">提交</el-button>
+            <el-button @click="closeAddOperatePrivilegeDialog">取消</el-button>
+            <el-button type="primary" @click="addOperatePrivilege">提交</el-button>
         </div>
     </el-dialog>
 </div>
 `;
 
-const KeyRegexPrivileges = {
-    template: KeyRegexPrivilegesTemplate,
+const OperatePrivileges = {
+    template: OperatePrivilegesTemplate,
     props: ['appId'],
     data: function () {
         return {
             manager: CURRENT_MANAGER,
             loading: false,
-            appPrivileges: [],
-            addKeyRegexPrivilegeVisible: false,
-            addKeyRegexPrivilegeForm: {
+            appOperatePrivileges: [],
+            addOperatePrivilegeVisible: false,
+            addOperatePrivilegeForm: {
                 keyRegex: null,
                 privilege: null
             }
         };
     },
     created: function () {
-        this.findInheritedPrivileges();
+        this.findInheritedOperatePrivileges();
     },
     methods: {
-        findInheritedPrivileges: function () {
+        findInheritedOperatePrivileges: function () {
             this.loading = true;
             const theThis = this;
-            axios.get('../manage/keyRegexPrivilege/findInheritedPrivileges', {
+            axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
                 params: {
                     appId: this.appId
                 }
@@ -122,10 +122,10 @@ const KeyRegexPrivileges = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                result.appPrivileges.forEach(function (appPrivilege) {
+                result.appOperatePrivileges.forEach(function (appOperatePrivilege) {
                     const showingKeyRegexPrivileges = [];
-                    for (let keyRegex in appPrivilege.keyRegexPrivileges) {
-                        let privilege = appPrivilege.keyRegexPrivileges[keyRegex];
+                    for (let keyRegex in appOperatePrivilege.keyRegexPrivileges) {
+                        let privilege = appOperatePrivilege.keyRegexPrivileges[keyRegex];
                         showingKeyRegexPrivileges.push({
                             keyRegex: keyRegex,
                             privilege: privilege,
@@ -133,9 +133,9 @@ const KeyRegexPrivileges = {
                             editingPrivilege: null
                         });
                     }
-                    appPrivilege.showingKeyRegexPrivileges = showingKeyRegexPrivileges;
+                    appOperatePrivilege.showingKeyRegexPrivileges = showingKeyRegexPrivileges;
                 });
-                theThis.appPrivileges = result.appPrivileges;
+                theThis.appOperatePrivileges = result.appOperatePrivileges;
             });
         },
         startEditing: function (showingKeyRegexPrivilege) {
@@ -143,20 +143,20 @@ const KeyRegexPrivileges = {
             showingKeyRegexPrivilege.editingPrivilege = showingKeyRegexPrivilege.privilege;
         },
         saveEditing: function (showingKeyRegexPrivilege) {
-            this.addOrModifyPrivilege(this.appId, showingKeyRegexPrivilege.keyRegex, showingKeyRegexPrivilege.editingPrivilege);
+            this.addOrModifyOperatePrivilege(this.appId, showingKeyRegexPrivilege.keyRegex, showingKeyRegexPrivilege.editingPrivilege);
         },
-        addPrivilege: function () {
+        addOperatePrivilege: function () {
             const theThis = this;
-            this.$refs.addKeyRegexPrivilegeForm.validate(function (valid) {
+            this.$refs.addOperatePrivilegeForm.validate(function (valid) {
                 if (!valid) {
                     return;
                 }
-                theThis.addOrModifyPrivilege(theThis.appId, theThis.addKeyRegexPrivilegeForm.keyRegex, theThis.addKeyRegexPrivilegeForm.privilege);
+                theThis.addOrModifyOperatePrivilege(theThis.appId, theThis.addOperatePrivilegeForm.keyRegex, theThis.addOperatePrivilegeForm.privilege);
             });
         },
-        addOrModifyPrivilege: function (appId, keyRegex, privilege) {
+        addOrModifyOperatePrivilege: function (appId, keyRegex, privilege) {
             const theThis = this;
-            axios.post('../manage/keyRegexPrivilege/addOrModifyPrivilege', {
+            axios.post('../manage/operatePrivilege/addOrModifyOperatePrivilege', {
                 appId: appId,
                 keyRegex: keyRegex,
                 privilege: privilege
@@ -166,15 +166,15 @@ const KeyRegexPrivileges = {
                     return;
                 }
                 Vue.prototype.$message.success(result.message);
-                theThis.closeAddKeyRegexPrivilegeDialog();
-                theThis.findInheritedPrivileges();
+                theThis.closeAddOperatePrivilegeDialog();
+                theThis.findInheritedOperatePrivileges();
             });
         },
-        deletePrivilege: function (showingKeyRegexPrivilege) {
+        deleteOperatePrivileges: function (showingKeyRegexPrivilege) {
             const theThis = this;
             Vue.prototype.$confirm('确定删除？', '警告', {type: 'warning'})
                 .then(function () {
-                    axios.post('../manage/keyRegexPrivilege/deletePrivilege', {
+                    axios.post('../manage/operatePrivilege/deleteOperatePrivileges', {
                         appId: theThis.appId,
                         keyRegex: showingKeyRegexPrivilege.keyRegex
                     }).then(function (result) {
@@ -183,14 +183,14 @@ const KeyRegexPrivileges = {
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.findInheritedPrivileges();
+                        theThis.findInheritedOperatePrivileges();
                     });
                 });
         },
-        closeAddKeyRegexPrivilegeDialog: function () {
-            this.addKeyRegexPrivilegeVisible = false;
-            this.addKeyRegexPrivilegeForm.keyRegex = null;
-            this.addKeyRegexPrivilegeForm.privilege = null;
+        closeAddOperatePrivilegeDialog: function () {
+            this.addOperatePrivilegeVisible = false;
+            this.addOperatePrivilegeForm.keyRegex = null;
+            this.addOperatePrivilegeForm.privilege = null;
         },
         toShowingApp: function (app) {
             if (!app) {
