@@ -240,9 +240,9 @@ public class ReleaseController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(appRelease.getApp().getAppId());
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appRelease.getApp().getAppId());
         for (ReleaseInfo release : appRelease.getInheritedProfileReleases()) {
-            mask(release, appPrivileges);
+            mask(release, appOperatePrivileges);
         }
     }
 
@@ -252,15 +252,15 @@ public class ReleaseController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(release.getAppId());
-        mask(release, appPrivileges);
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(release.getAppId());
+        mask(release, appOperatePrivileges);
     }
 
     // 对敏感配置进行掩码
-    private void mask(ReleaseInfo release, List<OperatePrivileges.AppPrivilege> appPrivileges) {
+    private void mask(ReleaseInfo release, List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges) {
         List<Property> properties = new ArrayList<>(release.getProperties().size());
         for (Property property : release.getProperties()) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appPrivileges, property.getKey());
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, property.getKey());
             if (privilege == OperatePrivilege.NONE) {
                 properties.add(new Property(property.getKey(), MASKED_VALUE, property.getScope()));
             } else {

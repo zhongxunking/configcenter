@@ -143,9 +143,9 @@ public class PropertyValueController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
         for (PropertyValueInfo propertyValue : propertyValues) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appPrivileges, propertyValue.getKey());
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, propertyValue.getKey());
             if (privilege == OperatePrivilege.NONE) {
                 propertyValue.setValue(MASKED_VALUE);
             }

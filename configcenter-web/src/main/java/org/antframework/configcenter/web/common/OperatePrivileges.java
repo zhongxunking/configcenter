@@ -77,13 +77,13 @@ public final class OperatePrivileges {
     /**
      * 计算操作权限
      *
-     * @param appPrivileges 应用继承的操作权限
-     * @param key           配置key
+     * @param appOperatePrivileges 应用继承的操作权限
+     * @param key                  配置key
      * @return 配置key的操作权限
      */
-    public static OperatePrivilege calcOperatePrivilege(List<AppPrivilege> appPrivileges, String key) {
-        for (AppPrivilege appPrivilege : appPrivileges) {
-            for (Map.Entry<String, OperatePrivilege> entry : appPrivilege.getKeyRegexPrivileges().entrySet()) {
+    public static OperatePrivilege calcOperatePrivilege(List<AppOperatePrivilege> appOperatePrivileges, String key) {
+        for (AppOperatePrivilege appOperatePrivilege : appOperatePrivileges) {
+            for (Map.Entry<String, OperatePrivilege> entry : appOperatePrivilege.getKeyRegexPrivileges().entrySet()) {
                 if (Pattern.matches(entry.getKey(), key)) {
                     return entry.getValue();
                 }
@@ -98,16 +98,16 @@ public final class OperatePrivileges {
      * @param appId 应用id
      * @return 由近及远应用继承的操作权限（该应用本身在第一位）
      */
-    public static List<AppPrivilege> findInheritedOperatePrivileges(String appId) {
-        List<AppPrivilege> appPrivileges = new ArrayList<>();
+    public static List<AppOperatePrivilege> findInheritedOperatePrivileges(String appId) {
+        List<AppOperatePrivilege> appOperatePrivileges = new ArrayList<>();
         for (AppInfo app : Apps.findInheritedApps(appId)) {
             Map<String, OperatePrivilege> keyRegexPrivileges = new HashMap<>();
             for (RelationInfo relation : Relations.findAllSourceRelations(RELATION_TYPE, app.getAppId())) {
                 keyRegexPrivileges.put(relation.getTarget(), OperatePrivilege.valueOf(relation.getValue()));
             }
-            appPrivileges.add(new AppPrivilege(app, keyRegexPrivileges));
+            appOperatePrivileges.add(new AppOperatePrivilege(app, keyRegexPrivileges));
         }
-        return appPrivileges;
+        return appOperatePrivileges;
     }
 
     /**
@@ -115,7 +115,7 @@ public final class OperatePrivileges {
      */
     @AllArgsConstructor
     @Getter
-    public static final class AppPrivilege implements Serializable {
+    public static final class AppOperatePrivilege implements Serializable {
         // 应用
         private final AppInfo app;
         // 配置key正则表达式以及对应的操作权限

@@ -63,7 +63,7 @@ public class OperatePrivilegeController {
     @RequestMapping("/findInheritedOperatePrivileges")
     public FindInheritedPrivilegesResult findInheritedOperatePrivileges(String appId) {
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
-        result.setAppPrivileges(OperatePrivileges.findInheritedOperatePrivileges(appId));
+        result.setAppOperatePrivileges(OperatePrivileges.findInheritedOperatePrivileges(appId));
         return result;
     }
 
@@ -74,6 +74,6 @@ public class OperatePrivilegeController {
     @Setter
     public static class FindInheritedPrivilegesResult extends AbstractResult {
         // 由近及远应用继承的配置权限（该应用本身在第一位）
-        private List<OperatePrivileges.AppPrivilege> appPrivileges;
+        private List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges;
     }
 }
