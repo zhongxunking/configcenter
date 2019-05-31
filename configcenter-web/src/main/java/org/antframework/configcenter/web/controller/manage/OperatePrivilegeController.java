@@ -13,8 +13,8 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.configcenter.web.common.KeyRegexPrivileges;
-import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.common.OperatePrivilege;
+import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,48 +22,48 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 /**
- * 配置key正则表达式对应的权限controller
+ * 操作权限controller
  */
 @RestController
-@RequestMapping("/manage/keyRegexPrivilege")
-public class KeyRegexPrivilegeController {
+@RequestMapping("/manage/operatePrivilege")
+public class OperatePrivilegeController {
     /**
-     * 添加或修改权限
+     * 添加或修改操作权限
      *
      * @param appId     应用id
-     * @param keyRegex  key正则表达式
-     * @param privilege 权限
+     * @param keyRegex  配置key正则表达式
+     * @param privilege 操作权限
      */
-    @RequestMapping("/addOrModifyPrivilege")
-    public EmptyResult addOrModifyPrivilege(String appId, String keyRegex, Privilege privilege) {
-        KeyRegexPrivileges.addOrModifyPrivilege(appId, keyRegex, privilege);
+    @RequestMapping("/addOrModifyOperatePrivilege")
+    public EmptyResult addOrModifyOperatePrivilege(String appId, String keyRegex, OperatePrivilege privilege) {
+        OperatePrivileges.addOrModifyOperatePrivilege(appId, keyRegex, privilege);
         return FacadeUtils.buildSuccess(EmptyResult.class);
     }
 
     /**
-     * 删除权限
+     * 删除操作权限
      *
      * @param appId    应用id
      * @param keyRegex 配置key正则表达式
      */
-    @RequestMapping("/deletePrivilege")
-    public EmptyResult deletePrivilege(String appId, String keyRegex) {
+    @RequestMapping("/deleteOperatePrivileges")
+    public EmptyResult deleteOperatePrivileges(String appId, String keyRegex) {
         Assert.notNull(appId, "appId不能为空");
         Assert.notNull(keyRegex, "keyRegex不能为空");
-        KeyRegexPrivileges.deletePrivileges(appId, keyRegex);
+        OperatePrivileges.deleteOperatePrivileges(appId, keyRegex);
         return FacadeUtils.buildSuccess(EmptyResult.class);
     }
 
     /**
-     * 查找应用继承的权限
+     * 查找应用继承的操作权限
      *
      * @param appId 应用id
-     * @return 由近及远应用继承的配置权限（该应用本身在第一位）
+     * @return 由近及远应用继承的操作权限（该应用本身在第一位）
      */
-    @RequestMapping("/findInheritedPrivileges")
-    public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
+    @RequestMapping("/findInheritedOperatePrivileges")
+    public FindInheritedPrivilegesResult findInheritedOperatePrivileges(String appId) {
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
-        result.setAppPrivileges(KeyRegexPrivileges.findInheritedPrivileges(appId));
+        result.setAppPrivileges(OperatePrivileges.findInheritedOperatePrivileges(appId));
         return result;
     }
 
@@ -74,6 +74,6 @@ public class KeyRegexPrivilegeController {
     @Setter
     public static class FindInheritedPrivilegesResult extends AbstractResult {
         // 由近及远应用继承的配置权限（该应用本身在第一位）
-        private List<KeyRegexPrivileges.AppPrivilege> appPrivileges;
+        private List<OperatePrivileges.AppPrivilege> appPrivileges;
     }
 }

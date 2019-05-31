@@ -28,9 +28,9 @@ import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyRegexPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.common.OperatePrivilege;
+import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
@@ -240,7 +240,7 @@ public class ReleaseController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<KeyRegexPrivileges.AppPrivilege> appPrivileges = KeyRegexPrivileges.findInheritedPrivileges(appRelease.getApp().getAppId());
+        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(appRelease.getApp().getAppId());
         for (ReleaseInfo release : appRelease.getInheritedProfileReleases()) {
             mask(release, appPrivileges);
         }
@@ -252,16 +252,16 @@ public class ReleaseController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<KeyRegexPrivileges.AppPrivilege> appPrivileges = KeyRegexPrivileges.findInheritedPrivileges(release.getAppId());
+        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(release.getAppId());
         mask(release, appPrivileges);
     }
 
     // 对敏感配置进行掩码
-    private void mask(ReleaseInfo release, List<KeyRegexPrivileges.AppPrivilege> inheritedAppPrivileges) {
+    private void mask(ReleaseInfo release, List<OperatePrivileges.AppPrivilege> appPrivileges) {
         List<Property> properties = new ArrayList<>(release.getProperties().size());
         for (Property property : release.getProperties()) {
-            Privilege privilege = KeyRegexPrivileges.calcPrivilege(inheritedAppPrivileges, property.getKey());
-            if (privilege == Privilege.NONE) {
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appPrivileges, property.getKey());
+            if (privilege == OperatePrivilege.NONE) {
                 properties.add(new Property(property.getKey(), MASKED_VALUE, property.getScope()));
             } else {
                 properties.add(property);

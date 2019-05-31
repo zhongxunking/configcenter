@@ -25,9 +25,9 @@ import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
-import org.antframework.configcenter.web.common.KeyRegexPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.Privilege;
+import org.antframework.configcenter.web.common.OperatePrivilege;
+import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
@@ -63,7 +63,7 @@ public class PropertyValueController {
     @RequestMapping("/addOrModifyPropertyValue")
     public EmptyResult addOrModifyPropertyValue(String appId, String key, String profileId, String value, Scope scope) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyRegexPrivileges.adminOrReadWrite(appId, key);
+        OperatePrivileges.adminOrReadWrite(appId, key);
 
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
@@ -85,7 +85,7 @@ public class PropertyValueController {
     @RequestMapping("/deletePropertyValue")
     public EmptyResult deletePropertyValue(String appId, String key, String profileId) {
         ManagerApps.adminOrHaveApp(appId);
-        KeyRegexPrivileges.adminOrReadWrite(appId, key);
+        OperatePrivileges.adminOrReadWrite(appId, key);
 
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
@@ -143,10 +143,10 @@ public class PropertyValueController {
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
-        List<KeyRegexPrivileges.AppPrivilege> appPrivileges = KeyRegexPrivileges.findInheritedPrivileges(appId);
+        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
         for (PropertyValueInfo propertyValue : propertyValues) {
-            Privilege privilege = KeyRegexPrivileges.calcPrivilege(appPrivileges, propertyValue.getKey());
-            if (privilege == Privilege.NONE) {
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appPrivileges, propertyValue.getKey());
+            if (privilege == OperatePrivilege.NONE) {
                 propertyValue.setValue(MASKED_VALUE);
             }
         }

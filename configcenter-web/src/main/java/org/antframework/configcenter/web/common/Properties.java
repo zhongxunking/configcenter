@@ -65,7 +65,7 @@ public final class Properties {
      * @param difference 被修改的配置
      */
     public static void onlyReadWrite(String appId, Difference difference) {
-        List<KeyRegexPrivileges.AppPrivilege> appPrivileges = KeyRegexPrivileges.findInheritedPrivileges(appId);
+        List<OperatePrivileges.AppPrivilege> appPrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
 
         Set<String> keys = new HashSet<>();
         keys.addAll(difference.getAddedKeys());
@@ -75,8 +75,8 @@ public final class Properties {
 
         Set<String> notReadWriteKeys = new HashSet<>();
         for (String key : keys) {
-            Privilege privilege = KeyRegexPrivileges.calcPrivilege(appPrivileges, key);
-            if (privilege != Privilege.READ_WRITE) {
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appPrivileges, key);
+            if (privilege != OperatePrivilege.READ_WRITE) {
                 notReadWriteKeys.add(key);
             }
         }

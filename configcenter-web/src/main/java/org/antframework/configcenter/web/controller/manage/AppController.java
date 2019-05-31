@@ -19,8 +19,8 @@ import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
-import org.antframework.configcenter.web.common.KeyRegexPrivileges;
 import org.antframework.configcenter.web.common.ManagerApps;
+import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.Managers;
@@ -72,7 +72,7 @@ public class AppController {
         EmptyResult result = appService.deleteApp(order);
         if (result.isSuccess()) {
             // 删除应用的所有配置key的权限
-            KeyRegexPrivileges.deletePrivileges(appId, null);
+            OperatePrivileges.deleteOperatePrivileges(appId, null);
         }
         return result;
     }

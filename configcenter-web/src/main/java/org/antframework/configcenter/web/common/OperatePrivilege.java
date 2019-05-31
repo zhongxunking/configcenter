@@ -9,9 +9,9 @@
 package org.antframework.configcenter.web.common;
 
 /**
- * 权限
+ * 操作权限
  */
-public enum Privilege {
+public enum OperatePrivilege {
     /**
      * 无
      */
