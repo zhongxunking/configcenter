@@ -63,7 +63,7 @@ public class KeyRegexPrivilegeController {
     @RequestMapping("/findInheritedPrivileges")
     public FindInheritedPrivilegesResult findInheritedPrivileges(String appId) {
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
-        result.setInheritedPrivileges(KeyRegexPrivileges.findInheritedPrivileges(appId));
+        result.setAppPrivileges(KeyRegexPrivileges.findInheritedPrivileges(appId));
         return result;
     }
 
@@ -74,6 +74,6 @@ public class KeyRegexPrivilegeController {
     @Setter
     public static class FindInheritedPrivilegesResult extends AbstractResult {
         // 由近及远应用继承的配置权限（该应用本身在第一位）
-        private List<KeyRegexPrivileges.AppPrivilege> inheritedPrivileges;
+        private List<KeyRegexPrivileges.AppPrivilege> appPrivileges;
     }
 }

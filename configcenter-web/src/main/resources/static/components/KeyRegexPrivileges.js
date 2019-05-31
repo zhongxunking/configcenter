@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>配置key正则表达式对应的操作权限</title>
-    <script src="../common/import.js"></script>
-    <style>
-        .keyRegex-text-style {
-            font-size: small;
-        }
-    </style>
-</head>
-<body>
-<div id="keyRegexPrivilegesApp">
+// 操作权限管理组件
+const KeyRegexPrivilegesTemplate = `
+<div>
     <div v-for="appPrivilege in appPrivileges" style="margin-bottom: 30px">
         <el-row v-if="appPrivilege.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
@@ -99,121 +88,119 @@
         </div>
     </el-dialog>
 </div>
-<script>
-    GET_CURRENT_MANAGER(function (manager) {
-        const keyRegexPrivilegesApp = new Vue({
-            el: '#keyRegexPrivilegesApp',
-            data: {
-                appId: 'customer',
-                manager: manager,
-                loading: false,
-                appPrivileges: [],
-                addKeyRegexPrivilegeVisible: false,
-                addKeyRegexPrivilegeForm: {
-                    keyRegex: null,
-                    privilege: null
+`;
+
+const KeyRegexPrivileges = {
+    template: KeyRegexPrivilegesTemplate,
+    props: ['appId'],
+    data: function () {
+        return {
+            manager: CURRENT_MANAGER,
+            loading: false,
+            appPrivileges: [],
+            addKeyRegexPrivilegeVisible: false,
+            addKeyRegexPrivilegeForm: {
+                keyRegex: null,
+                privilege: null
+            }
+        };
+    },
+    created: function () {
+        this.findInheritedPrivileges();
+    },
+    methods: {
+        findInheritedPrivileges: function () {
+            this.loading = true;
+            const theThis = this;
+            axios.get('../manage/keyRegexPrivilege/findInheritedPrivileges', {
+                params: {
+                    appId: this.appId
                 }
-            },
-            created: function () {
-                this.findInheritedPrivileges();
-            },
-            methods: {
-                findInheritedPrivileges: function () {
-                    this.loading = true;
-                    const theThis = this;
-                    axios.get('../manage/keyRegexPrivilege/findInheritedPrivileges', {
-                        params: {
-                            appId: this.appId
-                        }
-                    }).then(function (result) {
-                        theThis.loading = false;
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        result.appPrivileges.forEach(function (appPrivilege) {
-                            const showingKeyRegexPrivileges = [];
-                            for (let keyRegex in appPrivilege.keyRegexPrivileges) {
-                                let privilege = appPrivilege.keyRegexPrivileges[keyRegex];
-                                showingKeyRegexPrivileges.push({
-                                    keyRegex: keyRegex,
-                                    privilege: privilege,
-                                    editing: false,
-                                    editingPrivilege: null
-                                });
-                            }
-                            appPrivilege.showingKeyRegexPrivileges = showingKeyRegexPrivileges;
+            }).then(function (result) {
+                theThis.loading = false;
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                result.appPrivileges.forEach(function (appPrivilege) {
+                    const showingKeyRegexPrivileges = [];
+                    for (let keyRegex in appPrivilege.keyRegexPrivileges) {
+                        let privilege = appPrivilege.keyRegexPrivileges[keyRegex];
+                        showingKeyRegexPrivileges.push({
+                            keyRegex: keyRegex,
+                            privilege: privilege,
+                            editing: false,
+                            editingPrivilege: null
                         });
-                        theThis.appPrivileges = result.appPrivileges;
-                    });
-                },
-                startEditing: function (showingKeyRegexPrivilege) {
-                    showingKeyRegexPrivilege.editing = true;
-                    showingKeyRegexPrivilege.editingPrivilege = showingKeyRegexPrivilege.privilege;
-                },
-                saveEditing: function (showingKeyRegexPrivilege) {
-                    this.addOrModifyPrivilege(this.appId, showingKeyRegexPrivilege.keyRegex, showingKeyRegexPrivilege.editingPrivilege);
-                },
-                addPrivilege: function () {
-                    const theThis = this;
-                    this.$refs.addKeyRegexPrivilegeForm.validate(function (valid) {
-                        if (!valid) {
-                            return;
-                        }
-                        theThis.addOrModifyPrivilege(theThis.appId, theThis.addKeyRegexPrivilegeForm.keyRegex, theThis.addKeyRegexPrivilegeForm.privilege);
-                    });
-                },
-                addOrModifyPrivilege: function (appId, keyRegex, privilege) {
-                    const theThis = this;
-                    axios.post('../manage/keyRegexPrivilege/addOrModifyPrivilege', {
-                        appId: appId,
-                        keyRegex: keyRegex,
-                        privilege: privilege
+                    }
+                    appPrivilege.showingKeyRegexPrivileges = showingKeyRegexPrivileges;
+                });
+                theThis.appPrivileges = result.appPrivileges;
+            });
+        },
+        startEditing: function (showingKeyRegexPrivilege) {
+            showingKeyRegexPrivilege.editing = true;
+            showingKeyRegexPrivilege.editingPrivilege = showingKeyRegexPrivilege.privilege;
+        },
+        saveEditing: function (showingKeyRegexPrivilege) {
+            this.addOrModifyPrivilege(this.appId, showingKeyRegexPrivilege.keyRegex, showingKeyRegexPrivilege.editingPrivilege);
+        },
+        addPrivilege: function () {
+            const theThis = this;
+            this.$refs.addKeyRegexPrivilegeForm.validate(function (valid) {
+                if (!valid) {
+                    return;
+                }
+                theThis.addOrModifyPrivilege(theThis.appId, theThis.addKeyRegexPrivilegeForm.keyRegex, theThis.addKeyRegexPrivilegeForm.privilege);
+            });
+        },
+        addOrModifyPrivilege: function (appId, keyRegex, privilege) {
+            const theThis = this;
+            axios.post('../manage/keyRegexPrivilege/addOrModifyPrivilege', {
+                appId: appId,
+                keyRegex: keyRegex,
+                privilege: privilege
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                Vue.prototype.$message.success(result.message);
+                theThis.closeAddKeyRegexPrivilegeDialog();
+                theThis.findInheritedPrivileges();
+            });
+        },
+        deletePrivilege: function (showingKeyRegexPrivilege) {
+            const theThis = this;
+            Vue.prototype.$confirm('确定删除？', '警告', {type: 'warning'})
+                .then(function () {
+                    axios.post('../manage/keyRegexPrivilege/deletePrivilege', {
+                        appId: theThis.appId,
+                        keyRegex: showingKeyRegexPrivilege.keyRegex
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.closeAddKeyRegexPrivilegeDialog();
                         theThis.findInheritedPrivileges();
                     });
-                },
-                deletePrivilege: function (showingKeyRegexPrivilege) {
-                    const theThis = this;
-                    Vue.prototype.$confirm('确定删除？', '警告', {type: 'warning'})
-                        .then(function () {
-                            axios.post('../manage/keyRegexPrivilege/deletePrivilege', {
-                                appId: theThis.appId,
-                                keyRegex: showingKeyRegexPrivilege.keyRegex
-                            }).then(function (result) {
-                                if (!result.success) {
-                                    Vue.prototype.$message.error(result.message);
-                                    return;
-                                }
-                                Vue.prototype.$message.success(result.message);
-                                theThis.findInheritedPrivileges();
-                            });
-                        });
-                },
-                closeAddKeyRegexPrivilegeDialog: function () {
-                    this.addKeyRegexPrivilegeVisible = false;
-                    this.addKeyRegexPrivilegeForm.keyRegex = null;
-                    this.addKeyRegexPrivilegeForm.privilege = null;
-                },
-                toShowingApp: function (app) {
-                    if (!app) {
-                        return '';
-                    }
-                    let text = app.appId;
-                    if (app.appName) {
-                        text += '（' + app.appName + '）';
-                    }
-                    return text;
-                }
+                });
+        },
+        closeAddKeyRegexPrivilegeDialog: function () {
+            this.addKeyRegexPrivilegeVisible = false;
+            this.addKeyRegexPrivilegeForm.keyRegex = null;
+            this.addKeyRegexPrivilegeForm.privilege = null;
+        },
+        toShowingApp: function (app) {
+            if (!app) {
+                return '';
             }
-        });
-    });
-</script>
-</body>
-</html>
+            let text = app.appId;
+            if (app.appName) {
+                text += '（' + app.appName + '）';
+            }
+            return text;
+        }
+    }
+};
