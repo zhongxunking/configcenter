@@ -192,14 +192,14 @@ const Releases = {
             totalReleasesCount: 0,
             releases: [],
             showingRelease: {},
-            inheritedAppPrivileges: [],
+            appOperatePrivileges: [],
             currentRelease: null
         };
     },
     created: function () {
         this.findApp(this.appId);
         this.findProfile(this.profileId);
-        this.findInheritedAppPrivileges();
+        this.findInheritedOperatePrivileges();
         this.queryReleases();
     },
     methods: {
@@ -419,9 +419,9 @@ const Releases = {
                     });
                 });
         },
-        findInheritedAppPrivileges: function () {
+        findInheritedOperatePrivileges: function () {
             const theThis = this;
-            axios.get('../manage/propertyKey/findInheritedPrivileges', {
+            axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
                 params: {
                     appId: this.appId
                 }
@@ -430,20 +430,28 @@ const Releases = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.inheritedAppPrivileges = result.appPrivileges;
+                theThis.appOperatePrivileges = result.appOperatePrivileges;
             });
         },
         calcPrivilege: function (appId, key) {
             let started = false;
-            for (let i = 0; i < this.inheritedAppPrivileges.length; i++) {
-                let appPrivilege = this.inheritedAppPrivileges[i];
-                if (appPrivilege.app.appId === appId) {
+            for (let i = 0; i < this.appOperatePrivileges.length; i++) {
+                let appOperatePrivilege = this.appOperatePrivileges[i];
+                if (appOperatePrivilege.app.appId === appId) {
                     started = true;
                 }
                 if (started) {
-                    let privilege = appPrivilege.keyPrivileges[key];
-                    if (privilege) {
-                        return privilege;
+                    for (let keyRegex in appOperatePrivilege.keyRegexPrivileges) {
+                        let regex = keyRegex;
+                        if (!regex.startsWith('^')) {
+                            regex = '^' + regex;
+                        }
+                        if (!regex.endsWith('$')) {
+                            regex += '$';
+                        }
+                        if (new RegExp(regex).test(key)) {
+                            return appOperatePrivilege.keyRegexPrivileges[keyRegex];
+                        }
                     }
                 }
             }
