@@ -5,12 +5,13 @@
     <title>configcenter</title>
     <script src="../common/import.js"></script>
     <script src="../components/Configs.js"></script>
-    <script src="../components/ManagerApps.js"></script>
     <script src="../components/PropertyKeys.js"></script>
+    <script src="../components/OperatePrivileges.js"></script>
     <script src="../components/PropertyValues.js"></script>
     <script src="../components/Releases.js"></script>
     <script src="../components/Apps.js"></script>
     <script src="../components/Profiles.js"></script>
+    <script src="../components/ManagerApps.js"></script>
     <style>
         .propertyKey-text-style {
             font-size: small;
@@ -48,6 +49,10 @@
         .release-property-text-style {
             font-size: xx-small;
         }
+
+        .keyRegex-text-style {
+            font-size: small;
+        }
     </style>
 </head>
 <body>
@@ -83,6 +88,12 @@
             children: [{
                 path: '',
                 component: PropertyKeys
+            }, {
+                path: 'operatePrivileges',
+                component: OperatePrivileges,
+                meta: {
+                    title: '操作权限'
+                }
             }, {
                 path: ':profileId',
                 props: true,
