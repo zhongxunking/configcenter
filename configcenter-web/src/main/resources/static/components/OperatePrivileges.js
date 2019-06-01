@@ -7,7 +7,7 @@ const OperatePrivilegesTemplate = `
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appOperatePrivilege.app) }}</span>
             </el-col>
             <el-col :span="4" style="text-align: end;">
-                <el-button type="primary" icon="el-icon-plus" @click="addOperatePrivilegeVisible = true" size="small">新增</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="addOperatePrivilegeVisible = true" :disabled="manager.type !== 'ADMIN'" size="small">新增</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -46,7 +46,7 @@ const OperatePrivilegesTemplate = `
                     <el-row>
                         <el-col :span="16" style="text-align: center">
                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" size="mini" circle></el-button>
+                                <el-button @click="startEditing(row)" type="primary" icon="el-icon-edit" :disabled="manager.type !== 'ADMIN'" size="mini" circle></el-button>
                             </el-tooltip>
                             <template v-else>
                                 <el-button-group>
@@ -61,7 +61,7 @@ const OperatePrivilegesTemplate = `
                         </el-col>
                         <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deleteOperatePrivileges(row)" type="danger" icon="el-icon-delete" size="mini" circle></el-button>
+                                <el-button @click="deleteOperatePrivileges(row)" type="danger" icon="el-icon-delete" :disabled="manager.type !== 'ADMIN'" size="mini" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>

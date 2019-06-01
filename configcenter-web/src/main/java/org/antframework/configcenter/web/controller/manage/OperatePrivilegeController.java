@@ -13,8 +13,10 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivilege;
 import org.antframework.configcenter.web.common.OperatePrivileges;
+import org.antframework.manager.web.Managers;
 import org.springframework.util.Assert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,6 +38,7 @@ public class OperatePrivilegeController {
      */
     @RequestMapping("/addOrModifyOperatePrivilege")
     public EmptyResult addOrModifyOperatePrivilege(String appId, String keyRegex, OperatePrivilege privilege) {
+        Managers.admin();
         OperatePrivileges.addOrModifyOperatePrivilege(appId, keyRegex, privilege);
         return FacadeUtils.buildSuccess(EmptyResult.class);
     }
@@ -48,6 +51,7 @@ public class OperatePrivilegeController {
      */
     @RequestMapping("/deleteOperatePrivileges")
     public EmptyResult deleteOperatePrivileges(String appId, String keyRegex) {
+        Managers.admin();
         Assert.notNull(appId, "appId不能为空");
         Assert.notNull(keyRegex, "keyRegex不能为空");
         OperatePrivileges.deleteOperatePrivileges(appId, keyRegex);
@@ -62,6 +66,7 @@ public class OperatePrivilegeController {
      */
     @RequestMapping("/findInheritedOperatePrivileges")
     public FindInheritedPrivilegesResult findInheritedOperatePrivileges(String appId) {
+        ManagerApps.adminOrHaveApp(appId);
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
         result.setAppOperatePrivileges(OperatePrivileges.findInheritedOperatePrivileges(appId));
         return result;
