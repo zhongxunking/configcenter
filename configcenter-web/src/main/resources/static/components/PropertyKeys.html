@@ -13,7 +13,7 @@
 <body>
 <div id="propertyKeysApp">
     <el-row style="margin-bottom: 10px">
-        <el-col>
+        <el-col :span="16">
             <span style="font-size: large;">环境：</span>
             <el-button v-for="(profile, index) in allProfiles" v-if="index < 8" type="text" :key="profile.profileId" style="margin-right: 5px">{{ profile.profileId }}</el-button>
             <el-button v-if="allProfiles.length > 8" type="text" icon="el-icon-more" style="margin-right: 5px"></el-button>
@@ -22,6 +22,12 @@
             <!--</router-link>-->
             <!--<router-link v-if="allProfiles.length > 8" :to="'/configs/' + appId + '/' + allProfiles[0].profileId" style="margin-right: 10px">-->
             <!--<el-button type="text" icon="el-icon-more"></el-button>-->
+            <!--</router-link>-->
+        </el-col>
+        <el-col :span="8" style="text-align: right;">
+            <el-button type="text">操作权限</el-button>
+            <!--<router-link :to="'/configs/' + appId + '/operatePrivileges'">-->
+            <!--<el-button type="text">操作权限</el-button>-->
             <!--</router-link>-->
         </el-col>
     </el-row>
