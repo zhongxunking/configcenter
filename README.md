@@ -22,7 +22,7 @@
 ## 1. 整体设计
 配置就是不同应用在不同环境的一些键值对。
 整体设计图：<br/>
-<img src="https://note.youdao.com/yws/api/personal/file/WEB1bad1efff9180e0438a1ee662f86cf32?method=download&shareKey=901c4091647b0b35967d8bbb5c92a5a7" width=600 /><br/>
+<img src="https://note.youdao.com/yws/api/personal/file/WEB53a19fbcb9e34bdf6caa544e02172428?method=download&shareKey=9058ff8d692f8f68fb17df69a54d30fd" width=600 /><br/>
 
 ##### 本配置中心内的角色有：服务端、客户端、MySQL数据库、Redis、配置管理员
 
