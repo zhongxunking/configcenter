@@ -51,16 +51,9 @@
                                 <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
                                     <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
                                 </el-tooltip>
-                                <el-popover placement="top" v-model="row.savePopoverShowing">
-                                    <p>确定保存修改？</p>
-                                    <div style="text-align: right; margin: 0">
-                                        <el-button size="mini" type="text" @click="row.savePopoverShowing = false">取消</el-button>
-                                        <el-button type="primary" size="mini" @click="saveEditing(row)">确定</el-button>
-                                    </div>
-                                    <el-tooltip slot="reference" :disabled="row.savePopoverShowing" content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="row.savePopoverShowing = true" type="success" icon="el-icon-check" size="small" circle></el-button>
-                                    </el-tooltip>
-                                </el-popover>
+                                <el-tooltip content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
+                                </el-tooltip>
                             </el-button-group>
                         </template>
                     </el-col>
@@ -127,20 +120,19 @@
 
                 const theThis = this;
                 this.doQueryProfiles(this.queryProfilesForm, function (result) {
-                    theThis.totalProfiles = result.totalCount;
-                    theThis.profiles = result.infos;
-                    theThis.profiles.forEach(function (profile) {
-                        Vue.set(profile, 'editing', false);
-                        Vue.set(profile, 'editingProfileName', null);
-                        Vue.set(profile, 'editingParent', null);
-                        Vue.set(profile, 'savePopoverShowing', false);
-                        Vue.set(profile, 'parentProfile', null);
+                    result.infos.forEach(function (profile) {
+                        profile.editing = false;
+                        profile.editingProfileName = null;
+                        profile.editingParent = null;
+                        profile.parentProfile = null;
                         if (profile.parent) {
                             theThis.doFindProfile(profile.parent, function (parentProfile) {
                                 profile.parentProfile = parentProfile;
                             });
                         }
                     });
+                    theThis.totalProfiles = result.totalCount;
+                    theThis.profiles = result.infos;
                     theThis.profilesLoading = false;
                 }, function () {
                     theThis.profilesLoading = false;
@@ -163,24 +155,25 @@
                 this.matchedProfiles = null;
             },
             saveEditing: function (profile) {
-                profile.savePopoverShowing = false;
-
                 const theThis = this;
-                this.doAddOrModifyProfile({
-                    profileId: profile.profileId,
-                    profileName: profile.editingProfileName,
-                    parent: profile.editingParent
-                }, function () {
-                    profile.editing = false;
-                    profile.profileName = profile.editingProfileName;
-                    profile.parent = profile.editingParent;
-                    profile.parentProfile = null;
-                    if (profile.parent) {
-                        theThis.doFindProfile(profile.parent, function (parentProfile) {
-                            profile.parentProfile = parentProfile;
+                Vue.prototype.$confirm('确定保存修改？', '警告', {type: 'warning'})
+                    .then(function () {
+                        theThis.doAddOrModifyProfile({
+                            profileId: profile.profileId,
+                            profileName: profile.editingProfileName,
+                            parent: profile.editingParent
+                        }, function () {
+                            profile.editing = false;
+                            profile.profileName = profile.editingProfileName;
+                            profile.parent = profile.editingParent;
+                            profile.parentProfile = null;
+                            if (profile.parent) {
+                                theThis.doFindProfile(profile.parent, function (parentProfile) {
+                                    profile.parentProfile = parentProfile;
+                                });
+                            }
                         });
-                    }
-                });
+                    });
             },
             deleteProfile: function (profile) {
                 const theThis = this;
