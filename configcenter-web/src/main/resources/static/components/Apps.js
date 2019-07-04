@@ -48,16 +48,9 @@ const AppsTemplate = `
                                 <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
                                     <el-button @click="row.editing = false" type="info" icon="el-icon-close" size="small" circle></el-button>
                                 </el-tooltip>
-                                <el-popover placement="top" v-model="row.savePopoverShowing">
-                                    <p>确定保存修改？</p>
-                                    <div style="text-align: right; margin: 0">
-                                        <el-button size="mini" type="text" @click="row.savePopoverShowing = false">取消</el-button>
-                                        <el-button type="primary" size="mini" @click="saveEditing(row)">确定</el-button>
-                                    </div>
-                                    <el-tooltip slot="reference" :disabled="row.savePopoverShowing" content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="row.savePopoverShowing = true" type="success" icon="el-icon-check" size="small" circle></el-button>
-                                    </el-tooltip>
-                                </el-popover>
+                                <el-tooltip content="保存修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="small" circle></el-button>
+                                </el-tooltip>
                             </el-button-group>
                         </template>
                     </el-col>
@@ -128,20 +121,19 @@ const Apps = {
 
             const theThis = this;
             this.doQueryApps(this.queryAppsForm, function (result) {
-                theThis.totalApps = result.totalCount;
-                theThis.apps = result.infos;
-                theThis.apps.forEach(function (app) {
-                    Vue.set(app, 'editing', false);
-                    Vue.set(app, 'editingAppName', null);
-                    Vue.set(app, 'editingParent', null);
-                    Vue.set(app, 'savePopoverShowing', false);
-                    Vue.set(app, 'parentApp', null);
+                result.infos.forEach(function (app) {
+                    app.editing = false;
+                    app.editingAppName = null;
+                    app.editingParent = null;
+                    app.parentApp = null;
                     if (app.parent) {
                         theThis.doFindApp(app.parent, function (parentApp) {
                             app.parentApp = parentApp;
                         });
                     }
                 });
+                theThis.totalApps = result.totalCount;
+                theThis.apps = result.infos;
                 theThis.appsLoading = false;
             }, function () {
                 theThis.appsLoading = false;
@@ -164,24 +156,25 @@ const Apps = {
             this.matchedApps = null;
         },
         saveEditing: function (app) {
-            app.savePopoverShowing = false;
-
             const theThis = this;
-            this.doAddOrModifyApp({
-                appId: app.appId,
-                appName: app.editingAppName,
-                parent: app.editingParent
-            }, function () {
-                app.editing = false;
-                app.appName = app.editingAppName;
-                app.parent = app.editingParent;
-                app.parentApp = null;
-                if (app.parent) {
-                    theThis.doFindApp(app.parent, function (parentApp) {
-                        app.parentApp = parentApp;
+            Vue.prototype.$confirm('确定保存修改？', '警告', {type: 'warning'})
+                .then(function () {
+                    theThis.doAddOrModifyApp({
+                        appId: app.appId,
+                        appName: app.editingAppName,
+                        parent: app.editingParent
+                    }, function () {
+                        app.editing = false;
+                        app.appName = app.editingAppName;
+                        app.parent = app.editingParent;
+                        app.parentApp = null;
+                        if (app.parent) {
+                            theThis.doFindApp(app.parent, function (parentApp) {
+                                app.parentApp = parentApp;
+                            });
+                        }
                     });
-                }
-            });
+                });
         },
         deleteApp: function (app) {
             const theThis = this;
