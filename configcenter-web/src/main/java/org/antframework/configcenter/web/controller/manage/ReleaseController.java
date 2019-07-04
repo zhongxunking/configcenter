@@ -34,7 +34,7 @@ import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
-import org.antframework.manager.web.Managers;
+import org.antframework.manager.web.CurrentManagers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -67,7 +67,7 @@ public class ReleaseController {
     @RequestMapping("/addRelease")
     public AddReleaseResult addRelease(String appId, String profileId, String memo) {
         ManagerApps.adminOrHaveApp(appId);
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
             List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
@@ -99,7 +99,7 @@ public class ReleaseController {
     @RequestMapping("/revertRelease")
     public EmptyResult revertRelease(String appId, String profileId, Long targetVersion) {
         ManagerApps.adminOrHaveApp(appId);
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
             ReleaseInfo targetRelease = Releases.findRelease(appId, profileId, targetVersion);
@@ -173,7 +173,7 @@ public class ReleaseController {
     @RequestMapping("/queryReleases")
     public QueryReleasesResult queryReleases(int pageNo, int pageSize, String appId, String profileId) {
         if (appId == null) {
-            Managers.admin();
+            CurrentManagers.admin();
         } else {
             ManagerApps.adminOrHaveApp(appId);
         }
@@ -236,7 +236,7 @@ public class ReleaseController {
 
     // 对应用在各环境的发布中的敏感配置进行掩码
     private void maskAppRelease(FindInheritedReleasesResult.AppRelease appRelease) {
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
@@ -248,7 +248,7 @@ public class ReleaseController {
 
     // 对发布中敏感配置进行掩码
     private void maskRelease(ReleaseInfo release) {
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }

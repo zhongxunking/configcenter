@@ -16,11 +16,11 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.manager.biz.util.Relations;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
-import org.antframework.manager.web.Managers;
-import org.antframework.manager.web.Relations;
+import org.antframework.manager.web.CurrentManagers;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -64,7 +64,7 @@ public final class OperatePrivileges {
      * @param key   配置key
      */
     public static void adminOrReadWrite(String appId, String key) {
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }

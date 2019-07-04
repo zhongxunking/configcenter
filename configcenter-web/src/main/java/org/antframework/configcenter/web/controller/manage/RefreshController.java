@@ -13,7 +13,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.RefreshService;
 import org.antframework.configcenter.facade.order.RefreshClientsOrder;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.manager.web.Managers;
+import org.antframework.manager.web.CurrentManagers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -36,7 +36,7 @@ public class RefreshController {
     @RequestMapping("/refreshClients")
     public EmptyResult refreshClients(String rootAppId, String rootProfileId) {
         if (rootAppId == null) {
-            Managers.admin();
+            CurrentManagers.admin();
         } else {
             ManagerApps.adminOrHaveApp(rootAppId);
         }

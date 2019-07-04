@@ -31,7 +31,7 @@ import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
-import org.antframework.manager.web.Managers;
+import org.antframework.manager.web.CurrentManagers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -139,7 +139,7 @@ public class PropertyValueController {
 
     // 对敏感配置进行掩码
     private void mask(String appId, List<PropertyValueInfo> propertyValues) {
-        ManagerInfo manager = Managers.currentManager();
+        ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }
