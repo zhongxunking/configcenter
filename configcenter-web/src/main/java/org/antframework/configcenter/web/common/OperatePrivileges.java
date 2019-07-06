@@ -23,10 +23,7 @@ import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.CurrentManagers;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -71,6 +68,28 @@ public final class OperatePrivileges {
         OperatePrivilege privilege = calcOperatePrivilege(findInheritedOperatePrivileges(appId), key);
         if (privilege != OperatePrivilege.READ_WRITE) {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("无权限操作敏感配置key[%s]", key));
+        }
+    }
+
+    /**
+     * 断言提供的配置key对应的权限都是读写权限
+     *
+     * @param appId 应用id
+     * @param keys  配置key
+     */
+    public static void onlyReadWrite(String appId, Set<String> keys) {
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
+
+        Set<String> notReadWriteKeys = new HashSet<>();
+        for (String key : keys) {
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, key);
+            if (privilege != OperatePrivilege.READ_WRITE) {
+                notReadWriteKeys.add(key);
+            }
+        }
+
+        if (!notReadWriteKeys.isEmpty()) {
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
         }
     }
 

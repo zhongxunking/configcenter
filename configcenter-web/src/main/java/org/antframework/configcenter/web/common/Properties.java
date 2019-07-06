@@ -9,14 +9,14 @@
 package org.antframework.configcenter.web.common;
 
 import lombok.Getter;
-import org.antframework.common.util.facade.BizException;
-import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.facade.vo.Property;
 
 import java.io.Serializable;
-import java.util.*;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -56,34 +56,6 @@ public final class Properties {
         }
 
         return difference;
-    }
-
-    /**
-     * 断言只有读写权限的配置被修改
-     *
-     * @param appId      应用id
-     * @param difference 被修改的配置
-     */
-    public static void onlyReadWrite(String appId, Difference difference) {
-        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
-
-        Set<String> keys = new HashSet<>();
-        keys.addAll(difference.getAddedKeys());
-        keys.addAll(difference.getModifiedValueKeys());
-        keys.addAll(difference.getModifiedScopeKeys());
-        keys.addAll(difference.getRemovedKeys());
-
-        Set<String> notReadWriteKeys = new HashSet<>();
-        for (String key : keys) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, key);
-            if (privilege != OperatePrivilege.READ_WRITE) {
-                notReadWriteKeys.add(key);
-            }
-        }
-
-        if (!notReadWriteKeys.isEmpty()) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
-        }
     }
 
     /**

@@ -15,11 +15,9 @@ import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Configs;
-import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
@@ -58,22 +56,25 @@ public class ReleaseController {
     /**
      * 新增发布
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     * @param memo      备注（可选）
+     * @param appId               应用id（必须）
+     * @param profileId           环境id（必须）
+     * @param memo                备注（可选）
+     * @param setProperties       需添加或修改的配置
+     * @param deletedPropertyKeys 需删除的配置
      */
     @RequestMapping("/addRelease")
-    public AddReleaseResult addRelease(String appId, String profileId, String memo) {
+    public AddReleaseResult addRelease(String appId,
+                                       String profileId,
+                                       String memo,
+                                       Set<Property> setProperties,
+                                       Set<String> deletedPropertyKeys) {
         ManagerApps.adminOrHaveApp(appId);
         ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
-            Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());
-            Set<Property> right = Releases.findCurrentRelease(appId, profileId).getProperties();
-
-            Properties.Difference difference = Properties.compare(left, right);
-            Properties.onlyReadWrite(appId, difference);
+            Set<String> keys = setProperties.stream().map(Property::getKey).collect(Collectors.toSet());
+            keys.addAll(deletedPropertyKeys);
+            OperatePrivileges.onlyReadWrite(appId, keys);
         }
 
         AddReleaseOrder order = new AddReleaseOrder();
@@ -105,9 +106,14 @@ public class ReleaseController {
                 throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", appId, profileId, targetVersion));
             }
             ReleaseInfo currentRelease = Releases.findCurrentRelease(appId, profileId);
-
             Properties.Difference difference = Properties.compare(targetRelease.getProperties(), currentRelease.getProperties());
-            Properties.onlyReadWrite(appId, difference);
+            Set<String> keys = new HashSet<>();
+            keys.addAll(difference.getAddedKeys());
+            keys.addAll(difference.getModifiedValueKeys());
+            keys.addAll(difference.getModifiedScopeKeys());
+            keys.addAll(difference.getRemovedKeys());
+
+            OperatePrivileges.onlyReadWrite(appId, keys);
         }
 
         RevertReleaseOrder order = new RevertReleaseOrder();
