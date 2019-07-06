@@ -39,9 +39,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -71,8 +69,8 @@ public class ReleaseController {
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
             List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
-            List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
-            List<Property> right = Releases.findCurrentRelease(appId, profileId).getProperties();
+            Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());
+            Set<Property> right = Releases.findCurrentRelease(appId, profileId).getProperties();
 
             Properties.Difference difference = Properties.compare(left, right);
             Properties.onlyReadWrite(appId, difference);
@@ -201,8 +199,8 @@ public class ReleaseController {
     public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
         ManagerApps.adminOrHaveApp(appId);
 
-        List<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
-        List<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
+        Set<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
+        Set<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
 
         CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);
@@ -258,7 +256,7 @@ public class ReleaseController {
 
     // 对敏感配置进行掩码
     private void mask(ReleaseInfo release, List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges) {
-        List<Property> properties = new ArrayList<>(release.getProperties().size());
+        Set<Property> properties = new HashSet<>(release.getProperties().size());
         for (Property property : release.getProperties()) {
             OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, property.getKey());
             if (privilege == OperatePrivilege.NONE) {

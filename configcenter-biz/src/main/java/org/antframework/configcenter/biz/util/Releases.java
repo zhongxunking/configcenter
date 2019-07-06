@@ -20,8 +20,8 @@ import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 
 /**
  * 发布操作类
@@ -96,7 +96,7 @@ public final class Releases {
         release.setVersion(ReleaseConstant.ORIGIN_VERSION);
         release.setReleaseTime(new Date());
         release.setMemo("原始发布");
-        release.setProperties(new ArrayList<>());
+        release.setProperties(new HashSet<>());
 
         return release;
     }

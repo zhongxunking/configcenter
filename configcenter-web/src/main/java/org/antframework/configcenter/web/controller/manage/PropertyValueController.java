@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -164,8 +165,8 @@ public class PropertyValueController {
         ManagerApps.adminOrHaveApp(appId);
 
         List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
-        List<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toList());
-        List<Property> right = Releases.findRelease(appId, profileId, releaseVersion).getProperties();
+        Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());
+        Set<Property> right = Releases.findRelease(appId, profileId, releaseVersion).getProperties();
         Properties.Difference difference = Properties.compare(left, right);
 
         ComparePropertyValuesWithReleaseResult result = FacadeUtils.buildSuccess(ComparePropertyValuesWithReleaseResult.class);

@@ -16,7 +16,8 @@ import org.antframework.configcenter.facade.vo.Property;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 发布
@@ -49,14 +50,14 @@ public class Release extends AbstractEntity {
     // 配置集
     @Column(length = 1024 * 1024)
     @Convert(converter = PropertiesConverter.class)
-    private List<Property> properties;
+    private Set<Property> properties;
 
     /**
      * 配置集的jpa转换器
      */
-    public static class PropertiesConverter implements AttributeConverter<List<Property>, String> {
+    public static class PropertiesConverter implements AttributeConverter<Set<Property>, String> {
         @Override
-        public String convertToDatabaseColumn(List<Property> attribute) {
+        public String convertToDatabaseColumn(Set<Property> attribute) {
             if (attribute == null) {
                 return null;
             }
@@ -64,11 +65,11 @@ public class Release extends AbstractEntity {
         }
 
         @Override
-        public List<Property> convertToEntityAttribute(String dbData) {
+        public Set<Property> convertToEntityAttribute(String dbData) {
             if (dbData == null) {
                 return null;
             }
-            return JSON.parseArray(dbData, Property.class);
+            return new HashSet<>(JSON.parseArray(dbData, Property.class));
         }
     }
 }

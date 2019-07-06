@@ -36,9 +36,10 @@ import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.converter.Converter;
 
-import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 新增发布服务
@@ -95,7 +96,7 @@ public class AddReleaseService {
     }
 
     // 构建发布
-    private Release buildRelease(AddReleaseOrder order, long version, List<Property> properties) {
+    private Release buildRelease(AddReleaseOrder order, long version, Set<Property> properties) {
         Release release = new Release();
         BeanUtils.copyProperties(order, release);
         release.setVersion(version);
@@ -106,8 +107,8 @@ public class AddReleaseService {
     }
 
     // 构建配置集
-    private List<Property> buildProperties(AddReleaseOrder order) {
-        List<Property> properties = new ArrayList<>();
+    private Set<Property> buildProperties(AddReleaseOrder order) {
+        Set<Property> properties = new HashSet<>();
 
         List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(order.getAppId(), order.getProfileId(), Scope.PRIVATE);
         for (PropertyValueInfo propertyValue : propertyValues) {

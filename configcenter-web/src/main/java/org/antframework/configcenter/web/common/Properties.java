@@ -31,7 +31,7 @@ public final class Properties {
      * @param rights 待比较的配置
      * @return 差异
      */
-    public static Difference compare(List<Property> lefts, List<Property> rights) {
+    public static Difference compare(Set<Property> lefts, Set<Property> rights) {
         Map<String, Property> leftsMap = lefts.stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
         Map<String, Property> rightsMap = rights.stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
 
