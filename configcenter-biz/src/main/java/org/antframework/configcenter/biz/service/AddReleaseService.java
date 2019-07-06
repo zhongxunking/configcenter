@@ -14,20 +14,18 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Refreshes;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.Release;
-import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.vo.Property;
-import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceBefore;
@@ -38,8 +36,10 @@ import org.springframework.core.convert.converter.Converter;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * 新增发布服务
@@ -108,13 +108,15 @@ public class AddReleaseService {
 
     // 构建配置集
     private Set<Property> buildProperties(AddReleaseOrder order) {
-        Set<Property> properties = new HashSet<>();
-
-        List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(order.getAppId(), order.getProfileId(), Scope.PRIVATE);
-        for (PropertyValueInfo propertyValue : propertyValues) {
-            properties.add(new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope()));
+        ReleaseInfo currentRelease = Releases.findCurrentRelease(order.getAppId(), order.getProfileId());
+        Map<String, Property> keyProperties = currentRelease.getProperties().stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
+        for (Property property : order.getSetProperties()) {
+            keyProperties.put(property.getKey(), property);
+        }
+        for (String propertyKey : order.getDeletedPropertyKeys()) {
+            keyProperties.remove(propertyKey);
         }
 
-        return properties;
+        return new HashSet<>(keyProperties.values());
     }
 }

@@ -11,8 +11,12 @@ package org.antframework.configcenter.facade.order;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
+import org.antframework.configcenter.facade.vo.Property;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 新增发布order
@@ -22,10 +26,32 @@ import javax.validation.constraints.NotBlank;
 public class AddReleaseOrder extends AbstractOrder {
     // 应用id
     @NotBlank
+    @Getter
+    @Setter
     private String appId;
     // 环境id
     @NotBlank
+    @Getter
+    @Setter
     private String profileId;
     // 备注
+    @Getter
+    @Setter
     private String memo;
+    // 需添加或修改的配置
+    @NotNull
+    @Getter
+    private Set<Property> setProperties = new HashSet<>();
+    // 需删除的配置
+    @NotNull
+    @Getter
+    private Set<String> deletedPropertyKeys = new HashSet<>();
+
+    public void addSetProperty(Property property) {
+        setProperties.add(property);
+    }
+
+    public void addDeletedPropertyKey(String propertyKey) {
+        deletedPropertyKeys.add(propertyKey);
+    }
 }
