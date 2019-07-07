@@ -8,6 +8,7 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
+import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
@@ -60,21 +61,23 @@ public class ReleaseController {
      * @param appId                     应用id（必须）
      * @param profileId                 环境id（必须）
      * @param memo                      备注（可选）
-     * @param addedOrModifiedProperties 需添加或修改的配置
-     * @param deletedPropertyKeys       需删除的配置
+     * @param addedOrModifiedProperties 需添加或修改的配置（必须）
+     * @param deletedPropertyKeys       需删除的配置（必须）
      */
     @RequestMapping("/addRelease")
     public AddReleaseResult addRelease(String appId,
                                        String profileId,
                                        String memo,
-                                       Set<Property> addedOrModifiedProperties,
-                                       Set<String> deletedPropertyKeys) {
+                                       String addedOrModifiedProperties,
+                                       String deletedPropertyKeys) {
         ManagerApps.adminOrHaveApp(appId);
+        Set<Property> properties = new HashSet<>(JSON.parseArray(addedOrModifiedProperties, Property.class));
+        Set<String> propertyKeys = new HashSet<>(JSON.parseArray(deletedPropertyKeys, String.class));
         ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            Set<String> keys = addedOrModifiedProperties.stream().map(Property::getKey).collect(Collectors.toSet());
-            keys.addAll(deletedPropertyKeys);
+            Set<String> keys = properties.stream().map(Property::getKey).collect(Collectors.toSet());
+            keys.addAll(propertyKeys);
             OperatePrivileges.onlyReadWrite(appId, keys);
         }
 
@@ -82,17 +85,17 @@ public class ReleaseController {
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setMemo(memo);
-        order.getAddedOrModifiedProperties().addAll(addedOrModifiedProperties);
-        order.getDeletedPropertyKeys().addAll(deletedPropertyKeys);
+        order.getAddedOrModifiedProperties().addAll(properties);
+        order.getDeletedPropertyKeys().addAll(propertyKeys);
 
         AddReleaseResult result = releaseService.addRelease(order);
         FacadeUtils.assertSuccess(result);
         maskRelease(result.getRelease());
         // 同步到配置value
-        for (Property property : addedOrModifiedProperties) {
+        for (Property property : properties) {
             PropertyValues.addOrModifyPropertyValue(appId, property.getKey(), profileId, property.getValue(), property.getScope());
         }
-        for (String key : deletedPropertyKeys) {
+        for (String key : propertyKeys) {
             PropertyValues.deletePropertyValue(appId, key, profileId);
         }
 
