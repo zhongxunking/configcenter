@@ -913,12 +913,27 @@ const PropertyValues = {
         },
         addRelease: function () {
             const theThis = this;
-            axios.get('../manage/release/addRelease', {
-                params: {
-                    appId: this.appId,
-                    profileId: this.profileId,
-                    memo: this.addReleaseForm.memo
+            let addedOrModifiedProperties = [];
+            let deletedPropertyKeys = [];
+            theThis.modifiedProperties.forEach(function (property) {
+                if (theThis.difference.addedKeys.indexOf(property.key) >= 0
+                    || theThis.difference.modifiedValueKeys.indexOf(property.key) >= 0
+                    || theThis.difference.modifiedScopeKeys.indexOf(property.key) >= 0) {
+                    addedOrModifiedProperties.push({
+                        key: property.key,
+                        value: property.value,
+                        scope: property.scope
+                    });
+                } else if (theThis.difference.removedKeys.indexOf(property.key) >= 0) {
+                    deletedPropertyKeys.push(property.key);
                 }
+            });
+            axios.post('../manage/release/addRelease', {
+                appId: theThis.appId,
+                profileId: theThis.profileId,
+                memo: theThis.addReleaseForm.memo,
+                addedOrModifiedProperties: JSON.stringify(addedOrModifiedProperties),
+                deletedPropertyKeys: JSON.stringify(deletedPropertyKeys)
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
