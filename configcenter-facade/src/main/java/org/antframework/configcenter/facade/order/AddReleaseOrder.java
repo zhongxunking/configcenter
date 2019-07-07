@@ -21,8 +21,6 @@ import java.util.Set;
 /**
  * 新增发布order
  */
-@Getter
-@Setter
 public class AddReleaseOrder extends AbstractOrder {
     // 应用id
     @NotBlank

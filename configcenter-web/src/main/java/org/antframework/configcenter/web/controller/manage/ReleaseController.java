@@ -15,6 +15,7 @@ import org.antframework.common.util.facade.*;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Configs;
+import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
@@ -56,23 +57,23 @@ public class ReleaseController {
     /**
      * 新增发布
      *
-     * @param appId               应用id（必须）
-     * @param profileId           环境id（必须）
-     * @param memo                备注（可选）
-     * @param setProperties       需添加或修改的配置
-     * @param deletedPropertyKeys 需删除的配置
+     * @param appId                     应用id（必须）
+     * @param profileId                 环境id（必须）
+     * @param memo                      备注（可选）
+     * @param addedOrModifiedProperties 需添加或修改的配置
+     * @param deletedPropertyKeys       需删除的配置
      */
     @RequestMapping("/addRelease")
     public AddReleaseResult addRelease(String appId,
                                        String profileId,
                                        String memo,
-                                       Set<Property> setProperties,
+                                       Set<Property> addedOrModifiedProperties,
                                        Set<String> deletedPropertyKeys) {
         ManagerApps.adminOrHaveApp(appId);
         ManagerInfo manager = CurrentManagers.current();
         if (manager.getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
-            Set<String> keys = setProperties.stream().map(Property::getKey).collect(Collectors.toSet());
+            Set<String> keys = addedOrModifiedProperties.stream().map(Property::getKey).collect(Collectors.toSet());
             keys.addAll(deletedPropertyKeys);
             OperatePrivileges.onlyReadWrite(appId, keys);
         }
@@ -81,10 +82,20 @@ public class ReleaseController {
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setMemo(memo);
+        order.getAddedOrModifiedProperties().addAll(addedOrModifiedProperties);
+        order.getDeletedPropertyKeys().addAll(deletedPropertyKeys);
 
         AddReleaseResult result = releaseService.addRelease(order);
         FacadeUtils.assertSuccess(result);
         maskRelease(result.getRelease());
+        // 同步到配置value
+        for (Property property : addedOrModifiedProperties) {
+            PropertyValues.addOrModifyPropertyValue(appId, property.getKey(), profileId, property.getValue(), property.getScope());
+        }
+        for (String key : deletedPropertyKeys) {
+            PropertyValues.deletePropertyValue(appId, key, profileId);
+        }
+
         return result;
     }
 
