@@ -135,7 +135,12 @@ public class ReleaseController {
         order.setProfileId(profileId);
         order.setTargetVersion(targetVersion);
 
-        return releaseService.revertRelease(order);
+        EmptyResult result = releaseService.revertRelease(order);
+        if (result.isSuccess()) {
+            // 回滚配置value
+            PropertyValues.revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
+        }
+        return result;
     }
 
     /**

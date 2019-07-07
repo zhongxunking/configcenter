@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Release;
@@ -50,8 +49,6 @@ public class RevertReleaseService {
     @ServiceAfter
     public void after(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
-        // 回滚配置value
-        PropertyValues.revertPropertyValues(order.getAppId(), order.getProfileId(), order.getTargetVersion());
         // 刷新客户端
         Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
