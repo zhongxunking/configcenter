@@ -41,14 +41,14 @@ public class AddReleaseOrder extends AbstractOrder {
     // 需添加或修改的配置
     @NotNull
     @Getter
-    private Set<Property> setProperties = new HashSet<>();
+    private Set<Property> addedOrModifiedProperties = new HashSet<>();
     // 需删除的配置
     @NotNull
     @Getter
     private Set<String> deletedPropertyKeys = new HashSet<>();
 
-    public void addSetProperty(Property property) {
-        setProperties.add(property);
+    public void addAddedOrModifiedProperty(Property property) {
+        addedOrModifiedProperties.add(property);
     }
 
     public void addDeletedPropertyKey(String propertyKey) {

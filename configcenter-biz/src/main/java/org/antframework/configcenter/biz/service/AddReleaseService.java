@@ -110,7 +110,7 @@ public class AddReleaseService {
     private Set<Property> buildProperties(AddReleaseOrder order) {
         ReleaseInfo currentRelease = Releases.findCurrentRelease(order.getAppId(), order.getProfileId());
         Map<String, Property> keyProperties = currentRelease.getProperties().stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
-        for (Property property : order.getSetProperties()) {
+        for (Property property : order.getAddedOrModifiedProperties()) {
             keyProperties.put(property.getKey(), property);
         }
         for (String propertyKey : order.getDeletedPropertyKeys()) {
