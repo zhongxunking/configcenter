@@ -33,7 +33,7 @@
             <dependency>
                 <groupId>org.antframework.manager</groupId>
                 <artifactId>manager-web</artifactId>
-                <version>1.4.1.RELEASE</version>
+                <version>1.4.2.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
