@@ -16,7 +16,7 @@
 > 普通管理员账号：normal 密码：123
 <img src="https://note.youdao.com/yws/api/personal/file/WEB6292d40805cc0f62dde1b346a508d68d?method=download&shareKey=4cacc6700a80db6c3d43e0f4c935d1ca" width=500 />
 
-# 1. 特点
+# 特性
 configcenter具备统一的管理配置能力、配置发布回滚能力、配置更新秒级推送能力、客户端配置缓存能力、对敏感配置设置访问权限能力、管理员权限管理能力。
 * 统一的管理配置能力：提供配置管理页面，可管理不同应用在不同环境中的配置。
 * 配置发布回滚能力：配置可一按照版本进行发布回滚。
@@ -25,14 +25,14 @@ configcenter具备统一的管理配置能力、配置发布回滚能力、配�
 * 对敏感配置设置访问权限能力：可一些重要或敏感的配置设置访问权限，防止配置被泄漏。
 * 管理员权限管理能力：可对不同管理员设置对应的配置管理权限，让合适的人管理合适的配置。
 
-# 2. Why configcenter
+# Why configcenter
 configcenter具备以下特点支持你选择它。
 1. **简约**--configcenter从架构设计、服务端设计、客户端设计、数据库设计到页面设计，都遵从这个原则。
 1. **部署简单**--configcenter只依赖MySQL和Redis，部署时只需一个jar包+MySQL+Redis。
 1. **配置治理**--configcenter具有完善权限管理并且支持标记敏感配置，让你可以把非敏感配置放权给开发人员，让他们自助的管理配置，提高工作效率。
 1. **配置共享**--configcenter支持应用、环境两个纬度的继承关系（配置共享），让你可以去设计你的配置，让它变得优雅易管理。从开发的角度来看，就像从面向过程开发迈入面向对象开发一样。
 
-# 3. 文档
+# 文档
 * 设计<br/>
 &ensp;&ensp;[整体设计](https://github.com/zhongxunking/configcenter/wiki/%E6%95%B4%E4%BD%93%E8%AE%BE%E8%AE%A1)
 * 部署<br/>
@@ -43,9 +43,9 @@ configcenter具备以下特点支持你选择它。
 &ensp;&ensp;[集成Java客户端](https://github.com/zhongxunking/configcenter/wiki/%E9%9B%86%E6%88%90Java%E5%AE%A2%E6%88%B7%E7%AB%AF)<br/>
 &ensp;&ensp;[服务端OpenAPI](https://github.com/zhongxunking/configcenter/wiki/%E6%9C%8D%E5%8A%A1%E7%AB%AFOpenAPI)
 
-# 4. 技术支持
+# 技术支持
 欢迎加我微信入群进行交流。<br/>
 <img src="https://note.youdao.com/yws/api/personal/file/WEBbca9e0a9a6e1ea2d9ab9def1cc90f839?method=download&shareKey=00e90849ae0d3b5cb8ed7dd12bc6842e" width=200 />
 
-# 4. Who is using
+# Who is using
 欢迎使用configcenter的组织在[这里](https://github.com/zhongxunking/configcenter/issues/3)进行登记（仅供其他用户参考）。
