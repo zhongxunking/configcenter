@@ -24,7 +24,7 @@ public interface PropertyValueDao {
     void save(PropertyValue propertyValue);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
-    PropertyValue findLockByAppIdAndKeyAndProfileId(String appId, String key, String profileId);
+    PropertyValue findLockByAppIdAndProfileIdAndKey(String appId, String profileId, String key);
 
     List<PropertyValue> findByAppIdAndProfileId(String appId, String profileId);
 

@@ -51,7 +51,7 @@ public class AddOrModifyPropertyValueService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
         }
         // 新增或修改配置value
-        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), order.getKey(), order.getProfileId());
+        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndProfileIdAndKey(order.getAppId(), order.getProfileId(), order.getKey());
         if (propertyValue == null) {
             propertyValue = new PropertyValue();
         }

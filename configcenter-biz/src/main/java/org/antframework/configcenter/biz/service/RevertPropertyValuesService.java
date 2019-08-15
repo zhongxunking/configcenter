@@ -42,8 +42,8 @@ public class RevertPropertyValuesService {
         for (Property property : release.getProperties()) {
             PropertyValues.addOrModifyPropertyValue(
                     order.getAppId(),
-                    property.getKey(),
                     order.getProfileId(),
+                    property.getKey(),
                     property.getValue(),
                     property.getScope());
         }

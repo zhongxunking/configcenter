@@ -20,8 +20,7 @@ import javax.persistence.*;
  * 配置value
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_key_profileId", columnNames = {"appId", "key", "profileId"}),
-        indexes = @Index(name = "idx_appId_profileId", columnList = "appId,profileId"))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_key", columnNames = {"appId", "profileId", "key"}))
 @Getter
 @Setter
 public class PropertyValue extends AbstractEntity {
@@ -29,13 +28,13 @@ public class PropertyValue extends AbstractEntity {
     @Column(length = 64)
     private String appId;
 
-    // key
-    @Column(name = "`key`", length = 128)
-    private String key;
-
     // 环境id
     @Column(length = 64)
     private String profileId;
+
+    // key
+    @Column(name = "`key`", length = 128)
+    private String key;
 
     // value
     @Column

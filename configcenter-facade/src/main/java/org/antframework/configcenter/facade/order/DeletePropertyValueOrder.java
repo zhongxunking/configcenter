@@ -23,10 +23,10 @@ public class DeletePropertyValueOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
-    // 配置key
-    @NotBlank
-    private String key;
     // 环境id
     @NotBlank
     private String profileId;
+    // key
+    @NotBlank
+    private String key;
 }

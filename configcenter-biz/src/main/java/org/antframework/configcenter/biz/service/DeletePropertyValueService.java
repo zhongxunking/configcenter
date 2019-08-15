@@ -30,7 +30,7 @@ public class DeletePropertyValueService {
     public void execute(ServiceContext<DeletePropertyValueOrder, EmptyResult> context) {
         DeletePropertyValueOrder order = context.getOrder();
 
-        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndKeyAndProfileId(order.getAppId(), order.getKey(), order.getProfileId());
+        PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndProfileIdAndKey(order.getAppId(), order.getProfileId(), order.getKey());
         if (propertyValue != null) {
             propertyValueDao.delete(propertyValue);
         }

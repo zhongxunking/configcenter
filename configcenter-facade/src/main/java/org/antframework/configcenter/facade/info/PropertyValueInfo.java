@@ -22,10 +22,10 @@ import org.antframework.configcenter.facade.vo.Scope;
 public class PropertyValueInfo extends AbstractInfo {
     // 应用id
     private String appId;
-    // key
-    private String key;
     // 环境id
     private String profileId;
+    // key
+    private String key;
     // value
     @Mask(allMask = true)
     private String value;

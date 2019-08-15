@@ -39,7 +39,7 @@ public class DeletePropertyKeyService {
         }
         // 删除该key在所有环境的value
         for (ProfileInfo profile : Profiles.findAllProfiles()) {
-            PropertyValues.deletePropertyValue(order.getAppId(), order.getKey(), profile.getProfileId());
+            PropertyValues.deletePropertyValue(order.getAppId(), profile.getProfileId(), order.getKey());
         }
         // 删除key
         propertyKeyDao.delete(propertyKey);

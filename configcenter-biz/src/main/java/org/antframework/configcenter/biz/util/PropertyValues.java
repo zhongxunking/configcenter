@@ -33,16 +33,16 @@ public final class PropertyValues {
      * 新增或修改配置value
      *
      * @param appId     应用id
-     * @param key       key
      * @param profileId 环境id
+     * @param key       key
      * @param value     value
      * @param scope     作用域
      */
-    public static void addOrModifyPropertyValue(String appId, String key, String profileId, String value, Scope scope) {
+    public static void addOrModifyPropertyValue(String appId, String profileId, String key, String value, Scope scope) {
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
-        order.setKey(key);
         order.setProfileId(profileId);
+        order.setKey(key);
         order.setValue(value);
         order.setScope(scope);
 
@@ -54,14 +54,14 @@ public final class PropertyValues {
      * 删除配置value
      *
      * @param appId     应用id
-     * @param key       配置key
      * @param profileId 环境id
+     * @param key       key
      */
-    public static void deletePropertyValue(String appId, String key, String profileId) {
+    public static void deletePropertyValue(String appId, String profileId, String key) {
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
-        order.setKey(key);
         order.setProfileId(profileId);
+        order.setKey(key);
 
         EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
         FacadeUtils.assertSuccess(result);
@@ -111,7 +111,7 @@ public final class PropertyValues {
      */
     public static void deleteAppProfilePropertyValues(String appId, String profileId) {
         for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
-            deletePropertyValue(propertyValue.getAppId(), propertyValue.getKey(), propertyValue.getProfileId());
+            deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getKey());
         }
     }
 }

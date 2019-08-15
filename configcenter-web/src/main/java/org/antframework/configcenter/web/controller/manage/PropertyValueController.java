@@ -56,20 +56,20 @@ public class PropertyValueController {
      * 新增或修改配置value
      *
      * @param appId     应用id（必须）
-     * @param key       配置key（必须）
      * @param profileId 环境id（必须）
-     * @param value     配置value（必须）
+     * @param key       key（必须）
+     * @param value     value（必须）
      * @param scope     作用域（必须）
      */
     @RequestMapping("/addOrModifyPropertyValue")
-    public EmptyResult addOrModifyPropertyValue(String appId, String key, String profileId, String value, Scope scope) {
+    public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String key, String value, Scope scope) {
         ManagerApps.adminOrHaveApp(appId);
         OperatePrivileges.adminOrReadWrite(appId, key);
 
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
-        order.setKey(key);
         order.setProfileId(profileId);
+        order.setKey(key);
         order.setValue(value);
         order.setScope(scope);
 
@@ -80,18 +80,18 @@ public class PropertyValueController {
      * 删除配置value
      *
      * @param appId     应用id（必须）
-     * @param key       配置key（必须）
      * @param profileId 环境id（必须）
+     * @param key       key（必须）
      */
     @RequestMapping("/deletePropertyValue")
-    public EmptyResult deletePropertyValue(String appId, String key, String profileId) {
+    public EmptyResult deletePropertyValue(String appId, String profileId, String key) {
         ManagerApps.adminOrHaveApp(appId);
         OperatePrivileges.adminOrReadWrite(appId, key);
 
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
-        order.setKey(key);
         order.setProfileId(profileId);
+        order.setKey(key);
 
         return propertyValueService.deletePropertyValue(order);
     }

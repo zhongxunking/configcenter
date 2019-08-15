@@ -93,10 +93,10 @@ public class ReleaseController {
         maskRelease(result.getRelease());
         // 同步到配置value
         for (Property property : properties) {
-            PropertyValues.addOrModifyPropertyValue(appId, property.getKey(), profileId, property.getValue(), property.getScope());
+            PropertyValues.addOrModifyPropertyValue(appId, profileId, property.getKey(), property.getValue(), property.getScope());
         }
         for (String key : propertyKeys) {
-            PropertyValues.deletePropertyValue(appId, key, profileId);
+            PropertyValues.deletePropertyValue(appId, profileId, key);
         }
 
         return result;

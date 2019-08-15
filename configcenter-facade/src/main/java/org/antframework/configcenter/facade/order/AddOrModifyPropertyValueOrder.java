@@ -26,12 +26,12 @@ public class AddOrModifyPropertyValueOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
-    // key
-    @NotBlank
-    private String key;
     // 环境id
     @NotBlank
     private String profileId;
+    // key
+    @NotBlank
+    private String key;
     // value
     @NotBlank
     @Mask(allMask = true)
