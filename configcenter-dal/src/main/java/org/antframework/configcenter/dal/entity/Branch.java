@@ -10,6 +10,7 @@ package org.antframework.configcenter.dal.entity;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.antframework.boot.jpa.AbstractEntity;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -23,7 +24,7 @@ import javax.persistence.UniqueConstraint;
 @Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_branchId", columnNames = {"appId", "profileId", "branchId"}))
 @Getter
 @Setter
-public class Branch {
+public class Branch extends AbstractEntity {
     // 应用id
     @Column(length = 64)
     private String appId;
