@@ -19,7 +19,10 @@ import javax.persistence.LockModeType;
  */
 @RepositoryDefinition(domainClass = Branch.class, idClass = Long.class)
 public interface BranchDao {
+    void save(Branch branch);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Branch findLockByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
+
+    Branch findByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
 }

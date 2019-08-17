@@ -56,7 +56,7 @@ public class AddOrModifyPropertyValueService {
         }
         Branch branch = branchDao.findLockByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]在环境[%s]下的分支[%s]不存在", order.getAppId(), order.getProfileId(), order.getBranchId()));
+            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getBranchId()));
         }
         // 新增或修改配置value
         PropertyValue propertyValue = propertyValueDao.findLockByAppIdAndProfileIdAndBranchIdAndKey(order.getAppId(), order.getProfileId(), order.getBranchId(), order.getKey());
