@@ -29,6 +29,9 @@ public class AddOrModifyPropertyValueOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
+    // 分支id
+    @NotBlank
+    private String branchId;
     // key
     @NotBlank
     private String key;

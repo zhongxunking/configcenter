@@ -35,7 +35,7 @@ public interface PropertyValueService {
     EmptyResult revertPropertyValues(RevertPropertyValuesOrder order);
 
     /**
-     * 查找应用在指定环境的所有配置value
+     * 查找应用在指定环境指定分支的所有配置value
      */
     FindAppProfilePropertyValuesResult findAppProfilePropertyValues(FindAppProfilePropertyValuesOrder order);
 }

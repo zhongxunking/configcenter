@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用在指定环境的所有配置value-result
+ * 查找应用在指定环境指定分支的所有配置value-result
  */
 @Getter
 public class FindAppProfilePropertyValuesResult extends AbstractResult {

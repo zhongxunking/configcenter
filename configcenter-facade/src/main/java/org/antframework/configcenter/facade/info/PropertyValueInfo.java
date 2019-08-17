@@ -24,6 +24,8 @@ public class PropertyValueInfo extends AbstractInfo {
     private String appId;
     // 环境id
     private String profileId;
+    // 分支id
+    private String branchId;
     // key
     private String key;
     // value

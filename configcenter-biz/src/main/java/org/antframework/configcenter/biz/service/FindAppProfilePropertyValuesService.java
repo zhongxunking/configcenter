@@ -54,6 +54,7 @@ public class FindAppProfilePropertyValuesService {
         if (profile == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
         }
+        // todo 校验branch
     }
 
     @ServiceExecute
@@ -61,7 +62,7 @@ public class FindAppProfilePropertyValuesService {
         FindAppProfilePropertyValuesOrder order = context.getOrder();
         FindAppProfilePropertyValuesResult result = context.getResult();
 
-        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileId(order.getAppId(), order.getProfileId());
+        List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         // 忽略作用域不合要求的value
         propertyValues.removeIf(propertyValue -> propertyValue.getScope().compareTo(order.getMinScope()) < 0);
         // 设置result

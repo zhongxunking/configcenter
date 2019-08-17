@@ -34,14 +34,16 @@ public final class PropertyValues {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param branchId  分支id
      * @param key       key
      * @param value     value
      * @param scope     作用域
      */
-    public static void addOrModifyPropertyValue(String appId, String profileId, String key, String value, Scope scope) {
+    public static void addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setKey(key);
         order.setValue(value);
         order.setScope(scope);
@@ -55,12 +57,14 @@ public final class PropertyValues {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param branchId  分支id
      * @param key       key
      */
-    public static void deletePropertyValue(String appId, String profileId, String key) {
+    public static void deletePropertyValue(String appId, String profileId, String branchId, String key) {
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setKey(key);
 
         EmptyResult result = PROPERTY_VALUE_SERVICE.deletePropertyValue(order);
@@ -72,12 +76,14 @@ public final class PropertyValues {
      *
      * @param appId          应用id
      * @param profileId      环境id
+     * @param branchId       分支id
      * @param releaseVersion 回滚到的目标发布版本
      */
-    public static void revertPropertyValues(String appId, String profileId, Long releaseVersion) {
+    public static void revertPropertyValues(String appId, String profileId, String branchId, Long releaseVersion) {
         RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setReleaseVersion(releaseVersion);
 
         EmptyResult result = PROPERTY_VALUE_SERVICE.revertPropertyValues(order);
@@ -89,13 +95,15 @@ public final class PropertyValues {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param branchId  分支id
      * @param minScope  最小作用域
      * @return 配置value
      */
-    public static List<PropertyValueInfo> findAppProfilePropertyValues(String appId, String profileId, Scope minScope) {
+    public static List<PropertyValueInfo> findAppProfilePropertyValues(String appId, String profileId, String branchId, Scope minScope) {
         FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setMinScope(minScope);
 
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
@@ -108,10 +116,11 @@ public final class PropertyValues {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param branchId  分支id
      */
-    public static void deleteAppProfilePropertyValues(String appId, String profileId) {
-        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE)) {
-            deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getKey());
+    public static void deleteAppProfilePropertyValues(String appId, String profileId, String branchId) {
+        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, branchId, Scope.PRIVATE)) {
+            deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getBranchId(), propertyValue.getKey());
         }
     }
 }

@@ -29,6 +29,9 @@ public class RevertPropertyValuesOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
+    // 分支id
+    @NotBlank
+    private String branchId;
     // 回滚到的目标发布版本
     @Min(ReleaseConstant.ORIGIN_VERSION)
     @NotNull
