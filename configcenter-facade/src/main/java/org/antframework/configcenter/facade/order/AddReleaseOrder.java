@@ -12,7 +12,9 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
@@ -33,6 +35,7 @@ public class AddReleaseOrder extends AbstractOrder {
     @Setter
     private String profileId;
     // 父版本
+    @Min(ReleaseConstant.ORIGIN_VERSION)
     @NotNull
     @Getter
     @Setter
