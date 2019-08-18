@@ -34,4 +34,6 @@ public class ReleaseInfo extends AbstractInfo {
     private String memo;
     // 配置集
     private Set<Property> properties;
+    // 父版本
+    private Long parentVersion;
 }

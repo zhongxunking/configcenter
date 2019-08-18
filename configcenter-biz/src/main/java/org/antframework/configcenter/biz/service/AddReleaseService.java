@@ -15,7 +15,6 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Refreshes;
-import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
@@ -26,6 +25,7 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.AddReleaseOrder;
 import org.antframework.configcenter.facade.result.AddReleaseResult;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceBefore;
@@ -52,12 +52,12 @@ public class AddReleaseService {
     // info转换器
     private static final Converter<Release, ReleaseInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
 
+    // 发布dao
+    private final ReleaseDao releaseDao;
     // 应用dao
     private final AppDao appDao;
     // 环境dao
     private final ProfileDao profileDao;
-    // 发布dao
-    private final ReleaseDao releaseDao;
 
     @ServiceBefore
     public void before(ServiceContext<AddReleaseOrder, AddReleaseResult> context) {
@@ -72,15 +72,6 @@ public class AddReleaseService {
         AddReleaseOrder order = context.getOrder();
         AddReleaseResult result = context.getResult();
         long version = context.getAttachmentAttr(VERSION_KEY);
-        // 校验入参
-        App app = appDao.findLockByAppId(order.getAppId());
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
-        }
-        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
-        }
         // 新增发布
         Release release = buildRelease(order, version, buildProperties(order));
         releaseDao.save(release);
@@ -108,8 +99,7 @@ public class AddReleaseService {
 
     // 构建配置集
     private Set<Property> buildProperties(AddReleaseOrder order) {
-        ReleaseInfo currentRelease = Releases.findCurrentRelease(order.getAppId(), order.getProfileId());
-        Map<String, Property> keyProperties = currentRelease.getProperties().stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
+        Map<String, Property> keyProperties = getParentProperties(order).stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
         for (Property property : order.getAddedOrModifiedProperties()) {
             keyProperties.put(property.getKey(), property);
         }
@@ -118,5 +108,26 @@ public class AddReleaseService {
         }
 
         return new HashSet<>(keyProperties.values());
+    }
+
+    // 获取父发布的配置集
+    private Set<Property> getParentProperties(AddReleaseOrder order) {
+        if (order.getParentVersion() > ReleaseConstant.ORIGIN_VERSION) {
+            Release parentRelease = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getParentVersion());
+            if (parentRelease == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("父发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getParentVersion()));
+            }
+            return parentRelease.getProperties();
+        } else {
+            App app = appDao.findLockByAppId(order.getAppId());
+            if (app == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
+            }
+            Profile profile = profileDao.findLockByProfileId(order.getProfileId());
+            if (profile == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
+            }
+            return new HashSet<>();
+        }
     }
 }

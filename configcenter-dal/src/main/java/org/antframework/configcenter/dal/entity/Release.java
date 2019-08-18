@@ -52,6 +52,10 @@ public class Release extends AbstractEntity {
     @Convert(converter = PropertiesConverter.class)
     private Set<Property> properties;
 
+    // 父版本
+    @Column
+    private Long parentVersion;
+
     /**
      * 配置集的jpa转换器
      */

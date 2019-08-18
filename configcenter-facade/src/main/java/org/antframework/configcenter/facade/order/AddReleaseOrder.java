@@ -32,6 +32,11 @@ public class AddReleaseOrder extends AbstractOrder {
     @Getter
     @Setter
     private String profileId;
+    // 父版本
+    @NotNull
+    @Getter
+    @Setter
+    private Long parentVersion;
     // 备注
     @Getter
     @Setter
