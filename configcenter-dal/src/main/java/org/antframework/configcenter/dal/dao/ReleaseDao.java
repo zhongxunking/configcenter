@@ -30,6 +30,8 @@ public interface ReleaseDao {
     @CacheEvict(cacheNames = CacheConstant.CURRENT_RELEASES_CACHE_NAME, key = "#p0.appId + ',' + #p0.profileId")
     void save(Release release);
 
+    void delete(Release release);
+
     @CacheEvict(cacheNames = CacheConstant.CURRENT_RELEASES_CACHE_NAME, key = "#p0 + ',' + #p1")
     void deleteByAppIdAndProfileIdAndVersionGreaterThan(String appId, String profileId, Long version);
 
@@ -40,6 +42,8 @@ public interface ReleaseDao {
     Release findFirstByAppIdAndProfileIdOrderByVersionDesc(String appId, String profileId);
 
     Release findByAppIdAndProfileIdAndVersion(String appId, String profileId, Long version);
+
+    boolean existsByAppIdAndProfileIdAndParentVersion(String appId, String profileId, Long parentVersion);
 
     Page<Release> query(Collection<QueryParam> queryParams, Pageable pageable);
 }

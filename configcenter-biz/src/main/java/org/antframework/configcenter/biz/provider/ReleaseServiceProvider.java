@@ -40,6 +40,11 @@ public class ReleaseServiceProvider implements ReleaseService {
     }
 
     @Override
+    public EmptyResult deleteRelease(DeleteReleaseOrder order) {
+        return serviceEngine.execute("deleteReleaseService", order);
+    }
+
+    @Override
     public EmptyResult revertRelease(RevertReleaseOrder order) {
         return serviceEngine.execute("revertReleaseService", order);
     }

@@ -25,6 +25,11 @@ public interface ReleaseService {
     AddReleaseResult addRelease(AddReleaseOrder order);
 
     /**
+     * 删除发布
+     */
+    EmptyResult deleteRelease(DeleteReleaseOrder order);
+
+    /**
      * 回滚发布
      */
     EmptyResult revertRelease(RevertReleaseOrder order);
