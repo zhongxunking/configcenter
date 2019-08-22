@@ -12,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractQueryOrder;
 import org.antframework.common.util.query.annotation.operator.QueryEQ;
+import org.antframework.common.util.query.annotation.operator.QueryLike;
 
 /**
  * 查询发布order
@@ -25,4 +26,13 @@ public class QueryReleasesOrder extends AbstractQueryOrder {
     // 环境id
     @QueryEQ
     private String profileId;
+    // 版本
+    @QueryEQ
+    private Long version;
+    // 备注
+    @QueryLike
+    private String memo;
+    // 父版本
+    @QueryEQ
+    private Long parentVersion;
 }
