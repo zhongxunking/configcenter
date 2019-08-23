@@ -28,7 +28,7 @@ public final class Branches {
      * @param appId     应用id
      * @param profileId 环境id
      * @param branchId  分支id
-     * @return 分支
+     * @return 分支（null表示无该分支）
      */
     public static BranchInfo findBranch(String appId, String profileId, String branchId) {
         FindBranchOrder order = new FindBranchOrder();

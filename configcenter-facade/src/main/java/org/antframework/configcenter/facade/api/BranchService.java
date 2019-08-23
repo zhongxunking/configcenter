@@ -11,6 +11,8 @@ package org.antframework.configcenter.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddBranchOrder;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
+import org.antframework.configcenter.facade.order.FindBranchReleaseOrder;
+import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 
 /**
@@ -26,4 +28,9 @@ public interface BranchService {
      * 查找分支
      */
     FindBranchResult findBranch(FindBranchOrder order);
+
+    /**
+     * 查找分支发布
+     */
+    FindBranchReleaseResult findBranchRelease(FindBranchReleaseOrder order);
 }
