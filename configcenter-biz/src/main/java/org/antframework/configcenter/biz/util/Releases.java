@@ -13,6 +13,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
+import org.antframework.configcenter.facade.order.DeleteReleaseOrder;
 import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
 import org.antframework.configcenter.facade.order.RevertReleaseOrder;
@@ -67,6 +68,23 @@ public final class Releases {
     }
 
     /**
+     * 删除发布
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param version   版本
+     */
+    public static void deleteRelease(String appId, String profileId, long version) {
+        DeleteReleaseOrder order = new DeleteReleaseOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setVersion(version);
+
+        EmptyResult result = RELEASE_SERVICE.deleteRelease(order);
+        FacadeUtils.assertSuccess(result);
+    }
+
+    /**
      * 删除应用在指定环境的所有发布
      *
      * @param appId     应用id
@@ -97,6 +115,7 @@ public final class Releases {
         release.setReleaseTime(new Date());
         release.setMemo("原始发布");
         release.setProperties(new HashSet<>());
+        release.setParentVersion(null);
 
         return release;
     }

@@ -13,6 +13,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
 
 import javax.persistence.LockModeType;
+import java.util.List;
 
 /**
  * 分支dao
@@ -23,6 +24,9 @@ public interface BranchDao {
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Branch findLockByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Branch> findLockByAppIdAndProfileId(String appId, String profileId);
 
     Branch findByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
 }

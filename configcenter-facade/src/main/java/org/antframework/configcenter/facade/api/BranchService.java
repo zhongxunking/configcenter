@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddBranchOrder;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
 import org.antframework.configcenter.facade.order.FindBranchReleaseOrder;
+import org.antframework.configcenter.facade.order.RevertBranchReleaseOrder;
 import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 
@@ -23,6 +24,11 @@ public interface BranchService {
      * 添加分支
      */
     EmptyResult addBranch(AddBranchOrder order);
+
+    /**
+     * 回滚分支发布
+     */
+    EmptyResult revertBranchRelease(RevertBranchReleaseOrder order);
 
     /**
      * 查找分支
