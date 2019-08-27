@@ -22,6 +22,7 @@ import org.antframework.configcenter.facade.vo.ReleaseConstant;
 
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Set;
 
 /**
  * 发布操作类
@@ -64,6 +65,25 @@ public final class Releases {
         FindReleaseResult result = RELEASE_SERVICE.findRelease(order);
         FacadeUtils.assertSuccess(result);
         return result.getRelease();
+    }
+
+    /**
+     * 回滚发布
+     *
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param sourceVersion  需要回滚的源版本
+     * @param targetVersions 回滚截止的目标版本
+     */
+    public static void revertRelease(String appId, String profileId, long sourceVersion, Set<Long> targetVersions) {
+        RevertReleaseOrder order = new RevertReleaseOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setSourceVersion(sourceVersion);
+        order.setTargetVersions(targetVersions);
+
+        EmptyResult result = RELEASE_SERVICE.revertRelease(order);
+        FacadeUtils.assertSuccess(result);
     }
 
     /**

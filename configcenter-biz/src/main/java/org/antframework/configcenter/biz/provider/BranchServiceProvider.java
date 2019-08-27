@@ -11,10 +11,7 @@ package org.antframework.configcenter.biz.provider;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.BranchService;
-import org.antframework.configcenter.facade.order.AddBranchOrder;
-import org.antframework.configcenter.facade.order.FindBranchOrder;
-import org.antframework.configcenter.facade.order.FindBranchReleaseOrder;
-import org.antframework.configcenter.facade.order.RevertBranchReleaseOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.bekit.service.ServiceEngine;
@@ -37,6 +34,11 @@ public class BranchServiceProvider implements BranchService {
     @Override
     public EmptyResult revertBranchRelease(RevertBranchReleaseOrder order) {
         return serviceEngine.execute("revertBranchReleaseService", order);
+    }
+
+    @Override
+    public EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order) {
+        return serviceEngine.execute("deleteDetachedReleasesService", order);
     }
 
     @Override

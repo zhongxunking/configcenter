@@ -9,10 +9,7 @@
 package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.facade.order.AddBranchOrder;
-import org.antframework.configcenter.facade.order.FindBranchOrder;
-import org.antframework.configcenter.facade.order.FindBranchReleaseOrder;
-import org.antframework.configcenter.facade.order.RevertBranchReleaseOrder;
+import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 
@@ -29,6 +26,11 @@ public interface BranchService {
      * 回滚分支发布
      */
     EmptyResult revertBranchRelease(RevertBranchReleaseOrder order);
+
+    /**
+     * 删除分离的发布
+     */
+    EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order);
 
     /**
      * 查找分支
