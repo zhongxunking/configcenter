@@ -35,15 +35,21 @@ public class RevertReleaseService {
     @ServiceExecute
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
-        // 校验入参
-        if (order.getTargetVersion() > ReleaseConstant.ORIGIN_VERSION) {
-            Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getTargetVersion());
+        // 根据发布继承关系进行删除
+        Long version = order.getSourceVersion();
+        while (version > ReleaseConstant.ORIGIN_VERSION
+                && !order.getTargetVersions().contains(version)) {
+            Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), version);
             if (release == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getTargetVersion()));
+                throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), version));
             }
+            boolean existsChildren = releaseDao.existsByAppIdAndProfileIdAndParentVersion(order.getAppId(), order.getProfileId(), version);
+            if (existsChildren) {
+                break;
+            }
+            releaseDao.delete(release);
+            version = release.getParentVersion();
         }
-        // 回滚发布
-        releaseDao.deleteByAppIdAndProfileIdAndVersionGreaterThan(order.getAppId(), order.getProfileId(), order.getTargetVersion());
     }
 
     @ServiceAfter

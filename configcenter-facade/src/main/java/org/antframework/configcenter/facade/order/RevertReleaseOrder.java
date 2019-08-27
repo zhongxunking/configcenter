@@ -16,6 +16,7 @@ import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 /**
  * 回滚发布order
@@ -29,8 +30,12 @@ public class RevertReleaseOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
-    // 回滚到的目标版本（传入ReleaseConstant.ORIGIN_VERSION表示删除所有发布）
+    // 需要回滚的源版本
     @Min(ReleaseConstant.ORIGIN_VERSION)
     @NotNull
-    private Long targetVersion;
+    private Long sourceVersion;
+    // 回滚截止的目标版本
+    @Min(ReleaseConstant.ORIGIN_VERSION)
+    @NotNull
+    private Set<Long> targetVersions;
 }
