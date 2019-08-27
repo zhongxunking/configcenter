@@ -13,11 +13,9 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
-import org.antframework.configcenter.facade.order.DeleteReleaseOrder;
 import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
 import org.antframework.configcenter.facade.order.RevertReleaseOrder;
-import org.antframework.configcenter.facade.result.DeleteReleaseResult;
 import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
@@ -64,25 +62,6 @@ public final class Releases {
         order.setVersion(version);
 
         FindReleaseResult result = RELEASE_SERVICE.findRelease(order);
-        FacadeUtils.assertSuccess(result);
-        return result.getRelease();
-    }
-
-    /**
-     * 删除发布
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     * @param version   版本
-     * @return 被删除的发布（null表示无该发布）
-     */
-    public static ReleaseInfo deleteRelease(String appId, String profileId, long version) {
-        DeleteReleaseOrder order = new DeleteReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setVersion(version);
-
-        DeleteReleaseResult result = RELEASE_SERVICE.deleteRelease(order);
         FacadeUtils.assertSuccess(result);
         return result.getRelease();
     }
