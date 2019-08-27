@@ -48,7 +48,7 @@ public class RevertBranchReleaseService {
         if (release == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getTargetReleaseVersion()));
         }
-        // 保存发布版本
+        // 保存分离的发布版本
         context.setAttachmentAttr(RELEASE_VERSION_KEY, branch.getReleaseVersion());
         // 更新分支
         branch.setReleaseVersion(order.getTargetReleaseVersion());
