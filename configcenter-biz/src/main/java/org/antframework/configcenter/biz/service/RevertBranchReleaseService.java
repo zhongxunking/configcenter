@@ -51,17 +51,17 @@ public class RevertBranchReleaseService {
         Long releaseVersion = branch.getReleaseVersion();
         Set<Long> reservedReleaseVersions = getReservedReleaseVersions(order);
         while (releaseVersion > ReleaseConstant.ORIGIN_VERSION && !reservedReleaseVersions.contains(releaseVersion)) {
-            ReleaseInfo release = Releases.findRelease(order.getAppId(), order.getProfileId(), releaseVersion);
-            if (release == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), releaseVersion));
-            }
+            ReleaseInfo release;
             try {
-                Releases.deleteRelease(order.getAppId(), order.getProfileId(), releaseVersion);
+                release = Releases.deleteRelease(order.getAppId(), order.getProfileId(), releaseVersion);
             } catch (BizException e) {
                 if (Objects.equals(e.getCode(), ResultCode.EXISTS_CHILDREN.getCode())) {
                     break;
                 }
                 throw e;
+            }
+            if (release == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), releaseVersion));
             }
             releaseVersion = release.getParentVersion();
         }

@@ -10,10 +10,7 @@ package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.AddReleaseResult;
-import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
-import org.antframework.configcenter.facade.result.FindReleaseResult;
-import org.antframework.configcenter.facade.result.QueryReleasesResult;
+import org.antframework.configcenter.facade.result.*;
 
 /**
  * 发布服务
@@ -27,7 +24,7 @@ public interface ReleaseService {
     /**
      * 删除发布
      */
-    EmptyResult deleteRelease(DeleteReleaseOrder order);
+    DeleteReleaseResult deleteRelease(DeleteReleaseOrder order);
 
     /**
      * 回滚发布

@@ -15,10 +15,7 @@ import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.AddReleaseResult;
-import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
-import org.antframework.configcenter.facade.result.FindReleaseResult;
-import org.antframework.configcenter.facade.result.QueryReleasesResult;
+import org.antframework.configcenter.facade.result.*;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -37,7 +34,7 @@ public class ReleaseServiceProvider implements ReleaseService {
     }
 
     @Override
-    public EmptyResult deleteRelease(DeleteReleaseOrder order) {
+    public DeleteReleaseResult deleteRelease(DeleteReleaseOrder order) {
         return serviceEngine.execute("deleteReleaseService", order);
     }
 
