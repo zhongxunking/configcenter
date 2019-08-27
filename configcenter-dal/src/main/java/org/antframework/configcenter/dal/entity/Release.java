@@ -23,7 +23,9 @@ import java.util.Set;
  * 发布
  */
 @Entity
-@Table(name = "`Release`", uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}))
+@Table(name = "`Release`",
+        uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_version", columnNames = {"appId", "profileId", "version"}),
+        indexes = @Index(name = "idx_appId_profileId_parentVersion", columnList = "appId,profileId,parentVersion"))
 @Getter
 @Setter
 public class Release extends AbstractEntity {
