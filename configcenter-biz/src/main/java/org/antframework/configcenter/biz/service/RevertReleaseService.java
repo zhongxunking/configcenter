@@ -36,7 +36,7 @@ public class RevertReleaseService {
     public void execute(ServiceContext<RevertReleaseOrder, EmptyResult> context) {
         RevertReleaseOrder order = context.getOrder();
         // 根据发布继承关系进行删除
-        Long version = order.getSourceVersion();
+        long version = order.getSourceVersion();
         while (version > ReleaseConstant.ORIGIN_VERSION
                 && !order.getTargetVersions().contains(version)) {
             Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), version);
