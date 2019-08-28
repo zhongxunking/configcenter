@@ -33,6 +33,11 @@ public interface BranchService {
     EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order);
 
     /**
+     * 删除分支
+     */
+    EmptyResult deleteBranch(DeleteBranchOrder order);
+
+    /**
      * 查找分支
      */
     FindBranchResult findBranch(FindBranchOrder order);

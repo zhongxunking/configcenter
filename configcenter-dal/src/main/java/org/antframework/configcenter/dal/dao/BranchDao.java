@@ -22,6 +22,8 @@ import java.util.List;
 public interface BranchDao {
     void save(Branch branch);
 
+    void delete(Branch branch);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Branch findLockByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
 

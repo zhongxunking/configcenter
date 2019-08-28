@@ -42,6 +42,11 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
+    public EmptyResult deleteBranch(DeleteBranchOrder order) {
+        return serviceEngine.execute("deleteBranchService", order);
+    }
+
+    @Override
     public FindBranchResult findBranch(FindBranchOrder order) {
         return serviceEngine.execute("findBranchService", order);
     }
