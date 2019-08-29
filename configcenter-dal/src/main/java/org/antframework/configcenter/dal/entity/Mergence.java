@@ -37,7 +37,7 @@ public class Mergence extends AbstractEntity {
     @Column
     private Long releaseVersion;
 
-    // 被合并的发布版本
+    // 源发布版本
     @Column
-    private Long mergedReleaseVersion;
+    private Long sourceReleaseVersion;
 }
