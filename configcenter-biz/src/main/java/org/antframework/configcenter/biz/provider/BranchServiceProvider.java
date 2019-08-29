@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -32,6 +33,11 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
+    public EmptyResult releaseBranch(ReleaseBranchOrder order) {
+        return serviceEngine.execute("releaseBranchService", order);
+    }
+
+    @Override
     public EmptyResult revertBranchRelease(RevertBranchReleaseOrder order) {
         return serviceEngine.execute("revertBranchReleaseService", order);
     }
@@ -39,6 +45,11 @@ public class BranchServiceProvider implements BranchService {
     @Override
     public EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order) {
         return serviceEngine.execute("deleteDetachedReleasesService", order);
+    }
+
+    @Override
+    public MergeBranchResult mergeBranch(MergeBranchOrder order) {
+        return serviceEngine.execute("mergeBranchService", order);
     }
 
     @Override
