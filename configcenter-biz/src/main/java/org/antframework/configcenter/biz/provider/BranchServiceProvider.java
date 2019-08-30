@@ -12,7 +12,6 @@ import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.FindBranchReleaseResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.ServiceEngine;
@@ -55,10 +54,5 @@ public class BranchServiceProvider implements BranchService {
     @Override
     public FindBranchResult findBranch(FindBranchOrder order) {
         return serviceEngine.execute("findBranchService", order);
-    }
-
-    @Override
-    public FindBranchReleaseResult findBranchRelease(FindBranchReleaseOrder order) {
-        return serviceEngine.execute("findBranchReleaseService", order);
     }
 }
