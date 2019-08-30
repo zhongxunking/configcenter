@@ -24,6 +24,6 @@ public class BranchInfo extends AbstractInfo {
     private String profileId;
     // 分支id
     private String branchId;
-    // 发布版本
-    private Long releaseVersion;
+    // 发布
+    private ReleaseInfo release;
 }

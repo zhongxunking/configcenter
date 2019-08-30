@@ -11,8 +11,8 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.converter.BranchConverter;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.dal.dao.BranchDao;
@@ -35,7 +35,7 @@ import org.springframework.core.convert.converter.Converter;
 @AllArgsConstructor
 public class FindBranchService {
     // info转换器
-    private static final Converter<Branch, BranchInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(BranchInfo.class);
+    private static final Converter<Branch, BranchInfo> CONVERTER = new BranchConverter();
 
     // 分支dao
     private final BranchDao branchDao;
@@ -58,10 +58,10 @@ public class FindBranchService {
     public void execute(ServiceContext<FindBranchOrder, FindBranchResult> context) {
         FindBranchOrder order = context.getOrder();
         FindBranchResult result = context.getResult();
-
+        // 查找分支
         Branch branch = branchDao.findByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch != null) {
-            result.setBranch(INFO_CONVERTER.convert(branch));
+            result.setBranch(CONVERTER.convert(branch));
         }
     }
 }
