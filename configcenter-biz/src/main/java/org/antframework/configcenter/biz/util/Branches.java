@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
-import org.antframework.configcenter.facade.order.RevertBranchReleaseOrder;
+import org.antframework.configcenter.facade.order.RevertBranchOrder;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 
 /**
@@ -23,6 +23,25 @@ import org.antframework.configcenter.facade.result.FindBranchResult;
 public final class Branches {
     // 分支服务
     private static final BranchService BRANCH_SERVICE = Contexts.getApplicationContext().getBean(BranchService.class);
+
+    /**
+     * 回滚分支
+     *
+     * @param appId                应用id
+     * @param profileId            环境id
+     * @param branchId             分支id
+     * @param targetReleaseVersion 回滚到的目标发布版本（传入ReleaseConstant.ORIGIN_VERSION表示删除所有发布）
+     */
+    public static void revertBranch(String appId, String profileId, String branchId, long targetReleaseVersion) {
+        RevertBranchOrder order = new RevertBranchOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+        order.setTargetReleaseVersion(targetReleaseVersion);
+
+        EmptyResult result = BRANCH_SERVICE.revertBranch(order);
+        FacadeUtils.assertSuccess(result);
+    }
 
     /**
      * 查找分支
@@ -41,24 +60,5 @@ public final class Branches {
         FindBranchResult result = BRANCH_SERVICE.findBranch(order);
         FacadeUtils.assertSuccess(result);
         return result.getBranch();
-    }
-
-    /**
-     * 回滚分支发布
-     *
-     * @param appId                应用id
-     * @param profileId            环境id
-     * @param branchId             分支id
-     * @param targetReleaseVersion 回滚到的目标发布版本（传入ReleaseConstant.ORIGIN_VERSION表示删除所有发布）
-     */
-    public static void revertBranchRelease(String appId, String profileId, String branchId, long targetReleaseVersion) {
-        RevertBranchReleaseOrder order = new RevertBranchReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setBranchId(branchId);
-        order.setTargetReleaseVersion(targetReleaseVersion);
-
-        EmptyResult result = BRANCH_SERVICE.revertBranchRelease(order);
-        FacadeUtils.assertSuccess(result);
     }
 }
