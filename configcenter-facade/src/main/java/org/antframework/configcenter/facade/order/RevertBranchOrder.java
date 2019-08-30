@@ -18,11 +18,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 回滚分支的发布order
+ * 回滚分支order
  */
 @Getter
 @Setter
-public class RevertBranchReleaseOrder extends AbstractOrder {
+public class RevertBranchOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;

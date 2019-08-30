@@ -38,8 +38,8 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
-    public EmptyResult revertBranchRelease(RevertBranchReleaseOrder order) {
-        return serviceEngine.execute("revertBranchReleaseService", order);
+    public EmptyResult revertBranch(RevertBranchOrder order) {
+        return serviceEngine.execute("revertBranchService", order);
     }
 
     @Override
