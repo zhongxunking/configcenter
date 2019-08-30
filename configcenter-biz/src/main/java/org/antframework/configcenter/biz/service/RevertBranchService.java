@@ -55,7 +55,7 @@ public class RevertBranchService {
         }
         // 删除未被关联的发布
         Set<Long> touchedReleaseVersions = getTouchedReleaseVersions(branch, targetRelease);
-        deleteUntachedReleases(branch, touchedReleaseVersions);
+        deleteDetachedReleases(branch, touchedReleaseVersions);
         // 更新分支
         branch.setReleaseVersion(order.getTargetReleaseVersion());
         branchDao.save(branch);
@@ -73,7 +73,7 @@ public class RevertBranchService {
     }
 
     // 删除未被关联的发布
-    private void deleteUntachedReleases(Branch branch, Set<Long> touchedReleaseVersions) {
+    private void deleteDetachedReleases(Branch branch, Set<Long> touchedReleaseVersions) {
         long version = branch.getReleaseVersion();
         while (version > ReleaseConstant.ORIGIN_VERSION && !touchedReleaseVersions.contains(version)) {
             Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(branch.getAppId(), branch.getProfileId(), version);
