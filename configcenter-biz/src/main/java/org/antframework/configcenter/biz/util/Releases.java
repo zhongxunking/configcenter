@@ -9,20 +9,15 @@
 package org.antframework.configcenter.biz.util;
 
 import org.antframework.boot.core.Contexts;
-import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
-import org.antframework.configcenter.facade.order.FindCurrentReleaseOrder;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
-import org.antframework.configcenter.facade.order.RevertReleaseOrder;
-import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Set;
 
 /**
  * 发布操作类
@@ -30,23 +25,6 @@ import java.util.Set;
 public final class Releases {
     // 发布服务
     private static final ReleaseService RELEASE_SERVICE = Contexts.getApplicationContext().getBean(ReleaseService.class);
-
-    /**
-     * 查找当前发布
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     * @return 当前发布（null表示无任何发布）
-     */
-    public static ReleaseInfo findCurrentRelease(String appId, String profileId) {
-        FindCurrentReleaseOrder order = new FindCurrentReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-
-        FindCurrentReleaseResult result = RELEASE_SERVICE.findCurrentRelease(order);
-        FacadeUtils.assertSuccess(result);
-        return result.getRelease();
-    }
 
     /**
      * 查找发布
@@ -65,41 +43,6 @@ public final class Releases {
         FindReleaseResult result = RELEASE_SERVICE.findRelease(order);
         FacadeUtils.assertSuccess(result);
         return result.getRelease();
-    }
-
-    /**
-     * 回滚发布
-     *
-     * @param appId          应用id
-     * @param profileId      环境id
-     * @param sourceVersion  需要回滚的源版本
-     * @param targetVersions 回滚截止的目标版本
-     */
-    public static void revertRelease(String appId, String profileId, long sourceVersion, Set<Long> targetVersions) {
-        RevertReleaseOrder order = new RevertReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setSourceVersion(sourceVersion);
-        order.setTargetVersions(targetVersions);
-
-        EmptyResult result = RELEASE_SERVICE.revertRelease(order);
-        FacadeUtils.assertSuccess(result);
-    }
-
-    /**
-     * 删除应用在指定环境的所有发布
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     */
-    public static void deleteAppProfileReleases(String appId, String profileId) {
-        RevertReleaseOrder order = new RevertReleaseOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setTargetVersion(ReleaseConstant.ORIGIN_VERSION);
-
-        EmptyResult result = RELEASE_SERVICE.revertRelease(order);
-        FacadeUtils.assertSuccess(result);
     }
 
     /**

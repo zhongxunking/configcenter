@@ -10,13 +10,11 @@ package org.antframework.configcenter.biz.provider;
 
 import lombok.AllArgsConstructor;
 import org.antframework.boot.bekit.CommonQueries;
-import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.biz.util.QueryUtils;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.facade.api.ReleaseService;
-import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.AddReleaseResult;
-import org.antframework.configcenter.facade.result.FindCurrentReleaseResult;
+import org.antframework.configcenter.facade.order.FindReleaseOrder;
+import org.antframework.configcenter.facade.order.QueryReleasesOrder;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.bekit.service.ServiceEngine;
@@ -30,21 +28,6 @@ import org.springframework.stereotype.Service;
 public class ReleaseServiceProvider implements ReleaseService {
     // 服务引擎
     private final ServiceEngine serviceEngine;
-
-    @Override
-    public AddReleaseResult addRelease(AddReleaseOrder order) {
-        return serviceEngine.execute("addReleaseService", order);
-    }
-
-    @Override
-    public EmptyResult revertRelease(RevertReleaseOrder order) {
-        return serviceEngine.execute("revertReleaseService", order);
-    }
-
-    @Override
-    public FindCurrentReleaseResult findCurrentRelease(FindCurrentReleaseOrder order) {
-        return serviceEngine.execute("findCurrentReleaseService", order);
-    }
 
     @Override
     public FindReleaseResult findRelease(FindReleaseOrder order) {
