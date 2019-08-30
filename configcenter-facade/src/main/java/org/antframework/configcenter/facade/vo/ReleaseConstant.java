@@ -13,7 +13,7 @@ package org.antframework.configcenter.facade.vo;
  */
 public final class ReleaseConstant {
     /**
-     * 原始版本（未发布）
+     * 原始版本
      */
     public static final long ORIGIN_VERSION = 0L;
 }
