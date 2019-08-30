@@ -13,10 +13,12 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Release;
+import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.RevertBranchOrder;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
@@ -47,7 +49,7 @@ public class RevertBranchService {
         if (branch == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getBranchId()));
         }
-        Release targetRelease = releaseDao.findLockByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getTargetReleaseVersion());
+        ReleaseInfo targetRelease = Releases.findRelease(order.getAppId(), order.getProfileId(), order.getTargetReleaseVersion());
         if (targetRelease == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("回滚到的目标发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getTargetReleaseVersion()));
         }
@@ -60,7 +62,7 @@ public class RevertBranchService {
     }
 
     // 获取被关联的发布的版本
-    private Set<Long> getTouchedReleaseVersions(Branch branch, Release targetRelease) {
+    private Set<Long> getTouchedReleaseVersions(Branch branch, ReleaseInfo targetRelease) {
         List<Branch> branches = branchDao.findLockByAppIdAndProfileId(branch.getAppId(), branch.getProfileId());
         Set<Long> versions = branches.stream()
                 .filter(b -> !Objects.equals(b.getBranchId(), branch.getBranchId()))
