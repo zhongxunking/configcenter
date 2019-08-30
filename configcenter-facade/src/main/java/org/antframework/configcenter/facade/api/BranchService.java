@@ -34,11 +34,6 @@ public interface BranchService {
     EmptyResult revertBranch(RevertBranchOrder order);
 
     /**
-     * 删除分离的发布
-     */
-    EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order);
-
-    /**
      * 合并分支
      */
     MergeBranchResult mergeBranch(MergeBranchOrder order);

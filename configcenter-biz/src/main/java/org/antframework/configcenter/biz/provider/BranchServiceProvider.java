@@ -43,11 +43,6 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
-    public EmptyResult deleteDetachedReleases(DeleteDetachedReleasesOrder order) {
-        return serviceEngine.execute("deleteDetachedReleasesService", order);
-    }
-
-    @Override
     public MergeBranchResult mergeBranch(MergeBranchOrder order) {
         return serviceEngine.execute("mergeBranchService", order);
     }

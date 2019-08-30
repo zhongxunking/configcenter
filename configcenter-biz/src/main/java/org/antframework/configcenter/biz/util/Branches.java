@@ -13,7 +13,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.order.DeleteDetachedReleasesOrder;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
 import org.antframework.configcenter.facade.order.RevertBranchReleaseOrder;
 import org.antframework.configcenter.facade.result.FindBranchResult;
@@ -60,23 +59,6 @@ public final class Branches {
         order.setTargetReleaseVersion(targetReleaseVersion);
 
         EmptyResult result = BRANCH_SERVICE.revertBranchRelease(order);
-        FacadeUtils.assertSuccess(result);
-    }
-
-    /**
-     * 删除分离的发布
-     *
-     * @param appId          应用id
-     * @param profileId      环境id
-     * @param releaseVersion 发布版本
-     */
-    public static void deleteDetachedReleases(String appId, String profileId, long releaseVersion) {
-        DeleteDetachedReleasesOrder order = new DeleteDetachedReleasesOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setReleaseVersion(releaseVersion);
-
-        EmptyResult result = BRANCH_SERVICE.deleteDetachedReleases(order);
         FacadeUtils.assertSuccess(result);
     }
 }
