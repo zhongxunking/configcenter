@@ -12,16 +12,14 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 
 /**
  * 合并
  */
 @Entity
-@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_releaseVersion", columnNames = {"appId", "profileId", "releaseVersion"}))
+@Table(uniqueConstraints = @UniqueConstraint(name = "uk_appId_profileId_releaseVersion", columnNames = {"appId", "profileId", "releaseVersion"}),
+        indexes = @Index(name = "idx_appId_profileId_sourceReleaseVersion", columnList = "appId,profileId,sourceReleaseVersion"))
 @Getter
 @Setter
 public class Mergence extends AbstractEntity {

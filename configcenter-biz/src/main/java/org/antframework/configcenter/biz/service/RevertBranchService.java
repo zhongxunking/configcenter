@@ -15,8 +15,10 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.BranchDao;
+import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Branch;
+import org.antframework.configcenter.dal.entity.Mergence;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.RevertBranchOrder;
@@ -40,6 +42,8 @@ public class RevertBranchService {
     private final BranchDao branchDao;
     // 发布dao
     private final ReleaseDao releaseDao;
+    // 合并dao
+    private final MergenceDao mergenceDao;
 
     @ServiceExecute
     public void execute(ServiceContext<RevertBranchOrder, EmptyResult> context) {
@@ -76,6 +80,9 @@ public class RevertBranchService {
     private void deleteDetachedReleases(Branch branch, Set<Long> touchedReleaseVersions) {
         long version = branch.getReleaseVersion();
         while (version > ReleaseConstant.ORIGIN_VERSION && !touchedReleaseVersions.contains(version)) {
+            // 删除相关的合并
+            deleteMergences(branch.getAppId(), branch.getProfileId(), version);
+            // 判断删除发布
             Release release = releaseDao.findLockByAppIdAndProfileIdAndVersion(branch.getAppId(), branch.getProfileId(), version);
             if (release == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", branch.getAppId(), branch.getProfileId(), version));
@@ -85,7 +92,18 @@ public class RevertBranchService {
                 break;
             }
             releaseDao.delete(release);
+            // 切换到父版本
             version = release.getParentVersion();
         }
+    }
+
+    // 删除合并
+    private void deleteMergences(String appId, String profileId, long version) {
+        Mergence mergence = mergenceDao.findLockByAppIdAndProfileIdAndReleaseVersion(appId, profileId, version);
+        if (mergence != null) {
+            mergenceDao.delete(mergence);
+        }
+        List<Mergence> mergences = mergenceDao.findLockByAppIdAndProfileIdAndSourceReleaseVersion(appId, profileId, version);
+        mergences.forEach(mergenceDao::delete);
     }
 }

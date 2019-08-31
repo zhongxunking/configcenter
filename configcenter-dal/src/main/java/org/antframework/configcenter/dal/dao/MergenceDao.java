@@ -9,7 +9,11 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.configcenter.dal.entity.Mergence;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.repository.RepositoryDefinition;
+
+import javax.persistence.LockModeType;
+import java.util.List;
 
 /**
  * 合并dao
@@ -17,6 +21,14 @@ import org.springframework.data.repository.RepositoryDefinition;
 @RepositoryDefinition(domainClass = Mergence.class, idClass = Long.class)
 public interface MergenceDao {
     void save(Mergence mergence);
+
+    void delete(Mergence mergence);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Mergence findLockByAppIdAndProfileIdAndReleaseVersion(String appId, String profileId, Long releaseVersion);
+
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    List<Mergence> findLockByAppIdAndProfileIdAndSourceReleaseVersion(String appId, String profileId, Long sourceReleaseVersion);
 
     Mergence findByAppIdAndProfileIdAndReleaseVersion(String appId, String profileId, Long releaseVersion);
 }
