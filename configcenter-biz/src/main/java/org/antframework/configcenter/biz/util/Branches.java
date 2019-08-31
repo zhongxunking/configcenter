@@ -14,8 +14,12 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
+import org.antframework.configcenter.facade.order.ReleaseBranchOrder;
 import org.antframework.configcenter.facade.order.RevertBranchOrder;
 import org.antframework.configcenter.facade.result.FindBranchResult;
+import org.antframework.configcenter.facade.vo.Property;
+
+import java.util.Set;
 
 /**
  * 分支操作类
@@ -23,6 +27,34 @@ import org.antframework.configcenter.facade.result.FindBranchResult;
 public final class Branches {
     // 分支服务
     private static final BranchService BRANCH_SERVICE = Contexts.getApplicationContext().getBean(BranchService.class);
+
+    /**
+     * 发布分支
+     *
+     * @param appId                   应用id
+     * @param profileId               环境id
+     * @param branchId                分支id
+     * @param addOrModifiedProperties 需添加或修改的配置
+     * @param deletedPropertyKeys     需删除的配置key
+     * @param memo                    备注
+     */
+    public static void releaseBranch(String appId,
+                                     String profileId,
+                                     String branchId,
+                                     Set<Property> addOrModifiedProperties,
+                                     Set<String> deletedPropertyKeys,
+                                     String memo) {
+        ReleaseBranchOrder order = new ReleaseBranchOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+        order.setAddOrModifiedProperties(addOrModifiedProperties);
+        order.setDeletedPropertyKeys(deletedPropertyKeys);
+        order.setMemo(memo);
+
+        EmptyResult result = BRANCH_SERVICE.releaseBranch(order);
+        FacadeUtils.assertSuccess(result);
+    }
 
     /**
      * 回滚分支
