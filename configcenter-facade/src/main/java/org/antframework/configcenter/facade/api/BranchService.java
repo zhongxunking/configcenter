@@ -25,7 +25,7 @@ public interface BranchService {
     /**
      * 发布分支
      */
-    EmptyResult releaseBranch(ReleaseBranchOrder order);
+    ReleaseBranchResult releaseBranch(ReleaseBranchOrder order);
 
     /**
      * 回滚分支

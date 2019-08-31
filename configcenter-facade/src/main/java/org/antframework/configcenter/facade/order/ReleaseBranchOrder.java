@@ -37,7 +37,7 @@ public class ReleaseBranchOrder extends AbstractOrder {
     private Set<Property> addOrModifiedProperties;
     // 需删除的配置key
     @NotNull
-    private Set<String> deletedPropertyKeys;
+    private Set<String> removedPropertyKeys;
     // 备注
     private String memo;
 }

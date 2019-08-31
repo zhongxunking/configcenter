@@ -11,20 +11,23 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.converter.BranchConverter;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Release;
+import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.ReleaseBranchOrder;
+import org.antframework.configcenter.facade.order.ReleaseBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
+import org.springframework.core.convert.converter.Converter;
 
 import java.util.Date;
 import java.util.HashSet;
@@ -39,14 +42,18 @@ import java.util.stream.Collectors;
 @Service(enableTx = true)
 @AllArgsConstructor
 public class ReleaseBranchService {
+    // info转换器
+    private static final Converter<Branch, BranchInfo> CONVERTER = new BranchConverter();
+
     // 分支dao
     private final BranchDao branchDao;
     // 发布dao
     private final ReleaseDao releaseDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<ReleaseBranchOrder, EmptyResult> context) {
+    public void execute(ServiceContext<ReleaseBranchOrder, ReleaseBranchResult> context) {
         ReleaseBranchOrder order = context.getOrder();
+        ReleaseBranchResult result = context.getResult();
         // 校验
         Branch branch = branchDao.findLockByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch == null) {
@@ -58,6 +65,8 @@ public class ReleaseBranchService {
         // 更新分支
         branch.setReleaseVersion(release.getVersion());
         branchDao.save(branch);
+        // 设置result
+        result.setBranch(CONVERTER.convert(branch));
     }
 
     // 构建发布
@@ -80,7 +89,7 @@ public class ReleaseBranchService {
         for (Property property : order.getAddOrModifiedProperties()) {
             keyProperties.put(property.getKey(), property);
         }
-        for (String propertyKey : order.getDeletedPropertyKeys()) {
+        for (String propertyKey : order.getRemovedPropertyKeys()) {
             keyProperties.remove(propertyKey);
         }
 

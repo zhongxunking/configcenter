@@ -15,6 +15,7 @@ import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.FindBranchOrder;
 import org.antframework.configcenter.facade.order.ReleaseBranchOrder;
+import org.antframework.configcenter.facade.order.ReleaseBranchResult;
 import org.antframework.configcenter.facade.order.RevertBranchOrder;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
@@ -35,25 +36,26 @@ public final class Branches {
      * @param profileId               环境id
      * @param branchId                分支id
      * @param addOrModifiedProperties 需添加或修改的配置
-     * @param deletedPropertyKeys     需删除的配置key
+     * @param removedPropertyKeys     需删除的配置key
      * @param memo                    备注
      */
-    public static void releaseBranch(String appId,
-                                     String profileId,
-                                     String branchId,
-                                     Set<Property> addOrModifiedProperties,
-                                     Set<String> deletedPropertyKeys,
-                                     String memo) {
+    public static BranchInfo releaseBranch(String appId,
+                                           String profileId,
+                                           String branchId,
+                                           Set<Property> addOrModifiedProperties,
+                                           Set<String> removedPropertyKeys,
+                                           String memo) {
         ReleaseBranchOrder order = new ReleaseBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
         order.setAddOrModifiedProperties(addOrModifiedProperties);
-        order.setDeletedPropertyKeys(deletedPropertyKeys);
+        order.setRemovedPropertyKeys(removedPropertyKeys);
         order.setMemo(memo);
 
-        EmptyResult result = BRANCH_SERVICE.releaseBranch(order);
+        ReleaseBranchResult result = BRANCH_SERVICE.releaseBranch(order);
         FacadeUtils.assertSuccess(result);
+        return result.getBranch();
     }
 
     /**

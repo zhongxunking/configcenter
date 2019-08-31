@@ -32,7 +32,7 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
-    public EmptyResult releaseBranch(ReleaseBranchOrder order) {
+    public ReleaseBranchResult releaseBranch(ReleaseBranchOrder order) {
         return serviceEngine.execute("releaseBranchService", order);
     }
 
