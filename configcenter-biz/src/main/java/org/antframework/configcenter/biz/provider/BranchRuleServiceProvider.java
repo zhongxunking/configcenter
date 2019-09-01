@@ -13,6 +13,8 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.BranchRuleService;
 import org.antframework.configcenter.facade.order.AddOrModifyBranchRuleOrder;
 import org.antframework.configcenter.facade.order.DeleteBranchRuleOrder;
+import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
+import org.antframework.configcenter.facade.result.FindBranchRulesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -33,5 +35,10 @@ public class BranchRuleServiceProvider implements BranchRuleService {
     @Override
     public EmptyResult deleteBranchRule(DeleteBranchRuleOrder order) {
         return serviceEngine.execute("deleteBranchRuleService", order);
+    }
+
+    @Override
+    public FindBranchRulesResult findBranchRules(FindBranchRulesOrder order) {
+        return serviceEngine.execute("findBranchRulesService", order);
     }
 }

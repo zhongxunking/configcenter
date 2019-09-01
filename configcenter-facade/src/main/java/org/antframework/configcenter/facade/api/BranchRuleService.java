@@ -11,6 +11,8 @@ package org.antframework.configcenter.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyBranchRuleOrder;
 import org.antframework.configcenter.facade.order.DeleteBranchRuleOrder;
+import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
+import org.antframework.configcenter.facade.result.FindBranchRulesResult;
 
 /**
  * 分支规则服务
@@ -25,4 +27,9 @@ public interface BranchRuleService {
      * 删除分支规则
      */
     EmptyResult deleteBranchRule(DeleteBranchRuleOrder order);
+
+    /**
+     * 查找分支规则
+     */
+    FindBranchRulesResult findBranchRules(FindBranchRulesOrder order);
 }
