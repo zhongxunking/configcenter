@@ -21,6 +21,8 @@ import javax.persistence.LockModeType;
 public interface BranchRuleDao {
     void save(BranchRule branchRule);
 
+    void delete(BranchRule branchRule);
+
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     BranchRule findLockByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
 }
