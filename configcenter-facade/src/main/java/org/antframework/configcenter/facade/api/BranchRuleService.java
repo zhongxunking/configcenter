@@ -10,8 +10,10 @@ package org.antframework.configcenter.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyBranchRuleOrder;
+import org.antframework.configcenter.facade.order.ComputeBranchRulesOrder;
 import org.antframework.configcenter.facade.order.DeleteBranchRuleOrder;
 import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
+import org.antframework.configcenter.facade.result.ComputeBranchRulesResult;
 import org.antframework.configcenter.facade.result.FindBranchRulesResult;
 
 /**
@@ -32,4 +34,9 @@ public interface BranchRuleService {
      * 查找分支规则
      */
     FindBranchRulesResult findBranchRules(FindBranchRulesOrder order);
+
+    /**
+     * 计算分支规则
+     */
+    ComputeBranchRulesResult computeBranchRules(ComputeBranchRulesOrder order);
 }

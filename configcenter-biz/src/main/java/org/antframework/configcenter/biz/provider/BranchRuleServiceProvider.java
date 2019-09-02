@@ -12,8 +12,10 @@ import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.BranchRuleService;
 import org.antframework.configcenter.facade.order.AddOrModifyBranchRuleOrder;
+import org.antframework.configcenter.facade.order.ComputeBranchRulesOrder;
 import org.antframework.configcenter.facade.order.DeleteBranchRuleOrder;
 import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
+import org.antframework.configcenter.facade.result.ComputeBranchRulesResult;
 import org.antframework.configcenter.facade.result.FindBranchRulesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,10 @@ public class BranchRuleServiceProvider implements BranchRuleService {
     @Override
     public FindBranchRulesResult findBranchRules(FindBranchRulesOrder order) {
         return serviceEngine.execute("findBranchRulesService", order);
+    }
+
+    @Override
+    public ComputeBranchRulesResult computeBranchRules(ComputeBranchRulesOrder order) {
+        return serviceEngine.execute("computeBranchRulesService", order);
     }
 }
