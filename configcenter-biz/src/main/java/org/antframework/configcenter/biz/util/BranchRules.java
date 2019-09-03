@@ -12,7 +12,9 @@ import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchRuleService;
 import org.antframework.configcenter.facade.info.BranchRuleInfo;
+import org.antframework.configcenter.facade.order.ComputeBranchRulesOrder;
 import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
+import org.antframework.configcenter.facade.result.ComputeBranchRulesResult;
 import org.antframework.configcenter.facade.result.FindBranchRulesResult;
 
 import java.util.List;
@@ -39,5 +41,24 @@ public final class BranchRules {
         FindBranchRulesResult result = BRANCH_RULE_SERVICE.findBranchRules(order);
         FacadeUtils.assertSuccess(result);
         return result.getBranchRules();
+    }
+
+    /**
+     * 计算分支规则
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param target    被计算的目标
+     * @return 计算出的分支id
+     */
+    public static String computeBranchRules(String appId, String profileId, String target) {
+        ComputeBranchRulesOrder order = new ComputeBranchRulesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setTarget(target);
+
+        ComputeBranchRulesResult result = BRANCH_RULE_SERVICE.computeBranchRules(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getBranchId();
     }
 }

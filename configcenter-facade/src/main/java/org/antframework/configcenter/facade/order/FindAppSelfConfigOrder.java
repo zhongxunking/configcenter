@@ -31,4 +31,6 @@ public class FindAppSelfConfigOrder extends AbstractOrder {
     // 最小作用域
     @NotNull
     private Scope minScope;
+    // 目标
+    private String target;
 }

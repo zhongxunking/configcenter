@@ -31,13 +31,15 @@ public final class Configs {
      * @param appId     应用id
      * @param profileId 环境id
      * @param minScope  最小作用域
+     * @param target    目标
      * @return 由近及远继承的所用环境中的配置
      */
-    public static List<ReleaseInfo> findAppSelfConfig(String appId, String profileId, Scope minScope) {
+    public static List<ReleaseInfo> findAppSelfConfig(String appId, String profileId, Scope minScope, String target) {
         FindAppSelfConfigOrder order = new FindAppSelfConfigOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setMinScope(minScope);
+        order.setTarget(target);
 
         FindAppSelfConfigResult result = CONFIG_SERVICE.findAppSelfConfig(order);
         FacadeUtils.assertSuccess(result);
