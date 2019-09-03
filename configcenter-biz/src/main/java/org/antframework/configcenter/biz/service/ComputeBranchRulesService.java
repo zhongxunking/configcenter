@@ -30,12 +30,15 @@ public class ComputeBranchRulesService {
         ComputeBranchRulesOrder order = context.getOrder();
         ComputeBranchRulesResult result = context.getResult();
         // 计算分支id
-        List<BranchRuleInfo> branchRules = BranchRules.findBranchRules(order.getAppId(), order.getProfileId());
-        String branchId = branchRules.stream()
-                .filter(branchRule -> Pattern.matches(branchRule.getRule(), order.getTarget()))
-                .map(BranchRuleInfo::getBranchId)
-                .findFirst()
-                .orElse(BranchConstants.DEFAULT_BRANCH_ID);
+        String branchId = BranchConstants.DEFAULT_BRANCH_ID;
+        if (order.getTarget() != null) {
+            List<BranchRuleInfo> branchRules = BranchRules.findBranchRules(order.getAppId(), order.getProfileId());
+            branchId = branchRules.stream()
+                    .filter(branchRule -> Pattern.matches(branchRule.getRule(), order.getTarget()))
+                    .map(BranchRuleInfo::getBranchId)
+                    .findFirst()
+                    .orElse(BranchConstants.DEFAULT_BRANCH_ID);
+        }
         result.setBranchId(branchId);
     }
 }
