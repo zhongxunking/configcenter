@@ -48,6 +48,7 @@ public class FindConfigService {
                     queriedAppId,
                     order.getProfileId(),
                     calcMinScope(queriedAppId, order.getMainAppId(), mainAppIds),
+                    order.getTarget(),
                     version);
             temp.putAll(properties);
             properties = temp;
@@ -67,9 +68,9 @@ public class FindConfigService {
     }
 
     // 获取应用自己的配置
-    private Map<String, String> getAppSelfConfig(String appId, String profileId, Scope minScope, AtomicLong version) {
+    private Map<String, String> getAppSelfConfig(String appId, String profileId, Scope minScope, String target, AtomicLong version) {
         Map<String, String> properties = new HashMap<>();
-        for (ReleaseInfo release : Configs.findAppSelfConfig(appId, profileId, minScope)) {
+        for (ReleaseInfo release : Configs.findAppSelfConfig(appId, profileId, minScope, target)) {
             version.addAndGet(release.getVersion());
             Map<String, String> temp = new HashMap<>();
             for (Property property : release.getProperties()) {

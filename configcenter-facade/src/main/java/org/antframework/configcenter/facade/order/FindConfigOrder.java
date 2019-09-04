@@ -29,4 +29,6 @@ public class FindConfigOrder extends AbstractOrder {
     // 环境id
     @NotBlank
     private String profileId;
+    // 目标
+    private String target;
 }
