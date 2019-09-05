@@ -8,18 +8,20 @@
  */
 package org.antframework.configcenter.biz.util;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.order.FindBranchOrder;
-import org.antframework.configcenter.facade.order.ReleaseBranchOrder;
-import org.antframework.configcenter.facade.order.ReleaseBranchResult;
-import org.antframework.configcenter.facade.order.RevertBranchOrder;
+import org.antframework.configcenter.facade.order.*;
+import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
 
+import java.io.Serializable;
 import java.util.Set;
 
 /**
@@ -78,6 +80,27 @@ public final class Branches {
     }
 
     /**
+     * 计算分支合并
+     *
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param branchId       分支id
+     * @param sourceBranchId 源分支id
+     * @return 分支合并的配置变更
+     */
+    public static ReleaseDifference computeBranchMergence(String appId, String profileId, String branchId, String sourceBranchId) {
+        ComputeBranchMergenceOrder order = new ComputeBranchMergenceOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+        order.setSourceBranchId(sourceBranchId);
+
+        ComputeBranchMergenceResult result = BRANCH_SERVICE.computeBranchMergence(order);
+        FacadeUtils.assertSuccess(result);
+        return new ReleaseDifference(result.getAddOrModifiedProperties(), result.getRemovedPropertyKeys());
+    }
+
+    /**
      * 查找分支
      *
      * @param appId     应用id
@@ -94,5 +117,22 @@ public final class Branches {
         FindBranchResult result = BRANCH_SERVICE.findBranch(order);
         FacadeUtils.assertSuccess(result);
         return result.getBranch();
+    }
+
+    /**
+     * 发布之间的配置变更
+     */
+    @AllArgsConstructor
+    @Getter
+    public static class ReleaseDifference implements Serializable {
+        // 需添加或修改的配置
+        private final Set<Property> addOrModifiedProperties;
+        // 需删除的配置key
+        private final Set<String> removedPropertyKeys;
+
+        @Override
+        public String toString() {
+            return ToString.toString(this);
+        }
     }
 }

@@ -13,7 +13,6 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.vo.Property;
 
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 /**
@@ -23,9 +22,7 @@ import java.util.Set;
 @Setter
 public class ComputeBranchMergenceResult extends AbstractResult {
     // 需添加或修改的配置
-    @NotNull
     private Set<Property> addOrModifiedProperties;
     // 需删除的配置key
-    @NotNull
     private Set<String> removedPropertyKeys;
 }
