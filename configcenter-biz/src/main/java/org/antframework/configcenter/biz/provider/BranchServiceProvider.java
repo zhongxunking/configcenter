@@ -12,6 +12,7 @@ import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.order.*;
+import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.ServiceEngine;
@@ -44,6 +45,11 @@ public class BranchServiceProvider implements BranchService {
     @Override
     public MergeBranchResult mergeBranch(MergeBranchOrder order) {
         return serviceEngine.execute("mergeBranchService", order);
+    }
+
+    @Override
+    public ComputeBranchMergenceResult computeBranchMergence(ComputeBranchMergenceOrder order) {
+        return serviceEngine.execute("computeBranchMergenceService", order);
     }
 
     @Override
