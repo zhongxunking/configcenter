@@ -53,13 +53,13 @@ public class ComputeBranchMergenceService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getSourceBranchId()));
         }
         // 计算最近的发布
-        ReleaseInfo rencentRelease = computeRecentRelease(
+        ReleaseInfo recentRelease = computeRecentRelease(
                 order.getAppId(),
                 order.getProfileId(),
                 branch.getRelease().getVersion(),
                 sourceBranch.getRelease().getVersion());
         // 计算变更的配置
-        computeDifference(rencentRelease, sourceBranch.getRelease(), result);
+        computeDifference(recentRelease, sourceBranch.getRelease(), result);
     }
 
     // 计算最近的发布
