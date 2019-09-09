@@ -10,9 +10,8 @@ package org.antframework.configcenter.facade.info;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.facade.AbstractInfo;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import java.util.List;
  */
 @AllArgsConstructor
 @Getter
-public class AppTree implements Serializable {
+public class AppTree extends AbstractInfo {
     // 根节点
     private final AppInfo app;
     // 子树
@@ -29,10 +28,5 @@ public class AppTree implements Serializable {
 
     public void addChild(AppTree child) {
         children.add(child);
-    }
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
     }
 }
