@@ -14,6 +14,7 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.converter.BranchConverter;
 import org.antframework.configcenter.biz.util.Apps;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Branch;
@@ -24,6 +25,7 @@ import org.antframework.configcenter.facade.order.ReleaseBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -106,5 +108,12 @@ public class ReleaseBranchService {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", branch.getAppId(), branch.getProfileId(), branch.getReleaseVersion()));
         }
         return release.getProperties();
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<ReleaseBranchOrder, ReleaseBranchResult> context) {
+        ReleaseBranchOrder order = context.getOrder();
+        // 刷新客户端
+        Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
 }
