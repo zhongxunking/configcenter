@@ -13,6 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Branches;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.entity.Branch;
@@ -21,6 +22,7 @@ import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.MergeBranchOrder;
 import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -61,7 +63,7 @@ public class MergeBranchService {
                 order.getBranchId(),
                 difference.getAddOrModifiedProperties(),
                 difference.getRemovedPropertyKeys(),
-                String.format("merge from branch[%s] with version[%d]", order.getSourceBranchId(), sourceBranch.getReleaseVersion()))
+                String.format("merge from branch[%s] with release version[%d]", order.getSourceBranchId(), sourceBranch.getReleaseVersion()))
                 .getRelease();
         // 保存合并
         Mergence mergence = buildMergence(order, release.getVersion(), sourceBranch.getReleaseVersion());
@@ -76,5 +78,12 @@ public class MergeBranchService {
         mergence.setSourceReleaseVersion(sourceReleaseVersion);
 
         return mergence;
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<MergeBranchOrder, MergeBranchResult> context) {
+        MergeBranchOrder order = context.getOrder();
+        // 刷新客户端
+        Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
 }
