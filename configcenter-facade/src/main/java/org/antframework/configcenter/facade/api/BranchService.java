@@ -12,7 +12,6 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
-import org.antframework.configcenter.facade.result.MergeBranchResult;
 
 /**
  * 分支服务
@@ -36,7 +35,7 @@ public interface BranchService {
     /**
      * 合并分支
      */
-    MergeBranchResult mergeBranch(MergeBranchOrder order);
+    EmptyResult mergeBranch(MergeBranchOrder order);
 
     /**
      * 计算分支合并

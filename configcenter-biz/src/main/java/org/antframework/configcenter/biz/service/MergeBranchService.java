@@ -11,6 +11,7 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.Refreshes;
@@ -20,7 +21,6 @@ import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Mergence;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.MergeBranchOrder;
-import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -39,7 +39,7 @@ public class MergeBranchService {
     private final MergenceDao mergenceDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<MergeBranchOrder, MergeBranchResult> context) {
+    public void execute(ServiceContext<MergeBranchOrder, EmptyResult> context) {
         MergeBranchOrder order = context.getOrder();
         // 校验
         Branch branch = branchDao.findLockByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
@@ -81,7 +81,7 @@ public class MergeBranchService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<MergeBranchOrder, MergeBranchResult> context) {
+    public void after(ServiceContext<MergeBranchOrder, EmptyResult> context) {
         MergeBranchOrder order = context.getOrder();
         // 刷新客户端
         Refreshes.refreshClients(order.getAppId(), order.getProfileId());
