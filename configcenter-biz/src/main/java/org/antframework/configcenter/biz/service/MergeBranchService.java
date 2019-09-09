@@ -19,6 +19,7 @@ import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Mergence;
+import org.antframework.configcenter.facade.info.MergenceDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.MergeBranchOrder;
 import org.bekit.service.annotation.service.Service;
@@ -51,7 +52,7 @@ public class MergeBranchService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getSourceBranchId()));
         }
         // 计算分支合并的配置变更
-        Branches.ReleaseDifference difference = Branches.computeBranchMergence(
+        MergenceDifference difference = Branches.computeBranchMergence(
                 order.getAppId(),
                 order.getProfileId(),
                 order.getBranchId(),

@@ -11,9 +11,7 @@ package org.antframework.configcenter.facade.result;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.facade.vo.Property;
-
-import java.util.Set;
+import org.antframework.configcenter.facade.info.MergenceDifference;
 
 /**
  * 计算分支合并result
@@ -21,8 +19,6 @@ import java.util.Set;
 @Getter
 @Setter
 public class ComputeBranchMergenceResult extends AbstractResult {
-    // 需添加或修改的配置
-    private Set<Property> addOrModifiedProperties;
-    // 需删除的配置key
-    private Set<String> removedPropertyKeys;
+    // 需合并的差异
+    private MergenceDifference difference;
 }
