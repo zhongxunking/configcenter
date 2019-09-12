@@ -23,6 +23,11 @@ public final class CacheConstant {
     public static final String PROFILES_CACHE_NAME = "profiles";
 
     /**
+     * 分支的缓存名
+     */
+    public static final String BRANCHES_CACHE_NAME = "branches";
+
+    /**
      * 当前发布的缓存名
      */
     public static final String CURRENT_RELEASES_CACHE_NAME = "currentReleases";
