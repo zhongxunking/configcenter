@@ -37,7 +37,7 @@ public class RevertPropertyValuesService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("发布[appId=%s,profileId=%s,version=%d]不存在", order.getAppId(), order.getProfileId(), order.getReleaseVersion()));
         }
         // 删除现有配置value
-        PropertyValues.deleteAppProfilePropertyValues(order.getAppId(), order.getProfileId(), order.getBranchId());
+        PropertyValues.deletePropertyValues(order.getAppId(), order.getProfileId(), order.getBranchId());
         // 使用发布重建配置value
         for (Property property : release.getProperties()) {
             PropertyValues.addOrModifyPropertyValue(

@@ -15,9 +15,9 @@ import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 
 import java.util.List;
@@ -79,7 +79,7 @@ public final class PropertyValues {
      * @param branchId  分支id
      */
     public static void deletePropertyValues(String appId, String profileId, String branchId) {
-        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, branchId, Scope.PRIVATE)) {
+        for (PropertyValueInfo propertyValue : findPropertyValues(appId, profileId, branchId, Scope.PRIVATE)) {
             deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getBranchId(), propertyValue.getKey());
         }
     }
@@ -112,14 +112,14 @@ public final class PropertyValues {
      * @param minScope  最小作用域
      * @return 配置value
      */
-    public static List<PropertyValueInfo> findAppProfilePropertyValues(String appId, String profileId, String branchId, Scope minScope) {
-        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
+    public static List<PropertyValueInfo> findPropertyValues(String appId, String profileId, String branchId, Scope minScope) {
+        FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
         order.setMinScope(minScope);
 
-        FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
+        FindPropertyValuesResult result = PROPERTY_VALUE_SERVICE.findPropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
     }

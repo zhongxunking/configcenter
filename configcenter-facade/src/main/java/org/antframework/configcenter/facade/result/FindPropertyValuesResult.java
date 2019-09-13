@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用在指定环境指定分支的所有配置value-result
+ * 查找配置value集result
  */
 @Getter
-public class FindAppProfilePropertyValuesResult extends AbstractResult {
+public class FindPropertyValuesResult extends AbstractResult {
     // 配置value
     private final List<PropertyValueInfo> propertyValues = new ArrayList<>();
 

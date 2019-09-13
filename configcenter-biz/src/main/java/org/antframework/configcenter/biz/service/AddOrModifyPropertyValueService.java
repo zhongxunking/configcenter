@@ -13,13 +13,9 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.dao.BranchDao;
-import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.dao.PropertyValueDao;
-import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.dal.entity.Branch;
-import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.dal.entity.PropertyValue;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.bekit.service.annotation.service.Service;
@@ -33,10 +29,6 @@ import org.springframework.beans.BeanUtils;
 @Service(enableTx = true)
 @AllArgsConstructor
 public class AddOrModifyPropertyValueService {
-    // 应用dao
-    private final AppDao appDao;
-    // 环境dao
-    private final ProfileDao profileDao;
     // 分支dao
     private final BranchDao branchDao;
     // 配置value dao
@@ -46,14 +38,6 @@ public class AddOrModifyPropertyValueService {
     public void execute(ServiceContext<AddOrModifyPropertyValueOrder, EmptyResult> context) {
         AddOrModifyPropertyValueOrder order = context.getOrder();
         // 校验入参
-        App app = appDao.findLockByAppId(order.getAppId());
-        if (app == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
-        }
-        Profile profile = profileDao.findLockByProfileId(order.getProfileId());
-        if (profile == null) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
-        }
         Branch branch = branchDao.findLockByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getBranchId()));

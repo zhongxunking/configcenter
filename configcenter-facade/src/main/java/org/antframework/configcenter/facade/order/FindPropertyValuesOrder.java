@@ -17,11 +17,11 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 /**
- * 查找应用在指定环境指定分支的所有配置value-order
+ * 查找配置value集order
  */
 @Getter
 @Setter
-public class FindAppProfilePropertyValuesOrder extends AbstractOrder {
+public class FindPropertyValuesOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
