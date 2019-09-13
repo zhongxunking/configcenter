@@ -76,12 +76,12 @@ public final class Apps {
     /**
      * 获取环境树
      *
-     * @param appId 根节点应用id（null表示查找所有应用）
+     * @param rootAppId 根节点应用id（null表示查找所有应用）
      * @return 应用树
      */
-    public static AppTree findAppTree(String appId) {
+    public static AppTree findAppTree(String rootAppId) {
         FindAppTreeOrder order = new FindAppTreeOrder();
-        order.setAppId(appId);
+        order.setRootAppId(rootAppId);
 
         FindAppTreeResult result = APP_SERVICE.findAppTree(order);
         FacadeUtils.assertSuccess(result);

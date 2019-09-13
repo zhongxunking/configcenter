@@ -67,12 +67,12 @@ public final class Profiles {
     /**
      * 获取环境树
      *
-     * @param profileId 根节点环境id（null表示查找所有环境）
+     * @param rootProfileId 根节点环境id（null表示查找所有环境）
      * @return 环境树
      */
-    public static ProfileTree findProfileTree(String profileId) {
+    public static ProfileTree findProfileTree(String rootProfileId) {
         FindProfileTreeOrder order = new FindProfileTreeOrder();
-        order.setProfileId(profileId);
+        order.setRootProfileId(rootProfileId);
 
         FindProfileTreeResult result = PROFILE_SERVICE.findProfileTree(order);
         FacadeUtils.assertSuccess(result);
