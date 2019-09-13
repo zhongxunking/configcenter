@@ -37,4 +37,6 @@ public interface BranchDao {
 
     @Cacheable(cacheNames = CacheConstant.BRANCHES_CACHE_NAME, key = "#p0 + ',' + #p1 + ',' + #p2")
     Branch findByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
+
+    List<Branch> findByAppIdAndProfileId(String appId, String profileId);
 }

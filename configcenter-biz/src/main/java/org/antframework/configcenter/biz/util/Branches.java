@@ -17,8 +17,10 @@ import org.antframework.configcenter.facade.info.MergenceDifference;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
+import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.vo.Property;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -114,5 +116,22 @@ public final class Branches {
         FindBranchResult result = BRANCH_SERVICE.findBranch(order);
         FacadeUtils.assertSuccess(result);
         return result.getBranch();
+    }
+
+    /**
+     * 查找应用在环境下的所有分支
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @return 应用在环境下的所有分支
+     */
+    public static List<BranchInfo> findBranches(String appId, String profileId) {
+        FindBranchesOrder order = new FindBranchesOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+
+        FindBranchesResult result = BRANCH_SERVICE.findBranches(order);
+        FacadeUtils.assertSuccess(result);
+        return result.getBranches();
     }
 }

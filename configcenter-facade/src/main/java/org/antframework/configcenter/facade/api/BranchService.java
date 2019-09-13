@@ -12,6 +12,7 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
+import org.antframework.configcenter.facade.result.FindBranchesResult;
 
 /**
  * 分支服务
@@ -51,4 +52,9 @@ public interface BranchService {
      * 查找分支
      */
     FindBranchResult findBranch(FindBranchOrder order);
+
+    /**
+     * 查找应用在环境下的所有分支
+     */
+    FindBranchesResult findBranches(FindBranchesOrder order);
 }

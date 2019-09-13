@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
+import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -59,5 +60,10 @@ public class BranchServiceProvider implements BranchService {
     @Override
     public FindBranchResult findBranch(FindBranchOrder order) {
         return serviceEngine.execute("findBranchService", order);
+    }
+
+    @Override
+    public FindBranchesResult findBranches(FindBranchesOrder order) {
+        return serviceEngine.execute("findBranchesService", order);
     }
 }
