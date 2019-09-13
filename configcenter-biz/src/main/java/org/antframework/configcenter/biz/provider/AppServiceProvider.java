@@ -34,13 +34,13 @@ public class AppServiceProvider implements AppService {
     }
 
     @Override
-    public EmptyResult deleteApp(DeleteAppOrder order) {
-        return serviceEngine.execute("deleteAppService", order);
+    public ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order) {
+        return serviceEngine.execute("produceReleaseVersionService", order);
     }
 
     @Override
-    public ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order) {
-        return serviceEngine.execute("produceReleaseVersionService", order);
+    public EmptyResult deleteApp(DeleteAppOrder order) {
+        return serviceEngine.execute("deleteAppService", order);
     }
 
     @Override

@@ -44,14 +44,14 @@ public class FindAppTreeService {
         FindAppTreeOrder order = context.getOrder();
         FindAppTreeResult result = context.getResult();
 
-        AppInfo app = null;
-        if (order.getAppId() != null) {
-            app = Apps.findApp(order.getAppId());
-            if (app == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
+        AppInfo rootApp = null;
+        if (order.getRootAppId() != null) {
+            rootApp = Apps.findApp(order.getRootAppId());
+            if (rootApp == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getRootAppId()));
             }
         }
-        result.setAppTree(getAppTree(app));
+        result.setAppTree(getAppTree(rootApp));
     }
 
     // 获取应用树

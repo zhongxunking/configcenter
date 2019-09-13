@@ -19,5 +19,5 @@ import org.antframework.common.util.facade.AbstractOrder;
 @Setter
 public class FindAppTreeOrder extends AbstractOrder {
     // 根节点应用id（null表示查找所有应用）
-    private String appId;
+    private String rootAppId;
 }

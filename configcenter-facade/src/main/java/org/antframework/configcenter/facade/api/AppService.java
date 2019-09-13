@@ -22,14 +22,14 @@ public interface AppService {
     EmptyResult addOrModifyApp(AddOrModifyAppOrder order);
 
     /**
-     * 删除应用
-     */
-    EmptyResult deleteApp(DeleteAppOrder order);
-
-    /**
      * 生产发布版本
      */
     ProduceReleaseVersionResult produceReleaseVersion(ProduceReleaseVersionOrder order);
+
+    /**
+     * 删除应用
+     */
+    EmptyResult deleteApp(DeleteAppOrder order);
 
     /**
      * 查找应用
