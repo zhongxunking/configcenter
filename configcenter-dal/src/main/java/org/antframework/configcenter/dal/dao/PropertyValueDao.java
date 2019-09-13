@@ -20,7 +20,6 @@ import java.util.List;
  */
 @RepositoryDefinition(domainClass = PropertyValue.class, idClass = Long.class)
 public interface PropertyValueDao {
-
     void save(PropertyValue propertyValue);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)

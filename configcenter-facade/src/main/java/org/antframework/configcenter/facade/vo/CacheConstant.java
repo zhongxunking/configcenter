@@ -20,12 +20,12 @@ public final class CacheConstant {
     /**
      * 环境的缓存名
      */
-    public static final String PROFILES_CACHE_NAME = "profiles";
+    public static final String PROFILE_CACHE_NAME = "profile";
 
     /**
      * 分支的缓存名
      */
-    public static final String BRANCHES_CACHE_NAME = "branches";
+    public static final String BRANCH_CACHE_NAME = "branch";
 
     /**
      * 分支规则集的缓存名

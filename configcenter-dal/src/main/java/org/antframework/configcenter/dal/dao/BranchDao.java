@@ -23,10 +23,10 @@ import java.util.List;
  */
 @RepositoryDefinition(domainClass = Branch.class, idClass = Long.class)
 public interface BranchDao {
-    @CacheEvict(cacheNames = CacheConstant.BRANCHES_CACHE_NAME, key = "#p0.appId + ',' + #p0.profileId + ',' + #p0.branchId")
+    @CacheEvict(cacheNames = CacheConstant.BRANCH_CACHE_NAME, key = "#p0.appId + ',' + #p0.profileId + ',' + #p0.branchId")
     void save(Branch branch);
 
-    @CacheEvict(cacheNames = CacheConstant.BRANCHES_CACHE_NAME, key = "#p0.appId + ',' + #p0.profileId + ',' + #p0.branchId")
+    @CacheEvict(cacheNames = CacheConstant.BRANCH_CACHE_NAME, key = "#p0.appId + ',' + #p0.profileId + ',' + #p0.branchId")
     void delete(Branch branch);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
@@ -35,7 +35,7 @@ public interface BranchDao {
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     List<Branch> findLockByAppIdAndProfileId(String appId, String profileId);
 
-    @Cacheable(cacheNames = CacheConstant.BRANCHES_CACHE_NAME, key = "#p0 + ',' + #p1 + ',' + #p2")
+    @Cacheable(cacheNames = CacheConstant.BRANCH_CACHE_NAME, key = "#p0 + ',' + #p1 + ',' + #p2")
     Branch findByAppIdAndProfileIdAndBranchId(String appId, String profileId, String branchId);
 
     List<Branch> findByAppIdAndProfileId(String appId, String profileId);

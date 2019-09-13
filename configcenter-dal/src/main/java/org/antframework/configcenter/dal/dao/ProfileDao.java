@@ -27,17 +27,16 @@ import java.util.List;
  */
 @RepositoryDefinition(domainClass = Profile.class, idClass = Long.class)
 public interface ProfileDao {
-
-    @CacheEvict(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0.profileId")
+    @CacheEvict(cacheNames = CacheConstant.PROFILE_CACHE_NAME, key = "#p0.profileId")
     void save(Profile profile);
 
-    @CacheEvict(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0.profileId")
+    @CacheEvict(cacheNames = CacheConstant.PROFILE_CACHE_NAME, key = "#p0.profileId")
     void delete(Profile profile);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     Profile findLockByProfileId(String profileId);
 
-    @Cacheable(cacheNames = CacheConstant.PROFILES_CACHE_NAME, key = "#p0")
+    @Cacheable(cacheNames = CacheConstant.PROFILE_CACHE_NAME, key = "#p0")
     Profile findByProfileId(String profileId);
 
     List<Profile> findByParent(String parent);
