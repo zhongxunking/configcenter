@@ -100,6 +100,23 @@ public final class Branches {
     }
 
     /**
+     * 删除分支
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     */
+    public static void deleteBranch(String appId, String profileId, String branchId) {
+        DeleteBranchOrder order = new DeleteBranchOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+
+        EmptyResult result = BRANCH_SERVICE.deleteBranch(order);
+        FacadeUtils.assertSuccess(result);
+    }
+
+    /**
      * 查找分支
      *
      * @param appId     应用id

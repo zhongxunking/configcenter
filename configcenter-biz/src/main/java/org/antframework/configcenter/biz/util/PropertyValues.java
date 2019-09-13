@@ -72,6 +72,19 @@ public final class PropertyValues {
     }
 
     /**
+     * 删除应用在环境的分支下所有配置value
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     */
+    public static void deletePropertyValues(String appId, String profileId, String branchId) {
+        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, branchId, Scope.PRIVATE)) {
+            deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getBranchId(), propertyValue.getKey());
+        }
+    }
+
+    /**
      * 回滚配置value
      *
      * @param appId          应用id
@@ -109,18 +122,5 @@ public final class PropertyValues {
         FindAppProfilePropertyValuesResult result = PROPERTY_VALUE_SERVICE.findAppProfilePropertyValues(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyValues();
-    }
-
-    /**
-     * 删除应用在指定环境的所有配置value
-     *
-     * @param appId     应用id
-     * @param profileId 环境id
-     * @param branchId  分支id
-     */
-    public static void deleteAppProfilePropertyValues(String appId, String profileId, String branchId) {
-        for (PropertyValueInfo propertyValue : findAppProfilePropertyValues(appId, profileId, branchId, Scope.PRIVATE)) {
-            deletePropertyValue(propertyValue.getAppId(), propertyValue.getProfileId(), propertyValue.getBranchId(), propertyValue.getKey());
-        }
     }
 }
