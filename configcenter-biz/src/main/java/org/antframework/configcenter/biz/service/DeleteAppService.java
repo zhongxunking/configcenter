@@ -46,7 +46,7 @@ public class DeleteAppService {
             throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("应用[%s]存在子应用，不能删除", order.getAppId()));
         }
         // 删除该应用的所有配置key
-        for (PropertyKeyInfo propertyKey : PropertyKeys.findAppPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
+        for (PropertyKeyInfo propertyKey : PropertyKeys.findPropertyKeys(order.getAppId(), Scope.PRIVATE)) {
             PropertyKeys.deletePropertyKey(propertyKey.getAppId(), propertyKey.getKey());
         }
         // 删除该应用在所有环境的配置value和分支

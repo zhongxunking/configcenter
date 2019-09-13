@@ -11,8 +11,8 @@ package org.antframework.configcenter.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
+import org.antframework.configcenter.facade.order.FindPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindPropertyKeysResult;
 
 /**
  * 配置key服务
@@ -29,7 +29,7 @@ public interface PropertyKeyService {
     EmptyResult deletePropertyKey(DeletePropertyKeyOrder order);
 
     /**
-     * 查找应用的配置key
+     * 查找配置key集
      */
-    FindAppPropertyKeysResult findAppPropertyKeys(FindAppPropertyKeysOrder order);
+    FindPropertyKeysResult findPropertyKeys(FindPropertyKeysOrder order);
 }

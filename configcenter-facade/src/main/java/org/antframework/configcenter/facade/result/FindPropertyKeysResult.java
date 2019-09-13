@@ -16,10 +16,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 查找应用的配置key-result
+ * 查找配置key集result
  */
 @Getter
-public class FindAppPropertyKeysResult extends AbstractResult {
+public class FindPropertyKeysResult extends AbstractResult {
     // 应用的配置key
     private final List<PropertyKeyInfo> propertyKeys = new ArrayList<>();
 

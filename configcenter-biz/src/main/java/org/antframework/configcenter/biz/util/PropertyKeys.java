@@ -14,8 +14,8 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
+import org.antframework.configcenter.facade.order.FindPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
 
 import java.util.List;
@@ -43,18 +43,18 @@ public final class PropertyKeys {
     }
 
     /**
-     * 查找应用的配置key
+     * 查找配置key集
      *
      * @param appId    应用id
      * @param minScope 最小作用域
      * @return 应用的配置key
      */
-    public static List<PropertyKeyInfo> findAppPropertyKeys(String appId, Scope minScope) {
-        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
+    public static List<PropertyKeyInfo> findPropertyKeys(String appId, Scope minScope) {
+        FindPropertyKeysOrder order = new FindPropertyKeysOrder();
         order.setAppId(appId);
         order.setMinScope(minScope);
 
-        FindAppPropertyKeysResult result = PROPERTY_KEY_SERVICE.findAppPropertyKeys(order);
+        FindPropertyKeysResult result = PROPERTY_KEY_SERVICE.findPropertyKeys(order);
         FacadeUtils.assertSuccess(result);
         return result.getPropertyKeys();
     }
