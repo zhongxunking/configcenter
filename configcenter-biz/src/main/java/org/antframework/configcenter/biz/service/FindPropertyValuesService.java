@@ -43,7 +43,7 @@ public class FindPropertyValuesService {
     @ServiceBefore
     public void before(ServiceContext<FindPropertyValuesOrder, FindPropertyValuesResult> context) {
         FindPropertyValuesOrder order = context.getOrder();
-
+        // 校验入参
         BranchInfo branch = Branches.findBranch(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getBranchId()));
@@ -54,13 +54,11 @@ public class FindPropertyValuesService {
     public void execute(ServiceContext<FindPropertyValuesOrder, FindPropertyValuesResult> context) {
         FindPropertyValuesOrder order = context.getOrder();
         FindPropertyValuesResult result = context.getResult();
-
+        // 查找配置value集
         List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
-        // 忽略作用域不合要求的value
-        propertyValues.removeIf(propertyValue -> propertyValue.getScope().compareTo(order.getMinScope()) < 0);
-        // 设置result
-        for (PropertyValue propertyValue : propertyValues) {
-            result.addPropertyValue(INFO_CONVERTER.convert(propertyValue));
-        }
+        propertyValues.stream()
+                .filter(propertyValue -> propertyValue.getScope().compareTo(order.getMinScope()) >= 0)
+                .map(INFO_CONVERTER::convert)
+                .forEach(result::addPropertyValue);
     }
 }

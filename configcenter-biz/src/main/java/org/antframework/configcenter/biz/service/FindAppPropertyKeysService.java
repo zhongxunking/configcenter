@@ -43,7 +43,7 @@ public class FindAppPropertyKeysService {
     @ServiceBefore
     public void before(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
         FindAppPropertyKeysOrder order = context.getOrder();
-
+        // 校验入参
         AppInfo app = Apps.findApp(order.getAppId());
         if (app == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("应用[%s]不存在", order.getAppId()));
@@ -54,13 +54,11 @@ public class FindAppPropertyKeysService {
     public void execute(ServiceContext<FindAppPropertyKeysOrder, FindAppPropertyKeysResult> context) {
         FindAppPropertyKeysOrder order = context.getOrder();
         FindAppPropertyKeysResult result = context.getResult();
-
+        // 查找配置key集
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
-        // 忽略作用域不合要求的key
-        propertyKeys.removeIf(propertyKey -> propertyKey.getScope().compareTo(order.getMinScope()) < 0);
-        // 设置result
-        for (PropertyKey propertyKey : propertyKeys) {
-            result.addPropertyKey(INFO_CONVERTER.convert(propertyKey));
-        }
+        propertyKeys.stream()
+                .filter(propertyKey -> propertyKey.getScope().compareTo(order.getMinScope()) >= 0)
+                .map(INFO_CONVERTER::convert)
+                .forEach(result::addPropertyKey);
     }
 }
