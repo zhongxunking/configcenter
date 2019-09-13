@@ -19,5 +19,5 @@ import org.antframework.common.util.facade.AbstractOrder;
 @Setter
 public class FindProfileTreeOrder extends AbstractOrder {
     // 根节点环境id（null表示查找所有环境）
-    private String profileId;
+    private String rootProfileId;
 }

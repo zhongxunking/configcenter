@@ -44,14 +44,14 @@ public class FindProfileTreeService {
         FindProfileTreeOrder order = context.getOrder();
         FindProfileTreeResult result = context.getResult();
 
-        ProfileInfo profile = null;
-        if (order.getProfileId() != null) {
-            profile = Profiles.findProfile(order.getProfileId());
-            if (profile == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getProfileId()));
+        ProfileInfo rootProfile = null;
+        if (order.getRootProfileId() != null) {
+            rootProfile = Profiles.findProfile(order.getRootProfileId());
+            if (rootProfile == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("环境[%s]不存在", order.getRootProfileId()));
             }
         }
-        result.setProfileTree(getProfileTree(profile));
+        result.setProfileTree(getProfileTree(rootProfile));
     }
 
     // 获取环境树

@@ -14,11 +14,13 @@ import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Apps;
+import org.antframework.configcenter.biz.util.BranchRules;
+import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.DeleteProfileOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -46,8 +48,11 @@ public class DeleteProfileService {
         }
         // 删除所有应用在该环境下的配置value和发布
         for (AppInfo app : Apps.findAllApps()) {
-            PropertyValues.deleteAppProfilePropertyValues(app.getAppId(), order.getProfileId());
-            Releases.deleteAppProfileReleases(app.getAppId(), order.getProfileId());
+            for (BranchInfo branch : Branches.findBranches(app.getAppId(), order.getProfileId())) {
+                PropertyValues.deletePropertyValues(app.getAppId(), order.getProfileId(), branch.getBranchId());
+                BranchRules.deleteBranchRule(app.getAppId(), order.getProfileId(), branch.getBranchId());
+                Branches.deleteBranch(app.getAppId(), order.getProfileId(), branch.getBranchId());
+            }
         }
         // 删除环境
         profileDao.delete(profile);
