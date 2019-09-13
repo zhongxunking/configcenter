@@ -13,10 +13,7 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
-import org.antframework.configcenter.biz.util.Branches;
-import org.antframework.configcenter.biz.util.Profiles;
-import org.antframework.configcenter.biz.util.PropertyKeys;
-import org.antframework.configcenter.biz.util.PropertyValues;
+import org.antframework.configcenter.biz.util.*;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
 import org.antframework.configcenter.facade.info.BranchInfo;
@@ -56,6 +53,7 @@ public class DeleteAppService {
         for (ProfileInfo profile : Profiles.findAllProfiles()) {
             for (BranchInfo branch : Branches.findBranches(order.getAppId(), profile.getProfileId())) {
                 PropertyValues.deletePropertyValues(order.getAppId(), profile.getProfileId(), branch.getBranchId());
+                BranchRules.deleteBranchRule(order.getAppId(), profile.getProfileId(), branch.getBranchId());
                 Branches.deleteBranch(order.getAppId(), profile.getProfileId(), branch.getBranchId());
             }
         }

@@ -9,10 +9,12 @@
 package org.antframework.configcenter.biz.util;
 
 import org.antframework.boot.core.Contexts;
+import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchRuleService;
 import org.antframework.configcenter.facade.info.BranchRuleInfo;
 import org.antframework.configcenter.facade.order.ComputeBranchRulesOrder;
+import org.antframework.configcenter.facade.order.DeleteBranchRuleOrder;
 import org.antframework.configcenter.facade.order.FindBranchRulesOrder;
 import org.antframework.configcenter.facade.result.ComputeBranchRulesResult;
 import org.antframework.configcenter.facade.result.FindBranchRulesResult;
@@ -25,6 +27,23 @@ import java.util.List;
 public final class BranchRules {
     // 分支规则服务
     private static final BranchRuleService BRANCH_RULE_SERVICE = Contexts.getApplicationContext().getBean(BranchRuleService.class);
+
+    /**
+     * 删除分支规则
+     *
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     */
+    public static void deleteBranchRule(String appId, String profileId, String branchId) {
+        DeleteBranchRuleOrder order = new DeleteBranchRuleOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+
+        EmptyResult result = BRANCH_RULE_SERVICE.deleteBranchRule(order);
+        FacadeUtils.assertSuccess(result);
+    }
 
     /**
      * 查找分支规则
