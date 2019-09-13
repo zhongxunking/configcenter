@@ -37,7 +37,7 @@ import org.springframework.core.convert.converter.Converter;
 @AllArgsConstructor
 public class FindReleaseService {
     // info转换器
-    private static final Converter<Release, ReleaseInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
+    private static final Converter<Release, ReleaseInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
 
     // 发布dao
     private final ReleaseDao releaseDao;
@@ -63,7 +63,7 @@ public class FindReleaseService {
 
         Release release = releaseDao.findByAppIdAndProfileIdAndVersion(order.getAppId(), order.getProfileId(), order.getVersion());
         if (release != null) {
-            result.setRelease(INFO_CONVERTER.convert(release));
+            result.setRelease(CONVERTER.convert(release));
         } else if (order.getVersion() == ReleaseConstant.ORIGIN_VERSION) {
             result.setRelease(Releases.buildOriginRelease(order.getAppId(), order.getProfileId()));
         }

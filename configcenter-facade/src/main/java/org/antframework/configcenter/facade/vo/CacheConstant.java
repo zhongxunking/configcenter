@@ -33,7 +33,7 @@ public final class CacheConstant {
     public static final String BRANCH_RULES_CACHE_NAME = "branchRules";
 
     /**
-     * 当前发布的缓存名
+     * 发布的缓存名
      */
-    public static final String CURRENT_RELEASES_CACHE_NAME = "currentReleases";
+    public static final String RELEASE_CACHE_NAME = "release";
 }
