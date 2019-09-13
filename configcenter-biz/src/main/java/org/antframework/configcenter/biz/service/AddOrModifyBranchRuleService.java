@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -13,12 +13,14 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.BranchRuleDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.BranchRule;
 import org.antframework.configcenter.facade.order.AddOrModifyBranchRuleOrder;
 import org.bekit.service.annotation.service.Service;
+import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 import org.springframework.beans.BeanUtils;
@@ -49,5 +51,12 @@ public class AddOrModifyBranchRuleService {
         }
         BeanUtils.copyProperties(order, branchRule);
         branchRuleDao.save(branchRule);
+    }
+
+    @ServiceAfter
+    public void after(ServiceContext<AddOrModifyBranchRuleOrder, EmptyResult> context) {
+        AddOrModifyBranchRuleOrder order = context.getOrder();
+        // 刷新客户端
+        Refreshes.refreshClients(order.getAppId(), order.getProfileId());
     }
 }

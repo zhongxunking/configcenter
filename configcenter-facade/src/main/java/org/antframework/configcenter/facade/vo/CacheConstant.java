@@ -28,6 +28,11 @@ public final class CacheConstant {
     public static final String BRANCHES_CACHE_NAME = "branches";
 
     /**
+     * 分支规则的缓存名
+     */
+    public static final String BRANCH_RULES_CACHE_NAME = "branchRules";
+
+    /**
      * 当前发布的缓存名
      */
     public static final String CURRENT_RELEASES_CACHE_NAME = "currentReleases";
