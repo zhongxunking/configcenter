@@ -10,11 +10,8 @@ package org.antframework.configcenter.biz.service;
 
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.configcenter.biz.util.Profiles;
-import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.dal.dao.PropertyKeyDao;
 import org.antframework.configcenter.dal.entity.PropertyKey;
-import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -34,14 +31,9 @@ public class DeletePropertyKeyService {
         DeletePropertyKeyOrder order = context.getOrder();
 
         PropertyKey propertyKey = propertyKeyDao.findLockByAppIdAndKey(order.getAppId(), order.getKey());
-        if (propertyKey == null) {
-            return;
+        if (propertyKey != null) {
+            // 删除key
+            propertyKeyDao.delete(propertyKey);
         }
-        // 删除该key在所有环境的value
-        for (ProfileInfo profile : Profiles.findAllProfiles()) {
-            PropertyValues.deletePropertyValue(order.getAppId(), profile.getProfileId(), order.getKey());
-        }
-        // 删除key
-        propertyKeyDao.delete(propertyKey);
     }
 }
