@@ -15,7 +15,7 @@ public final class CacheConstant {
     /**
      * 应用的缓存名
      */
-    public static final String APPS_CACHE_NAME = "apps";
+    public static final String APP_CACHE_NAME = "app";
 
     /**
      * 环境的缓存名
@@ -28,7 +28,7 @@ public final class CacheConstant {
     public static final String BRANCHES_CACHE_NAME = "branches";
 
     /**
-     * 分支规则的缓存名
+     * 分支规则集的缓存名
      */
     public static final String BRANCH_RULES_CACHE_NAME = "branchRules";
 

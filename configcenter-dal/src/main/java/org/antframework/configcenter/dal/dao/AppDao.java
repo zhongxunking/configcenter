@@ -27,17 +27,16 @@ import java.util.List;
  */
 @RepositoryDefinition(domainClass = App.class, idClass = Long.class)
 public interface AppDao {
-
-    @CacheEvict(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0.appId")
+    @CacheEvict(cacheNames = CacheConstant.APP_CACHE_NAME, key = "#p0.appId")
     void save(App app);
 
-    @CacheEvict(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0.appId")
+    @CacheEvict(cacheNames = CacheConstant.APP_CACHE_NAME, key = "#p0.appId")
     void delete(App app);
 
     @Lock(LockModeType.PESSIMISTIC_WRITE)
     App findLockByAppId(String appId);
 
-    @Cacheable(cacheNames = CacheConstant.APPS_CACHE_NAME, key = "#p0")
+    @Cacheable(cacheNames = CacheConstant.APP_CACHE_NAME, key = "#p0")
     App findByAppId(String appId);
 
     List<App> findByParent(String parent);

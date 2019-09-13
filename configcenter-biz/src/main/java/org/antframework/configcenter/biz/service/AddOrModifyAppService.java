@@ -51,8 +51,9 @@ public class AddOrModifyAppService {
     }
 
     // 校验是否出现循环继承和祖先是否存在
-    private void checkCycleAndAncestors(String appId, String ancestorId) {
+    private void checkCycleAndAncestors(String appId, String parentId) {
         StringBuilder builder = new StringBuilder(appId);
+        String ancestorId = parentId;
         while (ancestorId != null) {
             builder.append("-->").append(ancestorId);
             if (Objects.equals(ancestorId, appId)) {
