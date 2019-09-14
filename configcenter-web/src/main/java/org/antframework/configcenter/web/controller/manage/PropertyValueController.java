@@ -14,21 +14,22 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.configcenter.biz.util.Properties;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.PropertyValueService;
+import org.antframework.configcenter.facade.info.PropertiesDifference;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivilege;
 import org.antframework.configcenter.web.common.OperatePrivileges;
-import org.antframework.configcenter.web.common.Properties;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.CurrentManagers;
@@ -57,18 +58,20 @@ public class PropertyValueController {
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
+     * @param branchId  分支id（必须）
      * @param key       key（必须）
      * @param value     value（必须）
      * @param scope     作用域（必须）
      */
     @RequestMapping("/addOrModifyPropertyValue")
-    public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String key, String value, Scope scope) {
+    public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
         ManagerApps.adminOrHaveApp(appId);
         OperatePrivileges.adminOrReadWrite(appId, key);
 
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setKey(key);
         order.setValue(value);
         order.setScope(scope);
@@ -81,16 +84,18 @@ public class PropertyValueController {
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
+     * @param branchId  分支id（必须）
      * @param key       key（必须）
      */
     @RequestMapping("/deletePropertyValue")
-    public EmptyResult deletePropertyValue(String appId, String profileId, String key) {
+    public EmptyResult deletePropertyValue(String appId, String profileId, String branchId, String key) {
         ManagerApps.adminOrHaveApp(appId);
         OperatePrivileges.adminOrReadWrite(appId, key);
 
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setKey(key);
 
         return propertyValueService.deletePropertyValue(order);
@@ -101,37 +106,41 @@ public class PropertyValueController {
      *
      * @param appId          应用id（必须）
      * @param profileId      环境id（必须）
+     * @param branchId       分支id（必须）
      * @param releaseVersion 发布版本（必须）
      */
     @RequestMapping("/revertPropertyValues")
-    public EmptyResult revertPropertyValues(String appId, String profileId, Long releaseVersion) {
+    public EmptyResult revertPropertyValues(String appId, String profileId, String branchId, Long releaseVersion) {
         ManagerApps.adminOrHaveApp(appId);
 
         RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setReleaseVersion(releaseVersion);
 
         return propertyValueService.revertPropertyValues(order);
     }
 
     /**
-     * 查找应用在指定环境的所有配置value
+     * 查找配置value集
      *
      * @param appId     应用id（必须）
      * @param profileId 环境id（必须）
+     * @param branchId  分支id（必须）
      * @param minScope  最小作用域（必须）
      */
-    @RequestMapping("/findAppProfilePropertyValues")
-    public FindAppProfilePropertyValuesResult findAppProfilePropertyValues(String appId, String profileId, Scope minScope) {
+    @RequestMapping("/findPropertyValues")
+    public FindPropertyValuesResult findPropertyValues(String appId, String profileId, String branchId, Scope minScope) {
         ManagerApps.adminOrHaveApp(appId);
 
-        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
+        FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
+        order.setBranchId(branchId);
         order.setMinScope(minScope);
 
-        FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
+        FindPropertyValuesResult result = propertyValueService.findPropertyValues(order);
         if (result.isSuccess()) {
             mask(appId, result.getPropertyValues());
         }
@@ -161,13 +170,13 @@ public class PropertyValueController {
      * @param releaseVersion 发布版本（必须）
      */
     @RequestMapping("/comparePropertyValuesWithRelease")
-    public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, Long releaseVersion) {
+    public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, String branchId, Long releaseVersion) {
         ManagerApps.adminOrHaveApp(appId);
 
-        List<PropertyValueInfo> propertyValues = PropertyValues.findAppProfilePropertyValues(appId, profileId, Scope.PRIVATE);
+        List<PropertyValueInfo> propertyValues = PropertyValues.findPropertyValues(appId, profileId, branchId, Scope.PRIVATE);
         Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());
         Set<Property> right = Releases.findRelease(appId, profileId, releaseVersion).getProperties();
-        Properties.Difference difference = Properties.compare(left, right);
+        PropertiesDifference difference = Properties.compare(left, right);
 
         ComparePropertyValuesWithReleaseResult result = FacadeUtils.buildSuccess(ComparePropertyValuesWithReleaseResult.class);
         result.setDifference(difference);
@@ -181,6 +190,6 @@ public class PropertyValueController {
     @Setter
     public static class ComparePropertyValuesWithReleaseResult extends AbstractResult {
         // 差异
-        private Properties.Difference difference;
+        private PropertiesDifference difference;
     }
 }

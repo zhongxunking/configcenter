@@ -90,7 +90,7 @@ public class PropertyKeyController {
 
         FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {
-            List<PropertyKeyInfo> propertyKeys = PropertyKeys.findAppPropertyKeys(app.getAppId(), Scope.PRIVATE);
+            List<PropertyKeyInfo> propertyKeys = PropertyKeys.findPropertyKeys(app.getAppId(), Scope.PRIVATE);
             result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }
         return result;

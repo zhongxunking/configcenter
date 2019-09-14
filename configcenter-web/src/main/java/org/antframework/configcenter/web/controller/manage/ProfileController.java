@@ -93,13 +93,13 @@ public class ProfileController {
     /**
      * 查找环境树
      *
-     * @param profileId 根节点环境id（不填表示查找所有环境）
+     * @param rootProfileId 根节点环境id（不填表示查找所有环境）
      */
     @RequestMapping("/findProfileTree")
-    public FindProfileTreeResult findProfileTree(String profileId) {
+    public FindProfileTreeResult findProfileTree(String rootProfileId) {
         CurrentManagers.current();
         FindProfileTreeOrder order = new FindProfileTreeOrder();
-        order.setProfileId(profileId);
+        order.setRootProfileId(rootProfileId);
 
         return profileService.findProfileTree(order);
     }
