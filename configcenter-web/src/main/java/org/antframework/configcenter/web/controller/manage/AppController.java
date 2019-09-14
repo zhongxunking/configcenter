@@ -108,13 +108,13 @@ public class AppController {
     /**
      * 查找应用树
      *
-     * @param appId 根节点应用id（不填表示查找所有应用）
+     * @param rootAppId 根节点应用id（不填表示查找所有应用）
      */
     @RequestMapping("/findAppTree")
-    private FindAppTreeResult findAppTree(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
+    private FindAppTreeResult findAppTree(String rootAppId) {
+        ManagerApps.adminOrHaveApp(rootAppId);
         FindAppTreeOrder order = new FindAppTreeOrder();
-        order.setAppId(appId);
+        order.setRootAppId(rootAppId);
 
         return appService.findAppTree(order);
     }
