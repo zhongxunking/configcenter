@@ -24,7 +24,6 @@ import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivilege;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
-import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.CurrentManagers;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -186,7 +185,7 @@ public class BranchController {
         order.setSourceBranchId(sourceBranchId);
 
         ComputeBranchMergenceResult result = branchService.computeBranchMergence(order);
-        if (result.isSuccess()) {
+        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
             Set<Property> maskedProperties = mask(appId, result.getDifference().getAddOrModifiedProperties());
             result.getDifference().getAddOrModifiedProperties().clear();
             result.getDifference().getAddOrModifiedProperties().addAll(maskedProperties);
@@ -256,12 +255,10 @@ public class BranchController {
 
     // 对发布中敏感配置进行掩码
     private void maskRelease(ReleaseInfo release) {
-        ManagerInfo manager = CurrentManagers.current();
-        if (manager.getType() == ManagerType.ADMIN) {
-            return;
+        if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+            Set<Property> maskedProperties = mask(release.getAppId(), release.getProperties());
+            release.setProperties(maskedProperties);
         }
-        Set<Property> maskedProperties = mask(release.getAppId(), release.getProperties());
-        release.setProperties(maskedProperties);
     }
 
     // 对敏感配置进行掩码
