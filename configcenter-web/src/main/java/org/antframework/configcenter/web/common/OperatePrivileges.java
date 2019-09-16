@@ -16,6 +16,7 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.manager.biz.util.Relations;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
@@ -32,6 +33,8 @@ import java.util.regex.Pattern;
 public final class OperatePrivileges {
     // 关系类型
     private static final String RELATION_TYPE = "appId-keyRegex-privilege";
+    // 掩码后的配置value
+    private static final String MASKED_VALUE = "******";
 
     /**
      * 添加或修改操作权限
@@ -78,11 +81,11 @@ public final class OperatePrivileges {
      * @param keys  配置key
      */
     public static void onlyReadWrite(String appId, Set<String> keys) {
-        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = findInheritedOperatePrivileges(appId);
 
         Set<String> notReadWriteKeys = new HashSet<>();
         for (String key : keys) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, key);
+            OperatePrivilege privilege = calcOperatePrivilege(appOperatePrivileges, key);
             if (privilege != OperatePrivilege.READ_WRITE) {
                 notReadWriteKeys.add(key);
             }
@@ -91,6 +94,27 @@ public final class OperatePrivileges {
         if (!notReadWriteKeys.isEmpty()) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
         }
+    }
+
+    /**
+     * 对敏感配置进行掩码
+     *
+     * @param appId      应用id
+     * @param properties 需掩码的配置集
+     * @return 掩码后的配置集
+     */
+    public static Set<Property> maskProperties(String appId, Set<Property> properties) {
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = findInheritedOperatePrivileges(appId);
+        Set<Property> maskedProperties = new HashSet<>(properties.size());
+        for (Property property : properties) {
+            OperatePrivilege privilege = calcOperatePrivilege(appOperatePrivileges, property.getKey());
+            if (privilege == OperatePrivilege.NONE) {
+                maskedProperties.add(new Property(property.getKey(), MASKED_VALUE, property.getScope()));
+            } else {
+                maskedProperties.add(property);
+            }
+        }
+        return maskedProperties;
     }
 
     /**

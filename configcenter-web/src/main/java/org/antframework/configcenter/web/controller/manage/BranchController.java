@@ -21,7 +21,6 @@ import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivilege;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.CurrentManagers;
@@ -29,7 +28,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -40,9 +38,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/manage/branch")
 @AllArgsConstructor
 public class BranchController {
-    // 掩码后的配置value
-    private static final String MASKED_VALUE = "******";
-
     // 分支服务
     private final BranchService branchService;
 
@@ -106,7 +101,6 @@ public class BranchController {
 
         ReleaseBranchResult result = branchService.releaseBranch(order);
         if (result.isSuccess()) {
-            maskRelease(result.getBranch().getRelease());
             // 同步到配置value
             for (Property property : properties) {
                 PropertyValues.addOrModifyPropertyValue(
@@ -119,6 +113,10 @@ public class BranchController {
             }
             for (String key : propertyKeys) {
                 PropertyValues.deletePropertyValue(appId, profileId, branchId, key);
+            }
+            // 对敏感配置掩码
+            if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+                maskRelease(result.getBranch().getRelease());
             }
         }
         return result;
@@ -186,7 +184,7 @@ public class BranchController {
 
         ComputeBranchMergenceResult result = branchService.computeBranchMergence(order);
         if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
-            Set<Property> maskedProperties = mask(appId, result.getDifference().getAddOrModifiedProperties());
+            Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getDifference().getAddOrModifiedProperties());
             result.getDifference().getAddOrModifiedProperties().clear();
             result.getDifference().getAddOrModifiedProperties().addAll(maskedProperties);
         }
@@ -227,7 +225,7 @@ public class BranchController {
         order.setBranchId(branchId);
 
         FindBranchResult result = branchService.findBranch(order);
-        if (result.isSuccess()) {
+        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
             maskRelease(result.getBranch().getRelease());
         }
         return result;
@@ -247,32 +245,15 @@ public class BranchController {
         order.setProfileId(profileId);
 
         FindBranchesResult result = branchService.findBranches(order);
-        if (result.isSuccess()) {
+        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
             result.getBranches().stream().map(BranchInfo::getRelease).forEach(this::maskRelease);
         }
         return result;
     }
 
-    // 对发布中敏感配置进行掩码
+    // 掩码敏感配置
     private void maskRelease(ReleaseInfo release) {
-        if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
-            Set<Property> maskedProperties = mask(release.getAppId(), release.getProperties());
-            release.setProperties(maskedProperties);
-        }
-    }
-
-    // 对敏感配置进行掩码
-    private Set<Property> mask(String appId, Set<Property> properties) {
-        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
-        Set<Property> maskedProperties = new HashSet<>(properties.size());
-        for (Property property : properties) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, property.getKey());
-            if (privilege == OperatePrivilege.NONE) {
-                maskedProperties.add(new Property(property.getKey(), MASKED_VALUE, property.getScope()));
-            } else {
-                maskedProperties.add(property);
-            }
-        }
-        return maskedProperties;
+        Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
+        release.setProperties(maskedProperties);
     }
 }
