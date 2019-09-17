@@ -13,8 +13,8 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
-import org.antframework.configcenter.facade.order.FindAppPropertyKeysOrder;
-import org.antframework.configcenter.facade.result.FindAppPropertyKeysResult;
+import org.antframework.configcenter.facade.order.FindPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -57,11 +57,11 @@ public class PropertyKeyServiceTest extends AbstractTest {
 
     @Test
     public void testFindAppPropertyKeys() {
-        FindAppPropertyKeysOrder order = new FindAppPropertyKeysOrder();
+        FindPropertyKeysOrder order = new FindPropertyKeysOrder();
         order.setAppId("customer");
         order.setMinScope(Scope.PROTECTED);
 
-        FindAppPropertyKeysResult result = propertyKeyService.findAppPropertyKeys(order);
+        FindPropertyKeysResult result = propertyKeyService.findPropertyKeys(order);
         checkResult(result, Status.SUCCESS);
     }
 }

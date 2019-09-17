@@ -13,9 +13,9 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
-import org.antframework.configcenter.facade.order.FindAppProfilePropertyValuesOrder;
+import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
-import org.antframework.configcenter.facade.result.FindAppProfilePropertyValuesResult;
+import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -78,12 +78,12 @@ public class PropertyValueServiceTest extends AbstractTest {
 
     @Test
     public void testFindAppProfilePropertyValues() {
-        FindAppProfilePropertyValuesOrder order = new FindAppProfilePropertyValuesOrder();
+        FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId("customer");
         order.setProfileId("dev");
         order.setMinScope(Scope.PRIVATE);
 
-        FindAppProfilePropertyValuesResult result = propertyValueService.findAppProfilePropertyValues(order);
+        FindPropertyValuesResult result = propertyValueService.findPropertyValues(order);
         checkResult(result, Status.SUCCESS);
     }
 }

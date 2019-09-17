@@ -100,7 +100,7 @@ public class AppServiceTest extends AbstractTest {
     @Test
     public void testFindAppTree() {
         FindAppTreeOrder order = new FindAppTreeOrder();
-        order.setAppId(null);
+        order.setRootAppId(null);
 
         FindAppTreeResult result = appService.findAppTree(order);
         checkResult(result, Status.SUCCESS);

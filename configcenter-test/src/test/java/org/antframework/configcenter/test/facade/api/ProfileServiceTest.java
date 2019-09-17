@@ -109,7 +109,7 @@ public class ProfileServiceTest extends AbstractTest {
     @Test
     public void testFindProfileTree() {
         FindProfileTreeOrder order = new FindProfileTreeOrder();
-        order.setProfileId(null);
+        order.setRootProfileId(null);
 
         FindProfileTreeResult result = profileService.findProfileTree(order);
         checkResult(result, Status.SUCCESS);
