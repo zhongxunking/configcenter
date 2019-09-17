@@ -33,9 +33,9 @@ public class ProfileController {
     /**
      * 新增或修改环境
      *
-     * @param profileId   环境id（必须）
-     * @param profileName 环境名（可选）
-     * @param parent      父环境id（可选）
+     * @param profileId   环境id
+     * @param profileName 环境名
+     * @param parent      父环境id
      */
     @RequestMapping("/addOrModifyProfile")
     public EmptyResult addOrModifyProfile(String profileId, String profileName, String parent) {
@@ -51,7 +51,7 @@ public class ProfileController {
     /**
      * 删除环境
      *
-     * @param profileId 环境id（必须）
+     * @param profileId 环境id
      */
     @RequestMapping("/deleteProfile")
     public EmptyResult deleteProfile(String profileId) {
@@ -65,7 +65,7 @@ public class ProfileController {
     /**
      * 查找环境
      *
-     * @param profileId 环境id（必填）
+     * @param profileId 环境id
      */
     @RequestMapping("/findProfile")
     public FindProfileResult findProfile(String profileId) {
@@ -79,7 +79,7 @@ public class ProfileController {
     /**
      * 查找环境继承的所有环境
      *
-     * @param profileId 环境id（必填）
+     * @param profileId 环境id
      */
     @RequestMapping("/findInheritedProfiles")
     public FindInheritedProfilesResult findInheritedProfiles(String profileId) {
@@ -107,9 +107,9 @@ public class ProfileController {
     /**
      * 分页查询环境
      *
-     * @param pageNo    页码（必须）
-     * @param pageSize  每页大小（必须）
-     * @param profileId 环境id（可选）
+     * @param pageNo    页码
+     * @param pageSize  每页大小
+     * @param profileId 环境id
      */
     @RequestMapping("/queryProfiles")
     public QueryProfilesResult queryProfiles(int pageNo, int pageSize, String profileId) {

@@ -56,12 +56,12 @@ public class PropertyValueController {
     /**
      * 新增或修改配置value
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     * @param branchId  分支id（必须）
-     * @param key       key（必须）
-     * @param value     value（必须）
-     * @param scope     作用域（必须）
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     * @param key       key
+     * @param value     value
+     * @param scope     作用域
      */
     @RequestMapping("/addOrModifyPropertyValue")
     public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
@@ -82,10 +82,10 @@ public class PropertyValueController {
     /**
      * 删除配置value
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     * @param branchId  分支id（必须）
-     * @param key       key（必须）
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     * @param key       key
      */
     @RequestMapping("/deletePropertyValue")
     public EmptyResult deletePropertyValue(String appId, String profileId, String branchId, String key) {
@@ -104,10 +104,10 @@ public class PropertyValueController {
     /**
      * 回滚配置value
      *
-     * @param appId          应用id（必须）
-     * @param profileId      环境id（必须）
-     * @param branchId       分支id（必须）
-     * @param releaseVersion 发布版本（必须）
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param branchId       分支id
+     * @param releaseVersion 发布版本
      */
     @RequestMapping("/revertPropertyValues")
     public EmptyResult revertPropertyValues(String appId, String profileId, String branchId, Long releaseVersion) {
@@ -125,10 +125,10 @@ public class PropertyValueController {
     /**
      * 查找配置value集
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     * @param branchId  分支id（必须）
-     * @param minScope  最小作用域（必须）
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param branchId  分支id
+     * @param minScope  最小作用域
      */
     @RequestMapping("/findPropertyValues")
     public FindPropertyValuesResult findPropertyValues(String appId, String profileId, String branchId, Scope minScope) {
@@ -165,9 +165,9 @@ public class PropertyValueController {
     /**
      * 比较配置value与发布的差异
      *
-     * @param appId          应用id（必须）
-     * @param profileId      环境id（必须）
-     * @param releaseVersion 发布版本（必须）
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param releaseVersion 发布版本
      */
     @RequestMapping("/comparePropertyValuesWithRelease")
     public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, String branchId, Long releaseVersion) {

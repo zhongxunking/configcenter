@@ -54,9 +54,9 @@ public class ReleaseController {
     /**
      * 查找发布
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     * @param version   版本（必须）
+     * @param appId     应用id
+     * @param profileId 环境id
+     * @param version   版本
      */
     @RequestMapping("/findRelease")
     public FindReleaseResult findRelease(String appId, String profileId, Long version) {
@@ -78,8 +78,8 @@ public class ReleaseController {
     /**
      * 查找应用在指定环境中继承的发布
      *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
+     * @param appId     应用id
+     * @param profileId 环境id
      */
     @RequestMapping("/findInheritedReleases")
     public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
@@ -103,8 +103,8 @@ public class ReleaseController {
     /**
      * 比较两个发布的配置差异
      *
-     * @param appId        应用id（必须）
-     * @param profileId    环境id（必须）
+     * @param appId        应用id
+     * @param profileId    环境id
      * @param leftVersion  待比较的发布版本
      * @param rightVersion 待比较的发布版本
      */

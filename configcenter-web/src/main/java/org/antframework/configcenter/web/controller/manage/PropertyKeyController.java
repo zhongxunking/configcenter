@@ -44,10 +44,10 @@ public class PropertyKeyController {
     /**
      * 新增或修改配置key
      *
-     * @param appId 应用id（必须）
-     * @param key   key（必须）
-     * @param scope 作用域（必须）
-     * @param memo  备注（可选）
+     * @param appId 应用id
+     * @param key   key
+     * @param scope 作用域
+     * @param memo  备注
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
@@ -65,8 +65,8 @@ public class PropertyKeyController {
     /**
      * 删除配置key
      *
-     * @param appId 应用id（必须）
-     * @param key   key（必须）
+     * @param appId 应用id
+     * @param key   key
      */
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
@@ -82,7 +82,7 @@ public class PropertyKeyController {
     /**
      * 查找应用继承的配置key（包含应用自己）
      *
-     * @param appId 应用id（必须）
+     * @param appId 应用id
      */
     @RequestMapping("/findInheritedPropertyKeys")
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {

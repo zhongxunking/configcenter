@@ -41,9 +41,9 @@ public class AppController {
     /**
      * 添加或修改应用
      *
-     * @param appId   应用id（必须）
-     * @param appName 应用名（可选）
-     * @param parent  父应用id（可选）
+     * @param appId   应用id
+     * @param appName 应用名
+     * @param parent  父应用id
      */
     @RequestMapping("/addOrModifyApp")
     public EmptyResult addOrModifyApp(String appId, String appName, String parent) {
@@ -59,7 +59,7 @@ public class AppController {
     /**
      * 删除应用
      *
-     * @param appId 应用id（必须）
+     * @param appId 应用id
      */
     @RequestMapping("/deleteApp")
     public EmptyResult deleteApp(String appId) {
@@ -80,7 +80,7 @@ public class AppController {
     /**
      * 查找应用
      *
-     * @param appId 应用id（必须）
+     * @param appId 应用id
      */
     @RequestMapping("/findApp")
     public FindAppResult findApp(String appId) {
@@ -94,7 +94,7 @@ public class AppController {
     /**
      * 查找应用继承的所有应用
      *
-     * @param appId 应用id（必须）
+     * @param appId 应用id
      */
     @RequestMapping("/findInheritedApps")
     public FindInheritedAppsResult findInheritedApps(String appId) {
@@ -122,10 +122,10 @@ public class AppController {
     /**
      * 分页查询应用
      *
-     * @param pageNo   页码（必须）
-     * @param pageSize 每页大小（必须）
-     * @param appId    应用id（可选）
-     * @param parent   父应用id（可选）
+     * @param pageNo   页码
+     * @param pageSize 每页大小
+     * @param appId    应用id
+     * @param parent   父应用id
      */
     @RequestMapping("/queryApps")
     public QueryAppsResult queryApps(int pageNo, int pageSize, String appId, String parent) {
@@ -142,9 +142,9 @@ public class AppController {
     /**
      * 查询被管理的应用
      *
-     * @param pageNo   页码（必须）
-     * @param pageSize 每页大小（必须）
-     * @param appId    应用id（可选）
+     * @param pageNo   页码
+     * @param pageSize 每页大小
+     * @param appId    应用id
      */
     @RequestMapping("/queryManagedApps")
     public QueryManagedAppsResult queryManagedApps(int pageNo, int pageSize, String appId) {
