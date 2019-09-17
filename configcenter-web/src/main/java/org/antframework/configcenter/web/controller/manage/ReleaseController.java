@@ -76,6 +76,52 @@ public class ReleaseController {
     }
 
     /**
+     * 查找应用在指定环境中继承的发布
+     *
+     * @param appId     应用id（必须）
+     * @param profileId 环境id（必须）
+     */
+    @RequestMapping("/findInheritedReleases")
+    public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
+        ManagerApps.adminOrHaveApp(appId);
+
+        FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
+        for (AppInfo app : Apps.findInheritedApps(appId)) {
+            // 获取应用在各环境的发布
+            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
+            List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, minScope, null);// 掩码
+            if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+                inheritedProfileReleases.forEach(this::maskRelease);
+            }
+            FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
+
+            result.addInheritedAppRelease(appRelease);
+        }
+        return result;
+    }
+
+    /**
+     * 比较两个发布的配置差异
+     *
+     * @param appId        应用id（必须）
+     * @param profileId    环境id（必须）
+     * @param leftVersion  待比较的发布版本
+     * @param rightVersion 待比较的发布版本
+     */
+    @RequestMapping("/compareReleases")
+    public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
+        ManagerApps.adminOrHaveApp(appId);
+
+        Set<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
+        Set<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
+        PropertiesDifference difference = Properties.compare(left, right);
+
+        CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);
+        result.setDifference(difference);
+        return result;
+    }
+
+    /**
      * 查询发布
      *
      * @param pageNo        页码
@@ -111,52 +157,6 @@ public class ReleaseController {
         QueryReleasesResult result = releaseService.queryReleases(order);
         if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
             result.getInfos().forEach(this::maskRelease);
-        }
-        return result;
-    }
-
-    /**
-     * 比较两个发布的配置差异
-     *
-     * @param appId        应用id（必须）
-     * @param profileId    环境id（必须）
-     * @param leftVersion  待比较的发布版本
-     * @param rightVersion 待比较的发布版本
-     */
-    @RequestMapping("/compareReleases")
-    public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
-        ManagerApps.adminOrHaveApp(appId);
-
-        Set<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
-        Set<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
-        PropertiesDifference difference = Properties.compare(left, right);
-
-        CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);
-        result.setDifference(difference);
-        return result;
-    }
-
-    /**
-     * 查找应用在指定环境中继承的发布
-     *
-     * @param appId     应用id（必须）
-     * @param profileId 环境id（必须）
-     */
-    @RequestMapping("/findInheritedReleases")
-    public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
-        ManagerApps.adminOrHaveApp(appId);
-
-        FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
-        for (AppInfo app : Apps.findInheritedApps(appId)) {
-            // 获取应用在各环境的发布
-            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, minScope, null);// 掩码
-            if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
-                inheritedProfileReleases.forEach(this::maskRelease);
-            }
-            FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
-
-            result.addInheritedAppRelease(appRelease);
         }
         return result;
     }
