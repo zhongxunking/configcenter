@@ -77,7 +77,7 @@ public class PropertyValueServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppProfilePropertyValues() {
+    public void testFindPropertyValues() {
         FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId("customer");
         order.setProfileId("dev");

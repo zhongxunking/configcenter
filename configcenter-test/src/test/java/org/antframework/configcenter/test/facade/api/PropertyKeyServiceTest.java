@@ -56,7 +56,7 @@ public class PropertyKeyServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppPropertyKeys() {
+    public void testFindPropertyKeys() {
         FindPropertyKeysOrder order = new FindPropertyKeysOrder();
         order.setAppId("customer");
         order.setMinScope(Scope.PROTECTED);
