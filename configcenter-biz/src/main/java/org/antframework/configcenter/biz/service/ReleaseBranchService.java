@@ -44,7 +44,7 @@ import java.util.stream.Collectors;
 @Service(enableTx = true)
 @AllArgsConstructor
 public class ReleaseBranchService {
-    // info转换器
+    // 转换器
     private static final Converter<Branch, BranchInfo> CONVERTER = new BranchConverter();
 
     // 分支dao

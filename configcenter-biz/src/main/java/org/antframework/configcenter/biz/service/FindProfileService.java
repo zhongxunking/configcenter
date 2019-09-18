@@ -26,8 +26,8 @@ import org.springframework.core.convert.converter.Converter;
 @Service
 @AllArgsConstructor
 public class FindProfileService {
-    // info转换器
-    private static final Converter<Profile, ProfileInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(ProfileInfo.class);
+    // 转换器
+    private static final Converter<Profile, ProfileInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(ProfileInfo.class);
 
     // 环境dao
     private final ProfileDao profileDao;
@@ -39,7 +39,7 @@ public class FindProfileService {
 
         Profile profile = profileDao.findByProfileId(order.getProfileId());
         if (profile != null) {
-            result.setProfile(INFO_CONVERTER.convert(profile));
+            result.setProfile(CONVERTER.convert(profile));
         }
     }
 }

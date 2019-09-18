@@ -34,8 +34,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class FindPropertyValuesService {
-    // info转换器
-    private static final Converter<PropertyValue, PropertyValueInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyValueInfo.class);
+    // 转换器
+    private static final Converter<PropertyValue, PropertyValueInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyValueInfo.class);
 
     // 配置value dao
     private final PropertyValueDao propertyValueDao;
@@ -58,7 +58,7 @@ public class FindPropertyValuesService {
         List<PropertyValue> propertyValues = propertyValueDao.findByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         propertyValues.stream()
                 .filter(propertyValue -> propertyValue.getScope().compareTo(order.getMinScope()) >= 0)
-                .map(INFO_CONVERTER::convert)
+                .map(CONVERTER::convert)
                 .forEach(result::addPropertyValue);
     }
 }

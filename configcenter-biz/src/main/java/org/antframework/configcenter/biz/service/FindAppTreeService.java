@@ -33,8 +33,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class FindAppTreeService {
-    // info转换器
-    private static final Converter<App, AppInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(AppInfo.class);
+    // 转换器
+    private static final Converter<App, AppInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(AppInfo.class);
 
     // 应用dao
     private final AppDao appDao;
@@ -60,7 +60,7 @@ public class FindAppTreeService {
 
         List<App> childrenApp = appDao.findByParent(app == null ? null : app.getAppId());
         for (App childApp : childrenApp) {
-            AppTree childTree = getAppTree(INFO_CONVERTER.convert(childApp));
+            AppTree childTree = getAppTree(CONVERTER.convert(childApp));
             appTree.addChild(childTree);
         }
 

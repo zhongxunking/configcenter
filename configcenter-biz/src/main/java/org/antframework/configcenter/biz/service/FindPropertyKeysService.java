@@ -34,8 +34,8 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 public class FindPropertyKeysService {
-    // info转换器
-    private static final Converter<PropertyKey, PropertyKeyInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
+    // 转换器
+    private static final Converter<PropertyKey, PropertyKeyInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(PropertyKeyInfo.class);
 
     // 配置key dao
     private final PropertyKeyDao propertyKeyDao;
@@ -58,7 +58,7 @@ public class FindPropertyKeysService {
         List<PropertyKey> propertyKeys = propertyKeyDao.findByAppId(order.getAppId());
         propertyKeys.stream()
                 .filter(propertyKey -> propertyKey.getScope().compareTo(order.getMinScope()) >= 0)
-                .map(INFO_CONVERTER::convert)
+                .map(CONVERTER::convert)
                 .forEach(result::addPropertyKey);
     }
 }

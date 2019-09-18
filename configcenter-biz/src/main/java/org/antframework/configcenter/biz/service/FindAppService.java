@@ -26,8 +26,8 @@ import org.springframework.core.convert.converter.Converter;
 @Service
 @AllArgsConstructor
 public class FindAppService {
-    // info转换器
-    private static final Converter<App, AppInfo> INFO_CONVERTER = new FacadeUtils.DefaultConverter<>(AppInfo.class);
+    // 转换器
+    private static final Converter<App, AppInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(AppInfo.class);
 
     // 应用dao
     private final AppDao appDao;
@@ -39,7 +39,7 @@ public class FindAppService {
 
         App app = appDao.findByAppId(order.getAppId());
         if (app != null) {
-            result.setApp(INFO_CONVERTER.convert(app));
+            result.setApp(CONVERTER.convert(app));
         }
     }
 }

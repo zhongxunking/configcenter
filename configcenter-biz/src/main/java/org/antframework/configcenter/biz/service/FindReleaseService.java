@@ -36,7 +36,7 @@ import org.springframework.core.convert.converter.Converter;
 @Service
 @AllArgsConstructor
 public class FindReleaseService {
-    // info转换器
+    // 转换器
     private static final Converter<Release, ReleaseInfo> CONVERTER = new FacadeUtils.DefaultConverter<>(ReleaseInfo.class);
 
     // 发布dao

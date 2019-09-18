@@ -34,7 +34,7 @@ import org.springframework.core.convert.converter.Converter;
 @Service
 @AllArgsConstructor
 public class FindBranchService {
-    // info转换器
+    // 转换器
     private static final Converter<Branch, BranchInfo> CONVERTER = new BranchConverter();
 
     // 分支dao
