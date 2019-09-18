@@ -13,10 +13,16 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.Apps;
+import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.ProfileDao;
 import org.antframework.configcenter.dal.entity.Profile;
+import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyProfileOrder;
+import org.antframework.configcenter.facade.vo.BranchConstants;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -46,6 +52,13 @@ public class AddOrModifyProfileService {
         }
         BeanUtils.copyProperties(order, profile);
         profileDao.save(profile);
+        // 保证默认分支存在
+        for (AppInfo app : Apps.findAllApps()) {
+            BranchInfo branch = Branches.findBranch(app.getAppId(), order.getProfileId(), BranchConstants.DEFAULT_BRANCH_ID);
+            if (branch == null) {
+                Branches.addBranch(app.getAppId(), order.getProfileId(), BranchConstants.DEFAULT_BRANCH_ID, ReleaseConstant.ORIGIN_VERSION);
+            }
+        }
     }
 
     // 校验是否出现循环继承和祖先是否存在

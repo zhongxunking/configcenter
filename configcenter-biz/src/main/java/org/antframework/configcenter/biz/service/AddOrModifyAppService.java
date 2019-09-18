@@ -13,10 +13,15 @@ import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
+import org.antframework.configcenter.biz.util.Branches;
+import org.antframework.configcenter.biz.util.Profiles;
 import org.antframework.configcenter.biz.util.Refreshes;
 import org.antframework.configcenter.dal.dao.AppDao;
 import org.antframework.configcenter.dal.entity.App;
+import org.antframework.configcenter.facade.info.BranchInfo;
+import org.antframework.configcenter.facade.info.ProfileInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyAppOrder;
+import org.antframework.configcenter.facade.vo.BranchConstants;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
@@ -48,6 +53,13 @@ public class AddOrModifyAppService {
         }
         BeanUtils.copyProperties(order, app);
         appDao.save(app);
+        // 保证默认分支存在
+        for (ProfileInfo profile : Profiles.findAllProfiles()) {
+            BranchInfo branch = Branches.findBranch(order.getAppId(), profile.getProfileId(), BranchConstants.DEFAULT_BRANCH_ID);
+            if (branch == null) {
+                Branches.addBranch(order.getAppId(), profile.getProfileId(), BranchConstants.DEFAULT_BRANCH_ID, ReleaseConstant.ORIGIN_VERSION);
+            }
+        }
     }
 
     // 校验是否出现循环继承和祖先是否存在

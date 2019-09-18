@@ -31,6 +31,25 @@ public final class Branches {
     private static final BranchService BRANCH_SERVICE = Contexts.getApplicationContext().getBean(BranchService.class);
 
     /**
+     * 添加分支
+     *
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param branchId       分支id
+     * @param releaseVersion 发布版本
+     */
+    public static void addBranch(String appId, String profileId, String branchId, Long releaseVersion) {
+        AddBranchOrder order = new AddBranchOrder();
+        order.setAppId(appId);
+        order.setProfileId(profileId);
+        order.setBranchId(branchId);
+        order.setReleaseVersion(releaseVersion);
+
+        EmptyResult result = BRANCH_SERVICE.addBranch(order);
+        FacadeUtils.assertSuccess(result);
+    }
+
+    /**
      * 发布分支
      *
      * @param appId                   应用id
