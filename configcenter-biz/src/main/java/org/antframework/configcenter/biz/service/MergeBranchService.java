@@ -51,6 +51,7 @@ public class MergeBranchService {
         if (sourceBranch == null) {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getSourceBranchId()));
         }
+        long sourceReleaseVersion = sourceBranch.getReleaseVersion();
         // 计算分支合并的配置变更
         MergenceDifference difference = Branches.computeBranchMergence(
                 order.getAppId(),
@@ -64,10 +65,10 @@ public class MergeBranchService {
                 order.getBranchId(),
                 difference.getAddOrModifiedProperties(),
                 difference.getRemovedPropertyKeys(),
-                String.format("merge from branch[%s] with release version[%d]", order.getSourceBranchId(), sourceBranch.getReleaseVersion()))
+                String.format("merged from branch[%s] with release version[%d]", order.getSourceBranchId(), sourceReleaseVersion))
                 .getRelease();
         // 保存合并
-        Mergence mergence = buildMergence(order, release.getVersion(), sourceBranch.getReleaseVersion());
+        Mergence mergence = buildMergence(order, release.getVersion(), sourceReleaseVersion);
         mergenceDao.save(mergence);
     }
 
