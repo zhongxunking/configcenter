@@ -29,10 +29,10 @@ public class AddOrModifyBranchRuleOrder {
     // 分支id
     @NotBlank
     private String branchId;
-    // 规则
-    @NotBlank
-    private String rule;
     // 优先级
     @NotNull
     private Long priority;
+    // 规则
+    @NotBlank
+    private String rule;
 }
