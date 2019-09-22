@@ -64,10 +64,10 @@ public class ComputeBranchMergenceService {
     }
 
     // 计算最近的发布
-    private ReleaseInfo computeRecentRelease(String appId, String profileId, long sourceVersion, long targetVersion) {
-        long version = sourceVersion;
+    private ReleaseInfo computeRecentRelease(String appId, String profileId, long targetVersion, long sourceVersion) {
         Set<Long> versions = new HashSet<>();
         versions.add(targetVersion);
+        long version = sourceVersion;
         // 从targetVersion继承体系中，找到被targetVersion覆盖的最近的发布版本
         while (!versions.contains(version)) {
             long maxVersion = versions.stream().max(Long::compareTo).get();
