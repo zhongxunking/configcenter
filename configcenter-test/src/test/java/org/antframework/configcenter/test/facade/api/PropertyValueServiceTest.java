@@ -9,6 +9,7 @@
 package org.antframework.configcenter.test.facade.api;
 
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyValueService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
@@ -16,6 +17,7 @@ import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
+import org.antframework.configcenter.facade.vo.BranchConstants;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -39,13 +41,14 @@ public class PropertyValueServiceTest extends AbstractTest {
                 for (Scope scope : Scope.values()) {
                     AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
                     order.setAppId(appId);
-                    order.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
                     order.setProfileId(profileId);
+                    order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
+                    order.setKey(String.format("%s-%s-key1", appId, scope.name().toLowerCase()));
                     order.setValue(String.format("%s-%s-value1-%s", appId, scope.name().toLowerCase(), profileId));
                     order.setScope(scope);
 
                     EmptyResult result = propertyValueService.addOrModifyPropertyValue(order);
-                    checkResult(result, Status.SUCCESS);
+                    FacadeUtils.assertSuccess(result);
                 }
             }
         }
@@ -57,8 +60,9 @@ public class PropertyValueServiceTest extends AbstractTest {
         for (String appId : appIds) {
             DeletePropertyValueOrder order = new DeletePropertyValueOrder();
             order.setAppId(appId);
-            order.setKey(String.format("%s-%s-key1", appId, Scope.PRIVATE.name().toLowerCase()));
             order.setProfileId("dev");
+            order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
+            order.setKey(String.format("%s-%s-key1", appId, Scope.PRIVATE.name().toLowerCase()));
 
             EmptyResult result = propertyValueService.deletePropertyValue(order);
             checkResult(result, Status.SUCCESS);
@@ -70,6 +74,7 @@ public class PropertyValueServiceTest extends AbstractTest {
         RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
         order.setAppId("customer");
         order.setProfileId("dev");
+        order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
         order.setReleaseVersion(0L);
 
         EmptyResult result = propertyValueService.revertPropertyValues(order);
@@ -81,6 +86,7 @@ public class PropertyValueServiceTest extends AbstractTest {
         FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId("customer");
         order.setProfileId("dev");
+        order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
         order.setMinScope(Scope.PRIVATE);
 
         FindPropertyValuesResult result = propertyValueService.findPropertyValues(order);
