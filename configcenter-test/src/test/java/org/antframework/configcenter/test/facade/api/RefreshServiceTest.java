@@ -28,13 +28,13 @@ public class RefreshServiceTest extends AbstractTest {
     @Test
     public void testRefreshClients() {
         String[] appIds = new String[]{null, "customer"};
-        String[] profiles = new String[]{null, "dev"};
+        String[] profileIds = new String[]{null, "dev"};
 
         for (String appId : appIds) {
-            for (String profile : profiles) {
+            for (String profileId : profileIds) {
                 RefreshClientsOrder order = new RefreshClientsOrder();
                 order.setRootAppId(appId);
-                order.setRootProfileId(profile);
+                order.setRootProfileId(profileId);
 
                 EmptyResult result = refreshService.refreshClients(order);
                 checkResult(result, Status.SUCCESS);
