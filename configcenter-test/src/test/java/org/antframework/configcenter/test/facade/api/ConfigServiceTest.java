@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.test.facade.api;
 
-import org.antframework.common.util.facade.Status;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
@@ -39,9 +39,10 @@ public class ConfigServiceTest extends AbstractTest {
                 order.setMainAppId("customer");
                 order.setQueriedAppId(queriedId);
                 order.setProfileId(profileId);
+                order.setTarget(null);
 
                 FindConfigResult result = configService.findConfig(order);
-                checkResult(result, Status.SUCCESS);
+                FacadeUtils.assertSuccess(result);
             }
         }
     }
@@ -55,9 +56,10 @@ public class ConfigServiceTest extends AbstractTest {
                 order.setAppId("customer");
                 order.setProfileId(profileId);
                 order.setMinScope(scope);
+                order.setTarget(null);
 
                 FindAppSelfConfigResult result = configService.findAppSelfConfig(order);
-                checkResult(result, Status.SUCCESS);
+                FacadeUtils.assertSuccess(result);
             }
         }
     }
