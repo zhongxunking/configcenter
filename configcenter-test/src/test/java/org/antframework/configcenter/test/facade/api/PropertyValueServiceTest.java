@@ -18,6 +18,7 @@ import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.BranchConstants;
+import org.antframework.configcenter.facade.vo.ReleaseConstant;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
@@ -75,7 +76,7 @@ public class PropertyValueServiceTest extends AbstractTest {
         order.setAppId("customer");
         order.setProfileId("dev");
         order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
-        order.setReleaseVersion(0L);
+        order.setReleaseVersion(ReleaseConstant.ORIGIN_VERSION);
 
         EmptyResult result = propertyValueService.revertPropertyValues(order);
         checkResult(result, Status.SUCCESS);
