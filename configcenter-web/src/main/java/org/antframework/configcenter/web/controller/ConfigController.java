@@ -40,6 +40,8 @@ public class ConfigController {
     private static final int LISTEN_MAX_TIMEOUT = 90000;
     // 随机数
     private static final Random RANDOM = new Random();
+    // 超时的监听result
+    private static final ListeningClientsContainer.ListenResult TIMEOUT_LISTEN_RESULT = FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class);
 
     // 配置服务
     private final ConfigService configService;
@@ -83,9 +85,7 @@ public class ConfigController {
             }
         }
         // 构建异步返回结果
-        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(
-                (long) LISTEN_MIN_TIMEOUT + RANDOM.nextInt(LISTEN_MAX_TIMEOUT - LISTEN_MIN_TIMEOUT),
-                FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class));
+        DeferredResult<ListeningClientsContainer.ListenResult> deferredResult = new DeferredResult<>(generateTimeout(), TIMEOUT_LISTEN_RESULT);
         if (listenMetas.isEmpty() || !listenResult.getTopics().isEmpty()) {
             // 直接设置返回结果
             deferredResult.setResult(listenResult);
@@ -97,6 +97,11 @@ public class ConfigController {
             deferredResult.onCompletion(() -> listeningClientsContainer.removeClient(listeningClient));
         }
         return deferredResult;
+    }
+
+    // 生成超时时间
+    private long generateTimeout() {
+        return LISTEN_MIN_TIMEOUT + RANDOM.nextInt(LISTEN_MAX_TIMEOUT - LISTEN_MIN_TIMEOUT);
     }
 
     /**
