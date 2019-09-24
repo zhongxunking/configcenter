@@ -484,7 +484,7 @@ const PropertyValues = {
             const theThis = this;
             axios.get('../manage/profile/findProfileTree', {
                 params: {
-                    profileId: null
+                    rootProfileId: null
                 }
             }).then(function (result) {
                 if (!result.success) {

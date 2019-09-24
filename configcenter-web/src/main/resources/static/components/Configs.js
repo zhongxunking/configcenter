@@ -80,7 +80,7 @@ const Configs = {
             this.allProfilesLoading = true;
             axios.get('../manage/profile/findProfileTree', {
                 params: {
-                    profileId: null
+                    rootProfileId: null
                 }
             }).then(function (result) {
                 theThis.allProfilesLoading = false;
