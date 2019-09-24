@@ -36,4 +36,14 @@ public final class CacheConstant {
      * 发布的缓存名
      */
     public static final String RELEASE_CACHE_NAME = "release";
+
+    /**
+     * 配置key集的缓存名
+     */
+    public static final String PROPERTY_KEYS_CACHE_NAME = "propertyKeys";
+
+    /**
+     * 配置value集的缓存名
+     */
+    public static final String PROPERTY_VALUES_CACHE_NAME = "propertyValues";
 }
