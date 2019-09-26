@@ -14,10 +14,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.Configs;
-import org.antframework.configcenter.biz.util.Properties;
-import org.antframework.configcenter.biz.util.Releases;
+import org.antframework.configcenter.biz.util.*;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertiesDifference;
@@ -80,9 +77,10 @@ public class ReleaseController {
      *
      * @param appId     应用id
      * @param profileId 环境id
+     * @param branchId  分支id
      */
     @RequestMapping("/findInheritedReleases")
-    public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId) {
+    public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId, String branchId) {
         ManagerApps.adminOrHaveApp(appId);
 
         FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
@@ -90,6 +88,7 @@ public class ReleaseController {
             // 获取应用在各环境的发布
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, minScope, null);// 掩码
+            inheritedProfileReleases.set(0, Branches.findBranch(appId, profileId, branchId).getRelease());
             if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
                 inheritedProfileReleases.forEach(this::maskRelease);
             }

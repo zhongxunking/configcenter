@@ -26,7 +26,7 @@
 <body>
 <div id="propertyValuesApp">
     <el-row style="margin-bottom: 10px">
-        <el-col :span="12">
+        <el-col :span="16">
             <span style="font-size: large;color: #409EFF;">环境：</span>
             <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
                 <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId">
@@ -34,10 +34,15 @@
                     <span>{{ toShowingProfile(profile) }}</span>
                 </el-option>
             </el-select>
+            <span style="font-size: large;color: #409EFF;">分支：</span>
+            <el-select v-model="currentBranchId" @change="switchBranch" placeholder="请选择分支" size="medium">
+                <el-option v-for="branch in branches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
+            </el-select>
         </el-col>
-        <el-col :span="12" style="text-align: right;">
+        <el-col :span="8" style="text-align: right;">
+            <el-button type="text">管理分支</el-button>
             <el-button type="text">发布历史</el-button>
-            <!--<router-link :to="'/configs/' + appId + '/' + currentProfileId + '/releases'">-->
+            <!--<router-link :to="'/configs/' + appId + '/' + profileId + '/' + branchId + '/releases'">-->
             <!--<el-button type="text">发布历史</el-button>-->
             <!--</router-link>-->
         </el-col>
@@ -290,9 +295,12 @@
             data: {
                 appId: 'customer',
                 profileId: 'dev',
+                branchId: 'master',
                 currentProfileId: 'dev',
+                currentBranchId: 'master',
                 manager: manager,
                 allProfiles: [],
+                branches: [],
                 selfPropertiesLoading: false,
                 appProperties: [],
                 propertyValues: [],
@@ -409,6 +417,7 @@
             methods: {
                 refreshData: function () {
                     this.findAllProfiles();
+                    this.findBranches();
                     this.findPropertyValues();
                     this.comparePropertyValuesWithRelease();
                     this.findInheritedAppReleases();
@@ -529,15 +538,34 @@
                         theThis.allProfiles = extractProfiles(result.profileTree, -1);
                     });
                 },
+                findBranches: function () {
+                    const theThis = this;
+                    axios.get('../manage/branch/findBranches', {
+                        params: {
+                            appId: theThis.appId,
+                            profileId: theThis.profileId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.branches = result.branches;
+                    });
+                },
                 switchProfile: function (profileId) {
-                    this.$router.replace('/configs/' + this.appId + '/' + profileId);
+                    this.$router.replace('/configs/' + this.appId + '/' + profileId + '/master');
+                },
+                switchBranch: function (branchId) {
+                    this.$router.replace('/configs/' + this.appId + '/' + this.profileId + '/' + branchId);
                 },
                 findPropertyValues: function () {
                     const theThis = this;
-                    axios.get('../manage/propertyValue/findAppProfilePropertyValues', {
+                    axios.get('../manage/propertyValue/findPropertyValues', {
                         params: {
                             appId: this.appId,
                             profileId: this.profileId,
+                            branchId: this.branchId,
                             minScope: 'PRIVATE'
                         }
                     }).then(function (result) {
@@ -550,11 +578,12 @@
                 },
                 comparePropertyValuesWithRelease: function () {
                     const theThis = this;
-                    this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
+                    this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
                         axios.get('../manage/propertyValue/comparePropertyValuesWithRelease', {
                             params: {
                                 appId: theThis.appId,
                                 profileId: theThis.profileId,
+                                branchId: theThis.branchId,
                                 releaseVersion: release.version
                             }
                         }).then(function (result) {
@@ -869,7 +898,7 @@
                 revertPropertyValues: function () {
                     const theThis = this;
 
-                    this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
+                    this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
                         axios.get('../manage/propertyValue/revertPropertyValues', {
                             params: {
                                 appId: theThis.appId,
@@ -890,20 +919,19 @@
                     this.addPropertyValueDialogShowing = false;
                     this.$refs['addPropertyValueForm'].resetFields();
                 },
-                doFindCurrentRelease: function (appId, profileId, callback) {
-                    const theThis = this;
-
-                    axios.get('../manage/release/findCurrentRelease', {
+                doFindBranchRelease: function (appId, profileId, branchId, callback) {
+                    axios.get('../manage/branch/findBranch', {
                         params: {
                             appId: appId,
-                            profileId: profileId
+                            profileId: profileId,
+                            branchId: branchId
                         }
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        callback(result.release);
+                        callback(result.branch.release);
                     });
                 },
                 addPropertyValue: function () {
