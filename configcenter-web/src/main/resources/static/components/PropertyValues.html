@@ -601,7 +601,8 @@
                     axios.get('../manage/release/findInheritedReleases', {
                         params: {
                             appId: this.appId,
-                            profileId: this.profileId
+                            profileId: this.profileId,
+                            branchId: this.branchId
                         }
                     }).then(function (result) {
                         theThis.selfPropertiesLoading = false;
