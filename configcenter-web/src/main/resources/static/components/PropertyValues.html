@@ -64,7 +64,7 @@
                     </div>
                     <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="revertPopoverShowing = true">还原修改</el-button>
                 </el-popover>
-                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showAddReleaseDialog">发布修改</el-button>
+                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showReleaseBranchDialog">发布修改</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -221,7 +221,7 @@
             <el-button type="primary" @click="addPropertyValue">提交</el-button>
         </div>
     </el-dialog>
-    <el-dialog :visible.sync="addReleaseDialogVisible" :before-close="closeAddReleaseDialog" title="新增发布" width="70%" center>
+    <el-dialog :visible.sync="releaseBranchDialogVisible" :before-close="closeReleaseBranchDialog" title="新增发布" width="70%" center>
         <el-row>
             <el-col :span="3" style="text-align: right;">
                 <span style="margin-right: 12px">变更的配置</span>
@@ -277,14 +277,14 @@
                 </el-table>
             </el-col>
         </el-row>
-        <el-form ref="addReleaseForm" :model="addReleaseForm" label-width="12.5%">
+        <el-form ref="releaseBranchForm" :model="releaseBranchForm" label-width="12.5%">
             <el-form-item label="备注" prop="memo" :rules="[{required:false, message:'请输入备注', trigger:'blur'}]">
-                <el-input v-model="addReleaseForm.memo" type="textarea" autosize clearable placeholder="请输入备注"></el-input>
+                <el-input v-model="releaseBranchForm.memo" type="textarea" autosize clearable placeholder="请输入备注"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">
-            <el-button @click="closeAddReleaseDialog">取消</el-button>
-            <el-button type="primary" @click="addRelease">提交</el-button>
+            <el-button @click="closeReleaseBranchDialog">取消</el-button>
+            <el-button type="primary" @click="releaseBranch">提交</el-button>
         </div>
     </el-dialog>
 </div>
@@ -320,8 +320,8 @@
                     scope: null
                 },
                 revertPopoverShowing: false,
-                addReleaseDialogVisible: false,
-                addReleaseForm: {
+                releaseBranchDialogVisible: false,
+                releaseBranchForm: {
                     memo: null
                 }
             },
@@ -953,7 +953,7 @@
                             });
                     });
                 },
-                showAddReleaseDialog: function () {
+                showReleaseBranchDialog: function () {
                     let keys = this.haveNotPrivilegeModifiedPropertyKeys();
                     if (keys.length > 0) {
                         Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
@@ -961,21 +961,21 @@
                         return;
                     }
                     this.refreshData();
-                    this.addReleaseDialogVisible = true;
+                    this.releaseBranchDialogVisible = true;
                 },
-                closeAddReleaseDialog: function () {
-                    this.addReleaseDialogVisible = false;
-                    this.$refs['addReleaseForm'].resetFields();
+                closeReleaseBranchDialog: function () {
+                    this.releaseBranchDialogVisible = false;
+                    this.$refs['releaseBranchForm'].resetFields();
                 },
-                addRelease: function () {
+                releaseBranch: function () {
                     const theThis = this;
-                    let addedOrModifiedProperties = [];
+                    let addOrModifiedProperties = [];
                     let deletedPropertyKeys = [];
                     theThis.modifiedProperties.forEach(function (property) {
                         if (theThis.difference.addedKeys.indexOf(property.key) >= 0
                             || theThis.difference.modifiedValueKeys.indexOf(property.key) >= 0
                             || theThis.difference.modifiedScopeKeys.indexOf(property.key) >= 0) {
-                            addedOrModifiedProperties.push({
+                            addOrModifiedProperties.push({
                                 key: property.key,
                                 value: property.value,
                                 scope: property.scope
@@ -984,19 +984,20 @@
                             deletedPropertyKeys.push(property.key);
                         }
                     });
-                    axios.post('../manage/release/addRelease', {
+                    axios.post('../manage/branch/releaseBranch', {
                         appId: theThis.appId,
                         profileId: theThis.profileId,
-                        memo: theThis.addReleaseForm.memo,
-                        addedOrModifiedProperties: JSON.stringify(addedOrModifiedProperties),
-                        deletedPropertyKeys: JSON.stringify(deletedPropertyKeys)
+                        branchId: theThis.branchId,
+                        addOrModifiedProperties: JSON.stringify(addOrModifiedProperties),
+                        removedPropertyKeys: JSON.stringify(deletedPropertyKeys),
+                        memo: theThis.releaseBranchForm.memo
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.closeAddReleaseDialog();
+                        theThis.closeReleaseBranchDialog();
                         theThis.refreshData();
                     });
                 },
