@@ -827,8 +827,9 @@
                     axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                         params: {
                             appId: this.appId,
-                            key: key,
                             profileId: this.profileId,
+                            branchId: this.branchId,
+                            key: key,
                             value: value,
                             scope: scope
                         }
@@ -848,8 +849,9 @@
                     axios.get('../manage/propertyValue/deletePropertyValue', {
                         params: {
                             appId: this.appId,
-                            key: property.key,
-                            profileId: this.profileId
+                            profileId: this.profileId,
+                            branchId: this.branchId,
+                            key: property.key
                         }
                     }).then(function (result) {
                         if (!result.success) {
@@ -904,6 +906,7 @@
                             params: {
                                 appId: theThis.appId,
                                 profileId: theThis.profileId,
+                                branchId: theThis.branchId,
                                 releaseVersion: release.version
                             }
                         }).then(function (revertPropertyValuesResult) {
