@@ -71,7 +71,7 @@
                 </el-table>
                 <el-row style="margin-top: 10px">
                     <el-col style="text-align: end">
-                        <el-pagination :total="totalReleasesCount" :current-page.sync="queryReleasesForm.pageNo" :page-size.sync="queryReleasesForm.pageSize" @current-change="queryReleases" layout="total,prev,pager,next" small background></el-pagination>
+                        <el-pagination :total="totalReleasesCount" :current-page.sync="queryReleasesForm.pageNo" :page-size.sync="queryReleasesForm.pageSize" @current-change="queryNextReleases" layout="total,prev,pager,next" small background></el-pagination>
                     </el-col>
                 </el-row>
             </el-aside>
@@ -214,6 +214,7 @@
             data: {
                 appId: 'customer',
                 profileId: 'dev',
+                branchId: 'master',
                 manager: manager,
                 app: {},
                 profile: {},
@@ -231,94 +232,87 @@
                 this.findApp(this.appId);
                 this.findProfile(this.profileId);
                 this.findInheritedOperatePrivileges();
-                this.queryReleases();
+                this.queryNextReleases();
             },
             methods: {
-                queryReleases: function () {
+                queryNextReleases: function () {
                     const theThis = this;
-                    this.findCurrentRelease();
-                    this.doQueryReleases(
-                        this.queryReleasesForm.pageNo,
-                        this.queryReleasesForm.pageSize,
-                        this.appId,
-                        this.profileId,
-                        function (totalCount, releases) {
-                            theThis.totalReleasesCount = totalCount;
-                            releases.forEach(function (release) {
-                                release.properties.forEach(function (property) {
-                                    property.privilege = theThis.calcPrivilege(release.appId, property.key);
-                                });
-                            });
-                            for (let i = 0; i < releases.length - 1; i++) {
-                                let current = releases[i];
-                                let previous = releases[i + 1];
-                                theThis.compareReleases(
-                                    theThis.appId,
-                                    theThis.profileId,
-                                    current.version,
-                                    previous.version,
-                                    function (difference) {
-                                        current.difference = difference;
-                                        current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
-                                    });
-                            }
-                            if (releases.length > 0) {
-                                let current = releases[releases.length - 1];
-                                theThis.doQueryReleases(
-                                    theThis.queryReleasesForm.pageNo + 1,
-                                    theThis.queryReleasesForm.pageSize,
-                                    theThis.appId,
-                                    theThis.profileId,
-                                    function (nextTotalCount, nextReleases) {
-                                        let previous;
-                                        if (nextReleases.length > 0) {
-                                            previous = nextReleases[0];
-                                        } else {
-                                            previous = {
-                                                appId: theThis.appId,
-                                                profileId: theThis.profileId,
-                                                version: 0,
-                                                releaseTime: new Date().getTime(),
-                                                memo: '原始发布',
-                                                properties: []
-                                            };
-                                        }
-                                        previous.properties.forEach(function (property) {
-                                            property.privilege = theThis.calcPrivilege(previous.appId, property.key);
-                                        });
-                                        theThis.compareReleases(
-                                            theThis.appId,
-                                            theThis.profileId,
-                                            current.version,
-                                            previous.version,
-                                            function (difference) {
-                                                current.difference = difference;
-                                                current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
-                                            });
-                                    }
-                                );
-                            }
-
-                            theThis.releases = releases;
+                    const fillNextReleases = function (version, amount) {
+                        if (version === null) {
+                            return;
                         }
-                    );
+                        theThis.doFindRelease(theThis.appId, theThis.profileId, version, function (release) {
+                            release.properties.forEach(function (property) {
+                                property.privilege = theThis.calcPrivilege(release.appId, property.key);
+                            });
+                            theThis.compareReleases(
+                                theThis.appId,
+                                theThis.profileId,
+                                release.version,
+                                release.parentVersion,
+                                function (difference) {
+                                    release.difference = difference;
+                                    release.changes = [];
+                                    if (theThis.releases.length > 0) {
+                                        let childRelease = theThis.releases[theThis.releases.length - 1];
+                                        childRelease.changes = theThis.extractChanges(childRelease.properties, release.properties, difference);
+                                    }
+                                    if (amount > 0) {
+                                        theThis.releases.push(release);
+                                        fillNextReleases(release.parentVersion, amount - 1);
+                                    }
+                                });
+                        });
+                    };
+                    if (theThis.releases.length <= 0) {
+                        this.doFindBranch(theThis.appId, theThis.profileId, theThis.branchId, function (branch) {
+                            theThis.currentRelease = branch.release;
+                            fillNextReleases(branch.release.version, 10);
+                        });
+                    } else {
+                        fillNextReleases(theThis.releases[theThis.releases.length - 1].version, 10);
+                    }
                 },
-                doQueryReleases: function (pageNo, pageSize, appId, profileId, callback) {
-                    axios.get('../manage/release/queryReleases', {
+                doFindBranch: function (appId, profileId, branchId, callback) {
+                    const theThis = this;
+                    axios.get('../manage/branch/findBranch', {
                         params: {
-                            pageNo: pageNo,
-                            pageSize: pageSize,
+                            appId: theThis.appId,
+                            profileId: theThis.profileId,
+                            branchId: theThis.branchId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        callback(result.branch);
+                    });
+                },
+                doFindRelease: function (appId, profileId, version, callback) {
+                    axios.get('../manage/release/findRelease', {
+                        params: {
                             appId: appId,
-                            profileId: profileId
+                            profileId: profileId,
+                            version: version
                         }
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                         }
-                        callback(result.totalCount, result.infos);
+                        callback(result.release);
                     });
                 },
                 compareReleases: function (appId, profileId, leftVersion, rightVersion, callback) {
+                    if (rightVersion === null) {
+                        callback({
+                            addedKeys: [],
+                            modifiedValueKeys: [],
+                            modifiedScopeKeys: [],
+                            removedKeys: []
+                        });
+                        return;
+                    }
                     axios.get('../manage/release/compareReleases', {
                         params: {
                             appId: appId,
@@ -446,7 +440,7 @@
                                 }
                                 Vue.prototype.$message.success(result.message);
                                 theThis.queryReleasesForm.pageNo = 1;
-                                theThis.queryReleases();
+                                theThis.queryNextReleases();
                             });
                         });
                 },
