@@ -21,6 +21,12 @@
         .el-table .invalid-property {
             background: rgba(255, 179, 68, 0.07);
         }
+
+        .configcenter-table__empty-text {
+            line-height: 35px;
+            width: 50%;
+            color: #909399;
+        }
     </style>
 </head>
 <body>
@@ -91,7 +97,7 @@
             <el-table-column prop="key" label="配置key" :resizable="false">
                 <template slot-scope="{ row }">
                     <div v-if="row.empty" style="text-align: center">
-                        <span class="el-table__empty-text">暂无数据</span>
+                        <span class="configcenter-table__empty-text">暂无数据</span>
                     </div>
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
