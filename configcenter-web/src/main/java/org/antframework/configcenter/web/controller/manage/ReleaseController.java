@@ -88,7 +88,9 @@ public class ReleaseController {
             // 获取应用在各环境的发布
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
             List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, minScope, null);// 掩码
-            inheritedProfileReleases.set(0, Branches.findBranch(appId, profileId, branchId).getRelease());
+            if (Objects.equals(app.getAppId(), appId)) {
+                inheritedProfileReleases.set(0, Branches.findBranch(appId, profileId, branchId).getRelease());
+            }
             if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
                 inheritedProfileReleases.forEach(this::maskRelease);
             }
