@@ -13,10 +13,6 @@
             padding: 0;
         }
 
-        .el-table .current-release-row {
-            background: rgba(148, 255, 182, 0.57);
-        }
-
         .badge-style {
             margin-top: 10px;
             margin-right: 16px;
@@ -44,7 +40,6 @@
                           @current-change="changeShowingRelease"
                           border
                           highlight-current-row
-                          :row-class-name="currentReleaseClassName"
                           :cell-style="{padding: '7px 0'}">
                     <el-table-column property="version" label="版本" width="70px"></el-table-column>
                     <el-table-column property="releaseTime" label="发布时间" width="150px">
@@ -255,7 +250,7 @@
                                     release.changes = [];
                                     if (theThis.releases.length > 0) {
                                         let childRelease = theThis.releases[theThis.releases.length - 1];
-                                        childRelease.changes = theThis.extractChanges(childRelease.properties, release.properties, difference);
+                                        childRelease.changes = theThis.extractChanges(childRelease.properties, release.properties, childRelease.difference);
                                     }
                                     if (amount > 0) {
                                         theThis.releases.push(release);
@@ -358,21 +353,6 @@
                     });
 
                     return changes;
-                },
-                findCurrentRelease: function () {
-                    const theThis = this;
-                    axios.get('../manage/release/findCurrentRelease', {
-                        params: {
-                            appId: this.appId,
-                            profileId: this.profileId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.currentRelease = result.release;
-                    });
                 },
                 findApp: function (appId) {
                     const theThis = this;
@@ -481,12 +461,6 @@
                         }
                     }
                     return 'READ_WRITE';
-                },
-                currentReleaseClassName: function ({row, rowIndex}) {
-                    if (this.currentRelease && row.version === this.currentRelease.version) {
-                        return 'current-release-row';
-                    }
-                    return '';
                 }
             }
         });
