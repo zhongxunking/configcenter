@@ -25,6 +25,17 @@
         .release-property-text-style {
             font-size: xx-small;
         }
+
+        .configcenter-loading-control {
+            height: 44px;
+            border-bottom-left-radius: 4px;
+            border-bottom-right-radius: 4px;
+            text-align: center;
+            margin-top: -1px;
+            color: #606266;
+            cursor: pointer;
+            position: relative;
+        }
     </style>
 </head>
 <body>
@@ -33,6 +44,7 @@
         <el-header height="30px" style="padding: 0">
             <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
             <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
+            <span style="font-size: medium;color: #409EFF;margin-left: 20px">分支：</span><span style="font-size: medium;">{{ branchId }}</span>
         </el-header>
         <el-container>
             <el-aside width="500px">
@@ -44,7 +56,7 @@
                     <el-table-column property="version" label="版本" width="70px"></el-table-column>
                     <el-table-column property="releaseTime" label="发布时间" width="150px">
                         <template slot-scope="{ row }">
-                            <span style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
+                            <span v-if="row.version !== 0" style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column property="memo" label="备注">
@@ -57,16 +69,20 @@
                             <el-row>
                                 <el-col :span="24" style="text-align: center">
                                     <el-tooltip content="回滚到此版本" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="revertRelease(row)" :disabled="currentRelease ? currentRelease.version === row.version : false" type="danger" icon="el-icon-arrow-left" size="mini" circle></el-button>
+                                        <el-button @click="revertBranch(row)" :disabled="currentRelease ? currentRelease.version === row.version : false" type="danger" icon="el-icon-arrow-left" size="mini" circle></el-button>
                                     </el-tooltip>
                                 </el-col>
                             </el-row>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-row style="margin-top: 10px">
-                    <el-col style="text-align: end">
-                        <el-pagination :total="totalReleasesCount" :current-page.sync="queryReleasesForm.pageNo" :page-size.sync="queryReleasesForm.pageSize" @current-change="queryNextReleases" layout="total,prev,pager,next" small background></el-pagination>
+                <el-row style="margin-top: 10px" v-if="!allReleasesLoaded">
+                    <el-col style="text-align: center">
+                        <div class="configcenter-loading-control" @click="queryNextReleases">
+                            <i class="el-icon-loading" v-if="releasesLoading"></i>
+                            <i class="el-icon-caret-bottom" v-else></i>
+                            <span>加载更多</span>
+                        </div>
                     </el-col>
                 </el-row>
             </el-aside>
@@ -213,11 +229,9 @@
                 manager: manager,
                 app: {},
                 profile: {},
-                queryReleasesForm: {
-                    pageNo: 1,
-                    pageSize: 10
-                },
-                totalReleasesCount: 0,
+                loadReleasesSize: 20,
+                releasesLoading: false,
+                allReleasesLoaded: false,
                 releases: [],
                 showingRelease: {},
                 appOperatePrivileges: [],
@@ -232,8 +246,11 @@
             methods: {
                 queryNextReleases: function () {
                     const theThis = this;
+                    theThis.releasesLoading = true;
                     const fillNextReleases = function (version, amount) {
                         if (version === null) {
+                            theThis.releasesLoading = false;
+                            theThis.allReleasesLoaded = true;
                             return;
                         }
                         theThis.doFindRelease(theThis.appId, theThis.profileId, version, function (release) {
@@ -255,6 +272,8 @@
                                     if (amount > 0) {
                                         theThis.releases.push(release);
                                         fillNextReleases(release.parentVersion, amount - 1);
+                                    } else {
+                                        theThis.releasesLoading = false;
                                     }
                                 });
                         });
@@ -262,10 +281,10 @@
                     if (theThis.releases.length <= 0) {
                         this.doFindBranch(theThis.appId, theThis.profileId, theThis.branchId, function (branch) {
                             theThis.currentRelease = branch.release;
-                            fillNextReleases(branch.release.version, 10);
+                            fillNextReleases(branch.release.version, theThis.loadReleasesSize);
                         });
                     } else {
-                        fillNextReleases(theThis.releases[theThis.releases.length - 1].version, 10);
+                        fillNextReleases(theThis.releases[theThis.releases.length - 1].parentVersion, theThis.loadReleasesSize);
                     }
                 },
                 doFindBranch: function (appId, profileId, branchId, callback) {
@@ -405,22 +424,22 @@
                 changeShowingRelease: function (row) {
                     this.showingRelease = row;
                 },
-                revertRelease: function (release) {
+                revertBranch: function (release) {
                     const theThis = this;
                     Vue.prototype.$confirm('回滚后，应用的配置将会采用此版本，且大于此版本的发布将会被删除。确定回滚？', '警告', {type: 'warning'})
                         .then(function () {
-                            axios.post('../manage/release/revertRelease', {
-                                appId: release.appId,
-                                profileId: release.profileId,
-                                targetVersion: release.version
+                            axios.post('../manage/branch/revertBranch', {
+                                appId: theThis.appId,
+                                profileId: theThis.profileId,
+                                branchId: theThis.branchId,
+                                targetReleaseVersion: release.version
                             }).then(function (result) {
                                 if (!result.success) {
                                     Vue.prototype.$message.error(result.message);
                                     return;
                                 }
                                 Vue.prototype.$message.success(result.message);
-                                theThis.queryReleasesForm.pageNo = 1;
-                                theThis.queryNextReleases();
+                                theThis.$router.replace('/configs/' + theThis.appId + '/' + theThis.profileId + '/' + theThis.branchId + '/releases');
                             });
                         });
                 },
