@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>分支</title>
+    <script src="../common/import.js"></script>
+</head>
+<body>
+<div id="branchesApp">
+    <el-row>
+        <el-col :span="16">
+            <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
+            <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
+        </el-col>
+        <el-col :span="8" style="text-align: right;">
+            <el-button type="primary" icon="el-icon-plus" size="small" @click="addBranchDialogVisible = true">新增</el-button>
+        </el-col>
+    </el-row>
+    <el-table :data="branches" border stripe>
+        <el-table-column prop="branchId" label="分支id"></el-table-column>
+        <el-table-column prop="release" label="发布版本">
+            <template slot-scope="{ row }">
+                <span>{{ row.release.version }}</span>
+                <span v-if="row.release.memo">({{ row.release.memo }})</span>
+            </template>
+        </el-table-column>
+        <el-table-column label="操作" header-align="center" align="center" width="250px">
+            <template slot-scope="{ row }">
+                <el-tooltip content="合并分支" placement="top" :open-delay="1000" :hide-after="3000">
+                    <el-button @click="mergeBranchForm.sourceBranchId=row.branchId; mergeBranchDialogVisible = true" size="small">Merge Request</el-button>
+                </el-tooltip>
+                <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                    <el-button @click="deleteBranch(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                </el-tooltip>
+            </template>
+        </el-table-column>
+    </el-table>
+    <el-dialog :visible.sync="addBranchDialogVisible" :before-close="closeAddBranchDialog" title="新增分支" width="50%">
+        <el-form ref="addBranchForm" :model="addBranchForm" label-width="20%">
+            <el-form-item label="分支id" prop="branchId" :rules="[{required:true, message:'请输入分支id', trigger:'blur'}]">
+                <el-input v-model="addBranchForm.branchId" clearable placeholder="请输入分支id" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="源分支id" prop="sourceBranchId" :rules="[{required:true, message:'请输入源分支id', trigger:'blur'}]">
+                <el-select v-model="addBranchForm.sourceBranchId" clearable placeholder="请输入源分支id" style="width: 90%">
+                    <el-option v-for="branch in branches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeAddBranchDialog">取消</el-button>
+            <el-button type="primary" @click="addBranch">提交</el-button>
+        </div>
+    </el-dialog>
+    <el-dialog :visible.sync="mergeBranchDialogVisible" :before-close="closeMergeBranchDialog" title="分支合并" width="50%">
+        <el-form ref="mergeBranchForm" :model="mergeBranchForm" label-width="20%">
+            <el-form-item label="源分支id" prop="sourceBranchId" :rules="[{required:true, message:'请输入源分支id', trigger:'blur'}]">
+                <el-input v-model="mergeBranchForm.sourceBranchId" :disabled="true" placeholder="请输入源分支id" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="目标分支id" prop="branchId" :rules="[{required:true, message:'请输入目标分支id', trigger:'blur'}]">
+                <el-select v-model="mergeBranchForm.branchId" clearable placeholder="请输入目标分支id" style="width: 90%">
+                    <el-option v-for="branch in branches" v-if="branch.branchId !== mergeBranchForm.sourceBranchId" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
+                </el-select>
+            </el-form-item>
+        </el-form>
+        <div slot="footer">
+            <el-button @click="closeMergeBranchDialog">取消</el-button>
+            <el-button type="primary" @click="mergeBranch">提交</el-button>
+        </div>
+    </el-dialog>
+</div>
+<script>
+    const branchesApp = new Vue({
+        el: '#branchesApp',
+        data: {
+            appId: 'customer',
+            profileId: 'dev',
+            app: {},
+            profile: {},
+            branches: [],
+            matchedApps: null,
+            addBranchDialogVisible: false,
+            addBranchForm: {
+                branchId: null,
+                sourceBranchId: null
+            },
+            mergeBranchDialogVisible: false,
+            mergeBranchForm: {
+                branchId: null,
+                sourceBranchId: null
+            }
+        },
+        created: function () {
+            this.findApp(this.appId);
+            this.findProfile(this.profileId);
+            this.findBranches();
+        },
+        methods: {
+            findApp: function (appId) {
+                const theThis = this;
+                axios.get('../manage/app/findApp', {
+                    params: {
+                        appId: appId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.app = result.app;
+                });
+            },
+            toShowingApp: function (app) {
+                if (!app) {
+                    return '';
+                }
+                let text = app.appId;
+                if (app.appName) {
+                    text += '（' + app.appName + '）';
+                }
+                return text;
+            },
+            findProfile: function (profileId) {
+                const theThis = this;
+                axios.get('../manage/profile/findProfile', {
+                    params: {
+                        profileId: profileId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    theThis.profile = result.profile;
+                });
+            },
+            toShowingProfile: function (profile) {
+                if (!profile) {
+                    return '';
+                }
+                let text = profile.profileId;
+                if (profile.profileName) {
+                    text += '（' + profile.profileName + '）';
+                }
+                return text;
+            },
+            findBranches: function () {
+                const theThis = this;
+                axios.get('../manage/branch/findBranches', {
+                    params: {
+                        appId: theThis.appId,
+                        profileId: theThis.profileId
+                    }
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                    }
+                    theThis.branches = result.branches;
+                });
+            },
+            closeAddBranchDialog: function () {
+                this.addBranchDialogVisible = false;
+                this.addBranchForm.branchId = null;
+                this.addBranchForm.sourceBranchId = null;
+            },
+            addBranch: function () {
+                const theThis = this;
+                theThis.$refs.addBranchForm.validate(function (valid) {
+                    if (!valid) {
+                        return;
+                    }
+                    let sourceBranch = null;
+                    for (let i = 0; i < theThis.branches.length; i++) {
+                        if (theThis.branches[i].branchId === theThis.addBranchForm.sourceBranchId) {
+                            sourceBranch = theThis.branches[i];
+                            break;
+                        }
+                    }
+                    if (!sourceBranch) {
+                        Vue.prototype.$message.error('源分支[' + theThis.addBranchForm.sourceBranchId + ']不存在');
+                        return;
+                    }
+                    theThis.doAddBranch(
+                        theThis.appId,
+                        theThis.profileId,
+                        theThis.addBranchForm.branchId,
+                        sourceBranch.release.version,
+                        function () {
+                            theThis.findBranches();
+                            theThis.closeAddBranchDialog();
+                        });
+                });
+            },
+            doAddBranch: function (appId, profileId, branchId, releaseVersion, callback) {
+                axios.post('../manage/branch/addBranch', {
+                    appId: appId,
+                    profileId: profileId,
+                    branchId: branchId,
+                    releaseVersion: releaseVersion
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    callback();
+                });
+            },
+            closeMergeBranchDialog: function () {
+                this.mergeBranchDialogVisible = false;
+                this.mergeBranchForm.branchId = null;
+                this.mergeBranchForm.sourceBranchId = null;
+            },
+            mergeBranch: function () {
+                const theThis = this;
+                theThis.$refs.mergeBranchForm.validate(function (valid) {
+                    if (!valid) {
+                        return;
+                    }
+                    theThis.doMergeBranch(
+                        theThis.appId,
+                        theThis.profileId,
+                        theThis.mergeBranchForm.branchId,
+                        theThis.mergeBranchForm.sourceBranchId,
+                        function () {
+                            theThis.findBranches();
+                            theThis.closeMergeBranchDialog();
+                        });
+                });
+            },
+            doMergeBranch: function (appId, profileId, branchId, sourceBranchId, callback) {
+                axios.post('../manage/branch/mergeBranch', {
+                    appId: appId,
+                    profileId: profileId,
+                    branchId: branchId,
+                    sourceBranchId: sourceBranchId
+                }).then(function (result) {
+                    if (!result.success) {
+                        Vue.prototype.$message.error(result.message);
+                        return;
+                    }
+                    Vue.prototype.$message.success(result.message);
+                    callback();
+                });
+            },
+            deleteBranch: function (branch) {
+                const theThis = this;
+                Vue.prototype.$confirm('确定删除分支？', '警告', {type: 'warning'})
+                    .then(function () {
+                        axios.post('../manage/branch/deleteBranch', {
+                            appId: branch.appId,
+                            profileId: branch.profileId,
+                            branchId: branch.branchId
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            Vue.prototype.$message.success(result.message);
+                            theThis.findBranches();
+                        });
+                    });
+            }
+        }
+    });
+</script>
+</body>
+</html>
