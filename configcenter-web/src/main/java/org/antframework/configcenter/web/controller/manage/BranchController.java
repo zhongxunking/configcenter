@@ -10,13 +10,16 @@ package org.antframework.configcenter.web.controller.manage;
 
 import com.alibaba.fastjson.JSON;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
+import org.antframework.configcenter.facade.info.MergenceDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.*;
-import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.vo.Property;
@@ -28,7 +31,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -176,17 +182,39 @@ public class BranchController {
                                                              String branchId,
                                                              String sourceBranchId) {
         ManagerApps.adminOrHaveApp(appId);
-        ComputeBranchMergenceOrder order = new ComputeBranchMergenceOrder();
-        order.setAppId(appId);
-        order.setProfileId(profileId);
-        order.setBranchId(branchId);
-        order.setSourceBranchId(sourceBranchId);
+        MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
+        Map<String, Property> propertyMap = Branches.findBranch(appId, profileId, branchId)
+                .getRelease()
+                .getProperties()
+                .stream()
+                .collect(Collectors.toMap(Property::getKey, Function.identity()));
 
-        ComputeBranchMergenceResult result = branchService.computeBranchMergence(order);
-        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
-            Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getDifference().getAddOrModifiedProperties());
-            result.getDifference().getAddOrModifiedProperties().clear();
-            result.getDifference().getAddOrModifiedProperties().addAll(maskedProperties);
+        ComputeBranchMergenceResult result = new ComputeBranchMergenceResult();
+        for (Property addOrModifiedProperty : difference.getAddOrModifiedProperties()) {
+            Property property = propertyMap.get(addOrModifiedProperty.getKey());
+            if (Objects.equals(addOrModifiedProperty, property)) {
+                continue;
+            }
+            result.addProperty(addOrModifiedProperty);
+            if (property == null) {
+                result.addAddedKeys(addOrModifiedProperty.getKey());
+            } else {
+                if (!Objects.equals(addOrModifiedProperty.getValue(), property.getValue())) {
+                    result.addModifiedValueKey(addOrModifiedProperty.getKey());
+                }
+                if (addOrModifiedProperty.getScope() != property.getScope()) {
+                    result.addModifiedScopeKey(addOrModifiedProperty.getKey());
+                }
+            }
+        }
+        difference.getRemovedPropertyKeys()
+                .stream()
+                .filter(propertyMap::containsKey)
+                .forEach(result::addRemovedKeys);
+        if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+            Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getProperties());
+            result.getProperties().clear();
+            result.getProperties().addAll(maskedProperties);
         }
         return result;
     }
@@ -255,5 +283,42 @@ public class BranchController {
     private void maskRelease(ReleaseInfo release) {
         Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
         release.setProperties(maskedProperties);
+    }
+
+    /**
+     * 计算分支合并result
+     */
+    @Getter
+    public static class ComputeBranchMergenceResult extends AbstractResult {
+        // 变动的配置
+        private final Set<Property> properties = new HashSet<>();
+        // 新增配置的key
+        private final Set<String> addedKeys = new HashSet<>();
+        // 被修改的配置value的key
+        private final Set<String> modifiedValueKeys = new HashSet<>();
+        // 被修改的scope的key
+        private final Set<String> modifiedScopeKeys = new HashSet<>();
+        // 被删除配置的key
+        private final Set<String> removedKeys = new HashSet<>();
+
+        public void addProperty(Property property) {
+            properties.add(property);
+        }
+
+        public void addAddedKeys(String key) {
+            addedKeys.add(key);
+        }
+
+        public void addModifiedValueKey(String key) {
+            modifiedValueKeys.add(key);
+        }
+
+        public void addModifiedScopeKey(String key) {
+            modifiedScopeKeys.add(key);
+        }
+
+        public void addRemovedKeys(String key) {
+            removedKeys.add(key);
+        }
     }
 }
