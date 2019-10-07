@@ -8,6 +8,7 @@
     <script src="../components/PropertyKeys.js"></script>
     <script src="../components/OperatePrivileges.js"></script>
     <script src="../components/PropertyValues.js"></script>
+    <script src="../components/Branches.js"></script>
     <script src="../components/Releases.js"></script>
     <script src="../components/Apps.js"></script>
     <script src="../components/Profiles.js"></script>
@@ -108,11 +109,25 @@
                     path: '',
                     component: PropertyValues
                 }, {
-                    path: 'releases',
-                    component: Releases,
+                    path: 'branches',
+                    component: Branches,
+                    meta: {
+                        title: '分支管理'
+                    }
+                }, {
+                    path: 'releases/:branchId',
+                    props: true,
+                    component: {
+                        props: ['appId', 'profileId', 'branchId'],
+                        template: '<router-view :appId="appId" :profileId="profileId" :branchId="branchId"></router-view>'
+                    },
                     meta: {
                         title: '发布历史'
-                    }
+                    },
+                    children: [{
+                        path: '',
+                        component: Releases
+                    }]
                 }]
             }]
         }]

@@ -41,7 +41,7 @@
                 </el-option>
             </el-select>
             <span style="font-size: large;color: #409EFF;">分支：</span>
-            <el-select v-model="currentBranchId" @change="switchBranch" placeholder="请选择分支" size="medium">
+            <el-select v-model="branchId" @change="refreshData" placeholder="请选择分支" size="medium">
                 <el-option v-for="branch in branches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
             </el-select>
         </el-col>
@@ -51,7 +51,7 @@
             <!--<router-link :to="'/configs/' + appId + '/' + profileId + '/branches'">-->
             <!--<el-button type="text">管理分支</el-button>-->
             <!--</router-link>-->
-            <!--<router-link :to="'/configs/' + appId + '/' + profileId + '/' + branchId + '/releases'">-->
+            <!--<router-link :to="'/configs/' + appId + '/' + profileId + '/releases/' + branchId">-->
             <!--<el-button type="text">发布历史</el-button>-->
             <!--</router-link>-->
         </el-col>
@@ -306,7 +306,6 @@
                 profileId: 'dev',
                 branchId: 'master',
                 currentProfileId: 'dev',
-                currentBranchId: 'master',
                 manager: manager,
                 allProfiles: [],
                 branches: [],
@@ -563,10 +562,7 @@
                     });
                 },
                 switchProfile: function (profileId) {
-                    this.$router.replace('/configs/' + this.appId + '/' + profileId + '/master');
-                },
-                switchBranch: function (branchId) {
-                    this.$router.replace('/configs/' + this.appId + '/' + this.profileId + '/' + branchId);
+                    this.$router.replace('/configs/' + this.appId + '/' + profileId);
                 },
                 findPropertyValues: function () {
                     const theThis = this;
