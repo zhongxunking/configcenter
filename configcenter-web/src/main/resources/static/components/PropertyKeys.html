@@ -37,7 +37,7 @@
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
             </el-col>
             <el-col :span="4" style="text-align: end;">
-                <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置项</el-button>
+                <el-button type="primary" icon="el-icon-plus" @click="addPropertyKeyVisible = true" size="small">新增配置key</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -112,7 +112,7 @@
             </el-table-column>
         </el-table>
     </div>
-    <el-dialog :visible.sync="addPropertyKeyVisible" :before-close="closeAddPropertyKeyDialog" title="新增配置项" width="40%">
+    <el-dialog :visible.sync="addPropertyKeyVisible" :before-close="closeAddPropertyKeyDialog" title="新增配置key" width="40%">
         <el-form ref="addPropertyKeyForm" :model="addPropertyKeyForm" label-width="20%">
             <el-form-item label="配置key" prop="key" :rules="[{required:true, message:'请输入配置key', trigger:'blur'}]">
                 <el-input v-model="addPropertyKeyForm.key" clearable placeholder="请输入配置key" style="width: 90%"></el-input>
