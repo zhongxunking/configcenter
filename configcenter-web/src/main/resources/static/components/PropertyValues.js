@@ -531,6 +531,7 @@ const PropertyValues = {
             });
         },
         switchProfile: function (profileId) {
+            this.branchId = 'master';
             this.$router.replace('/configs/' + this.appId + '/' + profileId);
         },
         findPropertyValues: function () {
