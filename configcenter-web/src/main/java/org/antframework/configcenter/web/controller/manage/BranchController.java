@@ -68,7 +68,11 @@ public class BranchController {
         order.setBranchId(branchId);
         order.setReleaseVersion(releaseVersion);
 
-        return branchService.addBranch(order);
+        EmptyResult result = branchService.addBranch(order);
+        if (result.isSuccess()) {
+            PropertyValues.revertPropertyValues(appId, profileId, branchId, releaseVersion);
+        }
+        return result;
     }
 
     /**
@@ -146,7 +150,11 @@ public class BranchController {
         order.setBranchId(branchId);
         order.setTargetReleaseVersion(targetReleaseVersion);
 
-        return branchService.revertBranch(order);
+        EmptyResult result = branchService.revertBranch(order);
+        if (result.isSuccess()) {
+            PropertyValues.revertPropertyValues(appId, profileId, branchId, targetReleaseVersion);
+        }
+        return result;
     }
 
     /**
@@ -160,13 +168,30 @@ public class BranchController {
     @RequestMapping("/mergeBranch")
     public EmptyResult mergeBranch(String appId, String profileId, String branchId, String sourceBranchId) {
         ManagerApps.adminOrHaveApp(appId);
+        MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
         MergeBranchOrder order = new MergeBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
         order.setSourceBranchId(sourceBranchId);
 
-        return branchService.mergeBranch(order);
+        EmptyResult result = branchService.mergeBranch(order);
+        if (result.isSuccess()) {
+            // 同步到配置value
+            for (Property property : difference.getAddOrModifiedProperties()) {
+                PropertyValues.addOrModifyPropertyValue(
+                        appId,
+                        profileId,
+                        branchId,
+                        property.getKey(),
+                        property.getValue(),
+                        property.getScope());
+            }
+            for (String key : difference.getRemovedPropertyKeys()) {
+                PropertyValues.deletePropertyValue(appId, profileId, branchId, key);
+            }
+        }
+        return result;
     }
 
     /**
