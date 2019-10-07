@@ -205,6 +205,14 @@ const Releases = {
         this.queryNextReleases();
     },
     methods: {
+        refreshData: function () {
+            this.allReleasesLoaded = false;
+            this.releases = [];
+            this.showingRelease = {};
+            this.appOperatePrivileges = [];
+            this.currentRelease = null;
+            this.queryNextReleases();
+        },
         queryNextReleases: function () {
             const theThis = this;
             theThis.releasesLoading = true;
@@ -231,6 +239,9 @@ const Releases = {
                                 childRelease.changes = theThis.extractChanges(childRelease.properties, release.properties, childRelease.difference);
                             }
                             if (amount > 0) {
+                                if (theThis.releases.length <= 0) {
+                                    theThis.changeShowingRelease(release);
+                                }
                                 theThis.releases.push(release);
                                 fillNextReleases(release.parentVersion, amount - 1);
                             } else {
@@ -400,7 +411,7 @@ const Releases = {
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.$router.replace('/configs/' + theThis.appId + '/' + theThis.profileId + '/' + theThis.branchId + '/releases');
+                        theThis.refreshData();
                     });
                 });
         },
