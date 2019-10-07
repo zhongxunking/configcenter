@@ -1,8 +1,8 @@
 // 配置value管理组件
 const PropertyValuesTemplate = `
-<div>
+<div id="propertyValuesApp">
     <el-row style="margin-bottom: 10px">
-        <el-col :span="12">
+        <el-col :span="16">
             <span style="font-size: large;color: #409EFF;">环境：</span>
             <el-select v-model="currentProfileId" @change="switchProfile" placeholder="请选择环境" size="medium">
                 <el-option v-for="profile in allProfiles" :value="profile.profileId" :label="toShowingProfile(profile)" :key="profile.profileId">
@@ -10,9 +10,16 @@ const PropertyValuesTemplate = `
                     <span>{{ toShowingProfile(profile) }}</span>
                 </el-option>
             </el-select>
+            <span style="font-size: large;color: #409EFF;">分支：</span>
+            <el-select v-model="branchId" @change="refreshData" placeholder="请选择分支" size="medium">
+                <el-option v-for="branch in branches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
+            </el-select>
         </el-col>
-        <el-col :span="12" style="text-align: right;">
-            <router-link :to="'/configs/' + appId + '/' + currentProfileId + '/releases'">
+        <el-col :span="8" style="text-align: right;">
+            <router-link :to="'/configs/' + appId + '/' + profileId + '/branches'">
+                <el-button type="text">分支管理</el-button>
+            </router-link>
+            <router-link :to="'/configs/' + appId + '/' + profileId + '/releases/' + branchId">
                 <el-button type="text">发布历史</el-button>
             </router-link>
         </el-col>
@@ -34,7 +41,7 @@ const PropertyValuesTemplate = `
                     </div>
                     <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="revertPopoverShowing = true">还原修改</el-button>
                 </el-popover>
-                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showAddReleaseDialog">发布修改</el-button>
+                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showReleaseBranchDialog">发布修改</el-button>
             </el-col>
         </el-row>
         <el-row v-else style="margin-bottom: 10px">
@@ -61,7 +68,7 @@ const PropertyValuesTemplate = `
             <el-table-column prop="key" label="配置key" :resizable="false">
                 <template slot-scope="{ row }">
                     <div v-if="row.empty" style="text-align: center">
-                        <span class="el-table__empty-text">暂无数据</span>
+                        <span class="configcenter-table__empty-text">暂无数据</span>
                     </div>
                     <template v-else>
                         <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
@@ -191,7 +198,7 @@ const PropertyValuesTemplate = `
             <el-button type="primary" @click="addPropertyValue">提交</el-button>
         </div>
     </el-dialog>
-    <el-dialog :visible.sync="addReleaseDialogVisible" :before-close="closeAddReleaseDialog" title="新增发布" width="70%" center>
+    <el-dialog :visible.sync="releaseBranchDialogVisible" :before-close="closeReleaseBranchDialog" title="新增发布" width="70%" center>
         <el-row>
             <el-col :span="3" style="text-align: right;">
                 <span style="margin-right: 12px">变更的配置</span>
@@ -247,14 +254,14 @@ const PropertyValuesTemplate = `
                 </el-table>
             </el-col>
         </el-row>
-        <el-form ref="addReleaseForm" :model="addReleaseForm" label-width="12.5%">
+        <el-form ref="releaseBranchForm" :model="releaseBranchForm" label-width="12.5%">
             <el-form-item label="备注" prop="memo" :rules="[{required:false, message:'请输入备注', trigger:'blur'}]">
-                <el-input v-model="addReleaseForm.memo" type="textarea" autosize clearable placeholder="请输入备注"></el-input>
+                <el-input v-model="releaseBranchForm.memo" type="textarea" autosize clearable placeholder="请输入备注"></el-input>
             </el-form-item>
         </el-form>
         <div slot="footer">
-            <el-button @click="closeAddReleaseDialog">取消</el-button>
-            <el-button type="primary" @click="addRelease">提交</el-button>
+            <el-button @click="closeReleaseBranchDialog">取消</el-button>
+            <el-button type="primary" @click="releaseBranch">提交</el-button>
         </div>
     </el-dialog>
 </div>
@@ -266,8 +273,10 @@ const PropertyValues = {
     data: function () {
         return {
             currentProfileId: this.profileId,
+            branchId: 'master',
             manager: CURRENT_MANAGER,
             allProfiles: [],
+            branches: [],
             selfPropertiesLoading: false,
             appProperties: [],
             propertyValues: [],
@@ -287,8 +296,8 @@ const PropertyValues = {
                 scope: null
             },
             revertPopoverShowing: false,
-            addReleaseDialogVisible: false,
-            addReleaseForm: {
+            releaseBranchDialogVisible: false,
+            releaseBranchForm: {
                 memo: null
             }
         };
@@ -385,6 +394,7 @@ const PropertyValues = {
     methods: {
         refreshData: function () {
             this.findAllProfiles();
+            this.findBranches();
             this.findPropertyValues();
             this.comparePropertyValuesWithRelease();
             this.findInheritedAppReleases();
@@ -505,15 +515,31 @@ const PropertyValues = {
                 theThis.allProfiles = extractProfiles(result.profileTree, -1);
             });
         },
+        findBranches: function () {
+            const theThis = this;
+            axios.get('../manage/branch/findBranches', {
+                params: {
+                    appId: theThis.appId,
+                    profileId: theThis.profileId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                theThis.branches = result.branches;
+            });
+        },
         switchProfile: function (profileId) {
             this.$router.replace('/configs/' + this.appId + '/' + profileId);
         },
         findPropertyValues: function () {
             const theThis = this;
-            axios.get('../manage/propertyValue/findAppProfilePropertyValues', {
+            axios.get('../manage/propertyValue/findPropertyValues', {
                 params: {
                     appId: this.appId,
                     profileId: this.profileId,
+                    branchId: this.branchId,
                     minScope: 'PRIVATE'
                 }
             }).then(function (result) {
@@ -526,11 +552,12 @@ const PropertyValues = {
         },
         comparePropertyValuesWithRelease: function () {
             const theThis = this;
-            this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
+            this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
                 axios.get('../manage/propertyValue/comparePropertyValuesWithRelease', {
                     params: {
                         appId: theThis.appId,
                         profileId: theThis.profileId,
+                        branchId: theThis.branchId,
                         releaseVersion: release.version
                     }
                 }).then(function (result) {
@@ -548,7 +575,8 @@ const PropertyValues = {
             axios.get('../manage/release/findInheritedReleases', {
                 params: {
                     appId: this.appId,
-                    profileId: this.profileId
+                    profileId: this.profileId,
+                    branchId: this.branchId
                 }
             }).then(function (result) {
                 theThis.selfPropertiesLoading = false;
@@ -773,8 +801,9 @@ const PropertyValues = {
             axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                 params: {
                     appId: this.appId,
-                    key: key,
                     profileId: this.profileId,
+                    branchId: this.branchId,
+                    key: key,
                     value: value,
                     scope: scope
                 }
@@ -794,8 +823,9 @@ const PropertyValues = {
             axios.get('../manage/propertyValue/deletePropertyValue', {
                 params: {
                     appId: this.appId,
-                    key: property.key,
-                    profileId: this.profileId
+                    profileId: this.profileId,
+                    branchId: this.branchId,
+                    key: property.key
                 }
             }).then(function (result) {
                 if (!result.success) {
@@ -845,11 +875,12 @@ const PropertyValues = {
         revertPropertyValues: function () {
             const theThis = this;
 
-            this.doFindCurrentRelease(this.appId, this.profileId, function (release) {
+            this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
                 axios.get('../manage/propertyValue/revertPropertyValues', {
                     params: {
                         appId: theThis.appId,
                         profileId: theThis.profileId,
+                        branchId: theThis.branchId,
                         releaseVersion: release.version
                     }
                 }).then(function (revertPropertyValuesResult) {
@@ -866,20 +897,19 @@ const PropertyValues = {
             this.addPropertyValueDialogShowing = false;
             this.$refs['addPropertyValueForm'].resetFields();
         },
-        doFindCurrentRelease: function (appId, profileId, callback) {
-            const theThis = this;
-
-            axios.get('../manage/release/findCurrentRelease', {
+        doFindBranchRelease: function (appId, profileId, branchId, callback) {
+            axios.get('../manage/branch/findBranch', {
                 params: {
                     appId: appId,
-                    profileId: profileId
+                    profileId: profileId,
+                    branchId: branchId
                 }
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                callback(result.release);
+                callback(result.branch.release);
             });
         },
         addPropertyValue: function () {
@@ -897,7 +927,7 @@ const PropertyValues = {
                     });
             });
         },
-        showAddReleaseDialog: function () {
+        showReleaseBranchDialog: function () {
             let keys = this.haveNotPrivilegeModifiedPropertyKeys();
             if (keys.length > 0) {
                 Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
@@ -905,21 +935,21 @@ const PropertyValues = {
                 return;
             }
             this.refreshData();
-            this.addReleaseDialogVisible = true;
+            this.releaseBranchDialogVisible = true;
         },
-        closeAddReleaseDialog: function () {
-            this.addReleaseDialogVisible = false;
-            this.$refs['addReleaseForm'].resetFields();
+        closeReleaseBranchDialog: function () {
+            this.releaseBranchDialogVisible = false;
+            this.$refs['releaseBranchForm'].resetFields();
         },
-        addRelease: function () {
+        releaseBranch: function () {
             const theThis = this;
-            let addedOrModifiedProperties = [];
+            let addOrModifiedProperties = [];
             let deletedPropertyKeys = [];
             theThis.modifiedProperties.forEach(function (property) {
                 if (theThis.difference.addedKeys.indexOf(property.key) >= 0
                     || theThis.difference.modifiedValueKeys.indexOf(property.key) >= 0
                     || theThis.difference.modifiedScopeKeys.indexOf(property.key) >= 0) {
-                    addedOrModifiedProperties.push({
+                    addOrModifiedProperties.push({
                         key: property.key,
                         value: property.value,
                         scope: property.scope
@@ -928,19 +958,20 @@ const PropertyValues = {
                     deletedPropertyKeys.push(property.key);
                 }
             });
-            axios.post('../manage/release/addRelease', {
+            axios.post('../manage/branch/releaseBranch', {
                 appId: theThis.appId,
                 profileId: theThis.profileId,
-                memo: theThis.addReleaseForm.memo,
-                addedOrModifiedProperties: JSON.stringify(addedOrModifiedProperties),
-                deletedPropertyKeys: JSON.stringify(deletedPropertyKeys)
+                branchId: theThis.branchId,
+                addOrModifiedProperties: JSON.stringify(addOrModifiedProperties),
+                removedPropertyKeys: JSON.stringify(deletedPropertyKeys),
+                memo: theThis.releaseBranchForm.memo
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
                 Vue.prototype.$message.success(result.message);
-                theThis.closeAddReleaseDialog();
+                theThis.closeReleaseBranchDialog();
                 theThis.refreshData();
             });
         },

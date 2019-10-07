@@ -1,10 +1,11 @@
 // 发布历史管理组件
 const ReleasesTemplate = `
-<div>
+<div id="releasesApp">
     <el-container>
         <el-header height="30px" style="padding: 0">
             <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
             <span style="font-size: medium;color: #409EFF;margin-left: 20px">环境：</span><span style="font-size: medium;">{{ toShowingProfile(profile) }}</span>
+            <span style="font-size: medium;color: #409EFF;margin-left: 20px">分支：</span><span style="font-size: medium;">{{ branchId }}</span>
         </el-header>
         <el-container>
             <el-aside width="500px">
@@ -12,12 +13,11 @@ const ReleasesTemplate = `
                           @current-change="changeShowingRelease"
                           border
                           highlight-current-row
-                          :row-class-name="currentReleaseClassName"
                           :cell-style="{padding: '7px 0'}">
                     <el-table-column property="version" label="版本" width="70px"></el-table-column>
                     <el-table-column property="releaseTime" label="发布时间" width="150px">
                         <template slot-scope="{ row }">
-                            <span style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
+                            <span v-if="row.version !== 0" style="font-size: xx-small">{{ new Date(row.releaseTime).format('yyyy-MM-dd hh:mm:ss') }}</span>
                         </template>
                     </el-table-column>
                     <el-table-column property="memo" label="备注">
@@ -30,16 +30,20 @@ const ReleasesTemplate = `
                             <el-row>
                                 <el-col :span="24" style="text-align: center">
                                     <el-tooltip content="回滚到此版本" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="revertRelease(row)" :disabled="currentRelease ? currentRelease.version === row.version : false" type="danger" icon="el-icon-arrow-left" size="mini" circle></el-button>
+                                        <el-button @click="revertBranch(row)" :disabled="currentRelease ? currentRelease.version === row.version : false" type="danger" icon="el-icon-arrow-left" size="mini" circle></el-button>
                                     </el-tooltip>
                                 </el-col>
                             </el-row>
                         </template>
                     </el-table-column>
                 </el-table>
-                <el-row style="margin-top: 10px">
-                    <el-col style="text-align: end">
-                        <el-pagination :total="totalReleasesCount" :current-page.sync="queryReleasesForm.pageNo" :page-size.sync="queryReleasesForm.pageSize" @current-change="queryReleases" layout="total,prev,pager,next" small background></el-pagination>
+                <el-row style="margin-top: 10px" v-if="!allReleasesLoaded">
+                    <el-col style="text-align: center">
+                        <div class="configcenter-loading-control" @click="queryNextReleases">
+                            <i class="el-icon-loading" v-if="releasesLoading"></i>
+                            <i class="el-icon-caret-bottom" v-else></i>
+                            <span>加载更多</span>
+                        </div>
                     </el-col>
                 </el-row>
             </el-aside>
@@ -179,17 +183,15 @@ const ReleasesTemplate = `
 
 const Releases = {
     template: ReleasesTemplate,
-    props: ['appId', 'profileId'],
+    props: ['appId', 'profileId', 'branchId'],
     data: function () {
         return {
             manager: CURRENT_MANAGER,
             app: {},
             profile: {},
-            queryReleasesForm: {
-                pageNo: 1,
-                pageSize: 10
-            },
-            totalReleasesCount: 0,
+            loadReleasesSize: 20,
+            releasesLoading: false,
+            allReleasesLoaded: false,
             releases: [],
             showingRelease: {},
             appOperatePrivileges: [],
@@ -200,94 +202,92 @@ const Releases = {
         this.findApp(this.appId);
         this.findProfile(this.profileId);
         this.findInheritedOperatePrivileges();
-        this.queryReleases();
+        this.queryNextReleases();
     },
     methods: {
-        queryReleases: function () {
+        queryNextReleases: function () {
             const theThis = this;
-            this.findCurrentRelease();
-            this.doQueryReleases(
-                this.queryReleasesForm.pageNo,
-                this.queryReleasesForm.pageSize,
-                this.appId,
-                this.profileId,
-                function (totalCount, releases) {
-                    theThis.totalReleasesCount = totalCount;
-                    releases.forEach(function (release) {
-                        release.properties.forEach(function (property) {
-                            property.privilege = theThis.calcPrivilege(release.appId, property.key);
-                        });
-                    });
-                    for (let i = 0; i < releases.length - 1; i++) {
-                        let current = releases[i];
-                        let previous = releases[i + 1];
-                        theThis.compareReleases(
-                            theThis.appId,
-                            theThis.profileId,
-                            current.version,
-                            previous.version,
-                            function (difference) {
-                                current.difference = difference;
-                                current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
-                            });
-                    }
-                    if (releases.length > 0) {
-                        let current = releases[releases.length - 1];
-                        theThis.doQueryReleases(
-                            theThis.queryReleasesForm.pageNo + 1,
-                            theThis.queryReleasesForm.pageSize,
-                            theThis.appId,
-                            theThis.profileId,
-                            function (nextTotalCount, nextReleases) {
-                                let previous;
-                                if (nextReleases.length > 0) {
-                                    previous = nextReleases[0];
-                                } else {
-                                    previous = {
-                                        appId: theThis.appId,
-                                        profileId: theThis.profileId,
-                                        version: 0,
-                                        releaseTime: new Date().getTime(),
-                                        memo: '原始发布',
-                                        properties: []
-                                    };
-                                }
-                                previous.properties.forEach(function (property) {
-                                    property.privilege = theThis.calcPrivilege(previous.appId, property.key);
-                                });
-                                theThis.compareReleases(
-                                    theThis.appId,
-                                    theThis.profileId,
-                                    current.version,
-                                    previous.version,
-                                    function (difference) {
-                                        current.difference = difference;
-                                        current.changes = theThis.extractChanges(current.properties, previous.properties, difference);
-                                    });
-                            }
-                        );
-                    }
-
-                    theThis.releases = releases;
+            theThis.releasesLoading = true;
+            const fillNextReleases = function (version, amount) {
+                if (version === null) {
+                    theThis.releasesLoading = false;
+                    theThis.allReleasesLoaded = true;
+                    return;
                 }
-            );
+                theThis.doFindRelease(theThis.appId, theThis.profileId, version, function (release) {
+                    release.properties.forEach(function (property) {
+                        property.privilege = theThis.calcPrivilege(release.appId, property.key);
+                    });
+                    theThis.compareReleases(
+                        theThis.appId,
+                        theThis.profileId,
+                        release.version,
+                        release.parentVersion,
+                        function (difference) {
+                            release.difference = difference;
+                            release.changes = [];
+                            if (theThis.releases.length > 0) {
+                                let childRelease = theThis.releases[theThis.releases.length - 1];
+                                childRelease.changes = theThis.extractChanges(childRelease.properties, release.properties, childRelease.difference);
+                            }
+                            if (amount > 0) {
+                                theThis.releases.push(release);
+                                fillNextReleases(release.parentVersion, amount - 1);
+                            } else {
+                                theThis.releasesLoading = false;
+                            }
+                        });
+                });
+            };
+            if (theThis.releases.length <= 0) {
+                this.doFindBranch(theThis.appId, theThis.profileId, theThis.branchId, function (branch) {
+                    theThis.currentRelease = branch.release;
+                    fillNextReleases(branch.release.version, theThis.loadReleasesSize);
+                });
+            } else {
+                fillNextReleases(theThis.releases[theThis.releases.length - 1].parentVersion, theThis.loadReleasesSize);
+            }
         },
-        doQueryReleases: function (pageNo, pageSize, appId, profileId, callback) {
-            axios.get('../manage/release/queryReleases', {
+        doFindBranch: function (appId, profileId, branchId, callback) {
+            const theThis = this;
+            axios.get('../manage/branch/findBranch', {
                 params: {
-                    pageNo: pageNo,
-                    pageSize: pageSize,
+                    appId: theThis.appId,
+                    profileId: theThis.profileId,
+                    branchId: theThis.branchId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                callback(result.branch);
+            });
+        },
+        doFindRelease: function (appId, profileId, version, callback) {
+            axios.get('../manage/release/findRelease', {
+                params: {
                     appId: appId,
-                    profileId: profileId
+                    profileId: profileId,
+                    version: version
                 }
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                 }
-                callback(result.totalCount, result.infos);
+                callback(result.release);
             });
         },
         compareReleases: function (appId, profileId, leftVersion, rightVersion, callback) {
+            if (rightVersion === null) {
+                callback({
+                    addedKeys: [],
+                    modifiedValueKeys: [],
+                    modifiedScopeKeys: [],
+                    removedKeys: []
+                });
+                return;
+            }
             axios.get('../manage/release/compareReleases', {
                 params: {
                     appId: appId,
@@ -333,21 +333,6 @@ const Releases = {
             });
 
             return changes;
-        },
-        findCurrentRelease: function () {
-            const theThis = this;
-            axios.get('../manage/release/findCurrentRelease', {
-                params: {
-                    appId: this.appId,
-                    profileId: this.profileId
-                }
-            }).then(function (result) {
-                if (!result.success) {
-                    Vue.prototype.$message.error(result.message);
-                    return;
-                }
-                theThis.currentRelease = result.release;
-            });
         },
         findApp: function (appId) {
             const theThis = this;
@@ -400,22 +385,22 @@ const Releases = {
         changeShowingRelease: function (row) {
             this.showingRelease = row;
         },
-        revertRelease: function (release) {
+        revertBranch: function (release) {
             const theThis = this;
             Vue.prototype.$confirm('回滚后，应用的配置将会采用此版本，且大于此版本的发布将会被删除。确定回滚？', '警告', {type: 'warning'})
                 .then(function () {
-                    axios.post('../manage/release/revertRelease', {
-                        appId: release.appId,
-                        profileId: release.profileId,
-                        targetVersion: release.version
+                    axios.post('../manage/branch/revertBranch', {
+                        appId: theThis.appId,
+                        profileId: theThis.profileId,
+                        branchId: theThis.branchId,
+                        targetReleaseVersion: release.version
                     }).then(function (result) {
                         if (!result.success) {
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.queryReleasesForm.pageNo = 1;
-                        theThis.queryReleases();
+                        theThis.$router.replace('/configs/' + theThis.appId + '/' + theThis.profileId + '/' + theThis.branchId + '/releases');
                     });
                 });
         },
@@ -456,12 +441,6 @@ const Releases = {
                 }
             }
             return 'READ_WRITE';
-        },
-        currentReleaseClassName: function ({row, rowIndex}) {
-            if (this.currentRelease && row.version === this.currentRelease.version) {
-                return 'current-release-row';
-            }
-            return '';
         }
     }
 };
