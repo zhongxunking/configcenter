@@ -35,22 +35,22 @@ public class BranchRuleController {
      * @param appId     应用id
      * @param profileId 环境id
      * @param branchId  分支id
-     * @param rule      规则
      * @param priority  优先级
+     * @param rule      规则
      */
     @RequestMapping("/addOrModifyBranchRule")
     public EmptyResult addOrModifyBranchRule(String appId,
                                              String profileId,
                                              String branchId,
-                                             String rule,
-                                             Long priority) {
+                                             Long priority,
+                                             String rule) {
         ManagerApps.adminOrHaveApp(appId);
         AddOrModifyBranchRuleOrder order = new AddOrModifyBranchRuleOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
-        order.setRule(rule);
         order.setPriority(priority);
+        order.setRule(rule);
 
         return branchRuleService.addOrModifyBranchRule(order);
     }

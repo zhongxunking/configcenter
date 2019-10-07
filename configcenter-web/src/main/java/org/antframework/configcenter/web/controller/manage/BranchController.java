@@ -13,6 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
+import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.facade.api.BranchService;
@@ -189,7 +190,7 @@ public class BranchController {
                 .stream()
                 .collect(Collectors.toMap(Property::getKey, Function.identity()));
 
-        ComputeBranchMergenceResult result = new ComputeBranchMergenceResult();
+        ComputeBranchMergenceResult result = FacadeUtils.buildSuccess(ComputeBranchMergenceResult.class);
         for (Property addOrModifiedProperty : difference.getAddOrModifiedProperties()) {
             Property property = propertyMap.get(addOrModifiedProperty.getKey());
             if (Objects.equals(addOrModifiedProperty, property)) {
@@ -210,7 +211,10 @@ public class BranchController {
         difference.getRemovedPropertyKeys()
                 .stream()
                 .filter(propertyMap::containsKey)
-                .forEach(result::addRemovedKeys);
+                .forEach(key -> {
+                    result.addProperty(propertyMap.get(key));
+                    result.addRemovedKeys(key);
+                });
         if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
             Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getProperties());
             result.getProperties().clear();

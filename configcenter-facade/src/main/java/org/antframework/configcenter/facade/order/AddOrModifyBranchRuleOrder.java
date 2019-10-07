@@ -10,6 +10,7 @@ package org.antframework.configcenter.facade.order;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.antframework.common.util.facade.AbstractOrder;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotNull;
  */
 @Getter
 @Setter
-public class AddOrModifyBranchRuleOrder {
+public class AddOrModifyBranchRuleOrder extends AbstractOrder {
     // 应用id
     @NotBlank
     private String appId;
