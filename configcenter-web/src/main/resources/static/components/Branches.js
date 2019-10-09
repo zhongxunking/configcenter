@@ -1,6 +1,6 @@
 // 分支管理组件
 const BranchesTemplate = `
-<div>
+<div id="branchesApp">
     <el-row>
         <el-col>
             <span style="font-size: medium;color: #409EFF;">应用：</span><span style="font-size: medium;">{{ toShowingApp(app) }}</span>
@@ -132,7 +132,7 @@ const BranchesTemplate = `
         <el-table-column prop="priority" label="优先级">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.priority }}</span>
-                <el-input v-else v-model="row.editingPriority" size="small" clearable placeholder="请输入优先级"></el-input>
+                <el-input-number v-else v-model="row.editingPriority" size="small" :min="0" controls-position="right"></el-input-number>
             </template>
         </el-table-column>
         <el-table-column prop="rule" label="规则">
@@ -176,7 +176,7 @@ const BranchesTemplate = `
                 </el-select>
             </el-form-item>
             <el-form-item label="优先级" prop="priority" :rules="[{required:true, message:'请输入优先级', trigger:'blur'}]">
-                <el-input v-model="addBranchRuleForm.priority" clearable placeholder="请输入优先级" style="width: 90%"></el-input>
+                <el-input-number v-model="addBranchRuleForm.priority" :min="0" controls-position="right" style="width: 90%"></el-input-number>
             </el-form-item>
             <el-form-item label="规则" prop="rule" :rules="[{required:true, message:'请输入规则', trigger:'blur'}]">
                 <el-input v-model="addBranchRuleForm.rule" clearable placeholder="请输入规则" style="width: 90%"></el-input>
@@ -512,14 +512,17 @@ const Branches = {
         },
         saveEditingBranchRule: function (branchRule) {
             const theThis = this;
-            theThis.doAddOrModifyBranchRule(
-                branchRule.appId,
-                branchRule.profileId,
-                branchRule.branchId,
-                branchRule.editingPriority,
-                branchRule.editingRule,
-                function () {
-                    theThis.findBranchRules();
+            Vue.prototype.$confirm('确定修改分支规则？', '警告', {type: 'warning'})
+                .then(function () {
+                    theThis.doAddOrModifyBranchRule(
+                        branchRule.appId,
+                        branchRule.profileId,
+                        branchRule.branchId,
+                        branchRule.editingPriority,
+                        branchRule.editingRule,
+                        function () {
+                            theThis.findBranchRules();
+                        });
                 });
         },
         closeAddBranchRuleDialog: function () {
@@ -564,18 +567,21 @@ const Branches = {
         },
         deleteBranchRule: function (branchRule) {
             const theThis = this;
-            axios.post('../manage/branchRule/deleteBranchRule', {
-                appId: branchRule.appId,
-                profileId: branchRule.profileId,
-                branchId: branchRule.branchId
-            }).then(function (result) {
-                if (!result.success) {
-                    Vue.prototype.$message.error(result.message);
-                    return;
-                }
-                Vue.prototype.$message.success(result.message);
-                theThis.findBranchRules();
-            });
+            Vue.prototype.$confirm('确定删除分支规则？', '警告', {type: 'warning'})
+                .then(function () {
+                    axios.post('../manage/branchRule/deleteBranchRule', {
+                        appId: branchRule.appId,
+                        profileId: branchRule.profileId,
+                        branchId: branchRule.branchId
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        Vue.prototype.$message.success(result.message);
+                        theThis.findBranchRules();
+                    });
+                });
         }
     }
 };
