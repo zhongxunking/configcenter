@@ -19,6 +19,7 @@ const PropertyValuesTemplate = `
             <router-link :to="'/configs/' + appId + '/' + profileId + '/branches'">
                 <el-button type="text">分支管理</el-button>
             </router-link>
+            &nbsp;&nbsp;
             <router-link :to="'/configs/' + appId + '/' + profileId + '/releases/' + branchId">
                 <el-button type="text">发布历史</el-button>
             </router-link>
