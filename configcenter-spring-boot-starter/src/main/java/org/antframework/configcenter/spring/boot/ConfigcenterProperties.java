@@ -9,6 +9,7 @@
 package org.antframework.configcenter.spring.boot;
 
 import org.antframework.boot.core.Contexts;
+import org.antframework.common.util.other.IPUtils;
 import org.antframework.common.util.tostring.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -36,13 +37,17 @@ public class ConfigcenterProperties {
     public static final ConfigcenterProperties INSTANCE = Contexts.buildProperties(ConfigcenterProperties.class);
 
     /**
-     * 选填：应用id（如果未设置，则采用spring.application.name对应的值）
+     * 选填：应用id（默认为spring.application.name对应的值）
      */
     private String appId = null;
     /**
-     * 选填：环境id（如果未设置，则采用spring.profiles.active对应的值）
+     * 选填：环境id（默认为spring.profiles.active对应的值）
      */
     private String profileId = null;
+    /**
+     * 选填：目标（用于标记客户端，默认为客户端所在主机的IP地址）
+     */
+    private String target = IPUtils.getIPV4();
     /**
      * 必填：configcenter服务端地址（比如：http://192.168.0.1:6220）
      */
@@ -94,6 +99,14 @@ public class ConfigcenterProperties {
 
     public void setProfileId(String profileId) {
         this.profileId = profileId;
+    }
+
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
     }
 
     public String getServerUrl() {

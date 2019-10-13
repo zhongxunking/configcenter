@@ -20,6 +20,7 @@ public final class ConfigsContexts {
     private static final ConfigsContext CONFIGS_CONTEXT = new ConfigsContext(
             ConfigcenterProperties.INSTANCE.getRequiredAppId(),
             ConfigcenterProperties.INSTANCE.getRequiredProfileId(),
+            ConfigcenterProperties.INSTANCE.getTarget(),
             ConfigcenterProperties.INSTANCE.getServerUrl(),
             ConfigcenterProperties.INSTANCE.getHome());
 
