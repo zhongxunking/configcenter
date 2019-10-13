@@ -29,7 +29,7 @@ public class PropertyValueInfo extends AbstractInfo {
     // key
     private String key;
     // value
-    @Mask(allMask = true)
+    @Mask(secureMask = true)
     private String value;
     // 作用域
     private Scope scope;

@@ -25,7 +25,7 @@ public final class Property implements Serializable {
     // key
     private final String key;
     // value
-    @Mask(allMask = true)
+    @Mask(secureMask = true)
     private final String value;
     // 作用域
     private final Scope scope;

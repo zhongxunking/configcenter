@@ -37,7 +37,7 @@ public class AddOrModifyPropertyValueOrder extends AbstractOrder {
     private String key;
     // value
     @NotBlank
-    @Mask(allMask = true)
+    @Mask(secureMask = true)
     private String value;
     // 作用域
     @NotNull

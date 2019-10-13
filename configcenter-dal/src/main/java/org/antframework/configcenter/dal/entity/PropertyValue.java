@@ -43,7 +43,7 @@ public class PropertyValue extends AbstractEntity {
     // value
     @Column
     @Lob
-    @Mask(allMask = true)
+    @Mask(secureMask = true)
     private String value;
 
     // 作用域
