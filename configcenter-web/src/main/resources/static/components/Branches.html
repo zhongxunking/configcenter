@@ -159,13 +159,13 @@
     </el-row>
     <el-table :data="branchRules" border stripe>
         <el-table-column prop="branchId" label="分支id"></el-table-column>
-        <el-table-column prop="priority" label="优先级">
+        <el-table-column prop="priority" label="优先级（值越小优先级越高）">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.priority }}</span>
                 <el-input-number v-else v-model="row.editingPriority" size="small" :min="0" controls-position="right"></el-input-number>
             </template>
         </el-table-column>
-        <el-table-column prop="rule" label="规则">
+        <el-table-column prop="rule" label="规则（正则表达式）">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.rule }}</span>
                 <el-input v-else v-model="row.editingRule" size="small" clearable placeholder="请输入规则"></el-input>
