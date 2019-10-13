@@ -58,7 +58,7 @@
                     <el-button @click="mergeBranchForm.sourceBranchId=row.branchId; mergeBranchDialogVisible = true" size="small">Merge Request</el-button>
                 </el-tooltip>
                 <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                    <el-button @click="deleteBranch(row)" type="danger" icon="el-icon-delete" size="small" circle></el-button>
+                    <el-button @click="deleteBranch(row)" :disabled="row.branchId === 'master'" type="danger" icon="el-icon-delete" size="small" circle></el-button>
                 </el-tooltip>
             </template>
         </el-table-column>
