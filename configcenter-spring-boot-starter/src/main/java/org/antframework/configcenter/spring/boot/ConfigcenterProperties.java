@@ -54,7 +54,7 @@ public class ConfigcenterProperties {
     @NotBlank
     private String serverUrl;
     /**
-     * 选填：缓存目录（默认为：/var/apps/${appId}/configcenter）
+     * 选填：缓存目录（"false"表示关闭缓存功能，默认为：/var/apps/${appId}/configcenter）
      */
     @NotBlank
     private String home = Contexts.getHome() + "/configcenter";
