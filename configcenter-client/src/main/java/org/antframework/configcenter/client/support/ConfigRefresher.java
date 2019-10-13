@@ -54,9 +54,11 @@ public class ConfigRefresher {
      */
     public synchronized void initConfig() {
         Map<String, String> config;
+        long version;
         boolean fromServer = true;
         try {
             config = configRequester.findConfig();
+            version = Long.parseLong(config.remove(VERSION_KEY));
         } catch (Throwable e) {
             log.error("从configcenter读取配置失败：{}", e.toString());
             if (cacheFile == null) {
@@ -67,14 +69,14 @@ public class ConfigRefresher {
                 throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
             }
             config = cacheFile.readAll();
+            version = -1;
             fromServer = false;
         }
         if (fromServer && cacheFile != null) {
             cacheFile.replace(config);
             log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
         }
-        version.set(Long.parseLong(config.get(VERSION_KEY)));
-        config.remove(VERSION_KEY);
+        this.version.set(version);
         properties.replaceProperties(config);
     }
 
@@ -83,12 +85,12 @@ public class ConfigRefresher {
      */
     public synchronized void refresh() {
         Map<String, String> config = configRequester.findConfig();
+        long version = Long.parseLong(config.remove(VERSION_KEY));
         if (cacheFile != null) {
             cacheFile.replace(config);
             log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
         }
-        version.set(Long.parseLong(config.get(VERSION_KEY)));
-        config.remove(VERSION_KEY);
+        this.version.set(version);
         List<ChangedProperty> changedProperties = properties.replaceProperties(config);
         listeners.onChange(changedProperties);
     }
