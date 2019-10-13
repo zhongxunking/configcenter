@@ -48,6 +48,8 @@ public class ServerRequester {
     private final String mainAppId;
     // 环境id
     private final String profileId;
+    // 目标
+    private final String target;
     // 服务端地址
     private final String serverUrl;
 
@@ -105,6 +107,7 @@ public class ServerRequester {
             params.add(new BasicNameValuePair("mainAppId", mainAppId));
             params.add(new BasicNameValuePair("queriedAppId", queriedAppId));
             params.add(new BasicNameValuePair("profileId", profileId));
+            params.add(new BasicNameValuePair("target", target));
 
             HttpPost httpPost = new HttpPost(serverUrl + FIND_CONFIG_URI);
             httpPost.setConfig(config);
@@ -177,6 +180,7 @@ public class ServerRequester {
             }
             List<NameValuePair> params = new ArrayList<>();
             params.add(new BasicNameValuePair("listenMetas", JSON.toJSONString(listenMetas)));
+            params.add(new BasicNameValuePair("target", target));
 
             HttpPost httpPost = new HttpPost(serverUrl + LISTEN_URI);
             httpPost.setConfig(config);
