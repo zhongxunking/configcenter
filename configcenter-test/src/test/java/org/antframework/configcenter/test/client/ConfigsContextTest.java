@@ -41,6 +41,7 @@ public class ConfigsContextTest {
         ConfigsContext configsContext = new ConfigsContext(
                 "customer",
                 "dev",
+                null,
                 "http://localhost:6220",
                 cacheDir);
         Config customerConfig = configsContext.getConfig("customer");
