@@ -22,9 +22,9 @@ import org.springframework.core.env.PropertySource;
  * environment初始化器（将configcenter配置加入到environment）
  * <p>
  * 先初始化日志，再初始化configcenter配置。原因：
- * 1、先初始化日志的优点：在configcenter中的日志相关配置会生效；缺点：初始化configcenter配置报错时，无法打印日志。
- * 2、先初始化configcenter配置的优点：初始化configcenter配置报错时，能打印日志；缺点：在configcenter中的日志相关配置不会生效。
- * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为先初始化日志再初始化configcenter配置（日志级别logging.level相关配置依然生效）。
+ * 1、先初始化日志的优点：初始化configcenter配置报错时，能打印日志；缺点：在configcenter中的日志相关的部分配置不会生效。
+ * 2、先初始化configcenter配置的优点：在configcenter中的日志相关配置会生效；缺点：初始化configcenter配置报错时，无法打印日志。
+ * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为先初始化日志再初始化configcenter配置。
  */
 @Order(EnvironmentInitializer.ORDER)
 public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
