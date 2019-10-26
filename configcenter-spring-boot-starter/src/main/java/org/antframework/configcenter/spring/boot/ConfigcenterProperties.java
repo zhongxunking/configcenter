@@ -39,6 +39,10 @@ public class ConfigcenterProperties {
     public static final ConfigcenterProperties INSTANCE = Contexts.buildProperties(ConfigcenterProperties.class);
 
     /**
+     * 选填：是否启用configcenter（默认启用）
+     */
+    private boolean enable = true;
+    /**
      * 选填：应用id（默认为spring.application.name对应的值）
      */
     private String appId = null;
@@ -92,6 +96,14 @@ public class ConfigcenterProperties {
             return null;
         }
         return home;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     public String getAppId() {

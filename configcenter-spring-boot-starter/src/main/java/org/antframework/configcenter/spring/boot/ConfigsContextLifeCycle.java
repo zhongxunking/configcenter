@@ -55,6 +55,9 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
 
     @Override
     public void onApplicationEvent(ApplicationEvent event) {
+        if (!ConfigcenterProperties.INSTANCE.isEnable()) {
+            return;
+        }
         if (event instanceof ApplicationReadyEvent) {
             readyConfigsContext();
         } else {
