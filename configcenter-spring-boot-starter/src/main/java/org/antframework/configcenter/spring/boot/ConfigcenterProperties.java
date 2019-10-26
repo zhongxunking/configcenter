@@ -17,6 +17,8 @@ import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Objects;
+
 /**
  * configcenter属性
  */
@@ -83,6 +85,13 @@ public class ConfigcenterProperties {
             throw new IllegalArgumentException(String.format("只能设置一个环境id（配置key：configcenter.profile-id或者%s），当前设置了多个环境id%s", AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, ToString.toString(profileIds)));
         }
         return profileIds[0];
+    }
+
+    public String computeHome() {
+        if (Objects.equals(home, Boolean.FALSE.toString())) {
+            return null;
+        }
+        return home;
     }
 
     public String getAppId() {
