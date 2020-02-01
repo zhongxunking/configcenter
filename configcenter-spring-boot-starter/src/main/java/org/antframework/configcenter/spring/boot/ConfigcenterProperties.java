@@ -26,11 +26,15 @@ import java.util.Objects;
 @Validated
 public class ConfigcenterProperties {
     /**
-     * 是否开启自动刷新configcenter配置（默认为开启）
+     * configcenter初始化的优先级的key（默认为Ordered.HIGHEST_PRECEDENCE + 30，比日志初始化的优先级低）
+     */
+    public static final String INIT_ORDER_KEY = "configcenter.init-order";
+    /**
+     * 是否开启自动刷新configcenter配置的key（默认为开启）
      */
     public static final String AUTO_REFRESH_CONFIGS_ENABLE_KEY = "configcenter.auto-refresh-configs.enable";
     /**
-     * 自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）
+     * 自动刷新configcenter配置的周期的key（单位：毫秒。默认为5分钟刷新一次）
      */
     public static final String AUTO_REFRESH_CONFIGS_PERIOD_KEY = "configcenter.auto-refresh-configs.period";
     /**

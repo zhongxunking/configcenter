@@ -8,12 +8,12 @@
  */
 package org.antframework.configcenter.spring.boot;
 
+import org.antframework.common.util.other.PropertyUtils;
 import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.spring.ConfigsContexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -24,14 +24,11 @@ import org.springframework.core.env.PropertySource;
  * 先初始化日志，再初始化configcenter配置。原因：
  * 1、先初始化日志的优点：初始化configcenter配置报错时，能打印日志；缺点：在configcenter中的日志相关的部分配置不会生效。
  * 2、先初始化configcenter配置的优点：在configcenter中的日志相关配置会生效；缺点：初始化configcenter配置报错时，无法打印日志。
- * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以设置为先初始化日志再初始化configcenter配置。
+ * 总结：一般日志需要进行动态化的配置比较少（比如：日志格式、日志文件路径等），所以默认设置为先初始化日志再初始化configcenter配置。
  */
-@Order(EnvironmentInitializer.ORDER)
-public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent> {
-    /**
-     * 优先级
-     */
-    public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 30;
+public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
+    // 优先级（默认为Ordered.HIGHEST_PRECEDENCE + 30，比日志初始化的优先级低）
+    private final int order = Integer.parseInt(PropertyUtils.getProperty(ConfigcenterProperties.INIT_ORDER_KEY, Integer.toString(Ordered.HIGHEST_PRECEDENCE + 30)));
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
@@ -47,6 +44,11 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
         } else {
             propertySources.addBefore(ConfigcenterProperties.INSTANCE.getPriorTo(), propertySource);
         }
+    }
+
+    @Override
+    public int getOrder() {
+        return order;
     }
 
     /**
