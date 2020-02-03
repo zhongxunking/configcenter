@@ -14,7 +14,7 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.facade.vo.RefreshClientsEvent;
-import org.bekit.event.annotation.BizListener;
+import org.bekit.event.annotation.DomainListener;
 import org.bekit.event.annotation.Listen;
 import org.springframework.web.context.request.async.DeferredResult;
 
@@ -27,7 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * 监听刷新事件的客户端的容器
  */
-@BizListener
+@DomainListener
 public class ListeningClientsContainer {
     // 配置主题及对应的客户端
     private final Map<ConfigTopic, Set<ListeningClient>> topicClients = new ConcurrentHashMap<>();
