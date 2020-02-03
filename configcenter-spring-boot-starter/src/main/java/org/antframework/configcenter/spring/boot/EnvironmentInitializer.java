@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.spring.boot;
 
-import org.antframework.common.util.other.PropertyUtils;
+import org.antframework.boot.core.Contexts;
 import org.antframework.configcenter.client.Config;
 import org.antframework.configcenter.spring.ConfigsContexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
@@ -28,7 +28,16 @@ import org.springframework.core.env.PropertySource;
  */
 public class EnvironmentInitializer implements ApplicationListener<ApplicationEnvironmentPreparedEvent>, Ordered {
     // 优先级（默认为Ordered.HIGHEST_PRECEDENCE + 30，比日志初始化的优先级低）
-    private final int order = Integer.parseInt(PropertyUtils.getProperty(ConfigcenterProperties.INIT_ORDER_KEY, Integer.toString(Ordered.HIGHEST_PRECEDENCE + 30)));
+    private final int order;
+
+    public EnvironmentInitializer() {
+        String initOrder = Contexts.getProperty(ConfigcenterProperties.INIT_ORDER_KEY);
+        if (initOrder != null) {
+            order = Integer.parseInt(initOrder);
+        } else {
+            order = Ordered.HIGHEST_PRECEDENCE + 30;
+        }
+    }
 
     @Override
     public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
