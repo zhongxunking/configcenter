@@ -17,6 +17,8 @@ import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.Objects;
+
 /**
  * configcenter属性
  */
@@ -24,11 +26,15 @@ import org.springframework.validation.annotation.Validated;
 @Validated
 public class ConfigcenterProperties {
     /**
-     * 是否开启自动刷新configcenter配置（默认为开启）
+     * configcenter初始化的优先级的key（默认为Ordered.HIGHEST_PRECEDENCE + 30，比日志初始化的优先级低）
+     */
+    public static final String INIT_ORDER_KEY = "configcenter.init-order";
+    /**
+     * 是否开启自动刷新configcenter配置的key（默认为开启）
      */
     public static final String AUTO_REFRESH_CONFIGS_ENABLE_KEY = "configcenter.auto-refresh-configs.enable";
     /**
-     * 自动刷新configcenter配置的周期（单位：毫秒。默认为5分钟刷新一次）
+     * 自动刷新configcenter配置的周期的key（单位：毫秒。默认为5分钟刷新一次）
      */
     public static final String AUTO_REFRESH_CONFIGS_PERIOD_KEY = "configcenter.auto-refresh-configs.period";
     /**
@@ -36,6 +42,10 @@ public class ConfigcenterProperties {
      */
     public static final ConfigcenterProperties INSTANCE = Contexts.buildProperties(ConfigcenterProperties.class);
 
+    /**
+     * 选填：是否启用configcenter（默认启用）
+     */
+    private boolean enable = true;
     /**
      * 选填：应用id（默认为spring.application.name对应的值）
      */
@@ -83,6 +93,21 @@ public class ConfigcenterProperties {
             throw new IllegalArgumentException(String.format("只能设置一个环境id（配置key：configcenter.profile-id或者%s），当前设置了多个环境id%s", AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, ToString.toString(profileIds)));
         }
         return profileIds[0];
+    }
+
+    public String computeHome() {
+        if (Objects.equals(home, Boolean.FALSE.toString())) {
+            return null;
+        }
+        return home;
+    }
+
+    public boolean isEnable() {
+        return enable;
+    }
+
+    public void setEnable(boolean enable) {
+        this.enable = enable;
     }
 
     public String getAppId() {

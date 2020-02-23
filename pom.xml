@@ -5,12 +5,12 @@
     <parent>
         <groupId>org.antframework.boot</groupId>
         <artifactId>ant-boot-starter-parent</artifactId>
-        <version>1.4.4.RELEASE</version>
+        <version>2.2.0.RELEASE</version>
     </parent>
 
     <groupId>org.antframework.configcenter</groupId>
     <artifactId>configcenter</artifactId>
-    <version>1.6.0.RELEASE</version>
+    <version>1.6.1.RELEASE</version>
     <packaging>pom</packaging>
 
     <name>configcenter</name>
@@ -33,7 +33,7 @@
             <dependency>
                 <groupId>org.antframework.manager</groupId>
                 <artifactId>manager-web</artifactId>
-                <version>1.4.3.RELEASE</version>
+                <version>1.4.4.RELEASE</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

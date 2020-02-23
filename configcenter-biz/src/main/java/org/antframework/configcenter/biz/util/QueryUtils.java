@@ -21,7 +21,7 @@ public final class QueryUtils {
     /**
      * 查询排序
      */
-    public static final Sort QUERY_SORT = new Sort(Sort.Direction.DESC, "id");
+    public static final Sort QUERY_SORT = Sort.by(new Sort.Order(Sort.Direction.DESC, "id"));
 
     /**
      * 构建通用查询附件
