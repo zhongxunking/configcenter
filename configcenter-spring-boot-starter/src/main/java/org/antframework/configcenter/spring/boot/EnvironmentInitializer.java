@@ -53,6 +53,12 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
         } else {
             propertySources.addBefore(ConfigcenterProperties.INSTANCE.getPriorTo(), propertySource);
         }
+
+        // 检查应用id
+        if (Contexts.getAppId() == null) {
+            // 设置应用id
+            System.setProperty(Contexts.APP_ID_KEY, ConfigcenterProperties.INSTANCE.getRequiredAppId());
+        }
     }
 
     @Override
