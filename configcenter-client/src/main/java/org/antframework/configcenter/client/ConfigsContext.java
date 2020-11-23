@@ -125,7 +125,7 @@ public class ConfigsContext {
                     try {
                         target.refresh();
                     } catch (Throwable e) {
-                        log.error("刷新configcenter配置[mainAppId={},queriedAppId={},profileId={}]出错：{}", mainAppId, target.getAppId(), profileId, e.toString());
+                        log.error("刷新configcenter配置[mainAppId={},queriedAppId={},profileId={},target={}]出错：{}", mainAppId, target.getAppId(), profileId, target, e.toString());
                     }
                 }
             });

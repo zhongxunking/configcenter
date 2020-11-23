@@ -10,6 +10,7 @@ package org.antframework.configcenter.client.support;
 
 import lombok.extern.slf4j.Slf4j;
 import org.antframework.common.util.file.MapFile;
+import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.antframework.configcenter.client.core.ConfigurableConfigProperties;
 
@@ -25,6 +26,8 @@ public class ConfigRefresher {
     // 配置版本的key
     private static final String VERSION_KEY = ConfigRefresher.class.getName() + "#configVersion";
 
+    // 应用id
+    private final String appId;
     // 版本
     private final AtomicLong version;
     // 配置集
@@ -42,6 +45,7 @@ public class ConfigRefresher {
                            ConfigListeners listeners,
                            ServerRequester serverRequester,
                            MapFile cacheFile) {
+        this.appId = appId;
         this.version = version;
         this.properties = properties;
         this.listeners = listeners;
@@ -60,11 +64,11 @@ public class ConfigRefresher {
             config = configRequester.findConfig();
             version = Long.parseLong(config.remove(VERSION_KEY));
         } catch (Throwable e) {
-            log.error("从configcenter读取配置失败：{}", e.toString());
+            log.error("从configcenter读取{}的配置失败：{}", appId, e.toString());
             if (cacheFile == null) {
                 throw e;
             }
-            log.warn("尝试从缓存文件[{}]读取配置", cacheFile.getFilePath());
+            log.warn("尝试从缓存文件[{}]读取{}的配置", cacheFile.getFilePath(), appId);
             if (!cacheFile.exists()) {
                 throw new IllegalStateException(String.format("不存在缓存文件[%s]", cacheFile.getFilePath()));
             }
@@ -74,7 +78,7 @@ public class ConfigRefresher {
         }
         if (fromServer && cacheFile != null) {
             cacheFile.replace(config);
-            log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
+            log.debug("{}的configcenter配置已缓存到：{}", appId, cacheFile.getFilePath());
         }
         this.version.set(version);
         properties.replaceProperties(config);
@@ -88,10 +92,13 @@ public class ConfigRefresher {
         long version = Long.parseLong(config.remove(VERSION_KEY));
         if (cacheFile != null) {
             cacheFile.replace(config);
-            log.debug("configcenter配置已缓存到：{}", cacheFile.getFilePath());
+            log.debug("{}的configcenter配置已缓存到：{}", appId, cacheFile.getFilePath());
         }
         this.version.set(version);
         List<ChangedProperty> changedProperties = properties.replaceProperties(config);
-        listeners.onChange(changedProperties);
+        if (changedProperties != null && changedProperties.size() > 0) {
+            log.info("检测到{}的configcenter配置已变更：{}", appId, ToString.toString(changedProperties));
+            listeners.onChange(changedProperties);
+        }
     }
 }
