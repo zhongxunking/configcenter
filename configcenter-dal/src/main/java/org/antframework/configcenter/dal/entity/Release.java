@@ -8,16 +8,20 @@
  */
 package org.antframework.configcenter.dal.entity;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
+import org.antframework.configcenter.common.util.JSON;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.Scope;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 发布
@@ -58,16 +62,18 @@ public class Release extends AbstractEntity {
     @Column
     private Long parentVersion;
 
-    /**
-     * 配置集的jpa转换器
-     */
-    public static class PropertiesConverter implements AttributeConverter<Set<Property>, String> {
+    // 配置集的jpa转换器
+    private static class PropertiesConverter implements AttributeConverter<Set<Property>, String> {
         @Override
         public String convertToDatabaseColumn(Set<Property> attribute) {
             if (attribute == null) {
                 return null;
             }
-            return JSON.toJSONString(attribute);
+            try {
+                return JSON.OBJECT_MAPPER.writeValueAsString(attribute);
+            } catch (JsonProcessingException e) {
+                return ExceptionUtils.rethrow(e);
+            }
         }
 
         @Override
@@ -75,7 +81,27 @@ public class Release extends AbstractEntity {
             if (dbData == null) {
                 return null;
             }
-            return new HashSet<>(JSON.parseArray(dbData, Property.class));
+            try {
+                Set<PropertyInfo> properties = JSON.OBJECT_MAPPER.readValue(dbData, new TypeReference<Set<PropertyInfo>>() {
+                });
+                return properties.stream()
+                        .map(property -> new Property(property.getKey(), property.getValue(), property.getScope()))
+                        .collect(Collectors.toSet());
+            } catch (JsonProcessingException e) {
+                return ExceptionUtils.rethrow(e);
+            }
+        }
+
+        // 配置项info
+        @Getter
+        @Setter
+        private static class PropertyInfo {
+            // key
+            private String key;
+            // value
+            private String value;
+            // 作用域
+            private Scope scope;
         }
     }
 }

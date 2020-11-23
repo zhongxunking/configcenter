@@ -8,14 +8,17 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
+import org.antframework.configcenter.common.util.JSON;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.info.MergenceDifference;
@@ -24,6 +27,7 @@ import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
@@ -91,9 +95,9 @@ public class BranchController {
                                              String branchId,
                                              String addOrModifiedProperties,
                                              String removedPropertyKeys,
-                                             String memo) {
-        Set<Property> properties = new HashSet<>(JSON.parseArray(addOrModifiedProperties, Property.class));
-        Set<String> propertyKeys = new HashSet<>(JSON.parseArray(removedPropertyKeys, String.class));
+                                             String memo) throws JsonProcessingException {
+        Set<Property> properties = convertToProperties(addOrModifiedProperties);
+        Set<String> propertyKeys = convertToPropertyKeys(removedPropertyKeys);
         ManagerApps.adminOrHaveApp(appId);
         if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
@@ -131,6 +135,21 @@ public class BranchController {
             }
         }
         return result;
+    }
+
+    // 转换出配置集
+    private Set<Property> convertToProperties(String json) throws JsonProcessingException {
+        Set<PropertyInfo> properties = JSON.OBJECT_MAPPER.readValue(json, new TypeReference<Set<PropertyInfo>>() {
+        });
+        return properties.stream()
+                .map(propertyInfo -> new Property(propertyInfo.getKey(), propertyInfo.getValue(), propertyInfo.getScope()))
+                .collect(Collectors.toSet());
+    }
+
+    // 转换出配置key集
+    private Set<String> convertToPropertyKeys(String json) throws JsonProcessingException {
+        return JSON.OBJECT_MAPPER.readValue(json, new TypeReference<Set<String>>() {
+        });
     }
 
     /**
@@ -312,6 +331,18 @@ public class BranchController {
     private void maskRelease(ReleaseInfo release) {
         Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
         release.setProperties(maskedProperties);
+    }
+
+    // 配置项info
+    @Getter
+    @Setter
+    private static class PropertyInfo {
+        // key
+        private String key;
+        // value
+        private String value;
+        // 作用域
+        private Scope scope;
     }
 
     /**

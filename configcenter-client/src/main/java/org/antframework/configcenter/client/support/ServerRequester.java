@@ -8,13 +8,14 @@
  */
 package org.antframework.configcenter.client.support;
 
-import com.alibaba.fastjson.JSON;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.HideDetail;
+import org.antframework.configcenter.client.util.JSON;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -79,8 +80,8 @@ public class ServerRequester {
          */
         public Map<String, String> findConfig() {
             try {
-                String resultStr = HTTP_CLIENT.execute(buildRequest(), new BasicResponseHandler());
-                FindConfigResult result = JSON.parseObject(resultStr, FindConfigResult.class);
+                String resultJson = HTTP_CLIENT.execute(buildRequest(), new BasicResponseHandler());
+                FindConfigResult result = JSON.OBJECT_MAPPER.readValue(resultJson, FindConfigResult.class);
                 if (result == null) {
                     throw new RuntimeException("请求configcenter失败");
                 }
@@ -151,8 +152,8 @@ public class ServerRequester {
          */
         public Set<String> listen(List<String> appIds, List<Long> configVersions) {
             try {
-                String resultStr = HTTP_CLIENT.execute(buildRequest(appIds, configVersions), new BasicResponseHandler());
-                ListenResult result = JSON.parseObject(resultStr, ListenResult.class);
+                String resultJson = HTTP_CLIENT.execute(buildRequest(appIds, configVersions), new BasicResponseHandler());
+                ListenResult result = convertToListenResult(resultJson);
                 if (result == null) {
                     throw new RuntimeException("请求configcenter失败");
                 }
@@ -166,7 +167,7 @@ public class ServerRequester {
         }
 
         // 构建请求
-        private HttpUriRequest buildRequest(List<String> appIds, List<Long> configVersions) {
+        private HttpUriRequest buildRequest(List<String> appIds, List<Long> configVersions) throws JsonProcessingException {
             RequestConfig config = RequestConfig.custom()
                     .setConnectTimeout(5000)
                     .setConnectionRequestTimeout(2000)
@@ -181,7 +182,7 @@ public class ServerRequester {
                 listenMetas.add(listenMeta);
             }
             List<NameValuePair> params = new ArrayList<>();
-            params.add(new BasicNameValuePair("listenMetas", JSON.toJSONString(listenMetas)));
+            params.add(new BasicNameValuePair("listenMetas", JSON.OBJECT_MAPPER.writeValueAsString(listenMetas)));
             if (target != null) {
                 params.add(new BasicNameValuePair("target", target));
             }
@@ -191,14 +192,27 @@ public class ServerRequester {
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
             return httpPost;
         }
+
+        // 转换出监听结果
+        private ListenResult convertToListenResult(String json) throws JsonProcessingException {
+            ListenResultInfo resultInfo = JSON.OBJECT_MAPPER.readValue(json, ListenResultInfo.class);
+            ListenResult result = new ListenResult();
+            result.setStatus(resultInfo.getStatus());
+            result.setCode(resultInfo.getCode());
+            result.setMessage(resultInfo.getMessage());
+            if (resultInfo.getTopics() != null) {
+                for (ConfigTopicInfo topicInfo : resultInfo.getTopics()) {
+                    result.addTopic(new ConfigTopic(topicInfo.getAppId(), topicInfo.getProfileId()));
+                }
+            }
+            return result;
+        }
     }
 
-    /**
-     * 监听元数据
-     */
+    // 监听元数据
     @AllArgsConstructor
     @Getter
-    public static final class ListenMeta {
+    private static final class ListenMeta {
         // 监听的配置主题
         private final ConfigTopic topic;
         // 配置的版本
@@ -224,11 +238,9 @@ public class ServerRequester {
         }
     }
 
-    /**
-     * 监听结果
-     */
+    // 监听结果
     @Getter
-    public static class ListenResult extends AbstractResult {
+    private static class ListenResult extends AbstractResult {
         // 需客户端刷新的配置主题
         private final Set<ConfigTopic> topics = new HashSet<>();
 
@@ -237,12 +249,10 @@ public class ServerRequester {
         }
     }
 
-    /**
-     * 配置主题
-     */
+    // 配置主题
     @AllArgsConstructor
     @Getter
-    public static final class ConfigTopic implements Serializable {
+    private static final class ConfigTopic implements Serializable {
         // 应用id
         private final String appId;
         // 环境id
@@ -266,5 +276,23 @@ public class ServerRequester {
         public String toString() {
             return ToString.toString(this);
         }
+    }
+
+    // 监听结果info
+    @Getter
+    @Setter
+    private static class ListenResultInfo extends AbstractResult {
+        // 需客户端刷新的配置主题
+        private Set<ConfigTopicInfo> topics;
+    }
+
+    // 配置主题info
+    @Getter
+    @Setter
+    private static class ConfigTopicInfo {
+        // 应用id
+        private String appId;
+        // 环境id
+        private String profileId;
     }
 }
