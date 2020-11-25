@@ -16,7 +16,6 @@ import org.antframework.configcenter.client.support.TaskExecutor;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -92,7 +91,7 @@ public class ConfigsContext {
      * 获取查找过配置的应用id
      */
     public Set<String> getAppIds() {
-        return Collections.unmodifiableSet(configsCache.getAllKeys());
+        return configsCache.getAllKeys();
     }
 
     /**
@@ -119,14 +118,11 @@ public class ConfigsContext {
      */
     public void refresh() {
         for (String appId : getAppIds()) {
-            taskExecutor.execute(new TaskExecutor.Task<Config>(getConfig(appId)) {
-                @Override
-                public void run() {
-                    try {
-                        target.refresh();
-                    } catch (Throwable e) {
-                        log.error("刷新configcenter配置[mainAppId={},queriedAppId={},profileId={},target={}]出错：{}", mainAppId, target.getAppId(), profileId, target, e.toString());
-                    }
+            taskExecutor.execute(() -> {
+                try {
+                    getConfig(appId).refresh();
+                } catch (Throwable e) {
+                    log.error("刷新configcenter配置[mainAppId={},queriedAppId={},profileId={},target={}]出错：{}", mainAppId, appId, profileId, target, e.toString());
                 }
             });
         }
