@@ -122,7 +122,7 @@ public class ServerRequester {
     // 查找应用在指定环境中的配置result
     @Getter
     @Setter
-    public static class FindConfigResult extends AbstractResult {
+    private static class FindConfigResult extends AbstractResult {
         // 版本
         private Long version;
         // 配置
