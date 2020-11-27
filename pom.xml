@@ -10,7 +10,7 @@
 
     <groupId>org.antframework.configcenter</groupId>
     <artifactId>configcenter</artifactId>
-    <version>1.6.1.RELEASE</version>
+    <version>1.6.2</version>
     <packaging>pom</packaging>
 
     <name>configcenter</name>
