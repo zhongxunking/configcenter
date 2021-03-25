@@ -16,9 +16,9 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
+import org.antframework.common.util.json.JSON;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
-import org.antframework.configcenter.common.util.JSON;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.info.MergenceDifference;
@@ -31,7 +31,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -99,7 +99,7 @@ public class BranchController {
         Set<Property> properties = convertToProperties(addOrModifiedProperties);
         Set<String> propertyKeys = convertToPropertyKeys(removedPropertyKeys);
         ManagerApps.adminOrHaveApp(appId);
-        if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             // 校验是否有敏感配置被修改
             Set<String> keys = properties.stream().map(Property::getKey).collect(Collectors.toSet());
             keys.addAll(propertyKeys);
@@ -130,7 +130,7 @@ public class BranchController {
                 PropertyValues.deletePropertyValue(appId, profileId, branchId, key);
             }
             // 对敏感配置掩码
-            if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+            if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
                 maskRelease(result.getBranch().getRelease());
             }
         }
@@ -259,7 +259,7 @@ public class BranchController {
                     result.addProperty(propertyMap.get(key));
                     result.addRemovedKeys(key);
                 });
-        if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getProperties());
             result.getProperties().clear();
             result.getProperties().addAll(maskedProperties);
@@ -301,7 +301,7 @@ public class BranchController {
         order.setBranchId(branchId);
 
         FindBranchResult result = branchService.findBranch(order);
-        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             maskRelease(result.getBranch().getRelease());
         }
         return result;
@@ -321,7 +321,7 @@ public class BranchController {
         order.setProfileId(profileId);
 
         FindBranchesResult result = branchService.findBranches(order);
-        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             result.getBranches().stream().map(BranchInfo::getRelease).forEach(this::maskRelease);
         }
         return result;

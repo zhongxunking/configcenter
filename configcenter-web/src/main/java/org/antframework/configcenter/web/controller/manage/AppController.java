@@ -23,7 +23,7 @@ import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +47,7 @@ public class AppController {
      */
     @RequestMapping("/addOrModifyApp")
     public EmptyResult addOrModifyApp(String appId, String appName, String parent) {
-        CurrentManagers.admin();
+        CurrentManagerAssert.admin();
         AddOrModifyAppOrder order = new AddOrModifyAppOrder();
         order.setAppId(appId);
         order.setAppName(appName);
@@ -63,7 +63,7 @@ public class AppController {
      */
     @RequestMapping("/deleteApp")
     public EmptyResult deleteApp(String appId) {
-        CurrentManagers.admin();
+        CurrentManagerAssert.admin();
         // 删除管理员和应用的关联
         ManagerApps.deletesByApp(appId);
         // 删除应用
@@ -84,7 +84,7 @@ public class AppController {
      */
     @RequestMapping("/findApp")
     public FindAppResult findApp(String appId) {
-        CurrentManagers.current();
+        CurrentManagerAssert.current();
         FindAppOrder order = new FindAppOrder();
         order.setAppId(appId);
 
@@ -129,7 +129,7 @@ public class AppController {
      */
     @RequestMapping("/queryApps")
     public QueryAppsResult queryApps(int pageNo, int pageSize, String appId, String parent) {
-        CurrentManagers.admin();
+        CurrentManagerAssert.admin();
         QueryAppsOrder order = new QueryAppsOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
@@ -148,7 +148,7 @@ public class AppController {
      */
     @RequestMapping("/queryManagedApps")
     public QueryManagedAppsResult queryManagedApps(int pageNo, int pageSize, String appId) {
-        ManagerInfo manager = CurrentManagers.current();
+        ManagerInfo manager = CurrentManagerAssert.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return forAdmin(pageNo, pageSize, appId);
         } else {

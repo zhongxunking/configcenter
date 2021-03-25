@@ -16,7 +16,7 @@ import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.facade.order.QuerySourceRelationsOrder;
 import org.antframework.manager.facade.result.QuerySourceRelationsResult;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.beans.BeanUtils;
 
 /**
@@ -35,9 +35,9 @@ public final class ManagerApps {
      */
     public static void adminOrHaveApp(String appId) {
         try {
-            CurrentManagers.admin();
+            CurrentManagerAssert.admin();
         } catch (BizException e) {
-            ManagerInfo manager = CurrentManagers.current();
+            ManagerInfo manager = CurrentManagerAssert.current();
             RelationInfo relation = Relations.findRelation(RELATION_TYPE, manager.getManagerId(), appId);
             if (relation == null) {
                 throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), CommonResultCode.ILLEGAL_STATE.getMessage());
@@ -67,7 +67,7 @@ public final class ManagerApps {
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
         order.setType(RELATION_TYPE);
-        order.setSource(CurrentManagers.current().getManagerId());
+        order.setSource(CurrentManagerAssert.current().getManagerId());
         order.setTarget(appId);
 
         QuerySourceRelationsResult relationsResult = RELATION_SERVICE.querySourceRelations(order);

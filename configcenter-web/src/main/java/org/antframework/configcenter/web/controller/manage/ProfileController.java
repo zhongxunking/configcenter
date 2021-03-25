@@ -16,7 +16,7 @@ import org.antframework.configcenter.facade.result.FindInheritedProfilesResult;
 import org.antframework.configcenter.facade.result.FindProfileResult;
 import org.antframework.configcenter.facade.result.FindProfileTreeResult;
 import org.antframework.configcenter.facade.result.QueryProfilesResult;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -39,7 +39,7 @@ public class ProfileController {
      */
     @RequestMapping("/addOrModifyProfile")
     public EmptyResult addOrModifyProfile(String profileId, String profileName, String parent) {
-        CurrentManagers.admin();
+        CurrentManagerAssert.admin();
         AddOrModifyProfileOrder order = new AddOrModifyProfileOrder();
         order.setProfileId(profileId);
         order.setProfileName(profileName);
@@ -55,7 +55,7 @@ public class ProfileController {
      */
     @RequestMapping("/deleteProfile")
     public EmptyResult deleteProfile(String profileId) {
-        CurrentManagers.admin();
+        CurrentManagerAssert.admin();
         DeleteProfileOrder order = new DeleteProfileOrder();
         order.setProfileId(profileId);
 
@@ -69,7 +69,7 @@ public class ProfileController {
      */
     @RequestMapping("/findProfile")
     public FindProfileResult findProfile(String profileId) {
-        CurrentManagers.current();
+        CurrentManagerAssert.current();
         FindProfileOrder order = new FindProfileOrder();
         order.setProfileId(profileId);
 
@@ -83,7 +83,7 @@ public class ProfileController {
      */
     @RequestMapping("/findInheritedProfiles")
     public FindInheritedProfilesResult findInheritedProfiles(String profileId) {
-        CurrentManagers.current();
+        CurrentManagerAssert.current();
         FindInheritedProfilesOrder order = new FindInheritedProfilesOrder();
         order.setProfileId(profileId);
 
@@ -97,7 +97,7 @@ public class ProfileController {
      */
     @RequestMapping("/findProfileTree")
     public FindProfileTreeResult findProfileTree(String rootProfileId) {
-        CurrentManagers.current();
+        CurrentManagerAssert.current();
         FindProfileTreeOrder order = new FindProfileTreeOrder();
         order.setRootProfileId(rootProfileId);
 
@@ -113,7 +113,7 @@ public class ProfileController {
      */
     @RequestMapping("/queryProfiles")
     public QueryProfilesResult queryProfiles(int pageNo, int pageSize, String profileId) {
-        CurrentManagers.current();
+        CurrentManagerAssert.current();
         QueryProfilesOrder order = new QueryProfilesOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);

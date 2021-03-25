@@ -21,7 +21,7 @@ import org.antframework.manager.biz.util.Relations;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 
 import java.io.Serializable;
 import java.util.*;
@@ -64,7 +64,7 @@ public final class OperatePrivileges {
      * @param key   配置key
      */
     public static void adminOrReadWrite(String appId, String key) {
-        ManagerInfo manager = CurrentManagers.current();
+        ManagerInfo manager = CurrentManagerAssert.current();
         if (manager.getType() == ManagerType.ADMIN) {
             return;
         }

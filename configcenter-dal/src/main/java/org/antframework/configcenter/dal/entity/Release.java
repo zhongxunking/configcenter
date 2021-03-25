@@ -13,7 +13,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.boot.jpa.AbstractEntity;
-import org.antframework.configcenter.common.util.JSON;
+import org.antframework.common.util.json.JSON;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.apache.commons.lang3.exception.ExceptionUtils;

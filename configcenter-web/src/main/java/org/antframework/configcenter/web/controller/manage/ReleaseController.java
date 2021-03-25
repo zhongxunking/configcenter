@@ -28,7 +28,7 @@ import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
-import org.antframework.manager.web.CurrentManagers;
+import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -64,7 +64,7 @@ public class ReleaseController {
         order.setVersion(version);
 
         FindReleaseResult result = releaseService.findRelease(order);
-        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             if (result.getRelease() != null) {
                 maskRelease(result.getRelease());
             }
@@ -91,7 +91,7 @@ public class ReleaseController {
             if (Objects.equals(app.getAppId(), appId)) {
                 inheritedProfileReleases.set(0, Branches.findBranch(appId, profileId, branchId).getRelease());
             }
-            if (CurrentManagers.current().getType() != ManagerType.ADMIN) {
+            if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
                 inheritedProfileReleases.forEach(this::maskRelease);
             }
             FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
@@ -142,7 +142,7 @@ public class ReleaseController {
                                              String memo,
                                              Long parentVersion) {
         if (appId == null) {
-            CurrentManagers.admin();
+            CurrentManagerAssert.admin();
         } else {
             ManagerApps.adminOrHaveApp(appId);
         }
@@ -156,7 +156,7 @@ public class ReleaseController {
         order.setParentVersion(parentVersion);
 
         QueryReleasesResult result = releaseService.queryReleases(order);
-        if (result.isSuccess() && CurrentManagers.current().getType() != ManagerType.ADMIN) {
+        if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             result.getInfos().forEach(this::maskRelease);
         }
         return result;
