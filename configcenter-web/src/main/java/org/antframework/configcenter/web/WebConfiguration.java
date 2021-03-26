@@ -17,9 +17,11 @@ import org.antframework.common.util.json.JSON;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.web.controller.ConfigController;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
+import org.springframework.validation.annotation.Validated;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -81,6 +83,30 @@ public class WebConfiguration {
             private String appId;
             // 环境id
             private String profileId;
+        }
+    }
+
+    /**
+     * configcenter配置
+     */
+    @ConfigurationProperties("configcenter")
+    @Validated
+    @Getter
+    @Setter
+    public static class ConfigcenterProperties {
+        // 配置
+        private Config config = new Config();
+
+        /**
+         * 配置
+         */
+        @Getter
+        @Setter
+        public static class Config {
+            /**
+             * 选填：获取配置是否需要管理员认证（默认为不需要）
+             */
+            private boolean fetchNeedManager = false;
         }
     }
 }

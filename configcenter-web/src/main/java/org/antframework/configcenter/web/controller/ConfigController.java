@@ -16,7 +16,9 @@ import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
 import org.antframework.configcenter.facade.result.FindConfigResult;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
+import org.antframework.configcenter.web.WebConfiguration;
 import org.antframework.configcenter.web.common.ListeningClientsContainer;
+import org.antframework.configcenter.web.common.ManagerApps;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,6 +45,8 @@ public class ConfigController {
     // 超时的监听result
     private static final ListeningClientsContainer.ListenResult TIMEOUT_LISTEN_RESULT = FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class);
 
+    // 配置
+    private final WebConfiguration.ConfigcenterProperties properties;
     // 配置服务
     private final ConfigService configService;
     // 监听刷新事件的客户端的容器
@@ -58,6 +62,9 @@ public class ConfigController {
      */
     @RequestMapping("/findConfig")
     public FindConfigResult findConfig(String mainAppId, String queriedAppId, String profileId, String target) {
+        if (properties.getConfig().isFetchNeedManager()) {
+            ManagerApps.adminOrHaveApp(mainAppId);
+        }
         FindConfigOrder order = new FindConfigOrder();
         order.setMainAppId(mainAppId);
         order.setQueriedAppId(queriedAppId);
