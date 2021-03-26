@@ -28,10 +28,8 @@ import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivilege;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
-import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -142,25 +140,12 @@ public class PropertyValueController {
         order.setMinScope(minScope);
 
         FindPropertyValuesResult result = propertyValueService.findPropertyValues(order);
-        if (result.isSuccess()) {
-            mask(appId, result.getPropertyValues());
+        if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
+            List<PropertyValueInfo> maskedPropertyValues = OperatePrivileges.maskPropertyValue(appId, result.getPropertyValues());
+            result.getPropertyValues().clear();
+            result.getPropertyValues().addAll(maskedPropertyValues);
         }
         return result;
-    }
-
-    // 对敏感配置进行掩码
-    private void mask(String appId, List<PropertyValueInfo> propertyValues) {
-        ManagerInfo manager = CurrentManagerAssert.current();
-        if (manager.getType() == ManagerType.ADMIN) {
-            return;
-        }
-        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
-        for (PropertyValueInfo propertyValue : propertyValues) {
-            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, propertyValue.getKey());
-            if (privilege == OperatePrivilege.NONE) {
-                propertyValue.setValue(MASKED_VALUE);
-            }
-        }
     }
 
     /**

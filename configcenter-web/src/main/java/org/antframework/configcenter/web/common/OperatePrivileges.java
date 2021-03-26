@@ -16,17 +16,19 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.manager.biz.util.Relations;
 import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.CurrentManagerAssert;
+import org.springframework.beans.BeanUtils;
 
 import java.io.Serializable;
 import java.util.*;
 import java.util.regex.Pattern;
 
 /**
- * 操作权限工具类
+ * 操作权限工具
  */
 public final class OperatePrivileges {
     // 关系类型
@@ -35,7 +37,7 @@ public final class OperatePrivileges {
     private static final String MASKED_VALUE = "******";
 
     /**
-     * 断言提供的配置key对应的权限都是读写权限
+     * 断言当前管理员是超级管理员或提供的配置key对应的权限都是读写权限
      *
      * @param appId 应用id
      * @param keys  配置key
@@ -103,21 +105,25 @@ public final class OperatePrivileges {
     }
 
     /**
-     * 计算操作权限
+     * 对敏感配置进行掩码
      *
-     * @param appOperatePrivileges 应用继承的操作权限
-     * @param key                  配置key
-     * @return 配置key的操作权限
+     * @param appId          应用id
+     * @param propertyValues 需掩码的配置集
+     * @return 掩码后的配置集
      */
-    public static OperatePrivilege calcOperatePrivilege(List<AppOperatePrivilege> appOperatePrivileges, String key) {
-        for (AppOperatePrivilege appOperatePrivilege : appOperatePrivileges) {
-            for (Map.Entry<String, OperatePrivilege> entry : appOperatePrivilege.getKeyRegexPrivileges().entrySet()) {
-                if (Pattern.matches(entry.getKey(), key)) {
-                    return entry.getValue();
-                }
+    public static List<PropertyValueInfo> maskPropertyValue(String appId, List<PropertyValueInfo> propertyValues) {
+        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = OperatePrivileges.findInheritedOperatePrivileges(appId);
+        List<PropertyValueInfo> maskedPropertyValues = new ArrayList<>(propertyValues.size());
+        for (PropertyValueInfo propertyValue : propertyValues) {
+            PropertyValueInfo maskedPropertyValue = new PropertyValueInfo();
+            BeanUtils.copyProperties(propertyValue, maskedPropertyValue);
+            OperatePrivilege privilege = OperatePrivileges.calcOperatePrivilege(appOperatePrivileges, propertyValue.getKey());
+            if (privilege == OperatePrivilege.NONE) {
+                maskedPropertyValue.setValue(MASKED_VALUE);
             }
+            maskedPropertyValues.add(maskedPropertyValue);
         }
-        return OperatePrivilege.READ_WRITE;
+        return maskedPropertyValues;
     }
 
     /**
@@ -136,6 +142,18 @@ public final class OperatePrivileges {
             appOperatePrivileges.add(new AppOperatePrivilege(app, keyRegexPrivileges));
         }
         return appOperatePrivileges;
+    }
+
+    // 计算操作权限
+    private static OperatePrivilege calcOperatePrivilege(List<AppOperatePrivilege> appOperatePrivileges, String key) {
+        for (AppOperatePrivilege appOperatePrivilege : appOperatePrivileges) {
+            for (Map.Entry<String, OperatePrivilege> entry : appOperatePrivilege.getKeyRegexPrivileges().entrySet()) {
+                if (Pattern.matches(entry.getKey(), key)) {
+                    return entry.getValue();
+                }
+            }
+        }
+        return OperatePrivilege.READ_WRITE;
     }
 
     /**

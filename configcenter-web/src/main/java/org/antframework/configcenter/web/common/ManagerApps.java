@@ -20,7 +20,7 @@ import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.beans.BeanUtils;
 
 /**
- * 管理员与应用关系的工具类
+ * 管理员与应用关系的工具
  */
 public final class ManagerApps {
     // 关系类型
@@ -71,7 +71,7 @@ public final class ManagerApps {
      * @param appId    应用id
      * @return 被管理的应用
      */
-    public static AbstractQueryResult<String> queryManagedApps(int pageNo, int pageSize, String appId) {
+    public static QueryManagedAppsResult queryManagedApps(int pageNo, int pageSize, String appId) {
         QuerySourceRelationsOrder order = new QuerySourceRelationsOrder();
         order.setPageNo(pageNo);
         order.setPageSize(pageSize);
@@ -82,13 +82,15 @@ public final class ManagerApps {
         QuerySourceRelationsResult relationsResult = RELATION_SERVICE.querySourceRelations(order);
         FacadeUtils.assertSuccess(relationsResult);
 
-        AbstractQueryResult<String> result = new AbstractQueryResult<String>() {
-        };
+        QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(relationsResult, result, "infos");
         for (RelationInfo relation : relationsResult.getInfos()) {
             result.addInfo(relation.getTarget());
         }
 
         return result;
+    }
+
+    public static class QueryManagedAppsResult extends AbstractQueryResult<String> {
     }
 }

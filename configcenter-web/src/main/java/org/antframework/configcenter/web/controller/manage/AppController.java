@@ -167,7 +167,7 @@ public class AppController {
     }
 
     // 为普通管理员查询他管理的应用
-    private QueryManagedAppsResult forNormal(AbstractQueryResult<String> appIdsResult) {
+    private QueryManagedAppsResult forNormal(ManagerApps.QueryManagedAppsResult appIdsResult) {
         QueryManagedAppsResult result = new QueryManagedAppsResult();
         BeanUtils.copyProperties(appIdsResult, result, "infos");
         // 查找应用
