@@ -25,6 +25,7 @@ import org.bekit.event.annotation.Listen;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.validation.annotation.Validated;
@@ -39,7 +40,7 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(WebConfiguration.ConfigcenterProperties.class)
-@DomainListener
+@Import(WebConfiguration.ManagerListener.class)
 @AllArgsConstructor
 public class WebConfiguration {
     // 转换器注册器
@@ -54,13 +55,6 @@ public class WebConfiguration {
         for (ConverterRegistry registry : converterRegistries) {
             registry.addConverter(new StringToSetListenMetaConverter());
         }
-    }
-
-    // 监听管理员删除事件
-    @Listen
-    public void listenManagerDeletingEvent(ManagerDeletingEvent event) {
-        ManagerInfo manager = event.getManager();
-        ManagerApps.deletesByManager(manager.getManagerId());
     }
 
     /**
@@ -98,6 +92,19 @@ public class WebConfiguration {
             private String appId;
             // 环境id
             private String profileId;
+        }
+    }
+
+    /**
+     * 管理员监听器
+     */
+    @DomainListener
+    public static class ManagerListener {
+        // 监听管理员删除事件
+        @Listen
+        public void listenManagerDeletingEvent(ManagerDeletingEvent event) {
+            ManagerInfo manager = event.getManager();
+            ManagerApps.deletesByManager(manager.getManagerId());
         }
     }
 
