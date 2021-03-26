@@ -22,7 +22,9 @@ public final class ConfigsContexts {
             ConfigcenterProperties.INSTANCE.getRequiredProfileId(),
             ConfigcenterProperties.INSTANCE.getTarget(),
             ConfigcenterProperties.INSTANCE.getServerUrl(),
-            ConfigcenterProperties.INSTANCE.computeHome());
+            ConfigcenterProperties.INSTANCE.computeHome(),
+            ConfigcenterProperties.INSTANCE.getManagerId(),
+            ConfigcenterProperties.INSTANCE.getSecretKey());
 
     /**
      * 获取配置上下文

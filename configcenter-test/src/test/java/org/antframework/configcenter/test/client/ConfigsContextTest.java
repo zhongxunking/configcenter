@@ -43,7 +43,9 @@ public class ConfigsContextTest {
                 "dev",
                 null,
                 "http://localhost:6220",
-                cacheDir);
+                cacheDir,
+                null,
+                null);
         Config customerConfig = configsContext.getConfig("customer");
         customerConfig.getListeners().addListener(new ConfigListener() {
             @Override

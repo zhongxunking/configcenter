@@ -69,6 +69,14 @@ public class ConfigcenterProperties {
     @NotBlank
     private String home = Contexts.getHome() + "/configcenter";
     /**
+     * 选填：管理员id（默认不使用管理员签名）
+     */
+    private String managerId = null;
+    /**
+     * 选填：管理员密钥（默认不使用管理员签名）
+     */
+    private String secretKey = null;
+    /**
      * 选填：configcenter配置优先于指定的配置源（默认为最低优先级）。可填入：commandLineArgs（命令行）、systemProperties（系统属性）、systemEnvironment（系统环境）、random（随机数。比配置文件优先级高）等等
      */
     private String priorTo = null;
@@ -148,6 +156,22 @@ public class ConfigcenterProperties {
 
     public void setHome(String home) {
         this.home = home;
+    }
+
+    public String getManagerId() {
+        return managerId;
+    }
+
+    public void setManagerId(String managerId) {
+        this.managerId = managerId;
+    }
+
+    public String getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(String secretKey) {
+        this.secretKey = secretKey;
     }
 
     public String getPriorTo() {

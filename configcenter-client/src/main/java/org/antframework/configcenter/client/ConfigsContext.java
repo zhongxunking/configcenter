@@ -13,6 +13,7 @@ import org.antframework.common.util.other.Cache;
 import org.antframework.configcenter.client.support.ServerListener;
 import org.antframework.configcenter.client.support.ServerRequester;
 import org.antframework.configcenter.client.support.TaskExecutor;
+import org.antframework.manager.client.sign.ManagerSigner;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.File;
@@ -49,20 +50,28 @@ public class ConfigsContext {
     /**
      * 构造配置上下文
      *
-     * @param mainAppId 主体应用id
-     * @param profileId 环境id
-     * @param target    目标
-     * @param serverUrl 服务端地址
-     * @param home      工作目录（用于存放缓存文件。null表示不使用缓存文件（既不读取缓存文件中的配置，也不写配置到缓存文件））
+     * @param mainAppId 主体应用id（必填）
+     * @param profileId 环境id（必填）
+     * @param target    目标（选填：用于标记客户端，可以为null）
+     * @param serverUrl 服务端地址（必填）
+     * @param home      工作目录（选填：用于存放缓存文件。null表示不使用缓存文件（既不读取缓存文件中的配置，也不写配置到缓存文件））
+     * @param managerId 管理员id（选填：null表示不使用管理员签名）
+     * @param secretKey 管理员密钥（选填：null表示不使用管理员签名）
      */
-    public ConfigsContext(String mainAppId, String profileId, String target, String serverUrl, String home) {
+    public ConfigsContext(String mainAppId,
+                          String profileId,
+                          String target,
+                          String serverUrl,
+                          String home,
+                          String managerId,
+                          String secretKey) {
         if (StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId) || StringUtils.isBlank(serverUrl)) {
-            throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,home=%s", mainAppId, profileId, serverUrl, home));
+            throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,home=%s,managerId=%s,secretKey=%s", mainAppId, profileId, serverUrl, home, managerId, secretKey));
         }
         this.mainAppId = mainAppId;
         this.profileId = profileId;
         this.target = target;
-        this.serverRequester = new ServerRequester(mainAppId, profileId, target, serverUrl);
+        this.serverRequester = new ServerRequester(mainAppId, profileId, target, serverUrl, managerId == null || secretKey == null ? null : new ManagerSigner(managerId, secretKey));
         this.cacheDirPath = home == null ? null : home + File.separator + mainAppId + File.separator + profileId;
     }
 

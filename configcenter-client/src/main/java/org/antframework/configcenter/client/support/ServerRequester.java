@@ -16,6 +16,7 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.json.JSON;
 import org.antframework.common.util.tostring.ToString;
 import org.antframework.common.util.tostring.format.HideDetail;
+import org.antframework.manager.client.sign.ManagerSigner;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
@@ -53,6 +54,8 @@ public class ServerRequester {
     private final String target;
     // 服务端地址
     private final String serverUrl;
+    // 管理员签名器
+    private final ManagerSigner managerSigner;
 
     /**
      * 创建配置请求器
@@ -115,6 +118,9 @@ public class ServerRequester {
             HttpPost httpPost = new HttpPost(serverUrl + FIND_CONFIG_URI);
             httpPost.setConfig(config);
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            if (managerSigner != null) {
+                managerSigner.sign(httpPost, params);
+            }
             return httpPost;
         }
     }
@@ -190,6 +196,9 @@ public class ServerRequester {
             HttpPost httpPost = new HttpPost(serverUrl + LISTEN_URI);
             httpPost.setConfig(config);
             httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            if (managerSigner != null) {
+                managerSigner.sign(httpPost, params);
+            }
             return httpPost;
         }
 
