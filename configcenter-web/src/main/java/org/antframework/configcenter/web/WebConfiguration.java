@@ -18,6 +18,7 @@ import org.antframework.configcenter.facade.vo.ConfigTopic;
 import org.antframework.configcenter.web.controller.ConfigController;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -32,6 +33,7 @@ import java.util.stream.Collectors;
  * web层配置
  */
 @Configuration
+@EnableConfigurationProperties(WebConfiguration.ConfigcenterProperties.class)
 @AllArgsConstructor
 public class WebConfiguration {
     // 转换器注册器
