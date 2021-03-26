@@ -98,7 +98,7 @@ public class AppController {
      */
     @RequestMapping("/findInheritedApps")
     public FindInheritedAppsResult findInheritedApps(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindInheritedAppsOrder order = new FindInheritedAppsOrder();
         order.setAppId(appId);
 
@@ -112,7 +112,7 @@ public class AppController {
      */
     @RequestMapping("/findAppTree")
     private FindAppTreeResult findAppTree(String rootAppId) {
-        ManagerApps.adminOrHaveApp(rootAppId);
+        ManagerApps.assertAdminOrHaveApp(rootAppId);
         FindAppTreeOrder order = new FindAppTreeOrder();
         order.setRootAppId(rootAppId);
 

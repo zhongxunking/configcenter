@@ -38,7 +38,7 @@ public class RefreshController {
         if (rootAppId == null) {
             CurrentManagerAssert.admin();
         } else {
-            ManagerApps.adminOrHaveApp(rootAppId);
+            ManagerApps.assertAdminOrHaveApp(rootAppId);
         }
         RefreshClientsOrder order = new RefreshClientsOrder();
         order.setRootAppId(rootAppId);

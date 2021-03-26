@@ -33,16 +33,25 @@ public final class ManagerApps {
      *
      * @param appId 应用id
      */
-    public static void adminOrHaveApp(String appId) {
+    public static void assertAdminOrHaveApp(String appId) {
         try {
             CurrentManagerAssert.admin();
         } catch (BizException e) {
             ManagerInfo manager = CurrentManagerAssert.current();
             RelationInfo relation = Relations.findRelation(RELATION_TYPE, manager.getManagerId(), appId);
             if (relation == null) {
-                throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), CommonResultCode.ILLEGAL_STATE.getMessage());
+                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), CommonResultCode.UNAUTHORIZED.getMessage());
             }
         }
+    }
+
+    /**
+     * 删除与指定管理员有关的管理权限
+     *
+     * @param managerId 管理员id
+     */
+    public static void deletesByManager(String managerId) {
+        Relations.deleteRelations(RELATION_TYPE, managerId, null);
     }
 
     /**

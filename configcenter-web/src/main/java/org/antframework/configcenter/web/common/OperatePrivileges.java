@@ -18,8 +18,6 @@ import org.antframework.configcenter.biz.util.Apps;
 import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.manager.biz.util.Relations;
-import org.antframework.manager.facade.enums.ManagerType;
-import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.CurrentManagerAssert;
 
@@ -35,6 +33,32 @@ public final class OperatePrivileges {
     private static final String RELATION_TYPE = "appId-keyRegex-privilege";
     // 掩码后的配置value
     private static final String MASKED_VALUE = "******";
+
+    /**
+     * 断言提供的配置key对应的权限都是读写权限
+     *
+     * @param appId 应用id
+     * @param keys  配置key
+     */
+    public static void assertAdminOrOnlyReadWrite(String appId, Set<String> keys) {
+        try {
+            CurrentManagerAssert.admin();
+        } catch (BizException e) {
+            List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = findInheritedOperatePrivileges(appId);
+
+            Set<String> notReadWriteKeys = new HashSet<>();
+            for (String key : keys) {
+                OperatePrivilege privilege = calcOperatePrivilege(appOperatePrivileges, key);
+                if (privilege != OperatePrivilege.READ_WRITE) {
+                    notReadWriteKeys.add(key);
+                }
+            }
+
+            if (!notReadWriteKeys.isEmpty()) {
+                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
+            }
+        }
+    }
 
     /**
      * 添加或修改操作权限
@@ -55,45 +79,6 @@ public final class OperatePrivileges {
      */
     public static void deleteOperatePrivileges(String appId, String keyRegex) {
         Relations.deleteRelations(RELATION_TYPE, appId, keyRegex);
-    }
-
-    /**
-     * 断言当前管理员为超级管理员或指定配置key的权限是读写权限
-     *
-     * @param appId 应用id
-     * @param key   配置key
-     */
-    public static void adminOrReadWrite(String appId, String key) {
-        ManagerInfo manager = CurrentManagerAssert.current();
-        if (manager.getType() == ManagerType.ADMIN) {
-            return;
-        }
-        OperatePrivilege privilege = calcOperatePrivilege(findInheritedOperatePrivileges(appId), key);
-        if (privilege != OperatePrivilege.READ_WRITE) {
-            throw new BizException(Status.FAIL, CommonResultCode.ILLEGAL_STATE.getCode(), String.format("无权限操作敏感配置key[%s]", key));
-        }
-    }
-
-    /**
-     * 断言提供的配置key对应的权限都是读写权限
-     *
-     * @param appId 应用id
-     * @param keys  配置key
-     */
-    public static void onlyReadWrite(String appId, Set<String> keys) {
-        List<OperatePrivileges.AppOperatePrivilege> appOperatePrivileges = findInheritedOperatePrivileges(appId);
-
-        Set<String> notReadWriteKeys = new HashSet<>();
-        for (String key : keys) {
-            OperatePrivilege privilege = calcOperatePrivilege(appOperatePrivileges, key);
-            if (privilege != OperatePrivilege.READ_WRITE) {
-                notReadWriteKeys.add(key);
-            }
-        }
-
-        if (!notReadWriteKeys.isEmpty()) {
-            throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
-        }
     }
 
     /**

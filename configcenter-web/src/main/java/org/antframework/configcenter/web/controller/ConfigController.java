@@ -63,7 +63,7 @@ public class ConfigController {
     @RequestMapping("/findConfig")
     public FindConfigResult findConfig(String mainAppId, String queriedAppId, String profileId, String target) {
         if (properties.getConfig().isFetchNeedManager()) {
-            ManagerApps.adminOrHaveApp(mainAppId);
+            ManagerApps.assertAdminOrHaveApp(mainAppId);
         }
         FindConfigOrder order = new FindConfigOrder();
         order.setMainAppId(mainAppId);

@@ -44,7 +44,7 @@ public class BranchRuleController {
                                              String branchId,
                                              Long priority,
                                              String rule) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         AddOrModifyBranchRuleOrder order = new AddOrModifyBranchRuleOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -64,7 +64,7 @@ public class BranchRuleController {
      */
     @RequestMapping("/deleteBranchRule")
     public EmptyResult deleteBranchRule(String appId, String profileId, String branchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         DeleteBranchRuleOrder order = new DeleteBranchRuleOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -81,7 +81,7 @@ public class BranchRuleController {
      */
     @RequestMapping("/findBranchRules")
     public FindBranchRulesResult findBranchRules(String appId, String profileId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindBranchRulesOrder order = new FindBranchRulesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);

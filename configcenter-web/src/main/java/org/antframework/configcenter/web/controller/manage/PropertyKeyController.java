@@ -29,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -51,8 +52,8 @@ public class PropertyKeyController {
      */
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
-        ManagerApps.adminOrHaveApp(appId);
-        OperatePrivileges.adminOrReadWrite(appId, key);
+        ManagerApps.assertAdminOrHaveApp(appId);
+        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -70,8 +71,8 @@ public class PropertyKeyController {
      */
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
-        ManagerApps.adminOrHaveApp(appId);
-        OperatePrivileges.adminOrReadWrite(appId, key);
+        ManagerApps.assertAdminOrHaveApp(appId);
+        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -86,7 +87,7 @@ public class PropertyKeyController {
      */
     @RequestMapping("/findInheritedPropertyKeys")
     public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {

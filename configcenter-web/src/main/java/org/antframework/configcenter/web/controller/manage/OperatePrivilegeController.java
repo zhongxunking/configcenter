@@ -66,7 +66,7 @@ public class OperatePrivilegeController {
      */
     @RequestMapping("/findInheritedOperatePrivileges")
     public FindInheritedPrivilegesResult findInheritedOperatePrivileges(String appId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindInheritedPrivilegesResult result = FacadeUtils.buildSuccess(FindInheritedPrivilegesResult.class);
         result.setAppOperatePrivileges(OperatePrivileges.findInheritedOperatePrivileges(appId));
         return result;

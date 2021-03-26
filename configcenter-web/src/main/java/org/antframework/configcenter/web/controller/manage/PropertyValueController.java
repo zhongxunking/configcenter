@@ -36,6 +36,7 @@ import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,8 +66,8 @@ public class PropertyValueController {
      */
     @RequestMapping("/addOrModifyPropertyValue")
     public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
-        ManagerApps.adminOrHaveApp(appId);
-        OperatePrivileges.adminOrReadWrite(appId, key);
+        ManagerApps.assertAdminOrHaveApp(appId);
+        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
 
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
@@ -89,8 +90,8 @@ public class PropertyValueController {
      */
     @RequestMapping("/deletePropertyValue")
     public EmptyResult deletePropertyValue(String appId, String profileId, String branchId, String key) {
-        ManagerApps.adminOrHaveApp(appId);
-        OperatePrivileges.adminOrReadWrite(appId, key);
+        ManagerApps.assertAdminOrHaveApp(appId);
+        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
 
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
@@ -111,7 +112,7 @@ public class PropertyValueController {
      */
     @RequestMapping("/revertPropertyValues")
     public EmptyResult revertPropertyValues(String appId, String profileId, String branchId, Long releaseVersion) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
         order.setAppId(appId);
@@ -132,7 +133,7 @@ public class PropertyValueController {
      */
     @RequestMapping("/findPropertyValues")
     public FindPropertyValuesResult findPropertyValues(String appId, String profileId, String branchId, Scope minScope) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId(appId);
@@ -171,7 +172,7 @@ public class PropertyValueController {
      */
     @RequestMapping("/comparePropertyValuesWithRelease")
     public ComparePropertyValuesWithReleaseResult comparePropertyValuesWithRelease(String appId, String profileId, String branchId, Long releaseVersion) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         List<PropertyValueInfo> propertyValues = PropertyValues.findPropertyValues(appId, profileId, branchId, Scope.PRIVATE);
         Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());

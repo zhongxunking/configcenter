@@ -15,8 +15,13 @@ import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.json.JSON;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
+import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.controller.ConfigController;
+import org.antframework.manager.facade.event.ManagerDeletingEvent;
+import org.antframework.manager.facade.info.ManagerInfo;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.bekit.event.annotation.DomainListener;
+import org.bekit.event.annotation.Listen;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -34,6 +39,7 @@ import java.util.stream.Collectors;
  */
 @Configuration
 @EnableConfigurationProperties(WebConfiguration.ConfigcenterProperties.class)
+@DomainListener
 @AllArgsConstructor
 public class WebConfiguration {
     // 转换器注册器
@@ -48,6 +54,13 @@ public class WebConfiguration {
         for (ConverterRegistry registry : converterRegistries) {
             registry.addConverter(new StringToSetListenMetaConverter());
         }
+    }
+
+    // 监听管理员删除事件
+    @Listen
+    public void listenManagerDeletingEvent(ManagerDeletingEvent event) {
+        ManagerInfo manager = event.getManager();
+        ManagerApps.deletesByManager(manager.getManagerId());
     }
 
     /**

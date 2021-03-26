@@ -65,7 +65,7 @@ public class BranchController {
                                  String profileId,
                                  String branchId,
                                  Long releaseVersion) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         AddBranchOrder order = new AddBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -98,13 +98,12 @@ public class BranchController {
                                              String memo) throws JsonProcessingException {
         Set<Property> properties = convertToProperties(addOrModifiedProperties);
         Set<String> propertyKeys = convertToPropertyKeys(removedPropertyKeys);
-        ManagerApps.adminOrHaveApp(appId);
-        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
-            // 校验是否有敏感配置被修改
-            Set<String> keys = properties.stream().map(Property::getKey).collect(Collectors.toSet());
-            keys.addAll(propertyKeys);
-            OperatePrivileges.onlyReadWrite(appId, keys);
-        }
+
+        // 校验是否有权限
+        ManagerApps.assertAdminOrHaveApp(appId);
+        Set<String> keys = properties.stream().map(Property::getKey).collect(Collectors.toSet());
+        keys.addAll(propertyKeys);
+        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
 
         ReleaseBranchOrder order = new ReleaseBranchOrder();
         order.setAppId(appId);
@@ -162,7 +161,7 @@ public class BranchController {
      */
     @RequestMapping("/revertBranch")
     public EmptyResult revertBranch(String appId, String profileId, String branchId, Long targetReleaseVersion) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         RevertBranchOrder order = new RevertBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -186,7 +185,7 @@ public class BranchController {
      */
     @RequestMapping("/mergeBranch")
     public EmptyResult mergeBranch(String appId, String profileId, String branchId, String sourceBranchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
         MergeBranchOrder order = new MergeBranchOrder();
         order.setAppId(appId);
@@ -226,7 +225,7 @@ public class BranchController {
                                                              String profileId,
                                                              String branchId,
                                                              String sourceBranchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
         Map<String, Property> propertyMap = Branches.findBranch(appId, profileId, branchId)
                 .getRelease()
@@ -276,7 +275,7 @@ public class BranchController {
      */
     @RequestMapping("/deleteBranch")
     public EmptyResult deleteBranch(String appId, String profileId, String branchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         DeleteBranchOrder order = new DeleteBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -294,7 +293,7 @@ public class BranchController {
      */
     @RequestMapping("/findBranch")
     public FindBranchResult findBranch(String appId, String profileId, String branchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindBranchOrder order = new FindBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -315,7 +314,7 @@ public class BranchController {
      */
     @RequestMapping("/findBranches")
     public FindBranchesResult findBranches(String appId, String profileId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindBranchesOrder order = new FindBranchesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);

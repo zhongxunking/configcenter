@@ -57,7 +57,7 @@ public class ReleaseController {
      */
     @RequestMapping("/findRelease")
     public FindReleaseResult findRelease(String appId, String profileId, Long version) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
         FindReleaseOrder order = new FindReleaseOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -81,7 +81,7 @@ public class ReleaseController {
      */
     @RequestMapping("/findInheritedReleases")
     public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId, String branchId) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {
@@ -111,7 +111,7 @@ public class ReleaseController {
      */
     @RequestMapping("/compareReleases")
     public CompareReleasesResult compareReleases(String appId, String profileId, Long leftVersion, Long rightVersion) {
-        ManagerApps.adminOrHaveApp(appId);
+        ManagerApps.assertAdminOrHaveApp(appId);
 
         Set<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
         Set<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
@@ -144,7 +144,7 @@ public class ReleaseController {
         if (appId == null) {
             CurrentManagerAssert.admin();
         } else {
-            ManagerApps.adminOrHaveApp(appId);
+            ManagerApps.assertAdminOrHaveApp(appId);
         }
         QueryReleasesOrder order = new QueryReleasesOrder();
         order.setPageNo(pageNo);
