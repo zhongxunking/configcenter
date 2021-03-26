@@ -9,8 +9,8 @@
 package org.antframework.configcenter.dal.dao;
 
 import org.antframework.common.util.query.QueryParam;
+import org.antframework.configcenter.common.constant.CacheConstant;
 import org.antframework.configcenter.dal.entity.Profile;
-import org.antframework.configcenter.facade.vo.CacheConstant;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;

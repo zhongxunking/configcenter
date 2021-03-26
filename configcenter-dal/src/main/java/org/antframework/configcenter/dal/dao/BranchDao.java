@@ -8,8 +8,8 @@
  */
 package org.antframework.configcenter.dal.dao;
 
+import org.antframework.configcenter.common.constant.CacheConstant;
 import org.antframework.configcenter.dal.entity.Branch;
-import org.antframework.configcenter.facade.vo.CacheConstant;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.jpa.repository.Lock;

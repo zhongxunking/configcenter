@@ -6,10 +6,10 @@
  * 修订记录:
  * @author 钟勋 2019-05-02 18:36 创建
  */
-package org.antframework.configcenter.facade.vo;
+package org.antframework.configcenter.common.constant;
 
 /**
- * 缓存静态常量类
+ * 缓存静态常量
  */
 public final class CacheConstant {
     /**
