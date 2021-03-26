@@ -9,8 +9,8 @@
 package org.antframework.configcenter.test.client;
 
 import org.antframework.configcenter.client.Config;
+import org.antframework.configcenter.client.ConfigContext;
 import org.antframework.configcenter.client.ConfigListener;
-import org.antframework.configcenter.client.ConfigsContext;
 import org.antframework.configcenter.client.core.ChangedProperty;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.junit.Ignore;
@@ -24,8 +24,8 @@ import java.util.List;
  * 配置上下文单元测试
  */
 @Ignore
-public class ConfigsContextTest {
-    private static final Logger logger = LoggerFactory.getLogger(ConfigsContextTest.class);
+public class ConfigContextTest {
+    private static final Logger logger = LoggerFactory.getLogger(ConfigContextTest.class);
 
     @Test
     public void testConfigsContext_withCache() throws InterruptedException {
@@ -38,7 +38,7 @@ public class ConfigsContextTest {
     }
 
     private void testConfigsContext(String cacheDir) {
-        ConfigsContext configsContext = new ConfigsContext(
+        ConfigContext configsContext = new ConfigContext(
                 "customer",
                 "dev",
                 null,

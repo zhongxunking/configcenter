@@ -24,7 +24,7 @@ import java.util.function.Function;
  * 配置上下文
  */
 @Slf4j
-public class ConfigsContext {
+public class ConfigContext {
     // config缓存
     private final Cache<String, Config> configsCache = new Cache<>(new Function<String, Config>() {
         @Override
@@ -58,13 +58,13 @@ public class ConfigsContext {
      * @param managerId 管理员id（选填：null表示不使用管理员签名）
      * @param secretKey 管理员密钥（选填：null表示不使用管理员签名）
      */
-    public ConfigsContext(String mainAppId,
-                          String profileId,
-                          String target,
-                          String serverUrl,
-                          String home,
-                          String managerId,
-                          String secretKey) {
+    public ConfigContext(String mainAppId,
+                         String profileId,
+                         String target,
+                         String serverUrl,
+                         String home,
+                         String managerId,
+                         String secretKey) {
         if (StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId) || StringUtils.isBlank(serverUrl)) {
             throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,home=%s,managerId=%s,secretKey=%s", mainAppId, profileId, serverUrl, home, managerId, secretKey));
         }

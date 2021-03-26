@@ -10,7 +10,7 @@ package org.antframework.configcenter.spring.boot;
 
 import org.antframework.boot.core.Contexts;
 import org.antframework.configcenter.client.Config;
-import org.antframework.configcenter.spring.ConfigsContexts;
+import org.antframework.configcenter.spring.ConfigContexts;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -45,7 +45,7 @@ public class EnvironmentInitializer implements ApplicationListener<ApplicationEn
             return;
         }
         // 创建配置资源
-        PropertySource propertySource = new ConfigcenterPropertySource(ConfigsContexts.getConfig(ConfigcenterProperties.INSTANCE.getRequiredAppId()));
+        PropertySource propertySource = new ConfigcenterPropertySource(ConfigContexts.getConfig(ConfigcenterProperties.INSTANCE.getRequiredAppId()));
         // 将配置资源添加到environment中
         MutablePropertySources propertySources = event.getEnvironment().getPropertySources();
         if (ConfigcenterProperties.INSTANCE.getPriorTo() == null) {

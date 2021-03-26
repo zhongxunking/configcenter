@@ -13,8 +13,8 @@ import org.antframework.boot.core.Contexts;
 import org.antframework.boot.env.Envs;
 import org.antframework.boot.env.listener.ChangedProperty;
 import org.antframework.configcenter.client.Config;
-import org.antframework.configcenter.client.ConfigsContext;
-import org.antframework.configcenter.spring.ConfigsContexts;
+import org.antframework.configcenter.client.ConfigContext;
+import org.antframework.configcenter.spring.ConfigContexts;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -72,7 +72,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
 
     // 使配置上下文准备好
     private void readyConfigsContext() {
-        ConfigsContext context = ConfigsContexts.getContext();
+        ConfigContext context = ConfigContexts.getContext();
         // 添加默认监听器
         for (String appId : context.getAppIds()) {
             Config config = context.getConfig(appId);
@@ -109,7 +109,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
             @Override
             public void run() {
                 try {
-                    ConfigsContexts.getContext().refresh();
+                    ConfigContexts.getContext().refresh();
                 } catch (Throwable e) {
                     log.error("定时刷新configcenter配置出错", e);
                 }
@@ -124,7 +124,7 @@ public class ConfigsContextLifeCycle implements GenericApplicationListener {
 
     // 关闭配置上下文和刷新定时器
     private void close() {
-        ConfigsContexts.getContext().close();
+        ConfigContexts.getContext().close();
         if (refreshTimer != null) {
             refreshTimer.cancel();
         }
