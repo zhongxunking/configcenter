@@ -136,6 +136,11 @@
                     </template>
                 </template>
             </el-table-column>
+            <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                <template slot-scope="{ row }">
+                    <span class="propertyValue-text-style">{{ row.memo }}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                 <template slot-scope="{ row }">
                     <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
@@ -203,7 +208,7 @@
                     </template>
                     <template v-else-if="showOverrideButton(row)">
                         <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-download" size="mini" plain circle></el-button>
+                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
                         </el-tooltip>
                     </template>
                 </template>
@@ -455,6 +460,7 @@
                                         key: propertyValue.key,
                                         value: propertyValue.value,
                                         scope: propertyValue.scope,
+                                        memo: null,
                                         privilege: theThis.calcPrivilege(release.appId, propertyValue.key),
                                         editing: false,
                                         editingValue: null,
@@ -485,6 +491,7 @@
                                                 key: property.key,
                                                 value: property.value,
                                                 scope: property.scope,
+                                                memo: null,
                                                 privilege: theThis.calcPrivilege(release.appId, property.key),
                                                 editing: false,
                                                 editingValue: null,
@@ -501,6 +508,7 @@
                                         key: property.key,
                                         value: property.value,
                                         scope: property.scope,
+                                        memo: null,
                                         privilege: theThis.calcPrivilege(release.appId, property.key),
                                         editing: false,
                                         editingValue: null,
@@ -510,6 +518,7 @@
                             }
                             appProperty.profileProperties.push(profileProperty);
                         });
+                        theThis.fillAppPropertyMemo(appProperty);
                         theThis.fillCurrentProfileProperties(appProperty);
                         appProperty.profileProperties.forEach(function (profileProperty) {
                             profileProperty.properties.forEach(function (property) {
@@ -634,6 +643,31 @@
                         theThis.inheritedAppPropertyKeys = result.appPropertyKeys;
                     });
                 },
+                fillAppPropertyMemo: function (appProperty) {
+                    let propertyKeyMap = {};
+                    let started = false;
+                    for (let i = 0; i < this.inheritedAppPropertyKeys.length; i++) {
+                        let appPropertyKey = this.inheritedAppPropertyKeys[i];
+                        if (appPropertyKey.app.appId === appProperty.app.appId) {
+                            started = true;
+                        }
+                        if (started) {
+                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                                if (!propertyKeyMap[propertyKey.key]) {
+                                    propertyKeyMap[propertyKey.key] = propertyKey;
+                                }
+                            });
+                        }
+                    }
+                    appProperty.profileProperties.forEach(function (profileProperty) {
+                        profileProperty.properties.forEach(function (property) {
+                            let propertyKey = propertyKeyMap[property.key];
+                            if (propertyKey) {
+                                property.memo = propertyKey.memo;
+                            }
+                        });
+                    });
+                },
                 fillCurrentProfileProperties: function (appProperty) {
                     const theThis = this;
 
@@ -660,6 +694,7 @@
                                     key: propertyKey.key,
                                     value: null,
                                     scope: propertyKey.scope,
+                                    memo: propertyKey.memo,
                                     privilege: theThis.calcPrivilege(propertyKey.appId, propertyKey.key),
                                     editing: false,
                                     editingValue: null
@@ -891,6 +926,7 @@
                                 key: property.key,
                                 value: property.value,
                                 scope: property.scope,
+                                memo: property.memo,
                                 privilege: theThis.calcPrivilege(appProperty.app.appId, property.key),
                                 editing: false,
                                 editingValue: null,
