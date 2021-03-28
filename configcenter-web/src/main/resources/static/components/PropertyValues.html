@@ -63,7 +63,7 @@
         </el-col>
         <el-col :span="12" style="text-align: center;">
             <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties[0] ? appProperties[0].app : null) }}</span>
-            <el-radio-group v-model="showMode" size="mini">
+            <el-radio-group v-model="showMode" size="mini" @change="changeShowMode">
                 <el-radio-button label="table">表格</el-radio-button>
                 <el-radio-button label="text">文本</el-radio-button>
                 <el-radio-button label="all">所有</el-radio-button>
@@ -91,7 +91,7 @@
             <template v-for="profileProperty in appProperty.profileProperties">
                 <template v-if="showMode==='table' || appProperty.app.appId!==appId || profileProperty.profileId!==profileId">
                     <el-table v-if="profileProperty.properties.length > 0"
-                              :key="appProperty.app.appId + ':' + profileProperty.profileId"
+                              :key="'table:' + appProperty.app.appId + ':' + profileProperty.profileId + ':properties'"
                               :show-header="profileProperty.profileId === profileId"
                               :data="profileProperty.properties"
                               :row-key="calcRowKey"
@@ -217,7 +217,7 @@
                         </el-table-column>
                     </el-table>
                     <el-table v-else
-                              :key="appProperty.app.appId + ':' + profileProperty.profileId"
+                              :key="'table:' + appProperty.app.appId + ':' + profileProperty.profileId + ':empty'"
                               :show-header="profileProperty.profileId === profileId"
                               :data="[{}]"
                               :span-method="profilePropertyEmptyOrShowTextSpanMethod"
@@ -242,7 +242,7 @@
                     </el-table>
                 </template>
                 <template v-else>
-                    <el-table :key="appProperty.app.appId + ':' + profileProperty.profileId"
+                    <el-table :key="'table:' + appProperty.app.appId + ':' + profileProperty.profileId + ':text'"
                               :data="[{}]"
                               :span-method="profilePropertyEmptyOrShowTextSpanMethod"
                               :cell-style="{padding: '3px 0px'}"
@@ -251,7 +251,7 @@
                             <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
                         </el-table-column>
                         <el-table-column prop="key" label="配置key" :resizable="false">
-                            <el-input v-model="editingCurrentProfileProperties" type="textarea" autosize size="mini" clearable placeholder="请输入配置集"></el-input>
+                            <el-input v-model="editingCurrentProfilePropertiesInText" type="textarea" autosize size="mini" clearable placeholder="请输入配置集"></el-input>
                         </el-table-column>
                         <el-table-column prop="value" label="配置value" :resizable="false">
                         </el-table-column>
@@ -298,7 +298,8 @@
                 <span style="margin-right: 12px">变更的配置</span>
             </el-col>
             <el-col :span="21">
-                <el-table :data="modifiedProperties"
+                <el-table :key="'table:modifiedProperties'"
+                          :data="modifiedProperties"
                           :default-sort="{prop: 'key'}"
                           :cell-style="{padding: '5px 0px'}"
                           border>
@@ -384,7 +385,7 @@
                 inheritedAppPropertyKeys: [],
                 appOperatePrivileges: [],
                 showMode: 'table',
-                editingCurrentProfileProperties: '',
+                editingCurrentProfilePropertiesInText: '',
                 addPropertyValueDialogShowing: false,
                 addPropertyValueForm: {
                     key: null,
@@ -774,6 +775,25 @@
                         }
                         theThis.appOperatePrivileges = result.appOperatePrivileges;
                     });
+                },
+                changeShowMode: function (newShowMode) {
+                    if (newShowMode === 'text') {
+                        let sortedPropertyValues = [];
+                        this.propertyValues.forEach(function (propertyValue) {
+                            sortedPropertyValues.push(propertyValue);
+                        });
+                        sortedPropertyValues.sort(function (left, right) {
+                            return left.key > right.key;
+                        });
+                        let text = '';
+                        sortedPropertyValues.forEach(function (propertyValue) {
+                            if (text !== '') {
+                                text += '\n';
+                            }
+                            text += propertyValue.key + '=' + propertyValue.value;
+                        });
+                        this.editingCurrentProfilePropertiesInText = text;
+                    }
                 },
                 calcPrivilege: function (appId, key) {
                     let started = false;
