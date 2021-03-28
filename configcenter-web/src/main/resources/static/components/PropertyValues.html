@@ -57,164 +57,200 @@
             <!--</router-link>-->
         </el-col>
     </el-row>
-    <div v-for="appProperty in appProperties" style="margin-bottom: 30px;">
-        <el-row v-if="appProperty.app.appId === appId" style="margin-bottom: 10px">
-            <el-col :span="6">
-                <el-button type="primary" icon="el-icon-plus" size="small" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
-            </el-col>
-            <el-col :span="12" style="text-align: center;">
-                <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperty.app) }}</span>
-            </el-col>
-            <el-col :span="6" style="text-align: end">
-                <el-popover placement="top" v-model="revertPopoverShowing" trigger="manual">
-                    <p>所有修改都会被还原，确定还原？</p>
-                    <div style="text-align: right; margin: 0">
-                        <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
-                        <el-button type="primary" size="mini" @click="revertPropertyValues">确定</el-button>
-                    </div>
-                    <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited" @click="revertPopoverShowing = true">还原修改</el-button>
-                </el-popover>
-                <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited" @click="showReleaseBranchDialog">发布修改</el-button>
-            </el-col>
-        </el-row>
-        <el-row v-else style="margin-bottom: 10px">
-            <el-col :offset="4" :span="16" style="text-align: center;">
-                <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperty.app) }}</span>
-            </el-col>
-        </el-row>
+    <el-row style="margin-bottom: 10px">
+        <el-col :span="6">
+            <el-button type="primary" icon="el-icon-plus" size="small" :disabled="showMode!=='table'" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
+        </el-col>
+        <el-col :span="12" style="text-align: center;">
+            <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties[0] ? appProperties[0].app : null) }}</span>
+            <el-radio-group v-model="showMode" size="mini">
+                <el-radio-button label="table">表格</el-radio-button>
+                <el-radio-button label="text">文本</el-radio-button>
+                <el-radio-button label="all">所有</el-radio-button>
+            </el-radio-group>
+        </el-col>
+        <el-col :span="6" style="text-align: end">
+            <el-popover placement="top" v-model="revertPopoverShowing" trigger="manual">
+                <p>所有修改都会被还原，确定还原？</p>
+                <div style="text-align: right; margin: 0">
+                    <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
+                    <el-button type="primary" size="mini" @click="revertPropertyValues">确定</el-button>
+                </div>
+                <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited || showMode==='all'" @click="revertPopoverShowing = true">还原修改</el-button>
+            </el-popover>
+            <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited || showMode!=='table'" @click="showReleaseBranchDialog">发布修改</el-button>
+        </el-col>
+    </el-row>
+    <template v-if="showMode!=='all'">
+        <div v-for="appProperty in appProperties" style="margin-bottom: 30px;">
+            <el-row v-if="appProperty.app.appId !== appId" style="margin-bottom: 10px">
+                <el-col :offset="4" :span="16" style="text-align: center;">
+                    <span style="font-size: large;color: #67c23a;">{{ toShowingApp(appProperty.app) }}</span>
+                </el-col>
+            </el-row>
+            <template v-for="profileProperty in appProperty.profileProperties">
+                <el-table v-if="showMode==='table' || appProperty.app.appId!==appId || profileProperty.profileId!==profileId"
+                          :data="profileProperty.properties.length !== 0 ? profileProperty.properties : [{empty:true, propertiesSize:1, appId:appProperty.app.appId, profileId:profileProperty.profileId}]"
+                          :span-method="profilePropertySpanMethod"
+                          :cell-class-name="tableCellClassName"
+                          :show-header="profileProperty.profileId === profileId"
+                          :key="appProperty.app.appId + ':' + profileProperty.profileId"
+                          :row-key="calcRowKey"
+                          :default-sort="{prop: 'key'}"
+                          :cell-style="{padding: '3px 0px'}"
+                          border>
+                    <el-table-column label="环境" :resizable="false" width="150px">
+                        <template slot-scope="{ row }">
+                            <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="key" label="配置key" :resizable="false">
+                        <template slot-scope="{ row }">
+                            <div v-if="row.empty" style="text-align: center">
+                                <span class="configcenter-table__empty-text">暂无数据</span>
+                            </div>
+                            <template v-else>
+                                <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
+                                    <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                        <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
+                                    </el-badge>
+                                    <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                        <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
+                                    </el-badge>
+                                    <span v-else class="propertyValue-text-style">{{ row.key }}</span>
+                                </template>
+                                <span v-else class="propertyValue-text-style">{{ row.key }}</span>
+                            </template>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="value" label="配置value" :resizable="false">
+                        <template slot-scope="{ row }">
+                            <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="mini" clearable placeholder="请输入配置value"></el-input>
+                            <template v-else>
+                                <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedValueKeys.indexOf(row.key) >= 0">
+                                    <el-badge type="warning" value="改" class="badge-style">
+                                        <el-tag v-if="row.value === null" size="medium">无效</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
+                                    </el-badge>
+                                </template>
+                                <div v-else>
+                                    <el-tag v-if="row.value === null" size="medium">无效</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                    <span v-else class="propertyValue-text-style">{{ row.value }}</span>
+                                </div>
+                            </template>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                        <template slot-scope="{ row }">
+                            <span class="propertyValue-text-style">{{ row.memo }}</span>
+                        </template>
+                    </el-table-column>
+                    <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
+                        <template slot-scope="{ row }">
+                            <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
+                                <el-option value="PRIVATE" label="私有"></el-option>
+                                <el-option value="PROTECTED" label="可继承"></el-option>
+                                <el-option value="PUBLIC" label="公开"></el-option>
+                            </el-select>
+                            <template v-else>
+                                <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedScopeKeys.indexOf(row.key) >= 0">
+                                    <el-badge type="warning" value="改" class="badge-style">
+                                        <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                        <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                        <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                    </el-badge>
+                                </template>
+                                <div v-else>
+                                    <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
+                                    <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
+                                </div>
+                            </template>
+                        </template>
+                    </el-table-column>
+                    <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
+                        <template slot-scope="{ row }">
+                            <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
+                                <template v-if="difference.removedKeys.indexOf(row.key) >= 0">
+                                    <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
+                                    </el-tooltip>
+                                </template>
+                                <template v-else-if="row.value === null || row.temporary">
+                                    <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                        <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                    </el-tooltip>
+                                    <el-button-group v-else>
+                                        <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                            <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
+                                        </el-tooltip>
+                                        <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                            <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
+                                        </el-tooltip>
+                                    </el-button-group>
+                                </template>
+                                <el-row v-else>
+                                    <el-col :span="12" style="text-align: center">
+                                        <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                        </el-tooltip>
+                                        <el-button-group v-else>
+                                            <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                                <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
+                                            </el-tooltip>
+                                            <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                                <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
+                                            </el-tooltip>
+                                        </el-button-group>
+                                    </el-col>
+                                    <el-col :span="12" style="text-align: center">
+                                        <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
+                                            <el-button @click="deletePropertyValue(row)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
+                                        </el-tooltip>
+                                    </el-col>
+                                </el-row>
+                            </template>
+                            <template v-else-if="showOverrideButton(row)">
+                                <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
+                                    <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
+                                </el-tooltip>
+                            </template>
+                        </template>
+                    </el-table-column>
+                </el-table>
+                <template v-else>
+                    <el-table :data="[{}]"
+                              :span-method="profilePropertyShowTextSpanMethod"
+                              :key="appProperty.app.appId + ':' + profileProperty.profileId"
+                              :row-key="'showWithText'"
+                              :cell-style="{padding: '3px 0px'}"
+                              border>
+                        <el-table-column label="环境" :resizable="false" width="150px">
+                            <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
+                        </el-table-column>
+                        <el-table-column prop="key" label="配置key" :resizable="false">
+                            <el-input v-model="editingCurrentProfileProperties" type="textarea" autosize size="mini" clearable placeholder="请输入配置集"></el-input>
+                        </el-table-column>
+                        <el-table-column prop="value" label="配置value" :resizable="false">
+                        </el-table-column>
+                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                        </el-table-column>
+                        <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
+                        </el-table-column>
+                        <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
+                            <el-tooltip content="提交修改" placement="top" :open-delay="1000" :hide-after="3000">
+                                <el-button type="primary" icon="el-icon-finished" size="mini" circle></el-button>
+                            </el-tooltip>
+                        </el-table-column>
+                    </el-table>
+                </template>
+            </template>
+        </div>
+    </template>
+    <template v-else>all</template>
 
-        <el-table v-for="profileProperty in appProperty.profileProperties"
-                  :data="profileProperty.properties.length !== 0 ? profileProperty.properties : [{empty:true, propertiesSize:1, appId:appProperty.app.appId, profileId:profileProperty.profileId}]"
-                  :span-method="profilePropertySpanMethod"
-                  :cell-class-name="tableCellClassName"
-                  :show-header="profileProperty.profileId === profileId"
-                  :key="appProperty.app.appId + ':' + profileProperty.profileId"
-                  :row-key="calcRowKey"
-                  :default-sort="{prop: 'key'}"
-                  :cell-style="{padding: '3px 0px'}"
-                  border>
-            <el-table-column label="环境" :resizable="false" width="150px">
-                <template slot-scope="{ row }">
-                    <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="key" label="配置key" :resizable="false">
-                <template slot-scope="{ row }">
-                    <div v-if="row.empty" style="text-align: center">
-                        <span class="configcenter-table__empty-text">暂无数据</span>
-                    </div>
-                    <template v-else>
-                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                            <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
-                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
-                            </el-badge>
-                            <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
-                                <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
-                            </el-badge>
-                            <span v-else class="propertyValue-text-style">{{ row.key }}</span>
-                        </template>
-                        <span v-else class="propertyValue-text-style">{{ row.key }}</span>
-                    </template>
-                </template>
-            </el-table-column>
-            <el-table-column prop="value" label="配置value" :resizable="false">
-                <template slot-scope="{ row }">
-                    <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="mini" clearable placeholder="请输入配置value"></el-input>
-                    <template v-else>
-                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedValueKeys.indexOf(row.key) >= 0">
-                            <el-badge type="warning" value="改" class="badge-style">
-                                <el-tag v-if="row.value === null" size="medium">无效</el-tag>
-                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                                <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
-                            </el-badge>
-                        </template>
-                        <div v-else>
-                            <el-tag v-if="row.value === null" size="medium">无效</el-tag>
-                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
-                            <span v-else class="propertyValue-text-style">{{ row.value }}</span>
-                        </div>
-                    </template>
-                </template>
-            </el-table-column>
-            <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
-                <template slot-scope="{ row }">
-                    <span class="propertyValue-text-style">{{ row.memo }}</span>
-                </template>
-            </el-table-column>
-            <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
-                <template slot-scope="{ row }">
-                    <el-select v-if="row.editing" v-model="row.editingScope" size="mini" placeholder="请选择作用域" style="width: 90%">
-                        <el-option value="PRIVATE" label="私有"></el-option>
-                        <el-option value="PROTECTED" label="可继承"></el-option>
-                        <el-option value="PUBLIC" label="公开"></el-option>
-                    </el-select>
-                    <template v-else>
-                        <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedScopeKeys.indexOf(row.key) >= 0">
-                            <el-badge type="warning" value="改" class="badge-style">
-                                <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
-                                <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
-                                <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
-                            </el-badge>
-                        </template>
-                        <div v-else>
-                            <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
-                            <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
-                            <el-tag v-else-if="row.scope === 'PUBLIC'" type="warning" size="medium">公开</el-tag>
-                        </div>
-                    </template>
-                </template>
-            </el-table-column>
-            <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
-                <template slot-scope="{ row }">
-                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                        <template v-if="difference.removedKeys.indexOf(row.key) >= 0">
-                            <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
-                            </el-tooltip>
-                        </template>
-                        <template v-else-if="row.value === null || row.temporary">
-                            <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
-                            </el-tooltip>
-                            <el-button-group v-else>
-                                <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
-                                </el-tooltip>
-                                <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
-                                </el-tooltip>
-                            </el-button-group>
-                        </template>
-                        <el-row v-else>
-                            <el-col :span="12" style="text-align: center">
-                                <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
-                                </el-tooltip>
-                                <el-button-group v-else>
-                                    <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="cancelEditing(row)" type="info" icon="el-icon-close" size="mini" circle></el-button>
-                                    </el-tooltip>
-                                    <el-tooltip content="确认修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="saveEditing(row)" type="success" icon="el-icon-check" size="mini" circle></el-button>
-                                    </el-tooltip>
-                                </el-button-group>
-                            </el-col>
-                            <el-col :span="12" style="text-align: center">
-                                <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                    <el-button @click="deletePropertyValue(row)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
-                                </el-tooltip>
-                            </el-col>
-                        </el-row>
-                    </template>
-                    <template v-else-if="showOverrideButton(row)">
-                        <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
-                            <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
-                        </el-tooltip>
-                    </template>
-                </template>
-            </el-table-column>
-        </el-table>
-    </div>
     <el-dialog :visible.sync="addPropertyValueDialogShowing" :before-close="closeAddPropertyValueDialog" title="新增配置项" width="50%">
         <el-form ref="addPropertyValueForm" :model="addPropertyValueForm" label-width="20%">
             <el-form-item label="配置key" prop="key" :rules="[{required:true, message:'请输入配置key', trigger:'blur'}]">
@@ -327,6 +363,8 @@
                 inheritedAppReleases: [],
                 inheritedAppPropertyKeys: [],
                 appOperatePrivileges: [],
+                showMode: 'table',
+                editingCurrentProfileProperties: '',
                 addPropertyValueDialogShowing: false,
                 addPropertyValueForm: {
                     key: null,
@@ -778,6 +816,19 @@
                         return 'invalid-property';
                     }
                     return '';
+                },
+                profilePropertyShowTextSpanMethod: function ({row, column, rowIndex, columnIndex}) {
+                    if (rowIndex === 0) {
+                        if (columnIndex === 0) {
+                            return [1, 1];
+                        } else if (columnIndex === 1) {
+                            return [1, 4];
+                        } else if (columnIndex === 5) {
+                            return [1, 1];
+                        } else {
+                            return [0, 0];
+                        }
+                    }
                 },
                 showOverrideButton: function (row) {
                     if (this.isValidKey(row.appId, row.profileId, row.key)) {
