@@ -203,7 +203,7 @@
                                         </el-col>
                                         <el-col :span="12" style="text-align: center">
                                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                                <el-button @click="deletePropertyValue(row)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
+                                                <el-button @click="deletePropertyValue(row.key)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
                                             </el-tooltip>
                                         </el-col>
                                     </el-row>
@@ -261,7 +261,7 @@
                         </el-table-column>
                         <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                             <el-tooltip content="提交修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button type="primary" icon="el-icon-finished" size="mini" circle></el-button>
+                                <el-button type="primary" icon="el-icon-finished" size="mini" circle :disabled="editingCurrentProfilePropertiesInText===currentProfilePropertiesInText" @click="showSubmitPropertiesInText"></el-button>
                             </el-tooltip>
                         </el-table-column>
                     </el-table>
@@ -386,6 +386,7 @@
                 appOperatePrivileges: [],
                 showMode: 'table',
                 editingCurrentProfilePropertiesInText: '',
+                currentProfilePropertiesInText: '',
                 addPropertyValueDialogShowing: false,
                 addPropertyValueForm: {
                     key: null,
@@ -462,6 +463,29 @@
                     });
 
                     return properties;
+                },
+                supposedKeyScopes: function () {
+                    let keyScopes = {};
+                    for (let i = this.inheritedAppPropertyKeys.length - 1; i >= 0; i--) {
+                        let appPropertyKey = this.inheritedAppPropertyKeys[i];
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            keyScopes[propertyKey.key] = propertyKey.scope;
+                        })
+                    }
+                    for (let i = this.inheritedAppReleases.length - 1; i >= 0; i--) {
+                        let appRelease = this.inheritedAppReleases[i];
+                        for (let j = appRelease.inheritedProfileReleases.length - 1; j >= 0; j--) {
+                            let release = appRelease.inheritedProfileReleases[j];
+                            release.properties.forEach(function (property) {
+                                keyScopes[property.key] = property.scope;
+                            });
+                        }
+                    }
+                    this.propertyValues.forEach(function (propertyValue) {
+                        keyScopes[propertyValue.key] = propertyValue.scope;
+                    });
+
+                    return keyScopes;
                 }
             },
             watch: {
@@ -793,7 +817,98 @@
                             text += propertyValue.key + '=' + propertyValue.value;
                         });
                         this.editingCurrentProfilePropertiesInText = text;
+                        this.currentProfilePropertiesInText = text;
                     }
+                },
+                showSubmitPropertiesInText: function () {
+                    const theThis = this;
+                    Vue.prototype.$confirm('确定提交修改？', '警告', {type: 'warning'})
+                        .then(function () {
+                            theThis.submitEditingCurrentProfilePropertiesInText();
+                        });
+
+                },
+                submitEditingCurrentProfilePropertiesInText: function () {
+                    const theThis = this;
+
+                    let propertyInTexts = this.editingCurrentProfilePropertiesInText.split('\n');
+                    let keyValues = {};
+                    let invalidPropertyInTexts = [];
+                    propertyInTexts.forEach(function (propertyInText) {
+                        propertyInText = propertyInText.trim();
+                        if (!propertyInText || propertyInText.startsWith('#')) {
+                            return;
+                        }
+                        let index = propertyInText.indexOf('=');
+                        if (index <= 0 || index >= propertyInText.length - 1) {
+                            invalidPropertyInTexts.push(propertyInText);
+                        } else {
+                            keyValues[propertyInText.substring(0, index)] = propertyInText.substring(index + 1);
+                        }
+                    });
+                    if (invalidPropertyInTexts.length > 0) {
+                        Vue.prototype.$message.error("存在非法的配置" + invalidPropertyInTexts);
+                        return
+                    }
+
+                    let oldKeyValues = {};
+                    this.propertyValues.forEach(function (propertyValue) {
+                        oldKeyValues[propertyValue.key] = propertyValue.value;
+                    });
+
+                    let addedOrModifiedPropertyValues = [];
+                    for (let key in keyValues) {
+                        let value = keyValues[key];
+                        let oldValue = oldKeyValues[key];
+                        if (value !== oldValue) {
+                            let scope = this.supposedKeyScopes[key];
+                            if (!scope) {
+                                scope = 'PRIVATE';
+                            }
+                            addedOrModifiedPropertyValues.push({
+                                key: key,
+                                value: value,
+                                scope: scope
+                            });
+                        }
+                    }
+
+                    let deletedKeys = [];
+                    for (let key in oldKeyValues) {
+                        let value = keyValues[key];
+                        if (value === undefined) {
+                            deletedKeys.push(key);
+                        }
+                    }
+
+                    if (this.manager.type === 'NORMAL') {
+                        let noPrivilegeKeys = [];
+                        addedOrModifiedPropertyValues.forEach(function (propertyValue) {
+                            let privilege = this.calcPrivilege(this.appId, propertyValue.key);
+                            if (privilege !== 'READ_WRITE') {
+                                noPrivilegeKeys.push(propertyValue.key);
+                            }
+                        });
+                        deletedKeys.forEach(function (key) {
+                            let privilege = this.calcPrivilege(this.appId, key);
+                            if (privilege !== 'READ_WRITE') {
+                                noPrivilegeKeys.push(key);
+                            }
+                        });
+                        if (noPrivilegeKeys.length > 0) {
+                            Vue.prototype.$message.error('无权限修改敏感配置：' + noPrivilegeKeys);
+                            return;
+                        }
+                    }
+
+                    addedOrModifiedPropertyValues.forEach(function (propertyValue) {
+                        theThis.addOrModifyPropertyValue(propertyValue.key, propertyValue.value, propertyValue.scope);
+                    });
+                    deletedKeys.forEach(function (key) {
+                        theThis.deletePropertyValue(key);
+                    });
+
+                    this.currentProfilePropertiesInText = this.editingCurrentProfilePropertiesInText;
                 },
                 calcPrivilege: function (appId, key) {
                     let started = false;
@@ -970,14 +1085,14 @@
                         }
                     });
                 },
-                deletePropertyValue: function (property) {
+                deletePropertyValue: function (key) {
                     const theThis = this;
                     axios.get('../manage/propertyValue/deletePropertyValue', {
                         params: {
                             appId: this.appId,
                             profileId: this.profileId,
                             branchId: this.branchId,
-                            key: property.key
+                            key: key
                         }
                     }).then(function (result) {
                         if (!result.success) {
