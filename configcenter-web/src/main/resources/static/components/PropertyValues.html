@@ -825,7 +825,7 @@
                     }
                 },
                 tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
-                    if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || row.value === null)) {
+                    if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || (!row.editing && row.value === null))) {
                         return 'invalid-property';
                     }
                     return '';
