@@ -1105,40 +1105,47 @@
                 overrideProperty: function (property) {
                     const theThis = this;
 
-                    this.appProperties.forEach(function (appProperty) {
-                        if (appProperty.app.appId !== theThis.appId) {
-                            return;
-                        }
-                        appProperty.profileProperties.forEach(function (profileProperty) {
-                            if (profileProperty.profileId !== theThis.profileId) {
+                    if (this.showMode === 'table') {
+                        this.appProperties.forEach(function (appProperty) {
+                            if (appProperty.app.appId !== theThis.appId) {
                                 return;
                             }
-                            for (let temp in profileProperty.properties) {
-                                if (temp.key === property.key) {
+                            appProperty.profileProperties.forEach(function (profileProperty) {
+                                if (profileProperty.profileId !== theThis.profileId) {
                                     return;
                                 }
-                            }
+                                for (let temp in profileProperty.properties) {
+                                    if (temp.key === property.key) {
+                                        return;
+                                    }
+                                }
 
-                            let temp = {
-                                appId: theThis.appId,
-                                profileId: theThis.profileId,
-                                key: property.key,
-                                value: property.value,
-                                scope: property.scope,
-                                memo: property.memo,
-                                privilege: theThis.calcPrivilege(appProperty.app.appId, property.key),
-                                editing: false,
-                                editingValue: null,
-                                editingScope: null,
-                                temporary: true
-                            };
-                            profileProperty.properties.push(temp);
-                            profileProperty.properties.forEach(function (property) {
-                                Vue.set(property, 'propertiesSize', profileProperty.properties.length);
+                                let temp = {
+                                    appId: theThis.appId,
+                                    profileId: theThis.profileId,
+                                    key: property.key,
+                                    value: property.value,
+                                    scope: property.scope,
+                                    memo: property.memo,
+                                    privilege: theThis.calcPrivilege(appProperty.app.appId, property.key),
+                                    editing: false,
+                                    editingValue: null,
+                                    editingScope: null,
+                                    temporary: true
+                                };
+                                profileProperty.properties.push(temp);
+                                profileProperty.properties.forEach(function (property) {
+                                    Vue.set(property, 'propertiesSize', profileProperty.properties.length);
+                                });
+                                theThis.startEditing(temp);
                             });
-                            theThis.startEditing(temp);
                         });
-                    });
+                    } else if (this.showMode === 'text') {
+                        if (this.editingCurrentProfilePropertiesInText.length > 0) {
+                            this.editingCurrentProfilePropertiesInText += '\n';
+                        }
+                        this.editingCurrentProfilePropertiesInText += property.key + '=' + property.value;
+                    }
                 },
                 revertPropertyValues: function () {
                     const theThis = this;
