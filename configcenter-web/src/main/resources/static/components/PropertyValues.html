@@ -251,7 +251,7 @@
                             <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
                         </el-table-column>
                         <el-table-column prop="key" label="配置key" :resizable="false">
-                            <el-input v-model="editingCurrentProfilePropertiesInText" type="textarea" autosize size="mini" clearable placeholder="请输入配置集"></el-input>
+                            <el-input v-model="editingPropertyValuesInText" type="textarea" autosize size="mini" clearable placeholder="请输入配置集"></el-input>
                         </el-table-column>
                         <el-table-column prop="value" label="配置value" :resizable="false">
                         </el-table-column>
@@ -261,7 +261,7 @@
                         </el-table-column>
                         <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                             <el-tooltip content="提交修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button type="primary" icon="el-icon-finished" size="mini" circle :disabled="editingCurrentProfilePropertiesInText===currentProfilePropertiesInText" @click="showSubmitPropertiesInText"></el-button>
+                                <el-button type="primary" icon="el-icon-finished" size="mini" circle :disabled="editingPropertyValuesInText===propertyValuesInText" @click="showSubmitEditingPropertyValuesInText"></el-button>
                             </el-tooltip>
                         </el-table-column>
                     </el-table>
@@ -385,8 +385,8 @@
                 inheritedAppPropertyKeys: [],
                 appOperatePrivileges: [],
                 showMode: 'table',
-                editingCurrentProfilePropertiesInText: '',
-                currentProfilePropertiesInText: '',
+                propertyValuesInText: '',
+                editingPropertyValuesInText: '',
                 addPropertyValueDialogShowing: false,
                 addPropertyValueForm: {
                     key: null,
@@ -516,7 +516,7 @@
                     this.findAllProfiles();
                     this.findBranches();
                     this.findPropertyValues();
-                    this.comparePropertyValuesWithRelease();
+                    this.findDifference();
                     this.findInheritedAppReleases();
                     this.findInheritedAppPropertyKeys();
                     this.findInheritedOperatePrivileges();
@@ -614,118 +614,6 @@
 
                     this.appProperties = appProperties;
                 },
-                findAllProfiles: function () {
-                    const theThis = this;
-                    axios.get('../manage/profile/findProfileTree', {
-                        params: {
-                            rootProfileId: null
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        let extractProfiles = function (profileTree, level) {
-                            let profiles = [];
-                            if (profileTree.profile !== null) {
-                                profileTree.profile.level = level;
-                                profiles.push(profileTree.profile);
-                            }
-                            profileTree.children.forEach(function (child) {
-                                profiles = profiles.concat(extractProfiles(child, level + 1));
-                            });
-                            return profiles;
-                        };
-                        theThis.allProfiles = extractProfiles(result.profileTree, -1);
-                    });
-                },
-                findBranches: function () {
-                    const theThis = this;
-                    axios.get('../manage/branch/findBranches', {
-                        params: {
-                            appId: theThis.appId,
-                            profileId: theThis.profileId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.branches = result.branches;
-                    });
-                },
-                switchProfile: function (profileId) {
-                    this.branchId = 'master';
-                    this.$router.replace('/configs/' + this.appId + '/' + profileId);
-                },
-                findPropertyValues: function () {
-                    const theThis = this;
-                    axios.get('../manage/propertyValue/findPropertyValues', {
-                        params: {
-                            appId: this.appId,
-                            profileId: this.profileId,
-                            branchId: this.branchId,
-                            minScope: 'PRIVATE'
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.propertyValues = result.propertyValues;
-                    });
-                },
-                comparePropertyValuesWithRelease: function () {
-                    const theThis = this;
-                    this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
-                        axios.get('../manage/propertyValue/comparePropertyValuesWithRelease', {
-                            params: {
-                                appId: theThis.appId,
-                                profileId: theThis.profileId,
-                                branchId: theThis.branchId,
-                                releaseVersion: release.version
-                            }
-                        }).then(function (result) {
-                            if (!result.success) {
-                                Vue.prototype.$message.error(result.message);
-                                return;
-                            }
-                            theThis.difference = result.difference;
-                        });
-                    });
-                },
-                findInheritedAppReleases: function () {
-                    const theThis = this;
-                    this.selfPropertiesLoading = true;
-                    axios.get('../manage/release/findInheritedReleases', {
-                        params: {
-                            appId: this.appId,
-                            profileId: this.profileId,
-                            branchId: this.branchId
-                        }
-                    }).then(function (result) {
-                        theThis.selfPropertiesLoading = false;
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.inheritedAppReleases = result.inheritedAppReleases;
-                    });
-                },
-                findInheritedAppPropertyKeys: function () {
-                    const theThis = this;
-                    axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
-                        params: {
-                            appId: this.appId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.inheritedAppPropertyKeys = result.appPropertyKeys;
-                    });
-                },
                 fillAppPropertyMemo: function (appProperty) {
                     let propertyKeyMap = {};
                     let started = false;
@@ -786,22 +674,8 @@
                         }
                     });
                 },
-                findInheritedOperatePrivileges: function () {
-                    const theThis = this;
-                    axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
-                        params: {
-                            appId: this.appId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        theThis.appOperatePrivileges = result.appOperatePrivileges;
-                    });
-                },
-                changeShowMode: function (newShowMode) {
-                    if (newShowMode === 'text') {
+                changeShowMode: function () {
+                    if (this.showMode === 'text') {
                         let sortedPropertyValues = [];
                         this.propertyValues.forEach(function (propertyValue) {
                             sortedPropertyValues.push(propertyValue);
@@ -816,22 +690,21 @@
                             }
                             text += propertyValue.key + '=' + propertyValue.value;
                         });
-                        this.editingCurrentProfilePropertiesInText = text;
-                        this.currentProfilePropertiesInText = text;
+                        this.editingPropertyValuesInText = text;
+                        this.propertyValuesInText = text;
                     }
                 },
-                showSubmitPropertiesInText: function () {
+                showSubmitEditingPropertyValuesInText: function () {
                     const theThis = this;
                     Vue.prototype.$confirm('确定提交修改？', '警告', {type: 'warning'})
                         .then(function () {
-                            theThis.submitEditingCurrentProfilePropertiesInText();
+                            theThis.submitEditingPropertyValuesInText();
                         });
-
                 },
-                submitEditingCurrentProfilePropertiesInText: function () {
+                submitEditingPropertyValuesInText: function () {
                     const theThis = this;
 
-                    let propertyInTexts = this.editingCurrentProfilePropertiesInText.split('\n');
+                    let propertyInTexts = this.editingPropertyValuesInText.split('\n');
                     let keyValues = {};
                     let invalidPropertyInTexts = [];
                     propertyInTexts.forEach(function (propertyInText) {
@@ -908,7 +781,7 @@
                         theThis.deletePropertyValue(key);
                     });
 
-                    this.currentProfilePropertiesInText = this.editingCurrentProfilePropertiesInText;
+                    this.propertyValuesInText = this.editingPropertyValuesInText;
                 },
                 calcPrivilege: function (appId, key) {
                     let started = false;
@@ -1079,13 +952,12 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.refreshData();
-                        if (callback) {
-                            callback();
-                        }
+                        theThis.findPropertyValues(function () {
+                            theThis.findDifference(callback);
+                        });
                     });
                 },
-                deletePropertyValue: function (key) {
+                deletePropertyValue: function (key, callback) {
                     const theThis = this;
                     axios.get('../manage/propertyValue/deletePropertyValue', {
                         params: {
@@ -1099,7 +971,9 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.refreshData();
+                        theThis.findPropertyValues(function () {
+                            theThis.findDifference(callback);
+                        });
                     });
                 },
                 overrideProperty: function (property) {
@@ -1141,10 +1015,10 @@
                             });
                         });
                     } else if (this.showMode === 'text') {
-                        if (this.editingCurrentProfilePropertiesInText.length > 0) {
-                            this.editingCurrentProfilePropertiesInText += '\n';
+                        if (this.editingPropertyValuesInText.length > 0) {
+                            this.editingPropertyValuesInText += '\n';
                         }
-                        this.editingCurrentProfilePropertiesInText += property.key + '=' + property.value;
+                        this.editingPropertyValuesInText += property.key + '=' + property.value;
                     }
                 },
                 revertPropertyValues: function () {
@@ -1158,34 +1032,23 @@
                                 branchId: theThis.branchId,
                                 releaseVersion: release.version
                             }
-                        }).then(function (revertPropertyValuesResult) {
-                            if (!revertPropertyValuesResult.success) {
-                                Vue.prototype.$message.error(revertPropertyValuesResult.message);
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
                                 return;
                             }
                             theThis.revertPopoverShowing = false;
-                            theThis.refreshData();
+                            theThis.findPropertyValues(function () {
+                                theThis.findDifference(function () {
+                                    theThis.changeShowMode();
+                                });
+                            });
                         });
                     });
                 },
                 closeAddPropertyValueDialog: function () {
                     this.addPropertyValueDialogShowing = false;
                     this.$refs['addPropertyValueForm'].resetFields();
-                },
-                doFindBranchRelease: function (appId, profileId, branchId, callback) {
-                    axios.get('../manage/branch/findBranch', {
-                        params: {
-                            appId: appId,
-                            profileId: profileId,
-                            branchId: branchId
-                        }
-                    }).then(function (result) {
-                        if (!result.success) {
-                            Vue.prototype.$message.error(result.message);
-                            return;
-                        }
-                        callback(result.branch.release);
-                    });
                 },
                 addPropertyValue: function () {
                     const theThis = this;
@@ -1206,10 +1069,8 @@
                     let keys = this.haveNotPrivilegeModifiedPropertyKeys();
                     if (keys.length > 0) {
                         Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
-                        this.refreshData();
                         return;
                     }
-                    this.refreshData();
                     this.releaseBranchDialogVisible = true;
                 },
                 closeReleaseBranchDialog: function () {
@@ -1283,6 +1144,168 @@
                         text += '（' + app.appName + '）';
                     }
                     return text;
+                },
+                findAllProfiles: function (callback) {
+                    const theThis = this;
+                    axios.get('../manage/profile/findProfileTree', {
+                        params: {
+                            rootProfileId: null
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        let extractProfiles = function (profileTree, level) {
+                            let profiles = [];
+                            if (profileTree.profile !== null) {
+                                profileTree.profile.level = level;
+                                profiles.push(profileTree.profile);
+                            }
+                            profileTree.children.forEach(function (child) {
+                                profiles = profiles.concat(extractProfiles(child, level + 1));
+                            });
+                            return profiles;
+                        };
+                        theThis.allProfiles = extractProfiles(result.profileTree, -1);
+                        if (callback) {
+                            callback(theThis.allProfiles);
+                        }
+                    });
+                },
+                findBranches: function (callback) {
+                    const theThis = this;
+                    axios.get('../manage/branch/findBranches', {
+                        params: {
+                            appId: theThis.appId,
+                            profileId: theThis.profileId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.branches = result.branches;
+                        if (callback) {
+                            callback(theThis.branches);
+                        }
+                    });
+                },
+                switchProfile: function (profileId) {
+                    this.branchId = 'master';
+                    this.$router.replace('/configs/' + this.appId + '/' + profileId);
+                },
+                findPropertyValues: function (callback) {
+                    const theThis = this;
+                    axios.get('../manage/propertyValue/findPropertyValues', {
+                        params: {
+                            appId: this.appId,
+                            profileId: this.profileId,
+                            branchId: this.branchId,
+                            minScope: 'PRIVATE'
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.propertyValues = result.propertyValues;
+                        if (callback) {
+                            callback(theThis.propertyValues);
+                        }
+                    });
+                },
+                findDifference: function (callback) {
+                    const theThis = this;
+                    this.doFindBranchRelease(this.appId, this.profileId, this.branchId, function (release) {
+                        axios.get('../manage/propertyValue/comparePropertyValuesWithRelease', {
+                            params: {
+                                appId: theThis.appId,
+                                profileId: theThis.profileId,
+                                branchId: theThis.branchId,
+                                releaseVersion: release.version
+                            }
+                        }).then(function (result) {
+                            if (!result.success) {
+                                Vue.prototype.$message.error(result.message);
+                                return;
+                            }
+                            theThis.difference = result.difference;
+                            if (callback) {
+                                callback(theThis.difference);
+                            }
+                        });
+                    });
+                },
+                findInheritedAppReleases: function (callback) {
+                    const theThis = this;
+                    this.selfPropertiesLoading = true;
+                    axios.get('../manage/release/findInheritedReleases', {
+                        params: {
+                            appId: this.appId,
+                            profileId: this.profileId,
+                            branchId: this.branchId
+                        }
+                    }).then(function (result) {
+                        theThis.selfPropertiesLoading = false;
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.inheritedAppReleases = result.inheritedAppReleases;
+                        if (callback) {
+                            callback(theThis.inheritedAppReleases);
+                        }
+                    });
+                },
+                findInheritedAppPropertyKeys: function (callback) {
+                    const theThis = this;
+                    axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                        params: {
+                            appId: this.appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.inheritedAppPropertyKeys = result.appPropertyKeys;
+                        if (callback) {
+                            callback(theThis.inheritedAppPropertyKeys);
+                        }
+                    });
+                },
+                findInheritedOperatePrivileges: function (callback) {
+                    const theThis = this;
+                    axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
+                        params: {
+                            appId: this.appId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        theThis.appOperatePrivileges = result.appOperatePrivileges;
+                        if (callback) {
+                            callback(theThis.appOperatePrivileges);
+                        }
+                    });
+                },
+                doFindBranchRelease: function (appId, profileId, branchId, callback) {
+                    axios.get('../manage/branch/findBranch', {
+                        params: {
+                            appId: appId,
+                            profileId: profileId,
+                            branchId: branchId
+                        }
+                    }).then(function (result) {
+                        if (!result.success) {
+                            Vue.prototype.$message.error(result.message);
+                            return;
+                        }
+                        callback(result.branch.release);
+                    });
                 }
             }
         });
