@@ -774,14 +774,40 @@
                         }
                     }
 
-                    addedOrModifiedPropertyValues.forEach(function (propertyValue) {
-                        theThis.addOrModifyPropertyValue(propertyValue.key, propertyValue.value, propertyValue.scope);
-                    });
-                    deletedKeys.forEach(function (key) {
-                        theThis.deletePropertyValue(key);
-                    });
+                    let addOrModifies = function (index, callback) {
+                        if (index < addedOrModifiedPropertyValues.length) {
+                            let propertyValue = addedOrModifiedPropertyValues[index];
+                            theThis.doAddOrModifyPropertyValue(propertyValue.key, propertyValue.value, propertyValue.scope, function () {
+                                addOrModifies(index + 1, callback);
+                            });
+                        } else {
+                            if (callback) {
+                                callback();
+                            }
+                        }
+                    }
+                    let deletes = function (index, callback) {
+                        if (index < deletedKeys.length) {
+                            let key = deletedKeys[index];
+                            theThis.doDeletePropertyValue(key, function () {
+                                deletes(index + 1, callback);
+                            });
+                        } else {
+                            if (callback) {
+                                callback();
+                            }
+                        }
+                    }
 
-                    this.propertyValuesInText = this.editingPropertyValuesInText;
+                    addOrModifies(0, function () {
+                        deletes(0, function () {
+                            theThis.findPropertyValues(function () {
+                                theThis.findDifference(function () {
+                                    theThis.propertyValuesInText = theThis.editingPropertyValuesInText;
+                                });
+                            });
+                        });
+                    });
                 },
                 calcPrivilege: function (appId, key) {
                     let started = false;
@@ -938,6 +964,13 @@
                 },
                 addOrModifyPropertyValue: function (key, value, scope, callback) {
                     const theThis = this;
+                    this.doAddOrModifyPropertyValue(key, value, scope, function () {
+                        theThis.findPropertyValues(function () {
+                            theThis.findDifference(callback);
+                        });
+                    });
+                },
+                doAddOrModifyPropertyValue: function (key, value, scope, callback) {
                     axios.get('../manage/propertyValue/addOrModifyPropertyValue', {
                         params: {
                             appId: this.appId,
@@ -952,13 +985,20 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
+                        if (callback) {
+                            callback();
+                        }
+                    });
+                },
+                deletePropertyValue: function (key, callback) {
+                    const theThis = this;
+                    this.doDeletePropertyValue(key, function () {
                         theThis.findPropertyValues(function () {
                             theThis.findDifference(callback);
                         });
                     });
                 },
-                deletePropertyValue: function (key, callback) {
-                    const theThis = this;
+                doDeletePropertyValue: function (key, callback) {
                     axios.get('../manage/propertyValue/deletePropertyValue', {
                         params: {
                             appId: this.appId,
@@ -971,9 +1011,9 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.findPropertyValues(function () {
-                            theThis.findDifference(callback);
-                        });
+                        if (callback) {
+                            callback();
+                        }
                     });
                 },
                 overrideProperty: function (property) {
