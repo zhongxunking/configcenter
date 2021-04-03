@@ -222,22 +222,23 @@
                               :data="[{}]"
                               :span-method="profilePropertyEmptyOrShowTextSpanMethod"
                               :cell-style="{padding: '3px 0px'}"
+                              :cell-class-name="emptyTableCellClassName"
                               border>
                         <el-table-column label="环境" :resizable="false" width="150px">
                             <span style="font-size: larger;color: #409EFF">{{ profileProperty.profileId }}</span>
                         </el-table-column>
-                        <el-table-column prop="key" label="配置key" :resizable="false" class-name="invalid-property">
+                        <el-table-column prop="key" label="配置key" :resizable="false">
                             <div style="text-align: center">
                                 <span class="configcenter-table__empty-text">暂无数据</span>
                             </div>
                         </el-table-column>
-                        <el-table-column prop="value" label="配置value" :resizable="false" class-name="invalid-property">
+                        <el-table-column prop="value" label="配置value" :resizable="false">
                         </el-table-column>
-                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px" class-name="invalid-property">
+                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
                         </el-table-column>
-                        <el-table-column prop="scope" label="作用域" :resizable="false" width="115px" class-name="invalid-property">
+                        <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                         </el-table-column>
-                        <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px" class-name="invalid-property">
+                        <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                         </el-table-column>
                     </el-table>
                 </template>
@@ -269,7 +270,11 @@
             </template>
         </div>
     </template>
-    <template v-else>all</template>
+    <template v-else>
+        <div class="el-textarea el-input--mini">
+            <textarea disabled="disabled" autocomplete="off" class="el-textarea__inner" style="height: 550px;" placeholder="无配置">{{ allPropertiesInText }}</textarea>
+        </div>
+    </template>
 
     <el-dialog :visible.sync="addPropertyValueDialogShowing" :before-close="closeAddPropertyValueDialog" title="新增配置项" width="50%">
         <el-form ref="addPropertyValueForm" :model="addPropertyValueForm" label-width="20%">
@@ -486,6 +491,50 @@
                     });
 
                     return keyScopes;
+                },
+                allPropertiesInText: function () {
+                    let keyProperties = {};
+                    for (let i = this.inheritedAppReleases.length - 1; i >= 0; i--) {
+                        let appRelease = this.inheritedAppReleases[i];
+                        for (let j = appRelease.inheritedProfileReleases.length - 1; j >= 0; j--) {
+                            let release = appRelease.inheritedProfileReleases[j];
+                            if (release.appId !== this.appId || release.profileId !== this.profileId) {
+                                release.properties.forEach(function (property) {
+                                    keyProperties[property.key] = property;
+                                });
+                            }
+                        }
+                    }
+                    this.propertyValues.forEach(function (propertyValue) {
+                        keyProperties[propertyValue.key] = {
+                            key: propertyValue.key,
+                            value: propertyValue.value,
+                            scope: propertyValue.scope
+                        }
+                    });
+
+                    let sortedProperties = [];
+                    for (let key in keyProperties) {
+                        sortedProperties.push(keyProperties[key]);
+                    }
+                    sortedProperties.sort(function (left, right) {
+                        if (left.key < right.key) {
+                            return -1
+                        } else if (left.key === right.key) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    });
+
+                    let text = '';
+                    sortedProperties.forEach(function (property) {
+                        if (text !== '') {
+                            text += '\n';
+                        }
+                        text += property.key + '=' + property.value;
+                    });
+                    return text;
                 }
             },
             watch: {
@@ -681,7 +730,13 @@
                             sortedPropertyValues.push(propertyValue);
                         });
                         sortedPropertyValues.sort(function (left, right) {
-                            return left.key > right.key;
+                            if (left.key < right.key) {
+                                return -1
+                            } else if (left.key === right.key) {
+                                return 0;
+                            } else {
+                                return 1;
+                            }
                         });
                         let text = '';
                         sortedPropertyValues.forEach(function (propertyValue) {
@@ -860,6 +915,12 @@
                 },
                 tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
                     if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || (!row.editing && row.value === null))) {
+                        return 'invalid-property';
+                    }
+                    return '';
+                },
+                emptyTableCellClassName: function ({row, column, rowIndex, columnIndex}) {
+                    if (columnIndex > 0) {
                         return 'invalid-property';
                     }
                     return '';
