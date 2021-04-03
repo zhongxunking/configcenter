@@ -820,6 +820,7 @@
                     let propertyInTexts = this.editingPropertyValuesInText.split('\n');
                     let keyValues = {};
                     let invalidPropertyInTexts = [];
+                    let repeatedKeyMap = {};
                     propertyInTexts.forEach(function (propertyInText) {
                         propertyInText = propertyInText.trim();
                         if (!propertyInText || propertyInText.startsWith('#')) {
@@ -829,11 +830,24 @@
                         if (index <= 0 || index >= propertyInText.length - 1) {
                             invalidPropertyInTexts.push(propertyInText);
                         } else {
-                            keyValues[propertyInText.substring(0, index)] = propertyInText.substring(index + 1);
+                            let key = propertyInText.substring(0, index);
+                            let value = propertyInText.substring(index + 1);
+                            if (keyValues[key] !== undefined) {
+                                repeatedKeyMap[key] = true;
+                            }
+                            keyValues[key] = value;
                         }
                     });
+                    let repeatedKeys = [];
+                    for (let key in repeatedKeyMap) {
+                        repeatedKeys.push(key);
+                    }
                     if (invalidPropertyInTexts.length > 0) {
                         Vue.prototype.$message.error("存在非法的配置" + invalidPropertyInTexts);
+                        return
+                    }
+                    if (repeatedKeys.length > 0) {
+                        Vue.prototype.$message.error("存在重复的配置key" + repeatedKeys);
                         return
                     }
 
@@ -911,7 +925,6 @@
                             }
                         }
                     }
-
                     addOrModifies(0, function () {
                         deletes(0, function () {
                             theThis.findPropertyValues(function () {
@@ -1033,6 +1046,7 @@
                                     let temp = profileProperty.properties[i];
                                     if (temp.key === property.key) {
                                         profileProperty.properties.splice(i, 1);
+                                        break;
                                     }
                                 }
                                 profileProperty.properties.forEach(function (property) {
@@ -1131,7 +1145,7 @@
                                     value: property.value,
                                     scope: property.scope,
                                     memo: property.memo,
-                                    privilege: theThis.calcPrivilege(appProperty.app.appId, property.key),
+                                    privilege: theThis.calcPrivilege(theThis.appId, property.key),
                                     editing: false,
                                     editingValue: null,
                                     editingScope: null,
@@ -1194,10 +1208,19 @@
                     });
                 },
                 showReleaseBranchDialog: function () {
-                    let keys = this.haveNotPrivilegeModifiedPropertyKeys();
-                    if (keys.length > 0) {
-                        Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
-                        return;
+                    if (this.manager.type === 'NORMAL') {
+                        let keys = [];
+                        for (let i = 0; i < this.modifiedProperties.length; i++) {
+                            let property = this.modifiedProperties[i];
+                            let privilege = this.calcPrivilege(this.appId, property.key);
+                            if (privilege !== 'READ_WRITE') {
+                                keys.push(property.key);
+                            }
+                        }
+                        if (keys.length > 0) {
+                            Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
+                            return;
+                        }
                     }
                     this.releaseBranchDialogVisible = true;
                 },
@@ -1238,20 +1261,6 @@
                         theThis.closeReleaseBranchDialog();
                         theThis.findAllData();
                     });
-                },
-                haveNotPrivilegeModifiedPropertyKeys: function () {
-                    if (this.manager.type !== 'NORMAL') {
-                        return [];
-                    }
-                    let keys = [];
-                    for (let i = 0; i < this.modifiedProperties.length; i++) {
-                        let property = this.modifiedProperties[i];
-                        let privilege = this.calcPrivilege(this.appId, property.key);
-                        if (privilege !== 'READ_WRITE') {
-                            keys.push(property.key);
-                        }
-                    }
-                    return keys;
                 },
                 toShowingProfile: function (profile) {
                     if (!profile) {
