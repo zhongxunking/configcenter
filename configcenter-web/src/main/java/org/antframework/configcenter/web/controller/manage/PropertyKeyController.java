@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -81,43 +81,43 @@ public class PropertyKeyController {
     }
 
     /**
-     * 查找应用继承的配置key（包含应用自己）
+     * 查找继承的应用配置key（包含应用自己）
      *
      * @param appId 应用id
      */
-    @RequestMapping("/findInheritedPropertyKeys")
-    public FindInheritedPropertyKeysResult findInheritedPropertyKeys(String appId) {
+    @RequestMapping("/findInheritedAppPropertyKeys")
+    public FindInheritedAppPropertyKeysResult findInheritedAppPropertyKeys(String appId) {
         ManagerApps.assertAdminOrHaveApp(appId);
 
-        FindInheritedPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedPropertyKeysResult.class);
+        FindInheritedAppPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedAppPropertyKeysResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {
             List<PropertyKeyInfo> propertyKeys = PropertyKeys.findPropertyKeys(app.getAppId(), Scope.PRIVATE);
-            result.addAppPropertyKey(new FindInheritedPropertyKeysResult.AppPropertyKey(app, propertyKeys));
+            result.addInheritedAppPropertyKey(new FindInheritedAppPropertyKeysResult.AppPropertyKey(app, propertyKeys));
         }
         return result;
     }
 
     /**
-     * 查找应用继承的所有应用的配置key
+     * 查找继承的应用配置key
      */
     @Getter
-    public static class FindInheritedPropertyKeysResult extends AbstractResult {
-        // 由近及远继承的所用应用的配置key
-        private final List<AppPropertyKey> appPropertyKeys = new ArrayList<>();
+    public static class FindInheritedAppPropertyKeysResult extends AbstractResult {
+        // 由近及远继承的应用配置key
+        private final List<AppPropertyKey> inheritedAppPropertyKeys = new ArrayList<>();
 
-        public void addAppPropertyKey(AppPropertyKey appPropertyKey) {
-            appPropertyKeys.add(appPropertyKey);
+        public void addInheritedAppPropertyKey(AppPropertyKey inheritedAppPropertyKey) {
+            inheritedAppPropertyKeys.add(inheritedAppPropertyKey);
         }
 
         /**
-         * 应用的配置key
+         * 应用配置key
          */
         @AllArgsConstructor
         @Getter
         public static final class AppPropertyKey implements Serializable {
             // 应用
             private final AppInfo app;
-            // 所有的配置key
+            // 所有配置key
             private final List<PropertyKeyInfo> propertyKeys;
 
             @Override

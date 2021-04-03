@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -73,17 +73,17 @@ public class ReleaseController {
     }
 
     /**
-     * 查找应用在指定环境中继承的发布
+     * 查找继承的应用发布
      *
      * @param appId     应用id
      * @param profileId 环境id
      * @param branchId  分支id
      */
-    @RequestMapping("/findInheritedReleases")
-    public FindInheritedReleasesResult findInheritedReleases(String appId, String profileId, String branchId) {
+    @RequestMapping("/findInheritedAppReleases")
+    public FindInheritedAppReleasesResult findInheritedAppReleases(String appId, String profileId, String branchId) {
         ManagerApps.assertAdminOrHaveApp(appId);
 
-        FindInheritedReleasesResult result = FacadeUtils.buildSuccess(FindInheritedReleasesResult.class);
+        FindInheritedAppReleasesResult result = FacadeUtils.buildSuccess(FindInheritedAppReleasesResult.class);
         for (AppInfo app : Apps.findInheritedApps(appId)) {
             // 获取应用在各环境的发布
             Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
@@ -94,7 +94,7 @@ public class ReleaseController {
             if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
                 inheritedProfileReleases.forEach(this::maskRelease);
             }
-            FindInheritedReleasesResult.AppRelease appRelease = new FindInheritedReleasesResult.AppRelease(app, inheritedProfileReleases);
+            FindInheritedAppReleasesResult.AppRelease appRelease = new FindInheritedAppReleasesResult.AppRelease(app, inheritedProfileReleases);
 
             result.addInheritedAppRelease(appRelease);
         }
@@ -179,11 +179,11 @@ public class ReleaseController {
     }
 
     /**
-     * 查找应用在指定环境中继承的发布--result
+     * 查找继承的应用发布--result
      */
     @Getter
-    public static class FindInheritedReleasesResult extends AbstractResult {
-        // 由近及远继承的所用应用的发布
+    public static class FindInheritedAppReleasesResult extends AbstractResult {
+        // 由近及远继承的应用发布
         private final List<AppRelease> inheritedAppReleases = new ArrayList<>();
 
         public void addInheritedAppRelease(AppRelease appRelease) {
@@ -191,14 +191,14 @@ public class ReleaseController {
         }
 
         /**
-         * 应用在各环境的发布
+         * 应用发布
          */
         @AllArgsConstructor
         @Getter
         public static class AppRelease implements Serializable {
             // 应用
             private final AppInfo app;
-            // 由近及远继承的所用环境中的发布
+            // 由近及远继承的环境中的发布
             private final List<ReleaseInfo> inheritedProfileReleases;
 
             @Override

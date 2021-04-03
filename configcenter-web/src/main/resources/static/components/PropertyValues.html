@@ -1377,7 +1377,7 @@
                 findInheritedAppReleases: function (callback) {
                     const theThis = this;
                     this.selfPropertiesLoading = true;
-                    axios.get('../manage/release/findInheritedReleases', {
+                    axios.get('../manage/release/findInheritedAppReleases', {
                         params: {
                             appId: this.appId,
                             profileId: this.profileId,
@@ -1397,7 +1397,7 @@
                 },
                 findInheritedAppPropertyKeys: function (callback) {
                     const theThis = this;
-                    axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+                    axios.get('../manage/propertyKey/findInheritedAppPropertyKeys', {
                         params: {
                             appId: this.appId
                         }
@@ -1406,7 +1406,7 @@
                             Vue.prototype.$message.error(result.message);
                             return;
                         }
-                        theThis.inheritedAppPropertyKeys = result.appPropertyKeys;
+                        theThis.inheritedAppPropertyKeys = result.inheritedAppPropertyKeys;
                         if (callback) {
                             callback(theThis.inheritedAppPropertyKeys);
                         }
