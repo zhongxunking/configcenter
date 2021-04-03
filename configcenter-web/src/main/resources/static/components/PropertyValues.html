@@ -41,7 +41,7 @@
                 </el-option>
             </el-select>
             <span style="font-size: large;color: #409EFF;">分支：</span>
-            <el-select v-model="branchId" @change="refreshData" placeholder="请选择分支" size="medium">
+            <el-select v-model="branchId" @change="findAllData" placeholder="请选择分支" size="medium">
                 <el-option v-for="branch in branches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
             </el-select>
         </el-col>
@@ -114,10 +114,10 @@
                         <el-table-column prop="key" label="配置key" :resizable="false">
                             <template slot-scope="{ row }">
                                 <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                                    <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                                    <el-badge v-if="differenceForMap.addedKeys[row.key]" type="success" value="新" class="badge-style">
                                         <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                                     </el-badge>
-                                    <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                    <el-badge v-else-if="differenceForMap.removedKeys[row.key]" type="danger" value="删" class="badge-style">
                                         <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                                     </el-badge>
                                     <span v-else class="propertyValue-text-style">{{ row.key }}</span>
@@ -129,7 +129,7 @@
                             <template slot-scope="{ row }">
                                 <el-input v-if="row.editing" v-model="row.editingValue" type="textarea" autosize size="mini" clearable placeholder="请输入配置value"></el-input>
                                 <template v-else>
-                                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedValueKeys.indexOf(row.key) >= 0">
+                                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && differenceForMap.modifiedValueKeys[row.key]">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.value === null" size="medium">无效</el-tag>
                                             <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
@@ -157,7 +157,7 @@
                                     <el-option value="PUBLIC" label="公开"></el-option>
                                 </el-select>
                                 <template v-else>
-                                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && difference.modifiedScopeKeys.indexOf(row.key) >= 0">
+                                    <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && differenceForMap.modifiedScopeKeys[row.key]">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                             <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -175,7 +175,7 @@
                         <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                             <template slot-scope="{ row }">
                                 <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                                    <template v-if="difference.removedKeys.indexOf(row.key) >= 0">
+                                    <template v-if="differenceForMap.removedKeys[row.key]">
                                         <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
                                             <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
                                         </el-tooltip>
@@ -316,10 +316,10 @@
                           border>
                     <el-table-column prop="key" label="配置key">
                         <template slot-scope="{ row }">
-                            <el-badge v-if="difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                            <el-badge v-if="differenceForMap.addedKeys[row.key]" type="success" value="新" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <el-badge v-else-if="difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                            <el-badge v-else-if="differenceForMap.removedKeys[row.key]" type="danger" value="删" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
                             <span v-else class="propertyValue-text-style">{{ row.key }}</span>
@@ -327,7 +327,7 @@
                     </el-table-column>
                     <el-table-column prop="value" label="配置value">
                         <template slot-scope="{ row }">
-                            <template v-if="difference.modifiedValueKeys.indexOf(row.key) >= 0">
+                            <template v-if="differenceForMap.modifiedValueKeys[row.key]">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.value === null">无效</el-tag>
                                     <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
@@ -343,7 +343,7 @@
                     </el-table-column>
                     <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
                         <template slot-scope="{ row }">
-                            <template v-if="difference.modifiedScopeKeys.indexOf(row.key) >= 0">
+                            <template v-if="differenceForMap.modifiedScopeKeys[row.key]">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                     <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -417,6 +417,28 @@
                         || this.difference.modifiedScopeKeys.length > 0
                         || this.difference.removedKeys.length > 0;
                 },
+                differenceForMap: function () {
+                    let forMap = {
+                        addedKeys: {},
+                        modifiedValueKeys: {},
+                        modifiedScopeKeys: {},
+                        removedKeys: {}
+                    };
+                    this.difference.addedKeys.forEach(function (key) {
+                        forMap.addedKeys[key] = true;
+                    });
+                    this.difference.modifiedValueKeys.forEach(function (key) {
+                        forMap.modifiedValueKeys[key] = true;
+                    });
+                    this.difference.modifiedScopeKeys.forEach(function (key) {
+                        forMap.modifiedScopeKeys[key] = true;
+                    });
+                    this.difference.removedKeys.forEach(function (key) {
+                        forMap.removedKeys[key] = true;
+                    });
+
+                    return forMap;
+                },
                 editingKeyProperties: function () {
                     const theThis = this;
 
@@ -485,46 +507,6 @@
 
                     return appMap;
                 },
-                modifiedProperties: function () {
-                    const theThis = this;
-
-                    let properties = [];
-                    this.propertyValues.forEach(function (propertyValue) {
-                        if (theThis.difference.addedKeys.indexOf(propertyValue.key) >= 0
-                            || theThis.difference.modifiedValueKeys.indexOf(propertyValue.key) >= 0
-                            || theThis.difference.modifiedScopeKeys.indexOf(propertyValue.key) >= 0) {
-                            properties.push({
-                                key: propertyValue.key,
-                                value: propertyValue.value,
-                                scope: propertyValue.scope,
-                                privilege: theThis.calcPrivilege(theThis.appId, propertyValue.key)
-                            });
-                        }
-                    });
-
-                    this.inheritedAppReleases.forEach(function (appRelease) {
-                        if (appRelease.app.appId !== theThis.appId) {
-                            return;
-                        }
-                        appRelease.inheritedProfileReleases.forEach(function (release) {
-                            if (release.profileId !== theThis.profileId) {
-                                return;
-                            }
-                            release.properties.forEach(function (property) {
-                                if (theThis.difference.removedKeys.indexOf(property.key) >= 0) {
-                                    properties.push({
-                                        key: property.key,
-                                        value: property.value,
-                                        scope: property.scope,
-                                        privilege: theThis.calcPrivilege(theThis.appId, property.key)
-                                    });
-                                }
-                            });
-                        });
-                    });
-
-                    return properties;
-                },
                 originalPropertyValuesInText: function () {
                     let sortedPropertyValues = [];
                     this.propertyValues.forEach(function (propertyValue) {
@@ -571,6 +553,46 @@
                     });
 
                     return keyScopes;
+                },
+                modifiedProperties: function () {
+                    const theThis = this;
+
+                    let properties = [];
+                    this.propertyValues.forEach(function (propertyValue) {
+                        if (theThis.differenceForMap.addedKeys[propertyValue.key]
+                            || theThis.differenceForMap.modifiedValueKeys[propertyValue.key]
+                            || theThis.differenceForMap.modifiedScopeKeys[propertyValue.key]) {
+                            properties.push({
+                                key: propertyValue.key,
+                                value: propertyValue.value,
+                                scope: propertyValue.scope,
+                                privilege: theThis.calcPrivilege(theThis.appId, propertyValue.key)
+                            });
+                        }
+                    });
+
+                    this.inheritedAppReleases.forEach(function (appRelease) {
+                        if (appRelease.app.appId !== theThis.appId) {
+                            return;
+                        }
+                        appRelease.inheritedProfileReleases.forEach(function (release) {
+                            if (release.profileId !== theThis.profileId) {
+                                return;
+                            }
+                            release.properties.forEach(function (property) {
+                                if (theThis.differenceForMap.removedKeys[property.key]) {
+                                    properties.push({
+                                        key: property.key,
+                                        value: property.value,
+                                        scope: property.scope,
+                                        privilege: theThis.calcPrivilege(theThis.appId, property.key)
+                                    });
+                                }
+                            });
+                        });
+                    });
+
+                    return properties;
                 },
                 allPropertiesInText: function () {
                     let keyProperties = {};
@@ -619,7 +641,7 @@
             },
             watch: {
                 '$route': function () {
-                    this.refreshData();
+                    this.findAllData();
                 },
                 propertyValues: function () {
                     this.refreshAppProperties();
@@ -638,10 +660,10 @@
                 }
             },
             created: function () {
-                this.refreshData();
+                this.findAllData();
             },
             methods: {
-                refreshData: function () {
+                findAllData: function () {
                     this.findAllProfiles();
                     this.findBranches();
                     this.findPropertyValues();
@@ -1188,15 +1210,15 @@
                     let addOrModifiedProperties = [];
                     let deletedPropertyKeys = [];
                     theThis.modifiedProperties.forEach(function (property) {
-                        if (theThis.difference.addedKeys.indexOf(property.key) >= 0
-                            || theThis.difference.modifiedValueKeys.indexOf(property.key) >= 0
-                            || theThis.difference.modifiedScopeKeys.indexOf(property.key) >= 0) {
+                        if (theThis.differenceForMap.addedKeys[property.key]
+                            || theThis.differenceForMap.modifiedValueKeys[property.key]
+                            || theThis.differenceForMap.modifiedScopeKeys[property.key]) {
                             addOrModifiedProperties.push({
                                 key: property.key,
                                 value: property.value,
                                 scope: property.scope
                             });
-                        } else if (theThis.difference.removedKeys.indexOf(property.key) >= 0) {
+                        } else if (theThis.differenceForMap.removedKeys[property.key]) {
                             deletedPropertyKeys.push(property.key);
                         }
                     });
@@ -1214,7 +1236,7 @@
                         }
                         Vue.prototype.$message.success(result.message);
                         theThis.closeReleaseBranchDialog();
-                        theThis.refreshData();
+                        theThis.findAllData();
                     });
                 },
                 haveNotPrivilegeModifiedPropertyKeys: function () {
