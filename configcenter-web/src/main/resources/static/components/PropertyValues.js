@@ -812,11 +812,11 @@ const PropertyValues = {
                 repeatedKeys.push(key);
             }
             if (invalidPropertyInTexts.length > 0) {
-                Vue.prototype.$message.error("存在非法的配置" + invalidPropertyInTexts);
+                Vue.prototype.$message.error("存在非法的配置：" + invalidPropertyInTexts);
                 return
             }
             if (repeatedKeys.length > 0) {
-                Vue.prototype.$message.error("存在重复的配置key" + repeatedKeys);
+                Vue.prototype.$message.error("存在重复的配置key：" + repeatedKeys);
                 return
             }
 
@@ -1187,7 +1187,7 @@ const PropertyValues = {
                     }
                 }
                 if (keys.length > 0) {
-                    Vue.prototype.$message.error("有敏感配置" + keys + "被修改，无权进行发布");
+                    Vue.prototype.$message.error("有敏感配置[" + keys + "]被修改，无权进行发布");
                     return;
                 }
             }
