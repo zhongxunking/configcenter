@@ -432,6 +432,24 @@
                     });
                     return keyProperties;
                 },
+                appKeyMemosMap: function () {
+                    let appMap = {};
+                    let allKeyMemos = {};
+                    for (let i = this.inheritedAppPropertyKeys.length - 1; i >= 0; i--) {
+                        let appPropertyKey = this.inheritedAppPropertyKeys[i];
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            allKeyMemos[propertyKey.key] = propertyKey.memo;
+                        });
+
+                        let keyMemos = {};
+                        for (let key in allKeyMemos) {
+                            keyMemos[key] = allKeyMemos[key];
+                        }
+                        appMap[appPropertyKey.app.appId] = keyMemos;
+                    }
+
+                    return appMap;
+                },
                 keyValidityMap: function () {
                     const theThis = this;
 
@@ -646,6 +664,7 @@
                                 profileId: release.profileId,
                                 properties: []
                             };
+                            let keyMemos = theThis.appKeyMemosMap[release.appId];
                             if (release.appId === theThis.appId && release.profileId === theThis.profileId) {
                                 theThis.propertyValues.forEach(function (propertyValue) {
                                     profileProperty.properties.push({
@@ -654,7 +673,7 @@
                                         key: propertyValue.key,
                                         value: propertyValue.value,
                                         scope: propertyValue.scope,
-                                        memo: null,
+                                        memo: keyMemos && keyMemos[propertyValue.key] ? keyMemos[propertyValue.key] : null,
                                         privilege: theThis.calcPrivilege(release.appId, propertyValue.key),
                                         editing: false,
                                         editingValue: null,
@@ -670,18 +689,28 @@
                                         }
                                     }
                                     if (property) {
-                                        profileProperty.properties.push({
-                                            appId: release.appId,
-                                            profileId: release.profileId,
-                                            key: property.key,
-                                            value: property.value,
-                                            scope: property.scope,
-                                            memo: null,
-                                            privilege: theThis.calcPrivilege(release.appId, property.key),
-                                            editing: false,
-                                            editingValue: null,
-                                            editingScope: null
-                                        });
+                                        let existing = false;
+                                        for (let i = 0; i < profileProperty.properties.length; i++) {
+                                            let temp = profileProperty.properties[i];
+                                            if (temp.key === property.key) {
+                                                existing = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!existing) {
+                                            profileProperty.properties.push({
+                                                appId: release.appId,
+                                                profileId: release.profileId,
+                                                key: property.key,
+                                                value: property.value,
+                                                scope: property.scope,
+                                                memo: keyMemos && keyMemos[property.key] ? keyMemos[property.key] : null,
+                                                privilege: theThis.calcPrivilege(release.appId, property.key),
+                                                editing: false,
+                                                editingValue: null,
+                                                editingScope: null
+                                            });
+                                        }
                                     }
                                 });
                             } else {
@@ -692,7 +721,7 @@
                                         key: property.key,
                                         value: property.value,
                                         scope: property.scope,
-                                        memo: null,
+                                        memo: keyMemos && keyMemos[property.key] ? keyMemos[property.key] : null,
                                         privilege: theThis.calcPrivilege(release.appId, property.key),
                                         editing: false,
                                         editingValue: null,
@@ -702,7 +731,6 @@
                             }
                             appProperty.profileProperties.push(profileProperty);
                         });
-                        theThis.fillAppPropertyMemo(appProperty);
                         theThis.fillCurrentProfileProperties(appProperty);
                         appProperty.profileProperties.forEach(function (profileProperty) {
                             profileProperty.properties.forEach(function (property) {
@@ -714,31 +742,6 @@
                     });
 
                     this.appProperties = appProperties;
-                },
-                fillAppPropertyMemo: function (appProperty) {
-                    let propertyKeyMap = {};
-                    let started = false;
-                    for (let i = 0; i < this.inheritedAppPropertyKeys.length; i++) {
-                        let appPropertyKey = this.inheritedAppPropertyKeys[i];
-                        if (appPropertyKey.app.appId === appProperty.app.appId) {
-                            started = true;
-                        }
-                        if (started) {
-                            appPropertyKey.propertyKeys.forEach(function (propertyKey) {
-                                if (!propertyKeyMap[propertyKey.key]) {
-                                    propertyKeyMap[propertyKey.key] = propertyKey;
-                                }
-                            });
-                        }
-                    }
-                    appProperty.profileProperties.forEach(function (profileProperty) {
-                        profileProperty.properties.forEach(function (property) {
-                            let propertyKey = propertyKeyMap[property.key];
-                            if (propertyKey) {
-                                property.memo = propertyKey.memo;
-                            }
-                        });
-                    });
                 },
                 fillCurrentProfileProperties: function (appProperty) {
                     const theThis = this;
@@ -769,7 +772,8 @@
                                     memo: propertyKey.memo,
                                     privilege: theThis.calcPrivilege(propertyKey.appId, propertyKey.key),
                                     editing: false,
-                                    editingValue: null
+                                    editingValue: null,
+                                    editingScope: null
                                 });
                             }
                         }
