@@ -417,22 +417,54 @@
                         || this.difference.modifiedScopeKeys.length > 0
                         || this.difference.removedKeys.length > 0;
                 },
-                keyValidityMap: function () {
-                    let appMap = {};
-                    for (let i = 0; i < this.appProperties.length; i++) {
-                        let appProperty = this.appProperties[i];
-                        let profileMap = {};
-                        for (let j = 0; j < appProperty.profileProperties.length; j++) {
-                            let profileProperty = appProperty.profileProperties[j];
-                            let keymap = {};
-                            for (let k = 0; k < profileProperty.properties.length; k++) {
-                                let property = profileProperty.properties[k];
-                                keymap[property.key] = this.calcKeyValidity(property.appId, property.profileId, property.key);
+                editingKeyProperties: function () {
+                    const theThis = this;
+
+                    let keyProperties = {};
+                    this.appProperties.forEach(function (appProperty) {
+                        appProperty.profileProperties.forEach(function (profileProperty) {
+                            if (appProperty.app.appId === theThis.appId && profileProperty.profileId === theThis.profileId) {
+                                profileProperty.properties.forEach(function (property) {
+                                    keyProperties[property.key] = property;
+                                });
                             }
-                            profileMap[profileProperty.profileId] = keymap;
-                        }
-                        appMap[appProperty.app.appId] = profileMap;
-                    }
+                        });
+                    });
+                    return keyProperties;
+                },
+                keyValidityMap: function () {
+                    const theThis = this;
+
+                    let appMap = {};
+                    let keys = {};
+                    this.inheritedAppReleases.forEach(function (appRelease) {
+                        let profileMap = {};
+                        appRelease.inheritedProfileReleases.forEach(function (release) {
+                            let keyMap = {};
+                            if (release.appId === theThis.appId && release.profileId === theThis.profileId) {
+                                theThis.propertyValues.forEach(function (propertyValue) {
+                                    if (keys[propertyValue.key]) {
+                                        keyMap[propertyValue.key] = false;
+                                    } else {
+                                        keyMap[propertyValue.key] = true;
+                                        keys[propertyValue.key] = true;
+                                    }
+                                });
+                            } else {
+                                release.properties.forEach(function (property) {
+                                    if (keys[property.key]) {
+                                        keyMap[property.key] = false;
+                                    } else {
+                                        keyMap[property.key] = true;
+                                        keys[property.key] = true;
+                                    }
+                                });
+                            }
+                            profileMap[release.profileId] = keyMap;
+                        });
+                        appMap[appRelease.app.appId] = profileMap;
+                    });
+
                     return appMap;
                 },
                 modifiedProperties: function () {
@@ -920,7 +952,7 @@
                     }
                 },
                 tableCellClassName: function ({row, column, rowIndex, columnIndex}) {
-                    if (columnIndex > 0 && (!this.isValidKey(row.appId, row.profileId, row.key) || (!row.editing && row.value === null))) {
+                    if (columnIndex > 0 && !row.editing && !this.isValidKey(row.appId, row.profileId, row.key)) {
                         return 'invalid-property';
                     }
                     return '';
@@ -945,10 +977,7 @@
                     }
                 },
                 showOverrideButton: function (row) {
-                    if (this.isValidKey(row.appId, row.profileId, row.key)) {
-                        return this.difference.removedKeys.indexOf(row.key) < 0;
-                    }
-                    return false;
+                    return this.isValidKey(row.appId, row.profileId, row.key) && !this.editingKeyProperties[row.key];
                 },
                 isValidKey: function (appId, profileId, key) {
                     let profileMap = this.keyValidityMap[appId];
@@ -960,32 +989,6 @@
                         return false;
                     }
                     return keyMap[key];
-                },
-                calcKeyValidity: function (appId, profileId, key) {
-                    const theThis = this;
-                    const removed = function (property) {
-                        return property.appId === theThis.appId && property.profileId === theThis.profileId && theThis.difference.removedKeys.indexOf(property.key) >= 0;
-                    };
-
-                    for (let i = 0; i < this.appProperties.length; i++) {
-                        let appProperty = this.appProperties[i];
-                        for (let j = 0; j < appProperty.profileProperties.length; j++) {
-                            let profileProperty = appProperty.profileProperties[j];
-                            for (let k = 0; k < profileProperty.properties.length; k++) {
-                                let property = profileProperty.properties[k];
-                                if (property.key === key) {
-                                    if (property.appId === appId && property.profileId === profileId) {
-                                        return !removed(property);
-                                    } else {
-                                        if (!removed(property)) {
-                                            return false;
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    return true;
                 },
                 startEditing: function (property) {
                     property.editing = true;
