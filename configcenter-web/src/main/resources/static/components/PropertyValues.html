@@ -58,10 +58,10 @@
         </el-col>
     </el-row>
     <el-row style="margin-bottom: 10px">
-        <el-col :span="6">
+        <el-col :span="5">
             <el-button type="primary" icon="el-icon-plus" size="small" :disabled="showMode!=='table'" @click="addPropertyValueDialogShowing = true" plain>新增</el-button>
         </el-col>
-        <el-col :span="12" style="text-align: center;">
+        <el-col :span="14" style="text-align: center;">
             <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties[0] ? appProperties[0].app : null) }}</span>
             <el-radio-group v-model="showMode" size="mini" @change="changeShowMode">
                 <el-radio-button label="table">表格</el-radio-button>
@@ -69,14 +69,14 @@
                 <el-radio-button label="all">所有</el-radio-button>
             </el-radio-group>
         </el-col>
-        <el-col :span="6" style="text-align: end">
+        <el-col :span="5" style="text-align: end">
             <el-popover placement="top" v-model="revertPopoverShowing" trigger="manual">
                 <p>所有修改都会被还原，确定还原？</p>
                 <div style="text-align: right; margin: 0">
                     <el-button type="text" size="mini" @click="revertPopoverShowing = false">取消</el-button>
                     <el-button type="primary" size="mini" @click="revertPropertyValues">确定</el-button>
                 </div>
-                <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited || showMode==='all'" @click="revertPopoverShowing = true">还原修改</el-button>
+                <el-button slot="reference" icon="el-icon-close" size="small" :disabled="!edited || showMode!=='table'" @click="revertPopoverShowing = true">还原修改</el-button>
             </el-popover>
             <el-button type="primary" icon="el-icon-upload" size="small" :disabled="!edited || showMode!=='table'" @click="showReleaseBranchDialog">发布修改</el-button>
         </el-col>
@@ -138,7 +138,7 @@
                                 </template>
                             </template>
                         </el-table-column>
-                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                        <el-table-column prop="memo" label="备注" :resizable="false">
                             <template slot-scope="{ row }">
                                 <span class="propertyValue-text-style">{{ row.memo }}</span>
                             </template>
@@ -234,7 +234,7 @@
                         </el-table-column>
                         <el-table-column prop="value" label="配置value" :resizable="false">
                         </el-table-column>
-                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                        <el-table-column prop="memo" label="备注" :resizable="false">
                         </el-table-column>
                         <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                         </el-table-column>
@@ -256,7 +256,7 @@
                         </el-table-column>
                         <el-table-column prop="value" label="配置value" :resizable="false">
                         </el-table-column>
-                        <el-table-column prop="memo" label="备注" :resizable="false" width="200px">
+                        <el-table-column prop="memo" label="备注" :resizable="false">
                         </el-table-column>
                         <el-table-column prop="scope" label="作用域" :resizable="false" width="115px">
                         </el-table-column>
