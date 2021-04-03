@@ -64,9 +64,15 @@
         <el-col :span="14" style="text-align: center;">
             <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appProperties[0] ? appProperties[0].app : null) }}</span>
             <el-radio-group v-model="showMode" size="mini" @change="changeShowMode">
-                <el-radio-button label="table">表格</el-radio-button>
-                <el-radio-button label="text">文本</el-radio-button>
-                <el-radio-button label="all">所有</el-radio-button>
+                <el-tooltip content="以表格方式编辑" placement="top" :open-delay="1000" :hide-after="3000">
+                    <el-radio-button label="table">表格</el-radio-button>
+                </el-tooltip>
+                <el-tooltip content="以文本方式编辑" placement="top" :open-delay="1000" :hide-after="3000">
+                    <el-radio-button label="text">文本</el-radio-button>
+                </el-tooltip>
+                <el-tooltip content="显示应用实际获取到的所有配置" placement="top" :open-delay="1000" :hide-after="4000">
+                    <el-radio-button label="all">所有</el-radio-button>
+                </el-tooltip>
             </el-radio-group>
         </el-col>
         <el-col :span="5" style="text-align: end">
