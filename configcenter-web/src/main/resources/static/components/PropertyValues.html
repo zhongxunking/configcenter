@@ -214,7 +214,7 @@
                                         </el-col>
                                     </el-row>
                                 </template>
-                                <template v-else-if="showOverrideButton(row)">
+                                <template v-else-if="isShowOverrideButton(row)">
                                     <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
                                         <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
                                     </el-tooltip>
@@ -507,6 +507,30 @@
 
                     return properties;
                 },
+                originalPropertyValuesInText: function () {
+                    let sortedPropertyValues = [];
+                    this.propertyValues.forEach(function (propertyValue) {
+                        sortedPropertyValues.push(propertyValue);
+                    });
+                    sortedPropertyValues.sort(function (left, right) {
+                        if (left.key < right.key) {
+                            return -1
+                        } else if (left.key === right.key) {
+                            return 0;
+                        } else {
+                            return 1;
+                        }
+                    });
+
+                    let text = '';
+                    sortedPropertyValues.forEach(function (propertyValue) {
+                        if (text !== '') {
+                            text += '\n';
+                        }
+                        text += propertyValue.key + '=' + propertyValue.value;
+                    });
+                    return text;
+                },
                 supposedKeyScopes: function () {
                     let keyScopes = {};
                     for (let i = this.inheritedAppPropertyKeys.length - 1; i >= 0; i--) {
@@ -646,28 +670,18 @@
                                         }
                                     }
                                     if (property) {
-                                        let existing = false;
-                                        for (let i = 0; i < profileProperty.properties.length; i++) {
-                                            let temp = profileProperty.properties[i];
-                                            if (temp.key === property.key) {
-                                                existing = true;
-                                                break;
-                                            }
-                                        }
-                                        if (!existing) {
-                                            profileProperty.properties.push({
-                                                appId: release.appId,
-                                                profileId: release.profileId,
-                                                key: property.key,
-                                                value: property.value,
-                                                scope: property.scope,
-                                                memo: null,
-                                                privilege: theThis.calcPrivilege(release.appId, property.key),
-                                                editing: false,
-                                                editingValue: null,
-                                                editingScope: null
-                                            });
-                                        }
+                                        profileProperty.properties.push({
+                                            appId: release.appId,
+                                            profileId: release.profileId,
+                                            key: property.key,
+                                            value: property.value,
+                                            scope: property.scope,
+                                            memo: null,
+                                            privilege: theThis.calcPrivilege(release.appId, property.key),
+                                            editing: false,
+                                            editingValue: null,
+                                            editingScope: null
+                                        });
                                     }
                                 });
                             } else {
@@ -763,28 +777,8 @@
                 },
                 changeShowMode: function () {
                     if (this.showMode === 'text') {
-                        let sortedPropertyValues = [];
-                        this.propertyValues.forEach(function (propertyValue) {
-                            sortedPropertyValues.push(propertyValue);
-                        });
-                        sortedPropertyValues.sort(function (left, right) {
-                            if (left.key < right.key) {
-                                return -1
-                            } else if (left.key === right.key) {
-                                return 0;
-                            } else {
-                                return 1;
-                            }
-                        });
-                        let text = '';
-                        sortedPropertyValues.forEach(function (propertyValue) {
-                            if (text !== '') {
-                                text += '\n';
-                            }
-                            text += propertyValue.key + '=' + propertyValue.value;
-                        });
-                        this.editingPropertyValuesInText = text;
-                        this.propertyValuesInText = text;
+                        this.editingPropertyValuesInText = this.originalPropertyValuesInText;
+                        this.propertyValuesInText = this.originalPropertyValuesInText;
                     }
                 },
                 showSubmitEditingPropertyValuesInText: function () {
@@ -976,7 +970,7 @@
                         }
                     }
                 },
-                showOverrideButton: function (row) {
+                isShowOverrideButton: function (row) {
                     return this.isValidKey(row.appId, row.profileId, row.key) && !this.editingKeyProperties[row.key];
                 },
                 isValidKey: function (appId, profileId, key) {
@@ -1149,9 +1143,7 @@
                             }
                             theThis.revertPopoverShowing = false;
                             theThis.findPropertyValues(function () {
-                                theThis.findDifference(function () {
-                                    theThis.changeShowMode();
-                                });
+                                theThis.findDifference();
                             });
                         });
                     });
