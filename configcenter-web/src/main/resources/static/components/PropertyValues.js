@@ -364,7 +364,6 @@ const PropertyValues = {
             inheritedAppPropertyKeys: [],
             appOperatePrivileges: [],
             showMode: 'table',
-            propertyValuesInText: '',
             editingPropertyValuesInText: '',
             addPropertyValueDialogShowing: false,
             addPropertyValueForm: {
@@ -476,7 +475,7 @@ const PropertyValues = {
 
             return appMap;
         },
-        originalPropertyValuesInText: function () {
+        propertyValuesInText: function () {
             let sortedPropertyValues = [];
             this.propertyValues.forEach(function (propertyValue) {
                 sortedPropertyValues.push(propertyValue);
@@ -773,8 +772,7 @@ const PropertyValues = {
         },
         changeShowMode: function () {
             if (this.showMode === 'text') {
-                this.editingPropertyValuesInText = this.originalPropertyValuesInText;
-                this.propertyValuesInText = this.originalPropertyValuesInText;
+                this.editingPropertyValuesInText = this.propertyValuesInText;
             }
         },
         showSubmitEditingPropertyValuesInText: function () {
@@ -898,9 +896,7 @@ const PropertyValues = {
             addOrModifies(0, function () {
                 deletes(0, function () {
                     theThis.findPropertyValues(function () {
-                        theThis.findDifference(function () {
-                            theThis.propertyValuesInText = theThis.editingPropertyValuesInText;
-                        });
+                        theThis.findDifference();
                     });
                 });
             });
