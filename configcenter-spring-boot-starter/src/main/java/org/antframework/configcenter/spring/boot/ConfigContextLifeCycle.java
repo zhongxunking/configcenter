@@ -36,7 +36,7 @@ import java.util.stream.Collectors;
  * 配置上下文的生命周期
  */
 @Slf4j
-public class ConfigsContextLifeCycle implements GenericApplicationListener {
+public class ConfigContextLifeCycle implements GenericApplicationListener {
     // 刷新定时器
     private Timer refreshTimer = null;
 

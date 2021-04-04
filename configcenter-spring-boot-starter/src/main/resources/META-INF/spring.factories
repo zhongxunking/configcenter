@@ -1,3 +1,3 @@
 org.springframework.context.ApplicationListener=\
   org.antframework.configcenter.spring.boot.EnvironmentInitializer,\
-  org.antframework.configcenter.spring.boot.ConfigsContextLifeCycle
+  org.antframework.configcenter.spring.boot.ConfigContextLifeCycle
