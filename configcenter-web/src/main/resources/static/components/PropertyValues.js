@@ -799,8 +799,8 @@ const PropertyValues = {
                 if (index <= 0 || index >= propertyInText.length - 1) {
                     invalidPropertyInTexts.push(propertyInText);
                 } else {
-                    let key = propertyInText.substring(0, index);
-                    let value = propertyInText.substring(index + 1);
+                    let key = propertyInText.substring(0, index).trim();
+                    let value = propertyInText.substring(index + 1).trim();
                     if (keyValues[key] !== undefined) {
                         repeatedKeyMap[key] = true;
                     }
