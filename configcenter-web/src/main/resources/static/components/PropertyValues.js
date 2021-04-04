@@ -614,6 +614,7 @@ const PropertyValues = {
         },
         propertyValues: function () {
             this.refreshAppProperties();
+            this.changeShowMode();
         },
         difference: function () {
             this.refreshAppProperties();
