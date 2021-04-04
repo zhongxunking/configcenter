@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -65,12 +65,7 @@ public class ConfigController {
         if (properties.getConfig().isFetchNeedManager()) {
             ManagerApps.assertAdminOrHaveApp(mainAppId);
         }
-        FindConfigOrder order = new FindConfigOrder();
-        order.setMainAppId(mainAppId);
-        order.setQueriedAppId(queriedAppId);
-        order.setProfileId(profileId);
-        order.setTarget(target);
-
+        FindConfigOrder order = buildFindConfigOrder(mainAppId, queriedAppId, profileId, target);
         return configService.findConfig(order);
     }
 
@@ -85,7 +80,8 @@ public class ConfigController {
         // 查找需要立即刷新的配置主题
         ListeningClientsContainer.ListenResult listenResult = FacadeUtils.buildSuccess(ListeningClientsContainer.ListenResult.class);
         for (ListenMeta listenMeta : listenMetas) {
-            FindConfigResult findConfigResult = findConfig(listenMeta.getTopic().getAppId(), listenMeta.getTopic().getAppId(), listenMeta.getTopic().getProfileId(), target);
+            FindConfigOrder findConfigOrder = buildFindConfigOrder(listenMeta.getTopic().getAppId(), listenMeta.getTopic().getAppId(), listenMeta.getTopic().getProfileId(), target);
+            FindConfigResult findConfigResult = configService.findConfig(findConfigOrder);
             FacadeUtils.assertSuccess(findConfigResult);
             if (!Objects.equals(listenMeta.getConfigVersion(), findConfigResult.getVersion())) {
                 listenResult.addTopic(listenMeta.getTopic());
@@ -104,6 +100,17 @@ public class ConfigController {
             deferredResult.onCompletion(() -> listeningClientsContainer.removeClient(listeningClient));
         }
         return deferredResult;
+    }
+
+    // 构建FindConfigOrder
+    private FindConfigOrder buildFindConfigOrder(String mainAppId, String queriedAppId, String profileId, String target) {
+        FindConfigOrder order = new FindConfigOrder();
+        order.setMainAppId(mainAppId);
+        order.setQueriedAppId(queriedAppId);
+        order.setProfileId(profileId);
+        order.setTarget(target);
+
+        return order;
     }
 
     // 生成超时时间
