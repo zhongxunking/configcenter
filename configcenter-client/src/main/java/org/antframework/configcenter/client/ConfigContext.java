@@ -66,7 +66,7 @@ public class ConfigContext {
                          String managerId,
                          String secretKey) {
         if (StringUtils.isBlank(mainAppId) || StringUtils.isBlank(profileId) || StringUtils.isBlank(serverUrl)) {
-            throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,home=%s,managerId=%s,secretKey=%s", mainAppId, profileId, serverUrl, home, managerId, secretKey));
+            throw new IllegalArgumentException(String.format("创建configcenter客户端的参数不合法：mainAppId=%s,profileId=%s,serverUrl=%s,home=%s", mainAppId, profileId, serverUrl, home));
         }
         this.mainAppId = mainAppId;
         this.profileId = profileId;
