@@ -14,6 +14,7 @@ import org.antframework.configcenter.facade.info.AppInfo;
 import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.FindInheritedAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindInheritedAppPropertyKeysResult;
+import org.antframework.configcenter.facade.vo.AppPropertyKey;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -33,7 +34,7 @@ public class FindInheritedAppPropertyKeysService {
 
         for (AppInfo app : Apps.findInheritedApps(order.getAppId())) {
             List<PropertyKeyInfo> propertyKeys = PropertyKeys.findPropertyKeys(app.getAppId(), Scope.PRIVATE);
-            result.addInheritedAppPropertyKey(new FindInheritedAppPropertyKeysResult.AppPropertyKey(app, propertyKeys));
+            result.addInheritedAppPropertyKey(new AppPropertyKey(app, propertyKeys));
         }
     }
 }

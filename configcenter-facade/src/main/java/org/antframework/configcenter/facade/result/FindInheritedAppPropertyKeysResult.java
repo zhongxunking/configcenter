@@ -8,14 +8,10 @@
  */
 package org.antframework.configcenter.facade.result;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.info.PropertyKeyInfo;
+import org.antframework.configcenter.facade.vo.AppPropertyKey;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,22 +25,5 @@ public class FindInheritedAppPropertyKeysResult extends AbstractResult {
 
     public void addInheritedAppPropertyKey(AppPropertyKey inheritedAppPropertyKey) {
         inheritedAppPropertyKeys.add(inheritedAppPropertyKey);
-    }
-
-    /**
-     * 应用配置key
-     */
-    @AllArgsConstructor
-    @Getter
-    public static final class AppPropertyKey implements Serializable {
-        // 应用
-        private final AppInfo app;
-        // 所有配置key
-        private final List<PropertyKeyInfo> propertyKeys;
-
-        @Override
-        public String toString() {
-            return ToString.toString(this);
-        }
     }
 }

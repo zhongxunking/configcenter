@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -13,7 +13,9 @@ import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindInheritedAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.FindPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindInheritedAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.FindPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.test.AbstractTest;
@@ -62,6 +64,15 @@ public class PropertyKeyServiceTest extends AbstractTest {
         order.setMinScope(Scope.PROTECTED);
 
         FindPropertyKeysResult result = propertyKeyService.findPropertyKeys(order);
+        checkResult(result, Status.SUCCESS);
+    }
+
+    @Test
+    public void testFindInheritedAppPropertyKeys() {
+        FindInheritedAppPropertyKeysOrder order = new FindInheritedAppPropertyKeysOrder();
+        order.setAppId("customer");
+
+        FindInheritedAppPropertyKeysResult result = propertyKeyService.findInheritedAppPropertyKeys(order);
         checkResult(result, Status.SUCCESS);
     }
 }
