@@ -1,6 +1,6 @@
 // 配置key管理组件
 const PropertyKeysTemplate = `
-<div>
+<div id="propertyKeysApp">
     <el-row style="margin-bottom: 10px">
         <el-col :span="16">
             <span style="font-size: large;">环境：</span>
@@ -17,7 +17,7 @@ const PropertyKeysTemplate = `
             </router-link>
         </el-col>
     </el-row>
-    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 30px">
+    <div v-for="appPropertyKey in inheritedAppPropertyKeys" style="margin-bottom: 30px">
         <el-row v-if="appPropertyKey.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
@@ -130,7 +130,7 @@ const PropertyKeys = {
             manager: CURRENT_MANAGER,
             allProfiles: [],
             loading: false,
-            appPropertyKeys: [],
+            inheritedAppPropertyKeys: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
                 key: null,
@@ -141,7 +141,7 @@ const PropertyKeys = {
     },
     created: function () {
         this.findAllProfiles();
-        this.findAppPropertyKeys();
+        this.findInheritedAppPropertyKeys();
     },
     methods: {
         findAllProfiles: function () {
@@ -169,10 +169,10 @@ const PropertyKeys = {
                 theThis.allProfiles = extractProfiles(result.profileTree, -1);
             });
         },
-        findAppPropertyKeys: function () {
+        findInheritedAppPropertyKeys: function () {
             const theThis = this;
             theThis.loading = true;
-            axios.get('../manage/propertyKey/findInheritedPropertyKeys', {
+            axios.get('../manage/propertyKey/findInheritedAppPropertyKeys', {
                 params: {
                     appId: theThis.appId
                 }
@@ -182,7 +182,7 @@ const PropertyKeys = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                const appPropertyKeys = result.appPropertyKeys;
+                const inheritedAppPropertyKeys = result.inheritedAppPropertyKeys;
                 axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
                     params: {
                         appId: theThis.appId
@@ -194,8 +194,8 @@ const PropertyKeys = {
                         return;
                     }
                     const appOperatePrivileges = result.appOperatePrivileges;
-                    for (let i = 0; i < appPropertyKeys.length; i++) {
-                        appPropertyKeys[i].propertyKeys.forEach(function (propertyKey) {
+                    for (let i = 0; i < inheritedAppPropertyKeys.length; i++) {
+                        inheritedAppPropertyKeys[i].propertyKeys.forEach(function (propertyKey) {
                             propertyKey.editing = false;
                             propertyKey.editingScope = null;
                             propertyKey.editingMemo = null;
@@ -218,7 +218,7 @@ const PropertyKeys = {
                             propertyKey.privilege = 'READ_WRITE';
                         });
                     }
-                    theThis.appPropertyKeys = appPropertyKeys;
+                    theThis.inheritedAppPropertyKeys = inheritedAppPropertyKeys;
                 });
             });
         },
@@ -252,7 +252,7 @@ const PropertyKeys = {
                             return;
                         }
                         Vue.prototype.$message.success(result.message);
-                        theThis.findAppPropertyKeys();
+                        theThis.findInheritedAppPropertyKeys();
                     });
                 });
         },
@@ -265,7 +265,7 @@ const PropertyKeys = {
                 const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
                 theThis.doAddOrModifyPropertyKey(params, function () {
                     theThis.closeAddPropertyKeyDialog();
-                    theThis.findAppPropertyKeys();
+                    theThis.findInheritedAppPropertyKeys();
                 });
             })
         },
