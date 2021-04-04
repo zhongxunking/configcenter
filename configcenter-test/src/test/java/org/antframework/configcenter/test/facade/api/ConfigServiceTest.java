@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -10,11 +10,10 @@ package org.antframework.configcenter.test.facade.api;
 
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
+import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.result.FindConfigResult;
-import org.antframework.configcenter.facade.vo.Scope;
+import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResult;
 import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -48,19 +47,17 @@ public class ConfigServiceTest extends AbstractTest {
     }
 
     @Test
-    public void testFindAppSelfConfig() {
+    public void testFindInheritedAppReleases() {
         String[] profileIds = new String[]{"offline", "dev"};
         for (String profileId : profileIds) {
-            for (Scope scope : Scope.values()) {
-                FindAppSelfConfigOrder order = new FindAppSelfConfigOrder();
-                order.setAppId("customer");
-                order.setProfileId(profileId);
-                order.setMinScope(scope);
-                order.setTarget(null);
+            FindInheritedAppReleasesOrder order = new FindInheritedAppReleasesOrder();
+            order.setMainAppId("customer");
+            order.setQueriedAppId("customer");
+            order.setProfileId(profileId);
+            order.setTarget(null);
 
-                FindAppSelfConfigResult result = configService.findAppSelfConfig(order);
-                FacadeUtils.assertSuccess(result);
-            }
+            FindInheritedAppReleasesResult result = configService.findInheritedAppReleases(order);
+            FacadeUtils.assertSuccess(result);
         }
     }
 }

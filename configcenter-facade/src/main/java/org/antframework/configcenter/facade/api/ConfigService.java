@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -8,10 +8,10 @@
  */
 package org.antframework.configcenter.facade.api;
 
-import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
+import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.result.FindConfigResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResult;
 
 /**
  * 配置服务
@@ -23,7 +23,7 @@ public interface ConfigService {
     FindConfigResult findConfig(FindConfigOrder order);
 
     /**
-     * 查找应用自己的在指定环境中的配置
+     * 查找继承的应用发布
      */
-    FindAppSelfConfigResult findAppSelfConfig(FindAppSelfConfigOrder order);
+    FindInheritedAppReleasesResult findInheritedAppReleases(FindInheritedAppReleasesOrder order);
 }

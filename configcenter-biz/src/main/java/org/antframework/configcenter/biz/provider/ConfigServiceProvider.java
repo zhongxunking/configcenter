@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -10,10 +10,10 @@ package org.antframework.configcenter.biz.provider;
 
 import lombok.AllArgsConstructor;
 import org.antframework.configcenter.facade.api.ConfigService;
-import org.antframework.configcenter.facade.order.FindAppSelfConfigOrder;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
-import org.antframework.configcenter.facade.result.FindAppSelfConfigResult;
+import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.result.FindConfigResult;
+import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -32,7 +32,7 @@ public class ConfigServiceProvider implements ConfigService {
     }
 
     @Override
-    public FindAppSelfConfigResult findAppSelfConfig(FindAppSelfConfigOrder order) {
-        return serviceEngine.execute("findAppSelfConfigService", order);
+    public FindInheritedAppReleasesResult findInheritedAppReleases(FindInheritedAppReleasesOrder order) {
+        return serviceEngine.execute("findInheritedAppReleasesService", order);
     }
 }

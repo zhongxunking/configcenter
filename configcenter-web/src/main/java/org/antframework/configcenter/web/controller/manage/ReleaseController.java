@@ -11,20 +11,22 @@ package org.antframework.configcenter.web.controller.manage;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.biz.util.*;
+import org.antframework.common.util.facade.*;
+import org.antframework.configcenter.biz.util.Branches;
+import org.antframework.configcenter.biz.util.Properties;
+import org.antframework.configcenter.biz.util.Releases;
+import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.ReleaseService;
-import org.antframework.configcenter.facade.info.AppInfo;
+import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.info.PropertiesDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
+import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
 import org.antframework.configcenter.facade.order.QueryReleasesOrder;
+import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResult;
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.antframework.configcenter.facade.vo.Property;
-import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
@@ -32,10 +34,6 @@ import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
 import java.util.Set;
 
 /**
@@ -47,6 +45,8 @@ import java.util.Set;
 public class ReleaseController {
     // 发布服务
     private final ReleaseService releaseService;
+    // 配置服务
+    private final ConfigService configService;
 
     /**
      * 查找发布
@@ -82,21 +82,27 @@ public class ReleaseController {
     @RequestMapping("/findInheritedAppReleases")
     public FindInheritedAppReleasesResult findInheritedAppReleases(String appId, String profileId, String branchId) {
         ManagerApps.assertAdminOrHaveApp(appId);
+        FindInheritedAppReleasesOrder order = new FindInheritedAppReleasesOrder();
+        order.setMainAppId(appId);
+        order.setQueriedAppId(appId);
+        order.setProfileId(profileId);
+        order.setTarget(null);
 
-        FindInheritedAppReleasesResult result = FacadeUtils.buildSuccess(FindInheritedAppReleasesResult.class);
-        for (AppInfo app : Apps.findInheritedApps(appId)) {
-            // 获取应用在各环境的发布
-            Scope minScope = Objects.equals(app.getAppId(), appId) ? Scope.PRIVATE : Scope.PROTECTED;
-            List<ReleaseInfo> inheritedProfileReleases = Configs.findAppSelfConfig(app.getAppId(), profileId, minScope, null);// 掩码
-            if (Objects.equals(app.getAppId(), appId)) {
-                inheritedProfileReleases.set(0, Branches.findBranch(appId, profileId, branchId).getRelease());
+        FindInheritedAppReleasesResult result = configService.findInheritedAppReleases(order);
+        if (result.isSuccess()) {
+            // 设置分支的发布
+            BranchInfo branch = Branches.findBranch(appId, profileId, branchId);
+            if (branch == null) {
+                throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", appId, profileId, branchId));
             }
+            result.getInheritedAppReleases().get(0).getInheritedProfileReleases().set(0, branch.getRelease());
+
             if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
-                inheritedProfileReleases.forEach(this::maskRelease);
+                // 敏感配置掩码
+                result.getInheritedAppReleases().forEach(appRelease -> {
+                    appRelease.getInheritedProfileReleases().forEach(this::maskRelease);
+                });
             }
-            FindInheritedAppReleasesResult.AppRelease appRelease = new FindInheritedAppReleasesResult.AppRelease(app, inheritedProfileReleases);
-
-            result.addInheritedAppRelease(appRelease);
         }
         return result;
     }
@@ -176,35 +182,5 @@ public class ReleaseController {
     public static class CompareReleasesResult extends AbstractResult {
         // 差异
         private PropertiesDifference difference;
-    }
-
-    /**
-     * 查找继承的应用发布--result
-     */
-    @Getter
-    public static class FindInheritedAppReleasesResult extends AbstractResult {
-        // 由近及远继承的应用发布
-        private final List<AppRelease> inheritedAppReleases = new ArrayList<>();
-
-        public void addInheritedAppRelease(AppRelease appRelease) {
-            inheritedAppReleases.add(appRelease);
-        }
-
-        /**
-         * 应用发布
-         */
-        @AllArgsConstructor
-        @Getter
-        public static class AppRelease implements Serializable {
-            // 应用
-            private final AppInfo app;
-            // 由近及远继承的环境中的发布
-            private final List<ReleaseInfo> inheritedProfileReleases;
-
-            @Override
-            public String toString() {
-                return ToString.toString(this);
-            }
-        }
     }
 }
