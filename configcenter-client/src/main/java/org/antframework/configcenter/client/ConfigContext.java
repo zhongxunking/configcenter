@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -71,7 +71,7 @@ public class ConfigContext {
         this.mainAppId = mainAppId;
         this.profileId = profileId;
         this.target = target;
-        this.serverRequester = new ServerRequester(mainAppId, profileId, target, serverUrl, managerId == null || secretKey == null ? null : new ManagerSigner(managerId, secretKey));
+        this.serverRequester = new ServerRequester(mainAppId, profileId, target, serverUrl, StringUtils.isBlank(managerId) || StringUtils.isBlank(secretKey) ? null : new ManagerSigner(managerId, secretKey));
         this.cacheDirPath = home == null ? null : home + File.separator + mainAppId + File.separator + profileId;
     }
 
