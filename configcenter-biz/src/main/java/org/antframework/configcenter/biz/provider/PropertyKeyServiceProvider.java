@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -13,7 +13,9 @@ import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindInheritedAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.order.FindPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindInheritedAppPropertyKeysResult;
 import org.antframework.configcenter.facade.result.FindPropertyKeysResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
@@ -40,5 +42,10 @@ public class PropertyKeyServiceProvider implements PropertyKeyService {
     @Override
     public FindPropertyKeysResult findPropertyKeys(FindPropertyKeysOrder order) {
         return serviceEngine.execute("findPropertyKeysService", order);
+    }
+
+    @Override
+    public FindInheritedAppPropertyKeysResult findInheritedAppPropertyKeys(FindInheritedAppPropertyKeysOrder order) {
+        return serviceEngine.execute("findInheritedAppPropertyKeysService", order);
     }
 }

@@ -9,28 +9,19 @@
 package org.antframework.configcenter.web.controller.manage;
 
 import lombok.AllArgsConstructor;
-import lombok.Getter;
-import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
-import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.biz.util.Apps;
-import org.antframework.configcenter.biz.util.PropertyKeys;
 import org.antframework.configcenter.facade.api.PropertyKeyService;
-import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.info.PropertyKeyInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyKeyOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
+import org.antframework.configcenter.facade.order.FindInheritedAppPropertyKeysOrder;
+import org.antframework.configcenter.facade.result.FindInheritedAppPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 /**
  * 配置key管理controller
@@ -89,41 +80,8 @@ public class PropertyKeyController {
     public FindInheritedAppPropertyKeysResult findInheritedAppPropertyKeys(String appId) {
         ManagerApps.assertAdminOrHaveApp(appId);
 
-        FindInheritedAppPropertyKeysResult result = FacadeUtils.buildSuccess(FindInheritedAppPropertyKeysResult.class);
-        for (AppInfo app : Apps.findInheritedApps(appId)) {
-            List<PropertyKeyInfo> propertyKeys = PropertyKeys.findPropertyKeys(app.getAppId(), Scope.PRIVATE);
-            result.addInheritedAppPropertyKey(new FindInheritedAppPropertyKeysResult.AppPropertyKey(app, propertyKeys));
-        }
-        return result;
-    }
-
-    /**
-     * 查找继承的应用配置key
-     */
-    @Getter
-    public static class FindInheritedAppPropertyKeysResult extends AbstractResult {
-        // 由近及远继承的应用配置key
-        private final List<AppPropertyKey> inheritedAppPropertyKeys = new ArrayList<>();
-
-        public void addInheritedAppPropertyKey(AppPropertyKey inheritedAppPropertyKey) {
-            inheritedAppPropertyKeys.add(inheritedAppPropertyKey);
-        }
-
-        /**
-         * 应用配置key
-         */
-        @AllArgsConstructor
-        @Getter
-        public static final class AppPropertyKey implements Serializable {
-            // 应用
-            private final AppInfo app;
-            // 所有配置key
-            private final List<PropertyKeyInfo> propertyKeys;
-
-            @Override
-            public String toString() {
-                return ToString.toString(this);
-            }
-        }
+        FindInheritedAppPropertyKeysOrder order = new FindInheritedAppPropertyKeysOrder();
+        order.setAppId(appId);
+        return propertyKeyService.findInheritedAppPropertyKeys(order);
     }
 }
