@@ -918,13 +918,13 @@
                     if (this.manager.type === 'NORMAL') {
                         let noPrivilegeKeys = [];
                         addedOrModifiedPropertyValues.forEach(function (propertyValue) {
-                            let privilege = this.calcPrivilege(this.appId, propertyValue.key);
+                            let privilege = theThis.calcPrivilege(theThis.appId, propertyValue.key);
                             if (privilege !== 'READ_WRITE') {
                                 noPrivilegeKeys.push(propertyValue.key);
                             }
                         });
                         deletedKeys.forEach(function (key) {
-                            let privilege = this.calcPrivilege(this.appId, key);
+                            let privilege = theThis.calcPrivilege(theThis.appId, key);
                             if (privilege !== 'READ_WRITE') {
                                 noPrivilegeKeys.push(key);
                             }
