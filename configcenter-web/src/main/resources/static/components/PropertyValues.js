@@ -475,6 +475,41 @@ const PropertyValues = {
 
             return appMap;
         },
+        propertyKeyValidityMap: function () {
+            const theThis = this;
+
+            let appMap = {};
+            let keys = {};
+            this.inheritedAppReleases.forEach(function (appRelease) {
+                appRelease.inheritedProfileReleases.forEach(function (release) {
+                    if (release.appId === theThis.appId && release.profileId === theThis.profileId) {
+                        theThis.propertyValues.forEach(function (propertyValue) {
+                            keys[propertyValue.key] = true;
+                        });
+                    } else {
+                        release.properties.forEach(function (property) {
+                            keys[property.key] = true;
+                        });
+                    }
+                });
+                let keyMap = {};
+                theThis.inheritedAppPropertyKeys.forEach(function (appPropertyKey) {
+                    if (appPropertyKey.app.appId === appRelease.app.appId) {
+                        appPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                            if (keys[propertyKey.key]) {
+                                keyMap[propertyKey.key] = false;
+                            } else {
+                                keyMap[propertyKey.key] = true;
+                                keys[propertyKey.key] = true;
+                            }
+                        });
+                    }
+                });
+                appMap[appRelease.app.appId] = keyMap;
+            });
+
+            return appMap;
+        },
         propertyValuesInText: function () {
             let sortedPropertyValues = [];
             this.propertyValues.forEach(function (propertyValue) {
@@ -505,7 +540,7 @@ const PropertyValues = {
                 let appPropertyKey = this.inheritedAppPropertyKeys[i];
                 appPropertyKey.propertyKeys.forEach(function (propertyKey) {
                     keyScopes[propertyKey.key] = propertyKey.scope;
-                })
+                });
             }
             for (let i = this.inheritedAppReleases.length - 1; i >= 0; i--) {
                 let appRelease = this.inheritedAppReleases[i];
@@ -976,7 +1011,7 @@ const PropertyValues = {
             }
         },
         isShowOverrideButton: function (row) {
-            return this.isValidKey(row.appId, row.profileId, row.key) && !this.editingKeyProperties[row.key];
+            return !this.editingKeyProperties[row.key] && (this.isValidKey(row.appId, row.profileId, row.key) || (row.profileId === this.profileId && this.isValidPropertyKey(row.appId, row.key)));
         },
         isValidKey: function (appId, profileId, key) {
             let profileMap = this.keyValidityMap[appId];
@@ -984,6 +1019,13 @@ const PropertyValues = {
                 return false;
             }
             let keyMap = profileMap[profileId];
+            if (!keyMap) {
+                return false;
+            }
+            return keyMap[key];
+        },
+        isValidPropertyKey: function (appId, key) {
+            let keyMap = this.propertyKeyValidityMap[appId];
             if (!keyMap) {
                 return false;
             }
