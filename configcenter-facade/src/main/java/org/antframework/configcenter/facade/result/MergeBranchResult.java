@@ -1,10 +1,10 @@
 /*
- * 作者：钟勋 (e-mail:zhongxunking@163.com)
+ * 作者：钟勋 (email:zhongxunking@163.com)
  */
 
 /*
  * 修订记录:
- * @author 钟勋 2019-09-05 23:31 创建
+ * @author 钟勋 2021-04-07 22:51 创建
  */
 package org.antframework.configcenter.facade.result;
 
@@ -14,11 +14,11 @@ import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.configcenter.facade.info.PropertyChange;
 
 /**
- * 计算分支合并result
+ * 合并分支-result
  */
 @Getter
 @Setter
-public class ComputeBranchMergenceResult extends AbstractResult {
+public class MergeBranchResult extends AbstractResult {
     // 配置变动
     private PropertyChange propertyChange;
 }

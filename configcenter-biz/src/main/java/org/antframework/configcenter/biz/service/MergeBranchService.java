@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -19,9 +19,10 @@ import org.antframework.configcenter.dal.dao.BranchDao;
 import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Mergence;
-import org.antframework.configcenter.facade.info.MergenceDifference;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.MergeBranchOrder;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceAfter;
 import org.bekit.service.annotation.service.ServiceExecute;
@@ -40,8 +41,9 @@ public class MergeBranchService {
     private final MergenceDao mergenceDao;
 
     @ServiceExecute
-    public void execute(ServiceContext<MergeBranchOrder, EmptyResult> context) {
+    public void execute(ServiceContext<MergeBranchOrder, MergeBranchResult> context) {
         MergeBranchOrder order = context.getOrder();
+        MergeBranchResult result = context.getResult();
         // 校验
         Branch branch = branchDao.findLockByAppIdAndProfileIdAndBranchId(order.getAppId(), order.getProfileId(), order.getBranchId());
         if (branch == null) {
@@ -52,8 +54,8 @@ public class MergeBranchService {
             throw new BizException(Status.FAIL, CommonResultCode.INVALID_PARAMETER.getCode(), String.format("分支[appId=%s,profileId=%s,branchId=%s]不存在", order.getAppId(), order.getProfileId(), order.getSourceBranchId()));
         }
         long sourceReleaseVersion = sourceBranch.getReleaseVersion();
-        // 计算分支合并的配置变更
-        MergenceDifference difference = Branches.computeBranchMergence(
+        // 计算分支合并的配置变动
+        PropertyChange propertyChange = Branches.computeBranchMergence(
                 order.getAppId(),
                 order.getProfileId(),
                 order.getBranchId(),
@@ -63,13 +65,14 @@ public class MergeBranchService {
                 order.getAppId(),
                 order.getProfileId(),
                 order.getBranchId(),
-                difference.getAddOrModifiedProperties(),
-                difference.getRemovedPropertyKeys(),
+                propertyChange,
                 String.format("merged from branch[%s] with release version[%d]", order.getSourceBranchId(), sourceReleaseVersion))
                 .getRelease();
         // 保存合并
         Mergence mergence = buildMergence(order, release.getVersion(), sourceReleaseVersion);
         mergenceDao.save(mergence);
+
+        result.setPropertyChange(propertyChange);
     }
 
     // 构建合并

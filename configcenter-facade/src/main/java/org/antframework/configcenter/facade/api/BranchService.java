@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -13,6 +13,7 @@ import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 
 /**
  * 分支服务
@@ -36,7 +37,7 @@ public interface BranchService {
     /**
      * 合并分支
      */
-    EmptyResult mergeBranch(MergeBranchOrder order);
+    MergeBranchResult mergeBranch(MergeBranchOrder order);
 
     /**
      * 计算分支合并

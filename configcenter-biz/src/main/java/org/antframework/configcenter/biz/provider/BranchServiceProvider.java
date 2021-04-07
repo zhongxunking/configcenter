@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -15,6 +15,7 @@ import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.bekit.service.ServiceEngine;
 import org.springframework.stereotype.Service;
 
@@ -43,7 +44,7 @@ public class BranchServiceProvider implements BranchService {
     }
 
     @Override
-    public EmptyResult mergeBranch(MergeBranchOrder order) {
+    public MergeBranchResult mergeBranch(MergeBranchOrder order) {
         return serviceEngine.execute("mergeBranchService", order);
     }
 

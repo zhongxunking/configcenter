@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -18,8 +18,8 @@ import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.entity.Mergence;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.info.MergenceDifference;
 import org.antframework.configcenter.facade.info.PropertiesDifference;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.ComputeBranchMergenceOrder;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
@@ -58,9 +58,9 @@ public class ComputeBranchMergenceService {
                 order.getProfileId(),
                 branch.getRelease().getVersion(),
                 sourceBranch.getRelease().getVersion());
-        // 计算变更的配置
-        MergenceDifference difference = computeDifference(recentRelease, sourceBranch.getRelease());
-        result.setDifference(difference);
+        // 计算配置变动
+        PropertyChange propertyChange = computeChange(recentRelease, sourceBranch.getRelease());
+        result.setPropertyChange(propertyChange);
     }
 
     // 计算最近的发布
@@ -89,17 +89,17 @@ public class ComputeBranchMergenceService {
         return Releases.findRelease(appId, profileId, version);
     }
 
-    // 计算需合并的配置集差异
-    private MergenceDifference computeDifference(ReleaseInfo startRelease, ReleaseInfo endRelease) {
-        MergenceDifference difference = new MergenceDifference();
+    // 计算需合并的配置变动
+    private PropertyChange computeChange(ReleaseInfo startRelease, ReleaseInfo endRelease) {
+        PropertyChange propertyChange = new PropertyChange();
         PropertiesDifference propertiesDifference = Properties.compare(endRelease.getProperties(), startRelease.getProperties());
         endRelease.getProperties().stream()
                 .filter(property -> propertiesDifference.getAddedKeys().contains(property.getKey())
                         || propertiesDifference.getModifiedValueKeys().contains(property.getKey())
                         || propertiesDifference.getModifiedScopeKeys().contains(property.getKey()))
-                .forEach(difference::addAddOrModifiedProperty);
-        propertiesDifference.getRemovedKeys().forEach(difference::addRemovedPropertyKey);
+                .forEach(propertyChange::addAddedOrModifiedProperty);
+        propertiesDifference.getRemovedKeys().forEach(propertyChange::addDeletedKey);
 
-        return difference;
+        return propertyChange;
     }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -14,7 +14,10 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.json.JSON;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.vo.ConfigTopic;
+import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.controller.ConfigController;
 import org.antframework.manager.facade.event.ManagerDeletingEvent;
@@ -54,6 +57,7 @@ public class WebConfiguration {
         // 注册转换器
         for (ConverterRegistry registry : converterRegistries) {
             registry.addConverter(new StringToSetListenMetaConverter());
+            registry.addConverter(new StringToPropertyChangeConverter());
         }
     }
 
@@ -92,6 +96,50 @@ public class WebConfiguration {
             private String appId;
             // 环境id
             private String profileId;
+        }
+    }
+
+    /**
+     * String转PropertyChange转换器
+     */
+    public static class StringToPropertyChangeConverter implements Converter<String, PropertyChange> {
+        @Override
+        public PropertyChange convert(String source) {
+            try {
+                PropertyChangeInfo propertyChangeInfo = JSON.OBJECT_MAPPER.readValue(source, PropertyChangeInfo.class);
+                PropertyChange propertyChange = new PropertyChange();
+                for (PropertyInfo propertyInfo : propertyChangeInfo.addedOrModifiedProperties) {
+                    propertyChange.addAddedOrModifiedProperty(new Property(propertyInfo.getKey(), propertyInfo.getValue(), propertyInfo.getScope()));
+                }
+                for (String key : propertyChangeInfo.getDeletedKeys()) {
+                    propertyChange.addDeletedKey(key);
+                }
+                return propertyChange;
+            } catch (JsonProcessingException e) {
+                return ExceptionUtils.rethrow(e);
+            }
+        }
+
+        // 配置变动info
+        @Getter
+        @Setter
+        private static class PropertyChangeInfo {
+            // 添加或修改的配置
+            private Set<PropertyInfo> addedOrModifiedProperties;
+            // 删除的配置key
+            private Set<String> deletedKeys;
+        }
+
+        // 配置项info
+        @Getter
+        @Setter
+        private static class PropertyInfo {
+            // key
+            private String key;
+            // value
+            private String value;
+            // 作用域
+            private Scope scope;
         }
     }
 

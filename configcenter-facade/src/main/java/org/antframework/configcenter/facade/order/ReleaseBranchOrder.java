@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,11 +11,10 @@ package org.antframework.configcenter.facade.order;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractOrder;
-import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.facade.info.PropertyChange;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 /**
  * 发布分支
@@ -32,12 +31,9 @@ public class ReleaseBranchOrder extends AbstractOrder {
     // 分支id
     @NotBlank
     private String branchId;
-    // 需添加或修改的配置
+    // 配置变动
     @NotNull
-    private Set<Property> addOrModifiedProperties;
-    // 需删除的配置key
-    @NotNull
-    private Set<String> removedPropertyKeys;
+    private PropertyChange propertyChange;
     // 备注
     private String memo;
 }

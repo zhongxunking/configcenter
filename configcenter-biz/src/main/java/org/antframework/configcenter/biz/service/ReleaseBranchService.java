@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -20,6 +20,7 @@ import org.antframework.configcenter.dal.dao.ReleaseDao;
 import org.antframework.configcenter.dal.entity.Branch;
 import org.antframework.configcenter.dal.entity.Release;
 import org.antframework.configcenter.facade.info.BranchInfo;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.order.ReleaseBranchOrder;
 import org.antframework.configcenter.facade.order.ReleaseBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
@@ -73,7 +74,7 @@ public class ReleaseBranchService {
 
     // 构建发布
     private Release buildRelease(Branch branch, ReleaseBranchOrder order) {
-        Set<Property> properties = buildProperties(getCurrentProperties(branch), order);
+        Set<Property> properties = buildProperties(getCurrentProperties(branch), order.getPropertyChange());
 
         Release release = new Release();
         BeanUtils.copyProperties(order, release);
@@ -86,13 +87,13 @@ public class ReleaseBranchService {
     }
 
     // 构建配置集
-    private Set<Property> buildProperties(Set<Property> parentProperties, ReleaseBranchOrder order) {
+    private Set<Property> buildProperties(Set<Property> parentProperties, PropertyChange propertyChange) {
         Map<String, Property> keyProperties = parentProperties.stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
-        for (Property property : order.getAddOrModifiedProperties()) {
+        for (Property property : propertyChange.getAddedOrModifiedProperties()) {
             keyProperties.put(property.getKey(), property);
         }
-        for (String propertyKey : order.getRemovedPropertyKeys()) {
-            keyProperties.remove(propertyKey);
+        for (String key : propertyChange.getDeletedKeys()) {
+            keyProperties.remove(key);
         }
 
         return new HashSet<>(keyProperties.values());

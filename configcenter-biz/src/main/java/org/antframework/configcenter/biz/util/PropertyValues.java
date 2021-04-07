@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -12,12 +12,14 @@ import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.PropertyValueService;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
 import org.antframework.configcenter.facade.order.FindPropertyValuesOrder;
 import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
+import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
 
 import java.util.List;
@@ -39,7 +41,12 @@ public final class PropertyValues {
      * @param value     value
      * @param scope     作用域
      */
-    public static void addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
+    public static void addOrModifyPropertyValue(String appId,
+                                                String profileId,
+                                                String branchId,
+                                                String key,
+                                                String value,
+                                                Scope scope) {
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -60,7 +67,10 @@ public final class PropertyValues {
      * @param branchId  分支id
      * @param key       key
      */
-    public static void deletePropertyValue(String appId, String profileId, String branchId, String key) {
+    public static void deletePropertyValue(String appId,
+                                           String profileId,
+                                           String branchId,
+                                           String key) {
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -85,6 +95,32 @@ public final class PropertyValues {
     }
 
     /**
+     * 修改配置value
+     *
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param branchId       分支id
+     * @param propertyChange 配置变动
+     */
+    public static void changePropertyValues(String appId,
+                                            String profileId,
+                                            String branchId,
+                                            PropertyChange propertyChange) {
+        for (Property property : propertyChange.getAddedOrModifiedProperties()) {
+            addOrModifyPropertyValue(
+                    appId,
+                    profileId,
+                    branchId,
+                    property.getKey(),
+                    property.getValue(),
+                    property.getScope());
+        }
+        for (String key : propertyChange.getDeletedKeys()) {
+            deletePropertyValue(appId, profileId, branchId, key);
+        }
+    }
+
+    /**
      * 回滚配置value
      *
      * @param appId          应用id
@@ -92,7 +128,10 @@ public final class PropertyValues {
      * @param branchId       分支id
      * @param releaseVersion 回滚到的目标发布版本
      */
-    public static void revertPropertyValues(String appId, String profileId, String branchId, Long releaseVersion) {
+    public static void revertPropertyValues(String appId,
+                                            String profileId,
+                                            String branchId,
+                                            Long releaseVersion) {
         RevertPropertyValuesOrder order = new RevertPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -112,7 +151,10 @@ public final class PropertyValues {
      * @param minScope  最小作用域
      * @return 配置value
      */
-    public static List<PropertyValueInfo> findPropertyValues(String appId, String profileId, String branchId, Scope minScope) {
+    public static List<PropertyValueInfo> findPropertyValues(String appId,
+                                                             String profileId,
+                                                             String branchId,
+                                                             Scope minScope) {
         FindPropertyValuesOrder order = new FindPropertyValuesOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);

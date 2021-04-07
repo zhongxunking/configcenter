@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,10 +11,12 @@ package org.antframework.configcenter.test.facade.api;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.BranchService;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.antframework.configcenter.facade.vo.BranchConstants;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.ReleaseConstant;
@@ -23,9 +25,6 @@ import org.antframework.configcenter.test.AbstractTest;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * 分支服务单元测试
@@ -54,19 +53,17 @@ public class BranchServiceTest extends AbstractTest {
     @Test
     public void testReleaseBranch() {
         for (String branchId : BRANCH_IDS) {
-            Set<Property> addOrModifiedProperties = new HashSet<>();
-            addOrModifiedProperties.add(new Property("redis.host", "localhost", Scope.PRIVATE));
-            addOrModifiedProperties.add(new Property("redis.port", "6379", Scope.PRIVATE));
+            PropertyChange propertyChange = new PropertyChange();
+            propertyChange.getAddedOrModifiedProperties().add(new Property("redis.host", "localhost", Scope.PRIVATE));
+            propertyChange.getAddedOrModifiedProperties().add(new Property("redis.port", "6379", Scope.PRIVATE));
 
-            Set<String> removedPropertyKeys = new HashSet<>();
-            removedPropertyKeys.add("zookeeper.url");
+            propertyChange.getDeletedKeys().add("zookeeper.url");
 
             ReleaseBranchOrder order = new ReleaseBranchOrder();
             order.setAppId("customer");
             order.setProfileId("dev");
             order.setBranchId(branchId);
-            order.setAddOrModifiedProperties(addOrModifiedProperties);
-            order.setRemovedPropertyKeys(removedPropertyKeys);
+            order.setPropertyChange(propertyChange);
             order.setMemo("发布");
 
             ReleaseBranchResult result = branchService.releaseBranch(order);
@@ -94,7 +91,7 @@ public class BranchServiceTest extends AbstractTest {
         order.setBranchId(BranchConstants.DEFAULT_BRANCH_ID);
         order.setSourceBranchId("branchA");
 
-        EmptyResult result = branchService.mergeBranch(order);
+        MergeBranchResult result = branchService.mergeBranch(order);
         FacadeUtils.assertSuccess(result);
     }
 

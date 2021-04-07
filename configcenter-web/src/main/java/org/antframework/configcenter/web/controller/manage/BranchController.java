@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -8,26 +8,22 @@
  */
 package org.antframework.configcenter.web.controller.manage;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.core.type.TypeReference;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
-import org.antframework.common.util.json.JSON;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.info.MergenceDifference;
+import org.antframework.configcenter.facade.info.PropertyChange;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
+import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.antframework.configcenter.facade.vo.Property;
-import org.antframework.configcenter.facade.vo.Scope;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
@@ -82,73 +78,45 @@ public class BranchController {
     /**
      * 发布分支
      *
-     * @param appId                   应用id
-     * @param profileId               环境id
-     * @param branchId                分支id
-     * @param addOrModifiedProperties 需添加或修改的配置
-     * @param removedPropertyKeys     需删除的配置key
-     * @param memo                    备注
+     * @param appId          应用id
+     * @param profileId      环境id
+     * @param branchId       分支id
+     * @param propertyChange 配置变动
+     * @param memo           备注
      */
     @RequestMapping("/releaseBranch")
     public ReleaseBranchResult releaseBranch(String appId,
                                              String profileId,
                                              String branchId,
-                                             String addOrModifiedProperties,
-                                             String removedPropertyKeys,
-                                             String memo) throws JsonProcessingException {
-        Set<Property> properties = convertToProperties(addOrModifiedProperties);
-        Set<String> propertyKeys = convertToPropertyKeys(removedPropertyKeys);
-
-        // 校验是否有权限
+                                             PropertyChange propertyChange,
+                                             String memo) {
+        // 验限
         ManagerApps.assertAdminOrHaveApp(appId);
-        Set<String> keys = properties.stream().map(Property::getKey).collect(Collectors.toSet());
-        keys.addAll(propertyKeys);
+        Set<String> keys = propertyChange.getAddedOrModifiedProperties().stream().map(Property::getKey).collect(Collectors.toSet());
+        keys.addAll(propertyChange.getDeletedKeys());
         OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
 
         ReleaseBranchOrder order = new ReleaseBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
-        order.setAddOrModifiedProperties(properties);
-        order.setRemovedPropertyKeys(propertyKeys);
+        order.setPropertyChange(propertyChange);
         order.setMemo(memo);
 
         ReleaseBranchResult result = branchService.releaseBranch(order);
         if (result.isSuccess()) {
             // 同步到配置value
-            for (Property property : properties) {
-                PropertyValues.addOrModifyPropertyValue(
-                        appId,
-                        profileId,
-                        branchId,
-                        property.getKey(),
-                        property.getValue(),
-                        property.getScope());
-            }
-            for (String key : propertyKeys) {
-                PropertyValues.deletePropertyValue(appId, profileId, branchId, key);
-            }
+            PropertyValues.changePropertyValues(
+                    appId,
+                    profileId,
+                    branchId,
+                    propertyChange);
             // 对敏感配置掩码
             if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
                 maskRelease(result.getBranch().getRelease());
             }
         }
         return result;
-    }
-
-    // 转换出配置集
-    private Set<Property> convertToProperties(String json) throws JsonProcessingException {
-        Set<PropertyInfo> properties = JSON.OBJECT_MAPPER.readValue(json, new TypeReference<Set<PropertyInfo>>() {
-        });
-        return properties.stream()
-                .map(propertyInfo -> new Property(propertyInfo.getKey(), propertyInfo.getValue(), propertyInfo.getScope()))
-                .collect(Collectors.toSet());
-    }
-
-    // 转换出配置key集
-    private Set<String> convertToPropertyKeys(String json) throws JsonProcessingException {
-        return JSON.OBJECT_MAPPER.readValue(json, new TypeReference<Set<String>>() {
-        });
     }
 
     /**
@@ -160,7 +128,10 @@ public class BranchController {
      * @param targetReleaseVersion 回滚到的目标发布版本
      */
     @RequestMapping("/revertBranch")
-    public EmptyResult revertBranch(String appId, String profileId, String branchId, Long targetReleaseVersion) {
+    public EmptyResult revertBranch(String appId,
+                                    String profileId,
+                                    String branchId,
+                                    Long targetReleaseVersion) {
         ManagerApps.assertAdminOrHaveApp(appId);
         RevertBranchOrder order = new RevertBranchOrder();
         order.setAppId(appId);
@@ -170,7 +141,11 @@ public class BranchController {
 
         EmptyResult result = branchService.revertBranch(order);
         if (result.isSuccess()) {
-            PropertyValues.revertPropertyValues(appId, profileId, branchId, targetReleaseVersion);
+            PropertyValues.revertPropertyValues(
+                    appId,
+                    profileId,
+                    branchId,
+                    targetReleaseVersion);
         }
         return result;
     }
@@ -184,29 +159,32 @@ public class BranchController {
      * @param sourceBranchId 源分支id
      */
     @RequestMapping("/mergeBranch")
-    public EmptyResult mergeBranch(String appId, String profileId, String branchId, String sourceBranchId) {
+    public MergeBranchResult mergeBranch(String appId,
+                                         String profileId,
+                                         String branchId,
+                                         String sourceBranchId) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
+
         MergeBranchOrder order = new MergeBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
         order.setSourceBranchId(sourceBranchId);
 
-        EmptyResult result = branchService.mergeBranch(order);
+        MergeBranchResult result = branchService.mergeBranch(order);
         if (result.isSuccess()) {
             // 同步到配置value
-            for (Property property : difference.getAddOrModifiedProperties()) {
-                PropertyValues.addOrModifyPropertyValue(
-                        appId,
-                        profileId,
-                        branchId,
-                        property.getKey(),
-                        property.getValue(),
-                        property.getScope());
-            }
-            for (String key : difference.getRemovedPropertyKeys()) {
-                PropertyValues.deletePropertyValue(appId, profileId, branchId, key);
+            PropertyValues.changePropertyValues(
+                    appId,
+                    profileId,
+                    branchId,
+                    result.getPropertyChange());
+            // 对敏感配置掩码
+            if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
+                Set<Property> properties = result.getPropertyChange().getAddedOrModifiedProperties();
+                Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, properties);
+                properties.clear();
+                properties.addAll(maskedProperties);
             }
         }
         return result;
@@ -226,43 +204,47 @@ public class BranchController {
                                                              String branchId,
                                                              String sourceBranchId) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        MergenceDifference difference = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
-        Map<String, Property> propertyMap = Branches.findBranch(appId, profileId, branchId)
+        // 计算分支合并的配置变动
+        PropertyChange propertyChange = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
+        Map<String, Property> oldKeyProperties = Branches.findBranch(appId, profileId, branchId)
                 .getRelease()
                 .getProperties()
                 .stream()
                 .collect(Collectors.toMap(Property::getKey, Function.identity()));
-
+        // 计算真正新增或修改的配置
         ComputeBranchMergenceResult result = FacadeUtils.buildSuccess(ComputeBranchMergenceResult.class);
-        for (Property addOrModifiedProperty : difference.getAddOrModifiedProperties()) {
-            Property property = propertyMap.get(addOrModifiedProperty.getKey());
-            if (Objects.equals(addOrModifiedProperty, property)) {
+        for (Property newProperty : propertyChange.getAddedOrModifiedProperties()) {
+            Property oldProperty = oldKeyProperties.get(newProperty.getKey());
+            if (Objects.equals(newProperty, oldProperty)) {
                 continue;
             }
-            result.addProperty(addOrModifiedProperty);
-            if (property == null) {
-                result.addAddedKeys(addOrModifiedProperty.getKey());
+            result.addProperty(newProperty);
+            if (oldProperty == null) {
+                result.addAddedKeys(newProperty.getKey());
             } else {
-                if (!Objects.equals(addOrModifiedProperty.getValue(), property.getValue())) {
-                    result.addModifiedValueKey(addOrModifiedProperty.getKey());
+                if (!Objects.equals(newProperty.getValue(), oldProperty.getValue())) {
+                    result.addModifiedValueKey(newProperty.getKey());
                 }
-                if (addOrModifiedProperty.getScope() != property.getScope()) {
-                    result.addModifiedScopeKey(addOrModifiedProperty.getKey());
+                if (newProperty.getScope() != oldProperty.getScope()) {
+                    result.addModifiedScopeKey(newProperty.getKey());
                 }
             }
         }
-        difference.getRemovedPropertyKeys()
-                .stream()
-                .filter(propertyMap::containsKey)
-                .forEach(key -> {
-                    result.addProperty(propertyMap.get(key));
-                    result.addRemovedKeys(key);
-                });
+        // 计算真正删除的配置
+        for (String key : propertyChange.getDeletedKeys()) {
+            Property oldProperty = oldKeyProperties.get(key);
+            if (oldProperty != null) {
+                result.addProperty(oldProperty);
+                result.addRemovedKeys(key);
+            }
+        }
+        // 对敏感配置掩码
         if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getProperties());
             result.getProperties().clear();
             result.getProperties().addAll(maskedProperties);
         }
+
         return result;
     }
 
@@ -330,18 +312,6 @@ public class BranchController {
     private void maskRelease(ReleaseInfo release) {
         Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
         release.setProperties(maskedProperties);
-    }
-
-    // 配置项info
-    @Getter
-    @Setter
-    private static class PropertyInfo {
-        // key
-        private String key;
-        // value
-        private String value;
-        // 作用域
-        private Scope scope;
     }
 
     /**
