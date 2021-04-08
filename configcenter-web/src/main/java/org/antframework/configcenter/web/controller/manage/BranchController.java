@@ -17,6 +17,7 @@ import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.Properties;
 import org.antframework.configcenter.biz.util.PropertyValues;
+import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.info.PropertyChange;
@@ -26,6 +27,7 @@ import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchResult;
 import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.result.MergeBranchResult;
+import org.antframework.configcenter.facade.vo.BranchConstants;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.configcenter.web.common.OperatePrivileges;
@@ -35,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -90,11 +93,13 @@ public class BranchController {
                                              String branchId,
                                              PropertyChange propertyChange,
                                              String memo) {
-        // 验限
+        // 验权
         ManagerApps.assertAdminOrHaveApp(appId);
-        Set<String> keys = propertyChange.getAddedOrModifiedProperties().stream().map(Property::getKey).collect(Collectors.toSet());
-        keys.addAll(propertyChange.getDeletedKeys());
-        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
+            Set<String> keys = propertyChange.getAddedOrModifiedProperties().stream().map(Property::getKey).collect(Collectors.toSet());
+            keys.addAll(propertyChange.getDeletedKeys());
+            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+        }
 
         ReleaseBranchOrder order = new ReleaseBranchOrder();
         order.setAppId(appId);
@@ -132,7 +137,20 @@ public class BranchController {
                                     String profileId,
                                     String branchId,
                                     Long targetReleaseVersion) {
+        // 验权
         ManagerApps.assertAdminOrHaveApp(appId);
+        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN && Objects.equals(branchId, BranchConstants.DEFAULT_BRANCH_ID)) {
+            Set<String> keys = new HashSet<>();
+            Set<Property> startProperties = Branches.findBranch(appId, profileId, branchId).getRelease().getProperties();
+            Set<Property> endProperties = Releases.findRelease(appId, profileId, targetReleaseVersion).getProperties();
+            PropertyDifference difference = Properties.compare(endProperties, startProperties);
+            keys.addAll(difference.getAddedKeys());
+            keys.addAll(difference.getModifiedValueKeys());
+            keys.addAll(difference.getModifiedScopeKeys());
+            keys.addAll(difference.getDeletedKeys());
+            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+        }
+
         RevertBranchOrder order = new RevertBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
@@ -163,7 +181,22 @@ public class BranchController {
                                          String profileId,
                                          String branchId,
                                          String sourceBranchId) {
+        // 验权
         ManagerApps.assertAdminOrHaveApp(appId);
+        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN && Objects.equals(branchId, BranchConstants.DEFAULT_BRANCH_ID)) {
+            Set<String> keys = new HashSet<>();
+            ComputeBranchMergenceResult computeBranchMergenceResult = computeBranchMergence(
+                    appId,
+                    profileId,
+                    branchId,
+                    sourceBranchId);
+            FacadeUtils.assertSuccess(computeBranchMergenceResult);
+            keys.addAll(computeBranchMergenceResult.getDifference().getAddedKeys());
+            keys.addAll(computeBranchMergenceResult.getDifference().getModifiedValueKeys());
+            keys.addAll(computeBranchMergenceResult.getDifference().getModifiedScopeKeys());
+            keys.addAll(computeBranchMergenceResult.getDifference().getDeletedKeys());
+            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+        }
 
         MergeBranchOrder order = new MergeBranchOrder();
         order.setAppId(appId);
@@ -244,7 +277,12 @@ public class BranchController {
      */
     @RequestMapping("/deleteBranch")
     public EmptyResult deleteBranch(String appId, String profileId, String branchId) {
+        // 验权
         ManagerApps.assertAdminOrHaveApp(appId);
+        if (Objects.equals(branchId, BranchConstants.DEFAULT_BRANCH_ID)) {
+            CurrentManagerAssert.admin();
+        }
+
         DeleteBranchOrder order = new DeleteBranchOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
