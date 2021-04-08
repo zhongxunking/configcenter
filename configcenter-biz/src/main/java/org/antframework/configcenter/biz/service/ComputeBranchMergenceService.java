@@ -18,8 +18,8 @@ import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.dal.dao.MergenceDao;
 import org.antframework.configcenter.dal.entity.Mergence;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.info.PropertiesDifference;
 import org.antframework.configcenter.facade.info.PropertyChange;
+import org.antframework.configcenter.facade.info.PropertyDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.ComputeBranchMergenceOrder;
 import org.antframework.configcenter.facade.result.ComputeBranchMergenceResult;
@@ -91,15 +91,15 @@ public class ComputeBranchMergenceService {
 
     // 计算需合并的配置变动
     private PropertyChange computeChange(ReleaseInfo startRelease, ReleaseInfo endRelease) {
-        PropertyChange propertyChange = new PropertyChange();
-        PropertiesDifference propertiesDifference = Properties.compare(endRelease.getProperties(), startRelease.getProperties());
+        PropertyChange change = new PropertyChange();
+        PropertyDifference difference = Properties.compare(endRelease.getProperties(), startRelease.getProperties());
         endRelease.getProperties().stream()
-                .filter(property -> propertiesDifference.getAddedKeys().contains(property.getKey())
-                        || propertiesDifference.getModifiedValueKeys().contains(property.getKey())
-                        || propertiesDifference.getModifiedScopeKeys().contains(property.getKey()))
-                .forEach(propertyChange::addAddedOrModifiedProperty);
-        propertiesDifference.getRemovedKeys().forEach(propertyChange::addDeletedKey);
+                .filter(property -> difference.getAddedKeys().contains(property.getKey())
+                        || difference.getModifiedValueKeys().contains(property.getKey())
+                        || difference.getModifiedScopeKeys().contains(property.getKey()))
+                .forEach(change::addAddedOrModifiedProperty);
+        difference.getDeletedKeys().forEach(change::addDeletedKey);
 
-        return propertyChange;
+        return change;
     }
 }

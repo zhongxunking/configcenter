@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -8,7 +8,7 @@
  */
 package org.antframework.configcenter.biz.util;
 
-import org.antframework.configcenter.facade.info.PropertiesDifference;
+import org.antframework.configcenter.facade.info.PropertyDifference;
 import org.antframework.configcenter.facade.vo.Property;
 
 import java.util.Map;
@@ -26,13 +26,13 @@ public final class Properties {
      *
      * @param left  待比较的配置
      * @param right 待比较的配置
-     * @return 配置集差异
+     * @return 配置差异
      */
-    public static PropertiesDifference compare(Set<Property> left, Set<Property> right) {
+    public static PropertyDifference compare(Set<Property> left, Set<Property> right) {
         Map<String, Property> leftMap = left.stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
         Map<String, Property> rightMap = right.stream().collect(Collectors.toMap(Property::getKey, Function.identity()));
 
-        PropertiesDifference difference = new PropertiesDifference();
+        PropertyDifference difference = new PropertyDifference();
         for (Property leftProperty : left) {
             Property rightProperty = rightMap.get(leftProperty.getKey());
             if (rightProperty == null) {
@@ -48,7 +48,7 @@ public final class Properties {
         }
         for (Property rightProperty : right) {
             if (!leftMap.containsKey(rightProperty.getKey())) {
-                difference.addRemovedKeys(rightProperty.getKey());
+                difference.addDeletedKeys(rightProperty.getKey());
             }
         }
 

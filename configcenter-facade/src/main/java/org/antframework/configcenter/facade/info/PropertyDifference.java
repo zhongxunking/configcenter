@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -15,10 +15,10 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * 配置集差异
+ * 配置差异
  */
 @Getter
-public class PropertiesDifference extends AbstractInfo {
+public class PropertyDifference extends AbstractInfo {
     // 新增配置的key
     private final Set<String> addedKeys = new HashSet<>();
     // 被修改的配置value的key
@@ -26,7 +26,7 @@ public class PropertiesDifference extends AbstractInfo {
     // 被修改的scope的key
     private final Set<String> modifiedScopeKeys = new HashSet<>();
     // 被删除配置的key
-    private final Set<String> removedKeys = new HashSet<>();
+    private final Set<String> deletedKeys = new HashSet<>();
 
     public void addAddedKeys(String key) {
         addedKeys.add(key);
@@ -40,7 +40,7 @@ public class PropertiesDifference extends AbstractInfo {
         modifiedScopeKeys.add(key);
     }
 
-    public void addRemovedKeys(String key) {
-        removedKeys.add(key);
+    public void addDeletedKeys(String key) {
+        deletedKeys.add(key);
     }
 }

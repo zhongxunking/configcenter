@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -18,7 +18,7 @@ import org.antframework.configcenter.biz.util.Properties;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.PropertyValueService;
-import org.antframework.configcenter.facade.info.PropertiesDifference;
+import org.antframework.configcenter.facade.info.PropertyDifference;
 import org.antframework.configcenter.facade.info.PropertyValueInfo;
 import org.antframework.configcenter.facade.order.AddOrModifyPropertyValueOrder;
 import org.antframework.configcenter.facade.order.DeletePropertyValueOrder;
@@ -162,7 +162,7 @@ public class PropertyValueController {
         List<PropertyValueInfo> propertyValues = PropertyValues.findPropertyValues(appId, profileId, branchId, Scope.PRIVATE);
         Set<Property> left = propertyValues.stream().map(propertyValue -> new Property(propertyValue.getKey(), propertyValue.getValue(), propertyValue.getScope())).collect(Collectors.toSet());
         Set<Property> right = Releases.findRelease(appId, profileId, releaseVersion).getProperties();
-        PropertiesDifference difference = Properties.compare(left, right);
+        PropertyDifference difference = Properties.compare(left, right);
 
         ComparePropertyValuesWithReleaseResult result = FacadeUtils.buildSuccess(ComparePropertyValuesWithReleaseResult.class);
         result.setDifference(difference);
@@ -176,6 +176,6 @@ public class PropertyValueController {
     @Setter
     public static class ComparePropertyValuesWithReleaseResult extends AbstractResult {
         // 差异
-        private PropertiesDifference difference;
+        private PropertyDifference difference;
     }
 }

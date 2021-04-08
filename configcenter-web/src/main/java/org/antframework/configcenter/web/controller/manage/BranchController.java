@@ -10,14 +10,17 @@ package org.antframework.configcenter.web.controller.manage;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.biz.util.Branches;
+import org.antframework.configcenter.biz.util.Properties;
 import org.antframework.configcenter.biz.util.PropertyValues;
 import org.antframework.configcenter.facade.api.BranchService;
 import org.antframework.configcenter.facade.info.BranchInfo;
 import org.antframework.configcenter.facade.info.PropertyChange;
+import org.antframework.configcenter.facade.info.PropertyDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.*;
 import org.antframework.configcenter.facade.result.FindBranchResult;
@@ -32,10 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -206,45 +206,32 @@ public class BranchController {
         ManagerApps.assertAdminOrHaveApp(appId);
         // 计算分支合并的配置变动
         PropertyChange propertyChange = Branches.computeBranchMergence(appId, profileId, branchId, sourceBranchId);
-        Map<String, Property> oldKeyProperties = Branches.findBranch(appId, profileId, branchId)
-                .getRelease()
-                .getProperties()
-                .stream()
-                .collect(Collectors.toMap(Property::getKey, Function.identity()));
+        Set<Property> oldProperties = Branches.findBranch(appId, profileId, branchId).getRelease().getProperties();
+        Set<Property> changedProperties = new HashSet<>();
         // 计算真正新增或修改的配置
-        ComputeBranchMergenceResult result = FacadeUtils.buildSuccess(ComputeBranchMergenceResult.class);
-        for (Property newProperty : propertyChange.getAddedOrModifiedProperties()) {
-            Property oldProperty = oldKeyProperties.get(newProperty.getKey());
-            if (Objects.equals(newProperty, oldProperty)) {
-                continue;
-            }
-            result.addProperty(newProperty);
-            if (oldProperty == null) {
-                result.addAddedKeys(newProperty.getKey());
-            } else {
-                if (!Objects.equals(newProperty.getValue(), oldProperty.getValue())) {
-                    result.addModifiedValueKey(newProperty.getKey());
-                }
-                if (newProperty.getScope() != oldProperty.getScope()) {
-                    result.addModifiedScopeKey(newProperty.getKey());
-                }
-            }
-        }
+        PropertyDifference difference = Properties.compare(propertyChange.getAddedOrModifiedProperties(), oldProperties);
+        difference.getDeletedKeys().clear();
+        propertyChange.getAddedOrModifiedProperties().stream()
+                .filter(property -> difference.getAddedKeys().contains(property.getKey())
+                        || difference.getModifiedValueKeys().contains(property.getKey())
+                        || difference.getModifiedScopeKeys().contains(property.getKey()))
+                .forEach(changedProperties::add);
         // 计算真正删除的配置
-        for (String key : propertyChange.getDeletedKeys()) {
-            Property oldProperty = oldKeyProperties.get(key);
-            if (oldProperty != null) {
-                result.addProperty(oldProperty);
-                result.addRemovedKeys(key);
-            }
-        }
-        // 对敏感配置掩码
-        if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
-            Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, result.getProperties());
-            result.getProperties().clear();
-            result.getProperties().addAll(maskedProperties);
-        }
+        oldProperties.stream()
+                .filter(property -> propertyChange.getDeletedKeys().contains(property.getKey()))
+                .forEach(property -> {
+                    difference.addDeletedKeys(property.getKey());
+                    changedProperties.add(property);
+                });
 
+        ComputeBranchMergenceResult result = FacadeUtils.buildSuccess(ComputeBranchMergenceResult.class);
+        if (CurrentManagerAssert.current().getType() == ManagerType.ADMIN) {
+            result.setChangedProperties(changedProperties);
+        } else {
+            // 对敏感配置掩码
+            result.setChangedProperties(OperatePrivileges.maskProperties(appId, changedProperties));
+        }
+        result.setDifference(difference);
         return result;
     }
 
@@ -318,36 +305,11 @@ public class BranchController {
      * 计算分支合并result
      */
     @Getter
+    @Setter
     public static class ComputeBranchMergenceResult extends AbstractResult {
         // 变动的配置
-        private final Set<Property> properties = new HashSet<>();
-        // 新增配置的key
-        private final Set<String> addedKeys = new HashSet<>();
-        // 被修改的配置value的key
-        private final Set<String> modifiedValueKeys = new HashSet<>();
-        // 被修改的scope的key
-        private final Set<String> modifiedScopeKeys = new HashSet<>();
-        // 被删除配置的key
-        private final Set<String> removedKeys = new HashSet<>();
-
-        public void addProperty(Property property) {
-            properties.add(property);
-        }
-
-        public void addAddedKeys(String key) {
-            addedKeys.add(key);
-        }
-
-        public void addModifiedValueKey(String key) {
-            modifiedValueKeys.add(key);
-        }
-
-        public void addModifiedScopeKey(String key) {
-            modifiedScopeKeys.add(key);
-        }
-
-        public void addRemovedKeys(String key) {
-            removedKeys.add(key);
-        }
+        private Set<Property> changedProperties;
+        // 配置差异
+        private PropertyDifference difference;
     }
 }

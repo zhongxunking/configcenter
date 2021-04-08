@@ -18,7 +18,7 @@ import org.antframework.configcenter.biz.util.Releases;
 import org.antframework.configcenter.facade.api.ConfigService;
 import org.antframework.configcenter.facade.api.ReleaseService;
 import org.antframework.configcenter.facade.info.BranchInfo;
-import org.antframework.configcenter.facade.info.PropertiesDifference;
+import org.antframework.configcenter.facade.info.PropertyDifference;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.order.FindReleaseOrder;
@@ -121,7 +121,7 @@ public class ReleaseController {
 
         Set<Property> left = Releases.findRelease(appId, profileId, leftVersion).getProperties();
         Set<Property> right = Releases.findRelease(appId, profileId, rightVersion).getProperties();
-        PropertiesDifference difference = Properties.compare(left, right);
+        PropertyDifference difference = Properties.compare(left, right);
 
         CompareReleasesResult result = FacadeUtils.buildSuccess(CompareReleasesResult.class);
         result.setDifference(difference);
@@ -181,6 +181,6 @@ public class ReleaseController {
     @Setter
     public static class CompareReleasesResult extends AbstractResult {
         // 差异
-        private PropertiesDifference difference;
+        private PropertyDifference difference;
     }
 }
