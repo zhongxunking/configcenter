@@ -27,8 +27,8 @@ import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResul
 import org.antframework.configcenter.facade.result.FindReleaseResult;
 import org.antframework.configcenter.facade.result.QueryReleasesResult;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.web.common.AppPropertyTypes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -170,7 +170,7 @@ public class ReleaseController {
 
     // 掩码敏感配置
     private void maskRelease(ReleaseInfo release) {
-        Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
+        Set<Property> maskedProperties = AppPropertyTypes.maskProperties(release.getAppId(), release.getProperties());
         release.setProperties(maskedProperties);
     }
 

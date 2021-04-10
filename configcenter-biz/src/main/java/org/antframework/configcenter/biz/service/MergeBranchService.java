@@ -11,7 +11,6 @@ package org.antframework.configcenter.biz.service;
 import lombok.AllArgsConstructor;
 import org.antframework.common.util.facade.BizException;
 import org.antframework.common.util.facade.CommonResultCode;
-import org.antframework.common.util.facade.EmptyResult;
 import org.antframework.common.util.facade.Status;
 import org.antframework.configcenter.biz.util.Branches;
 import org.antframework.configcenter.biz.util.Refreshes;
@@ -86,7 +85,7 @@ public class MergeBranchService {
     }
 
     @ServiceAfter
-    public void after(ServiceContext<MergeBranchOrder, EmptyResult> context) {
+    public void after(ServiceContext<MergeBranchOrder, MergeBranchResult> context) {
         MergeBranchOrder order = context.getOrder();
         // 刷新客户端
         Refreshes.refreshClients(order.getAppId(), order.getProfileId());

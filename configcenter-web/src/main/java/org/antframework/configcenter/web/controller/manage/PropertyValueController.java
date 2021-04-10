@@ -27,8 +27,8 @@ import org.antframework.configcenter.facade.order.RevertPropertyValuesOrder;
 import org.antframework.configcenter.facade.result.FindPropertyValuesResult;
 import org.antframework.configcenter.facade.vo.Property;
 import org.antframework.configcenter.facade.vo.Scope;
+import org.antframework.configcenter.web.common.AppPropertyTypes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,9 +46,6 @@ import java.util.stream.Collectors;
 @RequestMapping("/manage/propertyValue")
 @AllArgsConstructor
 public class PropertyValueController {
-    // 掩码后的配置value
-    private static final String MASKED_VALUE = "******";
-
     // 配置value服务
     private final PropertyValueService propertyValueService;
 
@@ -65,7 +62,7 @@ public class PropertyValueController {
     @RequestMapping("/addOrModifyPropertyValue")
     public EmptyResult addOrModifyPropertyValue(String appId, String profileId, String branchId, String key, String value, Scope scope) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
+        AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
 
         AddOrModifyPropertyValueOrder order = new AddOrModifyPropertyValueOrder();
         order.setAppId(appId);
@@ -89,7 +86,7 @@ public class PropertyValueController {
     @RequestMapping("/deletePropertyValue")
     public EmptyResult deletePropertyValue(String appId, String profileId, String branchId, String key) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
+        AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
 
         DeletePropertyValueOrder order = new DeletePropertyValueOrder();
         order.setAppId(appId);
@@ -141,7 +138,7 @@ public class PropertyValueController {
 
         FindPropertyValuesResult result = propertyValueService.findPropertyValues(order);
         if (result.isSuccess() && CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
-            List<PropertyValueInfo> maskedPropertyValues = OperatePrivileges.maskPropertyValue(appId, result.getPropertyValues());
+            List<PropertyValueInfo> maskedPropertyValues = AppPropertyTypes.maskPropertyValues(appId, result.getPropertyValues());
             result.getPropertyValues().clear();
             result.getPropertyValues().addAll(maskedPropertyValues);
         }

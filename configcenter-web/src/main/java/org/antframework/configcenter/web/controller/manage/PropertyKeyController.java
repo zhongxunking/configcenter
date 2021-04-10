@@ -16,8 +16,8 @@ import org.antframework.configcenter.facade.order.DeletePropertyKeyOrder;
 import org.antframework.configcenter.facade.order.FindInheritedAppPropertyKeysOrder;
 import org.antframework.configcenter.facade.result.FindInheritedAppPropertyKeysResult;
 import org.antframework.configcenter.facade.vo.Scope;
+import org.antframework.configcenter.web.common.AppPropertyTypes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -44,7 +44,7 @@ public class PropertyKeyController {
     @RequestMapping("/addOrModifyPropertyKey")
     public EmptyResult addOrModifyPropertyKey(String appId, String key, Scope scope, String memo) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
+        AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
         AddOrModifyPropertyKeyOrder order = new AddOrModifyPropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);
@@ -63,7 +63,7 @@ public class PropertyKeyController {
     @RequestMapping("/deletePropertyKey")
     public EmptyResult deletePropertyKey(String appId, String key) {
         ManagerApps.assertAdminOrHaveApp(appId);
-        OperatePrivileges.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
+        AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, Collections.singleton(key));
         DeletePropertyKeyOrder order = new DeletePropertyKeyOrder();
         order.setAppId(appId);
         order.setKey(key);

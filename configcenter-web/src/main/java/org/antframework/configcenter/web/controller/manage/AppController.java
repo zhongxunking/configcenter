@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -19,8 +19,8 @@ import org.antframework.configcenter.facade.result.FindAppResult;
 import org.antframework.configcenter.facade.result.FindAppTreeResult;
 import org.antframework.configcenter.facade.result.FindInheritedAppsResult;
 import org.antframework.configcenter.facade.result.QueryAppsResult;
+import org.antframework.configcenter.web.common.AppPropertyTypes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.facade.info.ManagerInfo;
 import org.antframework.manager.web.CurrentManagerAssert;
@@ -71,8 +71,8 @@ public class AppController {
         order.setAppId(appId);
         EmptyResult result = appService.deleteApp(order);
         if (result.isSuccess()) {
-            // 删除应用的所有配置key的权限
-            OperatePrivileges.deleteOperatePrivileges(appId, null);
+            // 删除应用所有的配置类型规则
+            AppPropertyTypes.deleteAllRule(appId);
         }
         return result;
     }

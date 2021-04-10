@@ -29,8 +29,8 @@ import org.antframework.configcenter.facade.result.FindBranchesResult;
 import org.antframework.configcenter.facade.result.MergeBranchResult;
 import org.antframework.configcenter.facade.vo.BranchConstants;
 import org.antframework.configcenter.facade.vo.Property;
+import org.antframework.configcenter.web.common.AppPropertyTypes;
 import org.antframework.configcenter.web.common.ManagerApps;
-import org.antframework.configcenter.web.common.OperatePrivileges;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -98,7 +98,7 @@ public class BranchController {
         if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
             Set<String> keys = propertyChange.getAddedOrModifiedProperties().stream().map(Property::getKey).collect(Collectors.toSet());
             keys.addAll(propertyChange.getDeletedKeys());
-            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+            AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, keys);
         }
 
         ReleaseBranchOrder order = new ReleaseBranchOrder();
@@ -148,7 +148,7 @@ public class BranchController {
             keys.addAll(difference.getModifiedValueKeys());
             keys.addAll(difference.getModifiedScopeKeys());
             keys.addAll(difference.getDeletedKeys());
-            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+            AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, keys);
         }
 
         RevertBranchOrder order = new RevertBranchOrder();
@@ -195,7 +195,7 @@ public class BranchController {
             keys.addAll(computeBranchMergenceResult.getDifference().getModifiedValueKeys());
             keys.addAll(computeBranchMergenceResult.getDifference().getModifiedScopeKeys());
             keys.addAll(computeBranchMergenceResult.getDifference().getDeletedKeys());
-            OperatePrivileges.assertAdminOrOnlyReadWrite(appId, keys);
+            AppPropertyTypes.assertAdminOrOnlyReadWrite(appId, keys);
         }
 
         MergeBranchOrder order = new MergeBranchOrder();
@@ -215,7 +215,7 @@ public class BranchController {
             // 对敏感配置掩码
             if (CurrentManagerAssert.current().getType() != ManagerType.ADMIN) {
                 Set<Property> properties = result.getPropertyChange().getAddedOrModifiedProperties();
-                Set<Property> maskedProperties = OperatePrivileges.maskProperties(appId, properties);
+                Set<Property> maskedProperties = AppPropertyTypes.maskProperties(appId, properties);
                 properties.clear();
                 properties.addAll(maskedProperties);
             }
@@ -262,7 +262,7 @@ public class BranchController {
             result.setChangedProperties(changedProperties);
         } else {
             // 对敏感配置掩码
-            result.setChangedProperties(OperatePrivileges.maskProperties(appId, changedProperties));
+            result.setChangedProperties(AppPropertyTypes.maskProperties(appId, changedProperties));
         }
         result.setDifference(difference);
         return result;
@@ -335,7 +335,7 @@ public class BranchController {
 
     // 掩码敏感配置
     private void maskRelease(ReleaseInfo release) {
-        Set<Property> maskedProperties = OperatePrivileges.maskProperties(release.getAppId(), release.getProperties());
+        Set<Property> maskedProperties = AppPropertyTypes.maskProperties(release.getAppId(), release.getProperties());
         release.setProperties(maskedProperties);
     }
 
