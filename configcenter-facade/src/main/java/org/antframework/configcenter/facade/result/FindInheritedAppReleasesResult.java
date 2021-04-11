@@ -10,7 +10,7 @@ package org.antframework.configcenter.facade.result;
 
 import lombok.Getter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.configcenter.facade.vo.AppRelease;
+import org.antframework.configcenter.facade.info.AppRelease;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -6,13 +6,11 @@
  * 修订记录:
  * @author 钟勋 2021-04-04 15:35 创建
  */
-package org.antframework.configcenter.facade.vo;
+package org.antframework.configcenter.facade.info;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.configcenter.facade.info.AppInfo;
-import org.antframework.configcenter.facade.info.ReleaseInfo;
 
 import java.io.Serializable;
 import java.util.List;

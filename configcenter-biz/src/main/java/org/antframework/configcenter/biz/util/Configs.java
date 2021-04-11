@@ -11,9 +11,9 @@ package org.antframework.configcenter.biz.util;
 import org.antframework.boot.core.Contexts;
 import org.antframework.common.util.facade.FacadeUtils;
 import org.antframework.configcenter.facade.api.ConfigService;
+import org.antframework.configcenter.facade.info.AppRelease;
 import org.antframework.configcenter.facade.order.FindInheritedAppReleasesOrder;
 import org.antframework.configcenter.facade.result.FindInheritedAppReleasesResult;
-import org.antframework.configcenter.facade.vo.AppRelease;
 
 import java.util.List;
 

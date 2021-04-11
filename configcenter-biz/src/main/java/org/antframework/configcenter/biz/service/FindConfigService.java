@@ -9,10 +9,10 @@
 package org.antframework.configcenter.biz.service;
 
 import org.antframework.configcenter.biz.util.Configs;
+import org.antframework.configcenter.facade.info.AppRelease;
 import org.antframework.configcenter.facade.info.ReleaseInfo;
 import org.antframework.configcenter.facade.order.FindConfigOrder;
 import org.antframework.configcenter.facade.result.FindConfigResult;
-import org.antframework.configcenter.facade.vo.AppRelease;
 import org.antframework.configcenter.facade.vo.Property;
 import org.bekit.service.annotation.service.Service;
 import org.bekit.service.annotation.service.ServiceExecute;
