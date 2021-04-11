@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <title>configcenter</title>
-    <script src="../common/import.js"></script>
+    <script>
+        CONFIGCENTER_VERSION = '1.7.5';
+        document.write("<script src=\"../common/import.js?version=" + CONFIGCENTER_VERSION + "\"><\/script>");
+    </script>
 </head>
 <body>
 <div id="loginApp">
