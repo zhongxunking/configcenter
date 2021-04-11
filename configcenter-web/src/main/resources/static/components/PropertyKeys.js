@@ -13,11 +13,11 @@ const PropertyKeysTemplate = `
         </el-col>
         <el-col :span="8" style="text-align: right;">
             <router-link :to="'/configs/' + appId + '/operatePrivileges'">
-                <el-button type="text">操作权限</el-button>
+                <el-button type="text">普通管理员权限</el-button>
             </router-link>
         </el-col>
     </el-row>
-    <div v-for="appPropertyKey in inheritedAppPropertyKeys" style="margin-bottom: 30px">
+    <div v-for="appPropertyKey in appPropertyKeys" style="margin-bottom: 30px">
         <el-row v-if="appPropertyKey.app.appId === appId" style="margin-bottom: 10px">
             <el-col :offset="4" :span="16" style="text-align: center;">
                 <span style="font-size: x-large;color: #409EFF;">{{ toShowingApp(appPropertyKey.app) }}</span>
@@ -32,7 +32,6 @@ const PropertyKeysTemplate = `
             </el-col>
         </el-row>
         <el-table :data="appPropertyKey.propertyKeys"
-                  v-loading="loading"
                   :key="appPropertyKey.app.appId"
                   :default-sort="{prop: 'key'}"
                   :style="{width: appPropertyKey.app.appId === appId ? '100%' : 'calc(100% - 130px)'}"
@@ -63,11 +62,11 @@ const PropertyKeysTemplate = `
                     </el-select>
                 </template>
             </el-table-column>
-            <el-table-column prop="privilege" label="操作权限" sortable width="120px">
+            <el-table-column prop="propertyType" label="普通管理员权限" sortable width="150px">
                 <template slot-scope="{ row }">
-                    <el-tag v-if="row.privilege === 'READ_WRITE'" type="success" size="medium">读写</el-tag>
-                    <el-tag v-else-if="row.privilege === 'READ'" type="warning" size="medium">只读</el-tag>
-                    <el-tag v-else-if="row.privilege === 'NONE'" type="danger" size="medium">无</el-tag>
+                    <el-tag v-if="row.propertyType === 'READ_WRITE'" type="success" size="medium">读写</el-tag>
+                    <el-tag v-else-if="row.propertyType === 'READ'" type="warning" size="medium">只读</el-tag>
+                    <el-tag v-else-if="row.propertyType === 'NONE'" type="danger" size="medium">无</el-tag>
                 </template>
             </el-table-column>
             <el-table-column v-if="appPropertyKey.app.appId === appId" label="操作" header-align="center" width="130px">
@@ -75,7 +74,7 @@ const PropertyKeysTemplate = `
                     <el-row>
                         <el-col :span="16" style="text-align: center">
                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type==='NORMAL' && row.privilege!=='READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type==='NORMAL' && row.propertyType!=='READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
                             </el-tooltip>
                             <template v-else>
                                 <el-button-group>
@@ -90,7 +89,7 @@ const PropertyKeysTemplate = `
                         </el-col>
                         <el-col :span="8" style="text-align: center">
                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                <el-button @click="deletePropertyKey(row)" type="danger" :disabled="manager.type==='NORMAL' && row.privilege!=='READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
+                                <el-button @click="deletePropertyKey(row)" type="danger" :disabled="manager.type==='NORMAL' && row.propertyType!=='READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
                             </el-tooltip>
                         </el-col>
                     </el-row>
@@ -128,9 +127,10 @@ const PropertyKeys = {
     data: function () {
         return {
             manager: CURRENT_MANAGER,
-            allProfiles: [],
-            loading: false,
+            profileTree: null,
+            appPropertyKeys: [],
             inheritedAppPropertyKeys: [],
+            inheritedAppRules: [],
             addPropertyKeyVisible: false,
             addPropertyKeyForm: {
                 key: null,
@@ -139,12 +139,95 @@ const PropertyKeys = {
             }
         };
     },
+    computed: {
+        allProfiles: function () {
+            if (this.profileTree === null) {
+                return [];
+            }
+            let extractProfiles = function (profileTree, level) {
+                let profiles = [];
+                if (profileTree.profile !== null) {
+                    profiles.push({
+                        profileId: profileTree.profile.profileId,
+                        profileName: profileTree.profile.profileName,
+                        parent: profileTree.profile.parent,
+                        level: level
+                    });
+                }
+                profileTree.children.forEach(function (child) {
+                    profiles = profiles.concat(extractProfiles(child, level + 1));
+                });
+                return profiles;
+            };
+            return extractProfiles(this.profileTree, -1);
+        }
+    },
+    watch: {
+        inheritedAppPropertyKeys: function () {
+            this.refreshAppPropertyKeys();
+        },
+        inheritedAppRules: function () {
+            this.refreshAppPropertyKeys();
+        }
+    },
     created: function () {
-        this.findAllProfiles();
+        this.findProfileTree();
         this.findInheritedAppPropertyKeys();
+        this.findInheritedAppRules();
     },
     methods: {
-        findAllProfiles: function () {
+        refreshAppPropertyKeys: function () {
+            const theThis = this;
+            let appPropertyKeys = [];
+            this.inheritedAppPropertyKeys.forEach(function (inheritedAppPropertyKey) {
+                let appPropertyKey = {
+                    app: inheritedAppPropertyKey.app,
+                    propertyKeys: [],
+                };
+                inheritedAppPropertyKey.propertyKeys.forEach(function (propertyKey) {
+                    appPropertyKey.propertyKeys.push({
+                        appId: propertyKey.appId,
+                        key: propertyKey.key,
+                        scope: propertyKey.scope,
+                        memo: propertyKey.memo,
+                        propertyType: theThis.computePropertyType(propertyKey.appId, propertyKey.key),
+                        editing: false,
+                        editingScope: null,
+                        editingMemo: null
+                    })
+                });
+
+                appPropertyKeys.push(appPropertyKey);
+            });
+
+            this.appPropertyKeys = appPropertyKeys;
+        },
+        computePropertyType: function (appId, key) {
+            let started = false;
+            for (let i = 0; i < this.inheritedAppRules.length; i++) {
+                let appRule = this.inheritedAppRules[i];
+                if (appRule.app.appId === appId) {
+                    started = true;
+                }
+                if (started) {
+                    for (let j = 0; j < appRule.rules.length; j++) {
+                        let rule = appRule.rules[j];
+                        let regex = rule.keyRegex;
+                        if (!regex.startsWith('^')) {
+                            regex = '^' + regex;
+                        }
+                        if (!regex.endsWith('$')) {
+                            regex += '$';
+                        }
+                        if (new RegExp(regex).test(key)) {
+                            return rule.propertyType;
+                        }
+                    }
+                }
+            }
+            return 'READ_WRITE';
+        },
+        findProfileTree: function (callback) {
             const theThis = this;
             axios.get('../manage/profile/findProfileTree', {
                 params: {
@@ -155,71 +238,44 @@ const PropertyKeys = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                let extractProfiles = function (profileTree, level) {
-                    let profiles = [];
-                    if (profileTree.profile !== null) {
-                        profileTree.profile.level = level;
-                        profiles.push(profileTree.profile);
-                    }
-                    profileTree.children.forEach(function (child) {
-                        profiles = profiles.concat(extractProfiles(child, level + 1));
-                    });
-                    return profiles;
-                };
-                theThis.allProfiles = extractProfiles(result.profileTree, -1);
+                theThis.profileTree = result.profileTree;
+                if (callback) {
+                    callback(theThis.profileTree);
+                }
             });
         },
-        findInheritedAppPropertyKeys: function () {
+        findInheritedAppPropertyKeys: function (callback) {
             const theThis = this;
-            theThis.loading = true;
             axios.get('../manage/propertyKey/findInheritedAppPropertyKeys', {
                 params: {
                     appId: theThis.appId
                 }
             }).then(function (result) {
                 if (!result.success) {
-                    theThis.loading = false;
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                const inheritedAppPropertyKeys = result.inheritedAppPropertyKeys;
-                axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
-                    params: {
-                        appId: theThis.appId
-                    }
-                }).then(function (result) {
-                    theThis.loading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    const appOperatePrivileges = result.appOperatePrivileges;
-                    for (let i = 0; i < inheritedAppPropertyKeys.length; i++) {
-                        inheritedAppPropertyKeys[i].propertyKeys.forEach(function (propertyKey) {
-                            propertyKey.editing = false;
-                            propertyKey.editingScope = null;
-                            propertyKey.editingMemo = null;
-                            for (let j = i; j < appOperatePrivileges.length; j++) {
-                                const keyRegexPrivileges = appOperatePrivileges[j].keyRegexPrivileges;
-                                for (let keyRegex in keyRegexPrivileges) {
-                                    let regex = keyRegex;
-                                    if (!regex.startsWith('^')) {
-                                        regex = '^' + regex;
-                                    }
-                                    if (!regex.endsWith('$')) {
-                                        regex += '$';
-                                    }
-                                    if (new RegExp(regex).test(propertyKey.key)) {
-                                        propertyKey.privilege = keyRegexPrivileges[keyRegex];
-                                        return;
-                                    }
-                                }
-                            }
-                            propertyKey.privilege = 'READ_WRITE';
-                        });
-                    }
-                    theThis.inheritedAppPropertyKeys = inheritedAppPropertyKeys;
-                });
+                theThis.inheritedAppPropertyKeys = result.inheritedAppPropertyKeys;
+                if (callback) {
+                    callback(theThis.inheritedAppPropertyKeys);
+                }
+            });
+        },
+        findInheritedAppRules: function (callback) {
+            const theThis = this;
+            axios.get('../manage/propertyType/findInheritedAppRules', {
+                params: {
+                    appId: theThis.appId
+                }
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                theThis.inheritedAppRules = result.inheritedAppRules;
+                if (callback) {
+                    callback(theThis.inheritedAppRules);
+                }
             });
         },
         startEditing: function (propertyKey) {
@@ -228,15 +284,9 @@ const PropertyKeys = {
             propertyKey.editingMemo = propertyKey.memo;
         },
         saveEditing: function (propertyKey) {
-            this.doAddOrModifyPropertyKey({
-                appId: propertyKey.appId,
-                key: propertyKey.key,
-                scope: propertyKey.editingScope,
-                memo: propertyKey.editingMemo
-            }, function () {
-                propertyKey.editing = false;
-                propertyKey.scope = propertyKey.editingScope;
-                propertyKey.memo = propertyKey.editingMemo;
+            const theThis = this;
+            this.doAddOrModifyPropertyKey(propertyKey.key, propertyKey.editingScope, propertyKey.editingMemo, function () {
+                theThis.findInheritedAppPropertyKeys();
             });
         },
         deletePropertyKey: function (propertyKey) {
@@ -262,12 +312,28 @@ const PropertyKeys = {
                 if (!valid) {
                     return;
                 }
-                const params = Object.assign({appId: theThis.appId}, theThis.addPropertyKeyForm);
-                theThis.doAddOrModifyPropertyKey(params, function () {
+                theThis.doAddOrModifyPropertyKey(theThis.addPropertyKeyForm.key, theThis.addPropertyKeyForm.scope, theThis.addPropertyKeyForm.memo, function () {
                     theThis.closeAddPropertyKeyDialog();
                     theThis.findInheritedAppPropertyKeys();
                 });
             })
+        },
+        doAddOrModifyPropertyKey: function (key, scope, memo, callback) {
+            axios.post('../manage/propertyKey/addOrModifyPropertyKey', {
+                appId: this.appId,
+                key: key,
+                scope: scope,
+                memo: memo
+            }).then(function (result) {
+                if (!result.success) {
+                    Vue.prototype.$message.error(result.message);
+                    return;
+                }
+                Vue.prototype.$message.success(result.message);
+                if (callback) {
+                    callback();
+                }
+            });
         },
         closeAddPropertyKeyDialog: function () {
             this.addPropertyKeyVisible = false;
@@ -284,20 +350,6 @@ const PropertyKeys = {
                 text += '（' + app.appName + '）';
             }
             return text;
-        },
-        doAddOrModifyPropertyKey: function (params, successCallback) {
-            const theThis = this;
-            this.loading = true;
-            axios.post('../manage/propertyKey/addOrModifyPropertyKey', params)
-                .then(function (result) {
-                    theThis.loading = false;
-                    if (!result.success) {
-                        Vue.prototype.$message.error(result.message);
-                        return;
-                    }
-                    Vue.prototype.$message.success(result.message);
-                    successCallback();
-                });
         }
     }
 };

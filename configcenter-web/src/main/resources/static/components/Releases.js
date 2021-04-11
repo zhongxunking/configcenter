@@ -76,7 +76,7 @@ const ReleasesTemplate = `
                                             <el-table-column property="value" label="配置value">
                                                 <template slot-scope="{ row }">
                                                     <el-tag v-if="row.value === null" size="medium">无效</el-tag>
-                                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                                     <span v-else class="release-property-text-style">{{ row.value }}</span>
                                                 </template>
                                             </el-table-column>
@@ -96,7 +96,7 @@ const ReleasesTemplate = `
                                     <el-badge v-if="showingRelease.difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
                                         <span class="badged-text-style release-property-text-style">{{ row.key }}</span>
                                     </el-badge>
-                                    <el-badge v-else-if="showingRelease.difference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                                    <el-badge v-else-if="showingRelease.difference.deletedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
                                         <span class="badged-text-style release-property-text-style">{{ row.key }}</span>
                                     </el-badge>
                                     <span v-else class="release-property-text-style">{{ row.key }}</span>
@@ -107,18 +107,18 @@ const ReleasesTemplate = `
                                     <template v-if="showingRelease.difference.modifiedValueKeys.indexOf(row.key) >= 0">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
-                                            <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                            <el-tag v-else-if="manager.type === 'NORMAL' && row.current.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                             <span v-else class="badged-text-style release-property-text-style">{{ row.current.value }}</span>
                                         </el-badge>
                                     </template>
                                     <div v-else-if="row.current">
                                         <el-tag v-if="row.current.value === null" size="medium">无效</el-tag>
-                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.current.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.current.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                         <span v-else class="release-property-text-style">{{ row.current.value }}</span>
                                     </div>
                                     <div v-else>
                                         <el-tag v-if="row.previous.value === null" size="medium">无效</el-tag>
-                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.previous.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.previous.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                         <span v-else class="release-property-text-style">{{ row.previous.value }}</span>
                                     </div>
                                 </template>
@@ -161,7 +161,7 @@ const ReleasesTemplate = `
                             <el-table-column property="value" label="配置value">
                                 <template slot-scope="{ row }">
                                     <el-tag v-if="row.value === null">无效</el-tag>
-                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger">无权限</el-tag>
                                     <span v-else class="release-property-text-style">{{ row.value }}</span>
                                 </template>
                             </el-table-column>
@@ -194,14 +194,14 @@ const Releases = {
             allReleasesLoaded: false,
             releases: [],
             showingRelease: {},
-            appOperatePrivileges: [],
+            inheritedAppRules: [],
             currentRelease: null
         };
     },
     created: function () {
         this.findApp(this.appId);
         this.findProfile(this.profileId);
-        this.findInheritedOperatePrivileges();
+        this.findInheritedAppRules();
         this.queryNextReleases();
     },
     methods: {
@@ -209,7 +209,7 @@ const Releases = {
             this.allReleasesLoaded = false;
             this.releases = [];
             this.showingRelease = {};
-            this.appOperatePrivileges = [];
+            this.inheritedAppRules = [];
             this.currentRelease = null;
             this.queryNextReleases();
         },
@@ -224,7 +224,7 @@ const Releases = {
                 }
                 theThis.doFindRelease(theThis.appId, theThis.profileId, version, function (release) {
                     release.properties.forEach(function (property) {
-                        property.privilege = theThis.calcPrivilege(release.appId, property.key);
+                        property.propertyType = theThis.computePropertyType(release.appId, property.key);
                     });
                     theThis.compareReleases(
                         theThis.appId,
@@ -295,7 +295,7 @@ const Releases = {
                     addedKeys: [],
                     modifiedValueKeys: [],
                     modifiedScopeKeys: [],
-                    removedKeys: []
+                    deletedKeys: []
                 });
                 return;
             }
@@ -327,7 +327,7 @@ const Releases = {
             let temp = difference.addedKeys.concat(
                 difference.modifiedValueKeys,
                 difference.modifiedScopeKeys,
-                difference.removedKeys);
+                difference.deletedKeys);
             temp.forEach(function (key) {
                 if (keys.indexOf(key) < 0) {
                     keys.push(key);
@@ -415,30 +415,34 @@ const Releases = {
                     });
                 });
         },
-        findInheritedOperatePrivileges: function () {
+        findInheritedAppRules: function (callback) {
             const theThis = this;
-            axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
+            axios.get('../manage/propertyType/findInheritedAppRules', {
                 params: {
-                    appId: this.appId
+                    appId: theThis.appId
                 }
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.appOperatePrivileges = result.appOperatePrivileges;
+                theThis.inheritedAppRules = result.inheritedAppRules;
+                if (callback) {
+                    callback(theThis.inheritedAppRules);
+                }
             });
         },
-        calcPrivilege: function (appId, key) {
+        computePropertyType: function (appId, key) {
             let started = false;
-            for (let i = 0; i < this.appOperatePrivileges.length; i++) {
-                let appOperatePrivilege = this.appOperatePrivileges[i];
-                if (appOperatePrivilege.app.appId === appId) {
+            for (let i = 0; i < this.inheritedAppRules.length; i++) {
+                let appRule = this.inheritedAppRules[i];
+                if (appRule.app.appId === appId) {
                     started = true;
                 }
                 if (started) {
-                    for (let keyRegex in appOperatePrivilege.keyRegexPrivileges) {
-                        let regex = keyRegex;
+                    for (let j = 0; j < appRule.rules.length; j++) {
+                        let rule = appRule.rules[j];
+                        let regex = rule.keyRegex;
                         if (!regex.startsWith('^')) {
                             regex = '^' + regex;
                         }
@@ -446,7 +450,7 @@ const Releases = {
                             regex += '$';
                         }
                         if (new RegExp(regex).test(key)) {
-                            return appOperatePrivilege.keyRegexPrivileges[keyRegex];
+                            return rule.propertyType;
                         }
                     }
                 }

@@ -55,7 +55,7 @@ const BranchesTemplate = `
                 <el-input v-model="mergeBranchForm.sourceBranchId" :disabled="true" placeholder="请输入源分支id" style="width: 100%"></el-input>
             </el-form-item>
             <el-form-item label="目标分支id" prop="branchId" :rules="[{required:true, message:'请输入目标分支id', trigger:'blur'}]">
-                <el-select v-model="mergeBranchForm.branchId" @change="refreshMergeDifference" clearable placeholder="请输入目标分支id" style="width: 100%">
+                <el-select v-model="mergeBranchForm.branchId" @change="refreshComputedBranchMergence" clearable placeholder="请输入目标分支id" style="width: 100%">
                     <el-option v-for="branch in branches" v-if="branch.branchId !== mergeBranchForm.sourceBranchId" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
                 </el-select>
             </el-form-item>
@@ -65,16 +65,16 @@ const BranchesTemplate = `
                 <span style="margin-right: 12px">合并的变更</span>
             </el-col>
             <el-col :span="21">
-                <el-table :data="mergeDifference.properties"
+                <el-table :data="computedBranchMergence.changedProperties"
                           :default-sort="{prop: 'key'}"
                           :cell-style="{padding: '5px 0px'}"
                           border>
                     <el-table-column prop="key" label="配置key">
                         <template slot-scope="{ row }">
-                            <el-badge v-if="mergeDifference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
+                            <el-badge v-if="computedBranchMergence.difference.addedKeys.indexOf(row.key) >= 0" type="success" value="新" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <el-badge v-else-if="mergeDifference.removedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
+                            <el-badge v-else-if="computedBranchMergence.difference.deletedKeys.indexOf(row.key) >= 0" type="danger" value="删" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
                             <span v-else class="propertyValue-text-style">{{ row.key }}</span>
@@ -82,23 +82,23 @@ const BranchesTemplate = `
                     </el-table-column>
                     <el-table-column prop="value" label="配置value">
                         <template slot-scope="{ row }">
-                            <template v-if="mergeDifference.modifiedValueKeys.indexOf(row.key) >= 0">
+                            <template v-if="computedBranchMergence.difference.modifiedValueKeys.indexOf(row.key) >= 0">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.value === null">无效</el-tag>
-                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger">无权限</el-tag>
                                     <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                                 </el-badge>
                             </template>
                             <div v-else>
                                 <el-tag v-if="row.value === null">无效</el-tag>
-                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger">无权限</el-tag>
                                 <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                             </div>
                         </template>
                     </el-table-column>
                     <el-table-column prop="scope" label="作用域" :resizable="false" width="120px">
                         <template slot-scope="{ row }">
-                            <template v-if="mergeDifference.modifiedScopeKeys.indexOf(row.key) >= 0">
+                            <template v-if="computedBranchMergence.difference.modifiedScopeKeys.indexOf(row.key) >= 0">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.scope === 'PRIVATE'" size="medium">私有</el-tag>
                                     <el-tag v-else-if="row.scope === 'PROTECTED'" type="success" size="medium">可继承</el-tag>
@@ -117,7 +117,7 @@ const BranchesTemplate = `
         </el-row>
         <div slot="footer">
             <el-button @click="closeMergeBranchDialog">取消</el-button>
-            <el-button type="primary" @click="mergeBranch">提交</el-button>
+            <el-button type="primary" @click="mergeBranch" :disabled="computedBranchMergence.changedProperties.length<=0">提交</el-button>
         </div>
     </el-dialog>
     <br/><br/><br/>
@@ -127,18 +127,20 @@ const BranchesTemplate = `
             <el-button type="primary" icon="el-icon-plus" size="small" @click="addBranchRuleDialogVisible = true">新增</el-button>
         </el-col>
     </el-row>
-    <el-table :data="branchRules" border stripe>
+    <el-table :data="branchRules"
+              :default-sort="{prop: 'priority'}"
+              border stripe>
         <el-table-column prop="branchId" label="分支id"></el-table-column>
-        <el-table-column prop="priority" label="优先级（值越小优先级越高）">
-            <template slot-scope="{ row }">
-                <span v-if="!row.editing">{{ row.priority }}</span>
-                <el-input-number v-else v-model="row.editingPriority" size="small" :min="0" controls-position="right"></el-input-number>
-            </template>
-        </el-table-column>
         <el-table-column prop="rule" label="规则（正则表达式）">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.rule }}</span>
                 <el-input v-else v-model="row.editingRule" size="small" clearable placeholder="请输入规则"></el-input>
+            </template>
+        </el-table-column>
+        <el-table-column prop="priority" label="优先级（值越小优先级越高）">
+            <template slot-scope="{ row }">
+                <span v-if="!row.editing">{{ row.priority }}</span>
+                <el-input-number v-else v-model="row.editingPriority" size="small" :min="0" controls-position="right"></el-input-number>
             </template>
         </el-table-column>
         <el-table-column label="操作" header-align="center" width="160px">
@@ -175,11 +177,11 @@ const BranchesTemplate = `
                     <el-option v-for="branch in addBranchRuleDialogBranches" :value="branch.branchId" :label="branch.branchId" :key="branch.branchId"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="优先级" prop="priority" :rules="[{required:true, message:'请输入优先级', trigger:'blur'}]">
-                <el-input-number v-model="addBranchRuleForm.priority" :min="0" controls-position="right" style="width: 90%"></el-input-number>
-            </el-form-item>
             <el-form-item label="规则" prop="rule" :rules="[{required:true, message:'请输入规则', trigger:'blur'}]">
                 <el-input v-model="addBranchRuleForm.rule" clearable placeholder="请输入规则" style="width: 90%"></el-input>
+            </el-form-item>
+            <el-form-item label="优先级" prop="priority" :rules="[{required:true, message:'请输入优先级', trigger:'blur'}]">
+                <el-input-number v-model="addBranchRuleForm.priority" :min="0" controls-position="right" style="width: 90%"></el-input-number>
             </el-form-item>
         </el-form>
         <div slot="footer">
@@ -199,7 +201,7 @@ const Branches = {
             app: {},
             profile: {},
             branches: [],
-            appOperatePrivileges: [],
+            inheritedAppRules: [],
             addBranchDialogVisible: false,
             addBranchForm: {
                 branchId: null,
@@ -210,12 +212,9 @@ const Branches = {
                 branchId: null,
                 sourceBranchId: null
             },
-            mergeDifference: {
-                properties: [],
-                addedKeys: [],
-                modifiedValueKeys: [],
-                modifiedScopeKeys: [],
-                removedKeys: []
+            computedBranchMergence: {
+                changedProperties: [],
+                difference: {}
             },
             branchRules: [],
             addBranchRuleDialogVisible: false,
@@ -245,7 +244,7 @@ const Branches = {
         this.findApp(this.appId);
         this.findProfile(this.profileId);
         this.findBranches();
-        this.findInheritedOperatePrivileges();
+        this.findInheritedAppRules();
         this.findBranchRules();
     },
     methods: {
@@ -311,9 +310,9 @@ const Branches = {
                 theThis.branches = result.branches;
             });
         },
-        findInheritedOperatePrivileges: function () {
+        findInheritedAppRules: function (callback) {
             const theThis = this;
-            axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
+            axios.get('../manage/propertyType/findInheritedAppRules', {
                 params: {
                     appId: theThis.appId
                 }
@@ -322,7 +321,10 @@ const Branches = {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.appOperatePrivileges = result.appOperatePrivileges;
+                theThis.inheritedAppRules = result.inheritedAppRules;
+                if (callback) {
+                    callback(theThis.inheritedAppRules);
+                }
             });
         },
         closeAddBranchDialog: function () {
@@ -370,19 +372,18 @@ const Branches = {
                     return;
                 }
                 Vue.prototype.$message.success(result.message);
-                callback();
+                if (callback) {
+                    callback();
+                }
             });
         },
         closeMergeBranchDialog: function () {
             this.mergeBranchDialogVisible = false;
             this.mergeBranchForm.branchId = null;
             this.mergeBranchForm.sourceBranchId = null;
-            this.mergeDifference = {
-                properties: [],
-                addedKeys: [],
-                modifiedValueKeys: [],
-                modifiedScopeKeys: [],
-                removedKeys: []
+            this.computedBranchMergence = {
+                changedProperties: [],
+                difference: {}
             };
         },
         mergeBranch: function () {
@@ -414,10 +415,12 @@ const Branches = {
                     return;
                 }
                 Vue.prototype.$message.success(result.message);
-                callback();
+                if (callback) {
+                    callback();
+                }
             });
         },
-        refreshMergeDifference: function () {
+        refreshComputedBranchMergence: function () {
             const theThis = this;
             axios.get('../manage/branch/computeBranchMergence', {
                 params: {
@@ -430,28 +433,32 @@ const Branches = {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                 }
-                result.properties.forEach(function (property) {
-                    property.privilege = theThis.calcPrivilege(theThis.appId, property.key);
-                });
-                theThis.mergeDifference = {
-                    properties: result.properties,
-                    addedKeys: result.addedKeys,
-                    modifiedValueKeys: result.modifiedValueKeys,
-                    modifiedScopeKeys: result.modifiedScopeKeys,
-                    removedKeys: result.removedKeys
+                let computedBranchMergence = {
+                    changedProperties: [],
+                    difference: result.difference
                 };
+                result.changedProperties.forEach(function (property) {
+                    computedBranchMergence.changedProperties.push({
+                        key: property.key,
+                        value: property.value,
+                        scope: property.scope,
+                        propertyType: theThis.computePropertyType(theThis.appId, property.key)
+                    });
+                });
+                theThis.computedBranchMergence = computedBranchMergence;
             });
         },
-        calcPrivilege: function (appId, key) {
+        computePropertyType: function (appId, key) {
             let started = false;
-            for (let i = 0; i < this.appOperatePrivileges.length; i++) {
-                let appOperatePrivilege = this.appOperatePrivileges[i];
-                if (appOperatePrivilege.app.appId === appId) {
+            for (let i = 0; i < this.inheritedAppRules.length; i++) {
+                let appRule = this.inheritedAppRules[i];
+                if (appRule.app.appId === appId) {
                     started = true;
                 }
                 if (started) {
-                    for (let keyRegex in appOperatePrivilege.keyRegexPrivileges) {
-                        let regex = keyRegex;
+                    for (let j = 0; j < appRule.rules.length; j++) {
+                        let rule = appRule.rules[j];
+                        let regex = rule.keyRegex;
                         if (!regex.startsWith('^')) {
                             regex = '^' + regex;
                         }
@@ -459,7 +466,7 @@ const Branches = {
                             regex += '$';
                         }
                         if (new RegExp(regex).test(key)) {
-                            return appOperatePrivilege.keyRegexPrivileges[keyRegex];
+                            return rule.propertyType;
                         }
                     }
                 }
@@ -507,8 +514,8 @@ const Branches = {
         },
         startEditingBranchRule: function (branchRule) {
             branchRule.editing = true;
-            branchRule.editingPriority = branchRule.priority;
             branchRule.editingRule = branchRule.rule;
+            branchRule.editingPriority = branchRule.priority;
         },
         saveEditingBranchRule: function (branchRule) {
             const theThis = this;
@@ -518,8 +525,8 @@ const Branches = {
                         branchRule.appId,
                         branchRule.profileId,
                         branchRule.branchId,
-                        branchRule.editingPriority,
                         branchRule.editingRule,
+                        branchRule.editingPriority,
                         function () {
                             theThis.findBranchRules();
                         });
@@ -528,8 +535,8 @@ const Branches = {
         closeAddBranchRuleDialog: function () {
             this.addBranchRuleDialogVisible = false;
             this.addBranchRuleForm.branchId = null;
-            this.addBranchRuleForm.priority = null;
             this.addBranchRuleForm.rule = null;
+            this.addBranchRuleForm.priority = null;
         },
         addBranchRule: function () {
             const theThis = this;
@@ -541,21 +548,21 @@ const Branches = {
                     theThis.appId,
                     theThis.profileId,
                     theThis.addBranchRuleForm.branchId,
-                    theThis.addBranchRuleForm.priority,
                     theThis.addBranchRuleForm.rule,
+                    theThis.addBranchRuleForm.priority,
                     function () {
                         theThis.closeAddBranchRuleDialog();
                         theThis.findBranchRules();
                     });
             });
         },
-        doAddOrModifyBranchRule: function (appId, profileId, branchId, priority, rule, callback) {
+        doAddOrModifyBranchRule: function (appId, profileId, branchId, rule, priority, callback) {
             axios.post('../manage/branchRule/addOrModifyBranchRule', {
                 appId: appId,
                 profileId: profileId,
                 branchId: branchId,
-                priority: priority,
-                rule: rule
+                rule: rule,
+                priority: priority
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);

@@ -85,7 +85,7 @@ const PropertyValuesTemplate = `
                                     <el-badge v-if="differenceForMap.addedKeys[row.key]" type="success" value="新" class="badge-style">
                                         <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                                     </el-badge>
-                                    <el-badge v-else-if="differenceForMap.removedKeys[row.key]" type="danger" value="删" class="badge-style">
+                                    <el-badge v-else-if="differenceForMap.deletedKeys[row.key]" type="danger" value="删" class="badge-style">
                                         <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                                     </el-badge>
                                     <span v-else class="propertyValue-text-style">{{ row.key }}</span>
@@ -100,13 +100,13 @@ const PropertyValuesTemplate = `
                                     <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId && differenceForMap.modifiedValueKeys[row.key]">
                                         <el-badge type="warning" value="改" class="badge-style">
                                             <el-tag v-if="row.value === null" size="medium">无效</el-tag>
-                                            <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                            <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                             <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                                         </el-badge>
                                     </template>
                                     <div v-else>
                                         <el-tag v-if="row.value === null" size="medium">无效</el-tag>
-                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger" size="medium">无权限</el-tag>
+                                        <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger" size="medium">无权限</el-tag>
                                         <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                                     </div>
                                 </template>
@@ -143,14 +143,14 @@ const PropertyValuesTemplate = `
                         <el-table-column label="操作" header-align="center" align="center" :resizable="false" width="140px">
                             <template slot-scope="{ row }">
                                 <template v-if="appProperty.app.appId === appId && profileProperty.profileId === profileId">
-                                    <template v-if="differenceForMap.removedKeys[row.key]">
+                                    <template v-if="differenceForMap.deletedKeys[row.key]">
                                         <el-tooltip content="恢复" placement="top" :open-delay="1000" :hide-after="3000">
-                                            <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
+                                            <el-button @click="addOrModifyPropertyValue(row.key, row.value, row.scope)" :disabled="manager.type === 'NORMAL' && row.propertyType !== 'READ_WRITE'" type="success" icon="el-icon-plus" size="mini" circle></el-button>
                                         </el-tooltip>
                                     </template>
                                     <template v-else-if="row.value === null || row.temporary">
                                         <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                            <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.propertyType !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
                                         </el-tooltip>
                                         <el-button-group v-else>
                                             <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
@@ -164,7 +164,7 @@ const PropertyValuesTemplate = `
                                     <el-row v-else>
                                         <el-col :span="12" style="text-align: center">
                                             <el-tooltip v-if="!row.editing" content="修改" placement="top" :open-delay="1000" :hide-after="3000">
-                                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
+                                                <el-button @click="startEditing(row)" type="primary" :disabled="manager.type === 'NORMAL' && row.propertyType !== 'READ_WRITE'" icon="el-icon-edit" size="mini" circle></el-button>
                                             </el-tooltip>
                                             <el-button-group v-else>
                                                 <el-tooltip content="取消修改" placement="top" :open-delay="1000" :hide-after="3000">
@@ -177,14 +177,14 @@ const PropertyValuesTemplate = `
                                         </el-col>
                                         <el-col :span="12" style="text-align: center">
                                             <el-tooltip content="删除" placement="top" :open-delay="1000" :hide-after="3000">
-                                                <el-button @click="deletePropertyValue(row.key)" type="danger" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
+                                                <el-button @click="deletePropertyValue(row.key)" type="danger" :disabled="manager.type === 'NORMAL' && row.propertyType !== 'READ_WRITE'" icon="el-icon-delete" size="mini" circle></el-button>
                                             </el-tooltip>
                                         </el-col>
                                     </el-row>
                                 </template>
                                 <template v-else-if="isShowOverrideButton(row)">
                                     <el-tooltip content="覆盖" placement="top" :open-delay="1000" :hide-after="3000">
-                                        <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.privilege !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
+                                        <el-button @click="overrideProperty(row)" :disabled="manager.type === 'NORMAL' && row.propertyType !== 'READ_WRITE'" type="success" icon="el-icon-edit" size="mini" plain circle></el-button>
                                     </el-tooltip>
                                 </template>
                             </template>
@@ -287,7 +287,7 @@ const PropertyValuesTemplate = `
                             <el-badge v-if="differenceForMap.addedKeys[row.key]" type="success" value="新" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
-                            <el-badge v-else-if="differenceForMap.removedKeys[row.key]" type="danger" value="删" class="badge-style">
+                            <el-badge v-else-if="differenceForMap.deletedKeys[row.key]" type="danger" value="删" class="badge-style">
                                 <span class="badged-text-style propertyValue-text-style">{{ row.key }}</span>
                             </el-badge>
                             <span v-else class="propertyValue-text-style">{{ row.key }}</span>
@@ -298,13 +298,13 @@ const PropertyValuesTemplate = `
                             <template v-if="differenceForMap.modifiedValueKeys[row.key]">
                                 <el-badge type="warning" value="改" class="badge-style">
                                     <el-tag v-if="row.value === null">无效</el-tag>
-                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                    <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger">无权限</el-tag>
                                     <span v-else class="badged-text-style propertyValue-text-style">{{ row.value }}</span>
                                 </el-badge>
                             </template>
                             <div v-else>
                                 <el-tag v-if="row.value === null">无效</el-tag>
-                                <el-tag v-else-if="manager.type === 'NORMAL' && row.privilege === 'NONE'" type="danger">无权限</el-tag>
+                                <el-tag v-else-if="manager.type === 'NORMAL' && row.propertyType === 'NONE'" type="danger">无权限</el-tag>
                                 <span v-else class="propertyValue-text-style">{{ row.value }}</span>
                             </div>
                         </template>
@@ -358,11 +358,11 @@ const PropertyValues = {
                 addedKeys: [],
                 modifiedValueKeys: [],
                 modifiedScopeKeys: [],
-                removedKeys: []
+                deletedKeys: []
             },
             inheritedAppReleases: [],
             inheritedAppPropertyKeys: [],
-            appOperatePrivileges: [],
+            inheritedAppRules: [],
             showMode: 'table',
             editingPropertyValuesInText: '',
             addPropertyValueDialogShowing: false,
@@ -383,14 +383,14 @@ const PropertyValues = {
             return this.difference.addedKeys.length > 0
                 || this.difference.modifiedValueKeys.length > 0
                 || this.difference.modifiedScopeKeys.length > 0
-                || this.difference.removedKeys.length > 0;
+                || this.difference.deletedKeys.length > 0;
         },
         differenceForMap: function () {
             let forMap = {
                 addedKeys: {},
                 modifiedValueKeys: {},
                 modifiedScopeKeys: {},
-                removedKeys: {}
+                deletedKeys: {}
             };
             this.difference.addedKeys.forEach(function (key) {
                 forMap.addedKeys[key] = true;
@@ -401,8 +401,8 @@ const PropertyValues = {
             this.difference.modifiedScopeKeys.forEach(function (key) {
                 forMap.modifiedScopeKeys[key] = true;
             });
-            this.difference.removedKeys.forEach(function (key) {
-                forMap.removedKeys[key] = true;
+            this.difference.deletedKeys.forEach(function (key) {
+                forMap.deletedKeys[key] = true;
             });
 
             return forMap;
@@ -569,7 +569,7 @@ const PropertyValues = {
                         key: propertyValue.key,
                         value: propertyValue.value,
                         scope: propertyValue.scope,
-                        privilege: theThis.calcPrivilege(theThis.appId, propertyValue.key)
+                        propertyType: theThis.computePropertyType(theThis.appId, propertyValue.key)
                     });
                 }
             });
@@ -583,12 +583,12 @@ const PropertyValues = {
                         return;
                     }
                     release.properties.forEach(function (property) {
-                        if (theThis.differenceForMap.removedKeys[property.key]) {
+                        if (theThis.differenceForMap.deletedKeys[property.key]) {
                             properties.push({
                                 key: property.key,
                                 value: property.value,
                                 scope: property.scope,
-                                privilege: theThis.calcPrivilege(theThis.appId, property.key)
+                                propertyType: theThis.computePropertyType(theThis.appId, property.key)
                             });
                         }
                     });
@@ -659,7 +659,7 @@ const PropertyValues = {
         inheritedAppPropertyKeys: function () {
             this.refreshAppProperties();
         },
-        appOperatePrivileges: function () {
+        inheritedAppRules: function () {
             this.refreshAppProperties();
         }
     },
@@ -674,7 +674,7 @@ const PropertyValues = {
             this.findDifference();
             this.findInheritedAppReleases();
             this.findInheritedAppPropertyKeys();
-            this.findInheritedOperatePrivileges();
+            this.findInheritedAppRules();
         },
         refreshAppProperties: function () {
             const theThis = this;
@@ -700,13 +700,13 @@ const PropertyValues = {
                                 value: propertyValue.value,
                                 scope: propertyValue.scope,
                                 memo: keyMemos && keyMemos[propertyValue.key] ? keyMemos[propertyValue.key] : null,
-                                privilege: theThis.calcPrivilege(release.appId, propertyValue.key),
+                                propertyType: theThis.computePropertyType(release.appId, propertyValue.key),
                                 editing: false,
                                 editingValue: null,
                                 editingScope: null
                             });
                         });
-                        theThis.difference.removedKeys.forEach(function (key) {
+                        theThis.difference.deletedKeys.forEach(function (key) {
                             let property;
                             for (let i = 0; i < release.properties.length; i++) {
                                 if (release.properties[i].key === key) {
@@ -731,7 +731,7 @@ const PropertyValues = {
                                         value: property.value,
                                         scope: property.scope,
                                         memo: keyMemos && keyMemos[property.key] ? keyMemos[property.key] : null,
-                                        privilege: theThis.calcPrivilege(release.appId, property.key),
+                                        propertyType: theThis.computePropertyType(release.appId, property.key),
                                         editing: false,
                                         editingValue: null,
                                         editingScope: null
@@ -748,7 +748,7 @@ const PropertyValues = {
                                 value: property.value,
                                 scope: property.scope,
                                 memo: keyMemos && keyMemos[property.key] ? keyMemos[property.key] : null,
-                                privilege: theThis.calcPrivilege(release.appId, property.key),
+                                propertyType: theThis.computePropertyType(release.appId, property.key),
                                 editing: false,
                                 editingValue: null,
                                 editingScope: null
@@ -796,7 +796,7 @@ const PropertyValues = {
                             value: null,
                             scope: propertyKey.scope,
                             memo: propertyKey.memo,
-                            privilege: theThis.calcPrivilege(propertyKey.appId, propertyKey.key),
+                            propertyType: theThis.computePropertyType(propertyKey.appId, propertyKey.key),
                             editing: false,
                             editingValue: null,
                             editingScope: null
@@ -885,21 +885,21 @@ const PropertyValues = {
             }
 
             if (this.manager.type === 'NORMAL') {
-                let noPrivilegeKeys = [];
+                let notReadWriteKeys = [];
                 addedOrModifiedPropertyValues.forEach(function (propertyValue) {
-                    let privilege = theThis.calcPrivilege(theThis.appId, propertyValue.key);
-                    if (privilege !== 'READ_WRITE') {
-                        noPrivilegeKeys.push(propertyValue.key);
+                    let propertyType = theThis.computePropertyType(theThis.appId, propertyValue.key);
+                    if (propertyType !== 'READ_WRITE') {
+                        notReadWriteKeys.push(propertyValue.key);
                     }
                 });
                 deletedKeys.forEach(function (key) {
-                    let privilege = theThis.calcPrivilege(theThis.appId, key);
-                    if (privilege !== 'READ_WRITE') {
-                        noPrivilegeKeys.push(key);
+                    let propertyType = theThis.computePropertyType(theThis.appId, key);
+                    if (propertyType !== 'READ_WRITE') {
+                        notReadWriteKeys.push(key);
                     }
                 });
-                if (noPrivilegeKeys.length > 0) {
-                    Vue.prototype.$message.error('无权限修改敏感配置：' + noPrivilegeKeys);
+                if (notReadWriteKeys.length > 0) {
+                    Vue.prototype.$message.error('无权限修改敏感配置：' + notReadWriteKeys);
                     return;
                 }
             }
@@ -936,16 +936,17 @@ const PropertyValues = {
                 });
             });
         },
-        calcPrivilege: function (appId, key) {
+        computePropertyType: function (appId, key) {
             let started = false;
-            for (let i = 0; i < this.appOperatePrivileges.length; i++) {
-                let appOperatePrivilege = this.appOperatePrivileges[i];
-                if (appOperatePrivilege.app.appId === appId) {
+            for (let i = 0; i < this.inheritedAppRules.length; i++) {
+                let appRule = this.inheritedAppRules[i];
+                if (appRule.app.appId === appId) {
                     started = true;
                 }
                 if (started) {
-                    for (let keyRegex in appOperatePrivilege.keyRegexPrivileges) {
-                        let regex = keyRegex;
+                    for (let j = 0; j < appRule.rules.length; j++) {
+                        let rule = appRule.rules[j];
+                        let regex = rule.keyRegex;
                         if (!regex.startsWith('^')) {
                             regex = '^' + regex;
                         }
@@ -953,7 +954,7 @@ const PropertyValues = {
                             regex += '$';
                         }
                         if (new RegExp(regex).test(key)) {
-                            return appOperatePrivilege.keyRegexPrivileges[keyRegex];
+                            return rule.propertyType;
                         }
                     }
                 }
@@ -1153,7 +1154,7 @@ const PropertyValues = {
                             value: property.value,
                             scope: property.scope,
                             memo: property.memo,
-                            privilege: theThis.calcPrivilege(theThis.appId, property.key),
+                            propertyType: theThis.computePropertyType(theThis.appId, property.key),
                             editing: false,
                             editingValue: null,
                             editingScope: null,
@@ -1220,8 +1221,7 @@ const PropertyValues = {
                 let keys = [];
                 for (let i = 0; i < this.modifiedProperties.length; i++) {
                     let property = this.modifiedProperties[i];
-                    let privilege = this.calcPrivilege(this.appId, property.key);
-                    if (privilege !== 'READ_WRITE') {
+                    if (property.propertyType !== 'READ_WRITE') {
                         keys.push(property.key);
                     }
                 }
@@ -1238,36 +1238,44 @@ const PropertyValues = {
         },
         releaseBranch: function () {
             const theThis = this;
-            let addOrModifiedProperties = [];
-            let deletedPropertyKeys = [];
-            theThis.modifiedProperties.forEach(function (property) {
+            let propertyChange = {
+                addedOrModifiedProperties: [],
+                deletedKeys: []
+            };
+            this.modifiedProperties.forEach(function (property) {
                 if (theThis.differenceForMap.addedKeys[property.key]
                     || theThis.differenceForMap.modifiedValueKeys[property.key]
                     || theThis.differenceForMap.modifiedScopeKeys[property.key]) {
-                    addOrModifiedProperties.push({
+                    propertyChange.addedOrModifiedProperties.push({
                         key: property.key,
                         value: property.value,
                         scope: property.scope
                     });
-                } else if (theThis.differenceForMap.removedKeys[property.key]) {
-                    deletedPropertyKeys.push(property.key);
+                } else if (theThis.differenceForMap.deletedKeys[property.key]) {
+                    propertyChange.deletedKeys.push(property.key);
                 }
             });
+            this.doReleaseBranch(propertyChange, this.releaseBranchForm.memo, function () {
+                theThis.closeReleaseBranchDialog();
+                theThis.findAllData();
+            });
+        },
+        doReleaseBranch: function (propertyChange, memo, callback) {
             axios.post('../manage/branch/releaseBranch', {
-                appId: theThis.appId,
-                profileId: theThis.profileId,
-                branchId: theThis.branchId,
-                addOrModifiedProperties: JSON.stringify(addOrModifiedProperties),
-                removedPropertyKeys: JSON.stringify(deletedPropertyKeys),
-                memo: theThis.releaseBranchForm.memo
+                appId: this.appId,
+                profileId: this.profileId,
+                branchId: this.branchId,
+                propertyChange: JSON.stringify(propertyChange),
+                memo: memo
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
                 Vue.prototype.$message.success(result.message);
-                theThis.closeReleaseBranchDialog();
-                theThis.findAllData();
+                if (callback) {
+                    callback(result.branch);
+                }
             });
         },
         toShowingProfile: function (profile) {
@@ -1420,20 +1428,20 @@ const PropertyValues = {
                 }
             });
         },
-        findInheritedOperatePrivileges: function (callback) {
+        findInheritedAppRules: function (callback) {
             const theThis = this;
-            axios.get('../manage/operatePrivilege/findInheritedOperatePrivileges', {
+            axios.get('../manage/propertyType/findInheritedAppRules', {
                 params: {
-                    appId: this.appId
+                    appId: theThis.appId
                 }
             }).then(function (result) {
                 if (!result.success) {
                     Vue.prototype.$message.error(result.message);
                     return;
                 }
-                theThis.appOperatePrivileges = result.appOperatePrivileges;
+                theThis.inheritedAppRules = result.inheritedAppRules;
                 if (callback) {
-                    callback(theThis.appOperatePrivileges);
+                    callback(theThis.inheritedAppRules);
                 }
             });
         },
