@@ -12,7 +12,7 @@ const PropertyKeysTemplate = `
             </router-link>
         </el-col>
         <el-col :span="8" style="text-align: right;">
-            <router-link :to="'/configs/' + appId + '/operatePrivileges'">
+            <router-link :to="'/configs/' + appId + '/propertyTypes'">
                 <el-button type="text">普通管理员权限</el-button>
             </router-link>
         </el-col>
