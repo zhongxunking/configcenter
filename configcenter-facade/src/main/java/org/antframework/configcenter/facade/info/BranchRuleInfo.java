@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -24,8 +24,8 @@ public class BranchRuleInfo extends AbstractInfo {
     private String profileId;
     // 分支id
     private String branchId;
-    // 优先级
-    private Long priority;
     // 规则
     private String rule;
+    // 优先级
+    private Long priority;
 }

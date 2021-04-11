@@ -25,7 +25,6 @@ import org.antframework.manager.facade.info.RelationInfo;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.Assert;
 
 import java.io.Serializable;
 import java.util.*;
@@ -93,7 +92,7 @@ public final class AppPropertyTypes {
      *
      * @param appId 应用id
      */
-    public static void deleteAllRule(String appId) {
+    public static void deleteAllRules(String appId) {
         Relations.deleteRelations(RELATION_TYPE, appId, null);
     }
 

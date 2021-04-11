@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -42,15 +42,15 @@ public class BranchRuleController {
     public EmptyResult addOrModifyBranchRule(String appId,
                                              String profileId,
                                              String branchId,
-                                             Long priority,
-                                             String rule) {
+                                             String rule,
+                                             Long priority) {
         ManagerApps.assertAdminOrHaveApp(appId);
         AddOrModifyBranchRuleOrder order = new AddOrModifyBranchRuleOrder();
         order.setAppId(appId);
         order.setProfileId(profileId);
         order.setBranchId(branchId);
-        order.setPriority(priority);
         order.setRule(rule);
+        order.setPriority(priority);
 
         return branchRuleService.addOrModifyBranchRule(order);
     }

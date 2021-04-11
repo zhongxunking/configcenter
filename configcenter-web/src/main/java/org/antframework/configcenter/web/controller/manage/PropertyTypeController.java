@@ -40,10 +40,11 @@ public class PropertyTypeController {
     public EmptyResult addOrModifyRule(String appId,
                                        String keyRegex,
                                        PropertyType propertyType,
-                                       int priority) {
+                                       Integer priority) {
         Assert.notNull(appId, "appId不能为空");
         Assert.notNull(keyRegex, "keyRegex不能为null");
         Assert.notNull(propertyType, "propertyType不能为null");
+        Assert.notNull(priority, "priority不能为null");
         CurrentManagerAssert.admin();
 
         AppPropertyTypes.addOrModifyRule(appId, new AppPropertyTypes.Rule(keyRegex, propertyType, priority));

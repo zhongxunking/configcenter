@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -30,10 +30,10 @@ public class AddOrModifyBranchRuleOrder extends AbstractOrder {
     // 分支id
     @NotBlank
     private String branchId;
-    // 优先级
-    @NotNull
-    private Long priority;
     // 规则
     @NotBlank
     private String rule;
+    // 优先级
+    @NotNull
+    private Long priority;
 }

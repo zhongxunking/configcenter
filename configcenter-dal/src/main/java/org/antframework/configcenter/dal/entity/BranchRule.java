@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -37,11 +37,11 @@ public class BranchRule extends AbstractEntity {
     @Column(length = 64)
     private String branchId;
 
-    // 优先级
-    @Column
-    private Long priority;
-
     // 规则
     @Column
     private String rule;
+
+    // 优先级
+    @Column
+    private Long priority;
 }

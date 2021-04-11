@@ -72,7 +72,7 @@ public class AppController {
         EmptyResult result = appService.deleteApp(order);
         if (result.isSuccess()) {
             // 删除应用所有的配置类型规则
-            AppPropertyTypes.deleteAllRule(appId);
+            AppPropertyTypes.deleteAllRules(appId);
         }
         return result;
     }
