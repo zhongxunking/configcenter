@@ -34,6 +34,7 @@ import org.antframework.configcenter.web.common.ManagerApps;
 import org.antframework.manager.facade.enums.ManagerType;
 import org.antframework.manager.web.CurrentManagerAssert;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.HashSet;
@@ -91,7 +92,7 @@ public class BranchController {
     public ReleaseBranchResult releaseBranch(String appId,
                                              String profileId,
                                              String branchId,
-                                             PropertyChange propertyChange,
+                                             @RequestParam PropertyChange propertyChange,
                                              String memo) {
         // 验权
         ManagerApps.assertAdminOrHaveApp(appId);

@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
  * 应用与配置类型规则的工具
  */
 public final class AppPropertyTypes {
-    // 关系类型
+    // 关系类型（source=appId, target=keyRegex, value=PropertyType|priority）
     private static final String RELATION_TYPE = "app-propertyType";
     // 分隔符
     private static final char SEPARATOR = '|';

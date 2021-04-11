@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -23,7 +23,7 @@ import org.springframework.beans.BeanUtils;
  * 管理员与应用关系的工具
  */
 public final class ManagerApps {
-    // 关系类型
+    // 关系类型（source=managerId, target=appId, value=null）
     private static final String RELATION_TYPE = "manager-app";
     // 关系服务
     private static final RelationService RELATION_SERVICE = Contexts.getApplicationContext().getBean(RelationService.class);
