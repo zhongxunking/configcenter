@@ -61,7 +61,7 @@ public final class AppPropertyTypes {
             }
 
             if (!notReadWriteKeys.isEmpty()) {
-                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("存在敏感配置%s被修改", ToString.toString(notReadWriteKeys)));
+                throw new BizException(Status.FAIL, CommonResultCode.UNAUTHORIZED.getCode(), String.format("无权修改敏感配置%s", ToString.toString(notReadWriteKeys)));
             }
         }
     }
