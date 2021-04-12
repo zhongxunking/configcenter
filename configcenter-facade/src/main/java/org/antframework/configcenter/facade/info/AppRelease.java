@@ -10,9 +10,8 @@ package org.antframework.configcenter.facade.info;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.facade.AbstractInfo;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,14 +19,9 @@ import java.util.List;
  */
 @AllArgsConstructor
 @Getter
-public class AppRelease implements Serializable {
+public class AppRelease extends AbstractInfo {
     // 应用
     private final AppInfo app;
     // 由近及远继承的环境中的发布
     private final List<ReleaseInfo> inheritedProfileReleases;
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
-    }
 }

@@ -10,9 +10,8 @@ package org.antframework.configcenter.facade.info;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import org.antframework.common.util.tostring.ToString;
+import org.antframework.common.util.facade.AbstractInfo;
 
-import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -20,14 +19,9 @@ import java.util.List;
  */
 @AllArgsConstructor
 @Getter
-public class AppPropertyKey implements Serializable {
+public class AppPropertyKey extends AbstractInfo {
     // 应用
     private final AppInfo app;
     // 所有配置key
     private final List<PropertyKeyInfo> propertyKeys;
-
-    @Override
-    public String toString() {
-        return ToString.toString(this);
-    }
 }

@@ -9,9 +9,9 @@
 package org.antframework.configcenter.facade.info;
 
 import lombok.Getter;
+import org.antframework.common.util.facade.AbstractInfo;
 import org.antframework.configcenter.facade.vo.Property;
 
-import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -19,7 +19,7 @@ import java.util.Set;
  * 配置变动
  */
 @Getter
-public class PropertyChange implements Serializable {
+public class PropertyChange extends AbstractInfo {
     // 添加或修改的配置
     private final Set<Property> addedOrModifiedProperties = new HashSet<>();
     // 删除的配置key
