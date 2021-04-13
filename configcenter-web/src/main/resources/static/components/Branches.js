@@ -126,12 +126,15 @@ const BranchesTemplate = `
             <span style="font-size: larger;margin-right: 20px">分支规则：</span>
             <el-button type="primary" icon="el-icon-plus" size="small" @click="addBranchRuleDialogVisible = true">新增</el-button>
         </el-col>
+        <el-col>
+            <span style="font-size: x-small;">用于配置灰度发布。默认使用master分支的配置，但如果客户端的target属性与某条分支规则匹配，则使用对应分支的配置。</span>
+        </el-col>
     </el-row>
     <el-table :data="branchRules"
               :default-sort="{prop: 'priority'}"
               border stripe>
         <el-table-column prop="branchId" label="分支id"></el-table-column>
-        <el-table-column prop="rule" label="规则（正则表达式）">
+        <el-table-column prop="rule" label="客户端target规则（正则表达式）">
             <template slot-scope="{ row }">
                 <span v-if="!row.editing">{{ row.rule }}</span>
                 <el-input v-else v-model="row.editingRule" size="small" clearable placeholder="请输入规则"></el-input>
