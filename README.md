@@ -12,7 +12,7 @@
 > 地址：<a href="http://configcenter.antframework.org:6220" target="_blank">http://configcenter.antframework.org:6220</a><br/>
 > 超级管理员账号：admin 密码：123 <br/>
 > 普通管理员账号：normal 密码：123
-<img src="https://note.youdao.com/yws/api/personal/file/WEB6292d40805cc0f62dde1b346a508d68d?method=download&shareKey=4cacc6700a80db6c3d43e0f4c935d1ca" width=700 />
+<img src="https://note.youdao.com/yws/api/personal/file/WEBd9e53ad6cc4303c226ad4cc0fa97beb6?method=download&shareKey=a585867fddafacb944df2d22607479cd" width=700 />
 
 # 特性
 configcenter具备统一的管理配置能力、配置发布回滚能力、配置更新秒级推送能力、客户端配置缓存能力、对敏感配置设置访问权限能力、配置灰度发布能力、管理员权限管理能力。
