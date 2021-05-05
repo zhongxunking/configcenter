@@ -6,6 +6,12 @@
 > - 服务端：jdk1.8、MySQL、Redis
 > - 客户端：jdk1.8
 
+3. 演示环境
+> 地址：<a href="http://configcenter.antframework.org:6220" target="_blank">http://configcenter.antframework.org:6220</a><br/>
+> 超级管理员账号：admin 密码：123 <br/>
+> 普通管理员账号：normal 密码：123 <br/>
+> 获取配置样例：<a href="http://configcenter.antframework.org:6220/config/findConfig?mainAppId=customer&queriedAppId=customer&profileId=dev" target="_blank">http://configcenter.antframework.org:6220/config/findConfig?mainAppId=customer&queriedAppId=customer&profileId=dev</a><br/>
+
 <img src="https://note.youdao.com/yws/api/personal/file/WEBd9e53ad6cc4303c226ad4cc0fa97beb6?method=download&shareKey=a585867fddafacb944df2d22607479cd" width=700 />
 
 # 特性
