@@ -19,6 +19,7 @@ import org.bekit.service.annotation.service.ServiceExecute;
 import org.bekit.service.engine.ServiceContext;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -48,8 +49,11 @@ public class FindConfigService {
                 }
             }
         }
+        // 对配置排序
+        Map<String, String> sortedProperties = new LinkedHashMap<>();
+        properties.keySet().stream().sorted().forEach(key -> sortedProperties.put(key, properties.get(key)));
 
         result.setVersion(version);
-        result.setProperties(properties);
+        result.setProperties(sortedProperties);
     }
 }

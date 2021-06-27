@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -30,7 +30,7 @@ import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
 import java.io.Serializable;
-import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -117,7 +117,7 @@ public class ServerRequester {
 
             HttpPost httpPost = new HttpPost(serverUrl + FIND_CONFIG_URI);
             httpPost.setConfig(config);
-            httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
             if (managerSigner != null) {
                 managerSigner.sign(httpPost, params);
             }
@@ -195,7 +195,7 @@ public class ServerRequester {
 
             HttpPost httpPost = new HttpPost(serverUrl + LISTEN_URI);
             httpPost.setConfig(config);
-            httpPost.setEntity(new UrlEncodedFormEntity(params, Charset.forName("utf-8")));
+            httpPost.setEntity(new UrlEncodedFormEntity(params, StandardCharsets.UTF_8));
             if (managerSigner != null) {
                 managerSigner.sign(httpPost, params);
             }
@@ -204,6 +204,9 @@ public class ServerRequester {
 
         // 转换出监听结果
         private ListenResult convertToListenResult(String json) throws JsonProcessingException {
+            if (json == null) {
+                return null;
+            }
             ListenResultInfo resultInfo = JSON.OBJECT_MAPPER.readValue(json, ListenResultInfo.class);
             ListenResult result = new ListenResult();
             result.setStatus(resultInfo.getStatus());

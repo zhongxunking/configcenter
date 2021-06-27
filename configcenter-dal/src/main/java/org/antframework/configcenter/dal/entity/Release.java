@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -54,7 +54,8 @@ public class Release extends AbstractEntity {
     private String memo;
 
     // 配置集
-    @Column(length = 1024 * 1024)
+    @Column
+    @Lob
     @Convert(converter = PropertiesConverter.class)
     private Set<Property> properties;
 
