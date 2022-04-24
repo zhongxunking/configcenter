@@ -8,7 +8,7 @@
 
 3. 演示环境
 > 地址：http://47.108.55.170:6220 <br/>
-> 超级管理员账号：admin 密码：123 <br/>
+> 超级管理员账号：admin 密码：123 <br/> 
 > 普通管理员账号：normal 密码：123 <br/>
 
 > 获取配置样例：http://47.108.55.170:6220/config/findConfig?mainAppId=customer&queriedAppId=customer&profileId=dev
