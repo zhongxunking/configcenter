@@ -54,7 +54,7 @@ public class WebConfiguration {
         if (converterRegistries == null) {
             return;
         }
-        // 注册转换器
+        // 注册转换器 code
         for (ConverterRegistry registry : converterRegistries) {
             registry.addConverter(new StringToSetListenMetaConverter());
             registry.addConverter(new StringToPropertyChangeConverter());
