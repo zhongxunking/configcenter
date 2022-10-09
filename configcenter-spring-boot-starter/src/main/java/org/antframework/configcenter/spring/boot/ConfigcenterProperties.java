@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -9,7 +9,7 @@
 package org.antframework.configcenter.spring.boot;
 
 import org.antframework.boot.core.Contexts;
-import org.antframework.common.util.other.IPUtils;
+import org.antframework.common.util.kit.IPUtils;
 import org.antframework.common.util.tostring.ToString;
 import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.boot.context.properties.ConfigurationProperties;

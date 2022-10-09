@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.vo;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.common.util.tostring.format.Mask;
+import org.antframework.common.util.tostring.mask.Mask;
 
 import java.io.Serializable;
 import java.util.Objects;

@@ -15,7 +15,7 @@ import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
 import org.antframework.common.util.json.JSON;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.common.util.tostring.format.HideDetail;
+import org.antframework.common.util.tostring.hidedetail.HideDetail;
 import org.antframework.manager.client.sign.ManagerSigner;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.apache.http.NameValuePair;

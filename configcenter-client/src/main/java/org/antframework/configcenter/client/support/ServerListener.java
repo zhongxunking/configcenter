@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -9,7 +9,7 @@
 package org.antframework.configcenter.client.support;
 
 import lombok.extern.slf4j.Slf4j;
-import org.antframework.common.util.other.Cache;
+import org.antframework.common.util.kit.Cache;
 import org.antframework.configcenter.client.Config;
 
 import java.util.ArrayList;

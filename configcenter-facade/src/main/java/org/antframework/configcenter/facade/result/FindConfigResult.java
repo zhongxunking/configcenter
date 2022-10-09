@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.result;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractResult;
-import org.antframework.common.util.tostring.format.HideDetail;
+import org.antframework.common.util.tostring.hidedetail.HideDetail;
 
 import java.util.Map;
 

@@ -9,7 +9,7 @@
 package org.antframework.configcenter.client;
 
 import lombok.extern.slf4j.Slf4j;
-import org.antframework.common.util.other.Cache;
+import org.antframework.common.util.kit.Cache;
 import org.antframework.configcenter.client.support.ServerListener;
 import org.antframework.configcenter.client.support.ServerRequester;
 import org.antframework.configcenter.client.support.TaskExecutor;

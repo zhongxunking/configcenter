@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,7 +11,7 @@ package org.antframework.configcenter.client.core;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.antframework.common.util.tostring.ToString;
-import org.antframework.common.util.tostring.format.Mask;
+import org.antframework.common.util.tostring.mask.Mask;
 
 import java.io.Serializable;
 

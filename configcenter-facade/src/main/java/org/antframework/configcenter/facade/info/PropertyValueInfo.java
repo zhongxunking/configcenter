@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -11,7 +11,7 @@ package org.antframework.configcenter.facade.info;
 import lombok.Getter;
 import lombok.Setter;
 import org.antframework.common.util.facade.AbstractInfo;
-import org.antframework.common.util.tostring.format.Mask;
+import org.antframework.common.util.tostring.mask.Mask;
 import org.antframework.configcenter.facade.vo.Scope;
 
 /**

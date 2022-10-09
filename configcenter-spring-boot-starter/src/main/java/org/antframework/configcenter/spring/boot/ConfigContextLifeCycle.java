@@ -1,4 +1,4 @@
-/* 
+/*
  * 作者：钟勋 (e-mail:zhongxunking@163.com)
  */
 
@@ -89,7 +89,7 @@ public class ConfigContextLifeCycle implements GenericApplicationListener {
                         }).map(property -> new ChangedProperty(ChangedProperty.ChangeType.valueOf(property.getType().name()), property.getKey(), property.getOldValue(), property.getNewValue()))
                         .collect(Collectors.toList());
                 if (!changedProperties.isEmpty()) {
-                    Envs.getConfigListeners().onChange(appId, changedProperties);
+                    Envs.getConfigListenerHub().onChange(appId, changedProperties);
                 }
             });
         }
